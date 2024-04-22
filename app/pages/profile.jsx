@@ -102,7 +102,7 @@ return(
         </View>
     </View>
 
-    <View style={{flexDirection:"row",width:"50%", marginLeft:"auto",marginRight:"auto",justifyContent:"space-evenly"}}>
+    <View style={{flexDirection:"row",width:"60%", marginLeft:"auto",marginRight:"auto",justifyContent:"space-evenly",marginTop:10}}>
         <TouchableOpacity onPress={() => handleNavigation("Account")} style={styles.followBTN}>
             <Text style={{color:"white",fontWeight:"600"}}>Account</Text>
         </TouchableOpacity>
@@ -121,7 +121,6 @@ return (
     <Tabs.Container
         renderHeader={Header}
         style={{backgroundColor:"white"}}
-        se
     >
 
         {/* CLIPS PAGE */}
@@ -167,10 +166,9 @@ const styles = StyleSheet.create({
     },
     rowOne: {
         alignItems: 'center',
-        paddingTop: 50,
-        backgroundColor: '#18191a',
+        backgroundColor: 'white',
         borderBottomWidth:3,
-        height:350,
+        height:280,
         borderBottomColor:"black",
         marginBottom:0,
     },
@@ -185,7 +183,7 @@ const styles = StyleSheet.create({
         width: '80%',
         marginLeft:"auto",
         marginRight:"auto",
-        marginTop: 20,
+        marginTop: 10,
     },
     centeredCol: {
         flexDirection: 'column',

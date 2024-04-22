@@ -14,6 +14,7 @@ import TabOneScreen from '../pages/home';
 import ForYouPage from '../pages/forYou';
 import Profile from '../pages/profile';
 import AssistantPage from '../pages/Personal_Assistant';
+import Detecttion from '../pages/detection';
 
 
 //ICONS
@@ -68,20 +69,12 @@ return (
           header : () => (
           <>
             <View style={{marginTop:60,marginLeft:95,marginRight:"auto",flexDirection:"row",justifyContent:"space-evenly",alignItems:"center",width:"50%",zIndex:5}}>
-              <TouchableOpacity onPress={() => setIsExplore(true)} style={isExplore? {borderBottomColor:"#9effb1",borderBottomWidth:2} : {}}>
-                <Text style={isExplore?{fontWeight:"800",color:"white"}:{opacity:0.4,fontWeight:800,color:"white"}}>Home</Text>
+              <TouchableOpacity onPress={() => setIsExplore(true)} style={isExplore? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
+                <Text style={isExplore?{fontWeight:"800",color:"black"}:{opacity:0.4,fontWeight:800,color:"black"}}>Assistant</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => setIsExplore(false)} style={!isExplore? {borderBottomColor:"#9effb1",borderBottomWidth:2} : {}}>
-                <Text style={isExplore?{opacity:0.4,fontWeight:800,color:"white"}:{fontWeight:"800",color:"white"}}>Folders</Text>
+              <TouchableOpacity onPress={() => setIsExplore(false)} style={!isExplore? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
+                <Text style={isExplore?{opacity:0.4,fontWeight:800,color:"black"}:{fontWeight:"800",color:"black"}}>Your Data</Text>
               </TouchableOpacity>
-              <View style={{position:"absolute",marginLeft:200,marginRight:0}}>
-                <Icon
-                  name='notifications'
-                  type='material'
-                  color='white'
-                  size={25}
-                />
-              </View>
             </View>
           </>
           ),
@@ -90,6 +83,20 @@ return (
           ),
         }}
       />
+
+      {/* Detection */}
+      <Tab.Screen
+        name={'Detection'}
+        component={Detecttion}
+        options={{
+          headerShown: false,
+          headerTransparent: true,
+          tabBarIcon: ({color}) => (
+            <Entypo name={'heart'} size={25} color={color} />
+          ),
+        }}
+      />
+
       {/* PROFILE NAVIGATION */}
       <Tab.Screen
         name={'Profile'}
@@ -98,7 +105,7 @@ return (
           headerShown:true,
           headerTransparent:false,
           header: () => (
-            <View style={{width:"100%",backgroundColor:"#18191a",paddingTop:40,paddingBottom:10}} >
+            <View style={{width:"100%",backgroundColor:"white",paddingTop:40,paddingBottom:10}} >
               <View style={{alignItems:"flex-end",width:"100%"}}>           
                   <TouchableOpacity style={{marginRight:30}} onPress={handleSettingsNavigation}>
                     <Icon

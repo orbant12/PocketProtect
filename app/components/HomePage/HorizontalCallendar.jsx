@@ -113,9 +113,8 @@ const styles = StyleSheet.create({
     dateSection: {
         width: '100%',
         paddingTop:20,
-        paddingBottom:20,
     },
     scroll: {
-        height: 150,
+        height: 100,
     },
 })
