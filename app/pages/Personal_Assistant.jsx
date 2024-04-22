@@ -13,30 +13,25 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useAuth } from '../context/UserAuthContext';
 import Calendar from '../components/HomePage/HorizontalCallendar';
 
-export default function TabOneScreen({navigation}) {
+export default function AssistantPage({navigation}) {
 
-const today = new Date();
-
-const format = moment(today).format('YYYY-MM-DD')
-
-const [selectedDate, setSelectedDate] = useState(format);
 
 //<********************FUNCTIONS************************>
 
 return (
 <View style={styles.container}>
-    <Calendar onSelectDate={setSelectedDate} selected={selectedDate} />
-    <StatusBar style="auto" />
+
 </View>
 
 );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        flexDirection: 'column',
-        paddingTop:50
-    },
+
+  container: {
+      flex: 1,
+      backgroundColor: '#fff',
+      flexDirection: 'column',
+      paddingTop:50
+  },
 });

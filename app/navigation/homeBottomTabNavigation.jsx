@@ -13,6 +13,7 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import TabOneScreen from '../pages/home';
 import ForYouPage from '../pages/forYou';
 import Profile from '../pages/profile';
+import AssistantPage from '../pages/Personal_Assistant';
 
 
 //ICONS
@@ -40,14 +41,27 @@ return (
   <Tab.Navigator
     tabBarOptions={{
       tabStyle: {
-        backgroundColor: 'black',
+        backgroundColor: '#fff',
       },
-      activeTintColor: '#9effb1',
+      activeTintColor: 'magenta',
     }}>
       {/* HOME NAVIGATION */}
       <Tab.Screen
         name={'Home'}
         component={isExplore ? TabOneScreen : ForYouPage}
+        options={{
+          headerShown: false,
+          headerTransparent: true,
+          tabBarIcon: ({color}) => (
+            <Entypo name={'home'} size={25} color={color} />
+          ),
+        }}
+      />
+
+      {/* ASSISTANT NAVIGATION */}
+      <Tab.Screen
+        name={'Assistant'}
+        component={isExplore ? AssistantPage : ForYouPage}
         options={{
           headerShown: true,
           headerTransparent: true,
@@ -72,7 +86,7 @@ return (
           </>
           ),
           tabBarIcon: ({color}) => (
-            <Entypo name={'home'} size={25} color={color} />
+            <Entypo name={'plus'} size={25} color={color} />
           ),
         }}
       />

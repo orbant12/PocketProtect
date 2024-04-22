@@ -1,5 +1,5 @@
 {
-  "name": "lupodymobile",
+  "name": "pocketprotect",
   "version": "1.0.0",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
@@ -27,6 +27,7 @@
     "ffmpeg-kit-react-native": "^6.0.2",
     "firebase": "^10.6.0",
     "install": "^0.13.0",
+    "moment": "^2.30.1",
     "react": "18.2.0",
     "react-native": "0.72.6",
     "react-native-collapsible-tab-view": "^6.2.1",

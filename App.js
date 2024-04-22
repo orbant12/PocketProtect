@@ -31,7 +31,7 @@ return (
             <Stack.Screen name="Login" component={LoginPage} options={{ headerShown:false}} />
             <Stack.Screen name="Register" component={RegisterPage} options={{ headerShown:false}} />
             <Stack.Screen name="Home" component={HomeBottomTabNavigator} options={{ headerShown:false}} />
-            <Stack.Screen name="ClipPage" component={FilePage}   options={({ route }) => ({ title: route.params.data.title,headerStyle: { backgroundColor: "#18191a"},headerTintColor: "white" })} />
+            <Stack.Screen name="ClipPage" component={FilePage}   options={({ route }) => ({ title: route.params.data.title,headerStyle: { backgroundColor: "#fff"},headerTintColor: "white" })} />
             <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown:true,title:"Settings"}} />
             <Stack.Screen name="GeneralSettings" component={GeneralSettings}   options={({ route }) => ({ title: route.params.data,headerStyle: { backgroundColor: "#18191a"},headerTintColor: "white" })} />
             <Stack.Screen name="EpisodeEdit" component={EpisodeEdit}   options={{ headerShown:true,title:"Manage Episodes"}} />
