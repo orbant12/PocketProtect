@@ -1,9 +1,11 @@
+
+
 import { useState, useEffect } from 'react'
 import { StyleSheet, Text, View, ScrollView } from 'react-native'
 import moment from 'moment'
 import Date from './Date'
 
-export const Calendar = ({ onSelectDate, selected }) => {
+const CalendarNoLabel = ({ onSelectDate, selected }) => {
         
     const [dates, setDates] = useState([])
     const [scrollPosition, setScrollPosition] = useState()
@@ -58,10 +60,6 @@ export const Calendar = ({ onSelectDate, selected }) => {
 
 return (
 <>
-    <View style={styles.dateTitle}>
-        <Text style={styles.title}>{currentMonth}</Text>
-        <Text style={styles.title}>{currentYear}</Text>
-    </View>
     <View style={styles.dateSection}>
         <View style={styles.scroll}>
             <ScrollView
@@ -91,7 +89,7 @@ return (
 )
 }
 
-export default Calendar
+export default CalendarNoLabel
 
 const styles = StyleSheet.create({
     centered: {
@@ -112,7 +110,7 @@ const styles = StyleSheet.create({
     },
     dateSection: {
         width: '100%',
-        paddingTop:20,
+        paddingTop:50,
     },
     scroll: {
         height: 100,
