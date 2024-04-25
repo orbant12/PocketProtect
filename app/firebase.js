@@ -10,6 +10,7 @@ import { initializeAuth,getReactNativePersistence } from 'firebase/auth';
 import ReactNativeAsyncStorage from '@react-native-async-storage/async-storage';
 import { getStorage } from  'firebase/storage' ;
 
+
 //Your web app's Firebase configuration
 const firebaseConfig = {
    apiKey: "AIzaSyBdDaUvv_CM4TgovSQ-U4TIvvL3iTP9XX4",
@@ -18,8 +19,8 @@ const firebaseConfig = {
    storageBucket: "pocketprotect-cc462.appspot.com",
    messagingSenderId: "567381254436",
    appId: "1:567381254436:web:552134ac293e586d0393b1"
- };
- 
+};
+
 
 //FIREBASE APP INIT
 export const app = initializeApp(firebaseConfig);
@@ -34,6 +35,10 @@ export const db = getFirestore(app);
 
 //FIREBASE STORAGE INIT
 export const storage = getStorage();
+
+
+
+
 
 
 

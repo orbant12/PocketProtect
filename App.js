@@ -18,6 +18,8 @@ import SettingsPage from "./app/pages/Screens/SettingsPage"
 import GeneralSettings from "./app/pages/Screens/generalSettings/generalSettings"
 import EpisodeEdit from "./app/pages/Screens/generalSettings/creatorSettings/episodeEdit"
 import RegisterPage from "./app/pages/register";
+import PartAnalasis from "./app/pages/Screens/Melanoma/partAnalasis";
+import SinglePartAnalasis from "./app/pages/Screens/Melanoma/singlePart";
 
 
 //CREATING THE NAVIGATION STACK
@@ -35,6 +37,8 @@ return (
             <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown:true,title:"Settings"}} />
             <Stack.Screen name="GeneralSettings" component={GeneralSettings}   options={({ route }) => ({ title: route.params.data,headerStyle: { backgroundColor: "#18191a"},headerTintColor: "white" })} />
             <Stack.Screen name="EpisodeEdit" component={EpisodeEdit}   options={{ headerShown:true,title:"Manage Episodes"}} />
+            <Stack.Screen name="BodyPartAnalasis" component={PartAnalasis}   options={({ route }) => ({ title: route.params.data.charAt(0).toUpperCase() + route.params.data.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
+            <Stack.Screen name="SinglePartAnalasis" component={SinglePartAnalasis}   options={({ route }) => ({ title: route.params.data.charAt(0).toUpperCase() + route.params.data.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
             <Stack.Screen name="FolderPage" component={FolderPage}   options={({ route }) => ({ title: route.params.data.title, headerStyle: { backgroundColor: "#18191a"},headerTintColor: "white"  })} />
         </ Stack.Navigator>
     </UserAuthContext>
