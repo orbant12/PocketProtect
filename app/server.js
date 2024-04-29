@@ -1,4 +1,4 @@
-import { setDoc , doc , collection,getDoc} from "firebase/firestore"
+import { setDoc , doc , collection,getDoc,getDocs} from "firebase/firestore"
 import { db } from './firebase.js';
 
 
@@ -31,6 +31,36 @@ export const fetchMelanomaSpotData = async ({
         const docSnap = await getDoc(ref);
         if (docSnap.exists()) {
             console.log("Melanoma data:", docSnap.data());
+            return docSnap.data();
+        } else {
+            console.log("No such document!");
+        }
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const fetchAllMelanomaSpotData = async ({
+    userId,
+}) => {
+    try{
+        const ref = collection(db, "users", userId, "Melanoma");
+        const snapshot = await getDocs(ref);
+        const melanomaData = snapshot.docs.map(doc => doc.data());
+        return melanomaData;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const fetchUserData = async ({
+    userId,
+}) => {
+    try{
+        const ref = doc(db, "users", userId);
+        const docSnap = await getDoc(ref);
+        if (docSnap.exists()) {
+            console.log("User data:", docSnap.data());
             return docSnap.data();
         } else {
             console.log("No such document!");

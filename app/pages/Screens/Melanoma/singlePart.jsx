@@ -9,27 +9,12 @@ const SinglePartAnalasis = ({ route }) => {
 
 //<***************************  Variables ******************************************>
 
-    const [melanomaData, setMelanomaData] = useState(null);
-    const { currentuser } = useAuth();
 
+const bodyPart = route.params.data;
 
 //<***************************  Functions ******************************************>
 
-    const fetchmelanomaData = async () => {
-        if(currentuser){
-            const melanomaId = route.params.data;
-            const response = await fetchMelanomaSpotData({
-                userId: currentuser.uid,
-                melanomaId: melanomaId,
-            });
-            setMelanomaData(response);
-            console.log(response);
-        }
-    }
 
-    useEffect(() => {
-        fetchmelanomaData();
-    },[])
 
 
 //<***************************  Components ******************************************>
@@ -38,96 +23,94 @@ const SinglePartAnalasis = ({ route }) => {
         return (
             <Svg preserveAspectRatio="xMidYMid meet" style={{borderWidth:1}} height={200} width={350} > 
 
-                {melanomaData.melanomaDoc.spot.map(bodyPart => (
-                    bodyPart.pathArray.map((path, index) => (
+                    {bodyPart.melanomaDoc.spot[0].pathArray.map((path, index) => (
                             <Path
-                                key={`${bodyPart.slug}_${index}`} 
+                                key={`${bodyPart.melanomaDoc.spot[0].slug}_${index}`} 
                                 d={path}
                                 fill="blue" 
-                                stroke={bodyPart.color} 
+                                stroke={bodyPart.melanomaDoc.spot[0].color} 
                                 strokeWidth="2"
                                 rotation={
-                                    bodyPart.slug == "right-arm" ? "-20"
+                                    bodyPart.melanomaDoc.spot[0].slug == "right-arm" ? "-20"
                                     :
-                                    bodyPart.slug == "left-arm" ? "20"
+                                    bodyPart.melanomaDoc.spot[0].slug == "left-arm" ? "20"
                                     :
                                     null
                                 }
                                 transform={
             
-                                    bodyPart.slug == "chest" ? `translate(-180 -270)` 
+                                    bodyPart.melanomaDoc.spot[0].slug == "chest" ? `translate(-180 -270)` 
                                     :
-                                    bodyPart.slug == "head" ? `translate(-140 -70)`
+                                    bodyPart.melanomaDoc.spot[0].slug == "head" ? `translate(-140 -70)`
                                     :
-                                    bodyPart.slug == "legs" ? `translate(-140 -100)`
+                                    bodyPart.melanomaDoc.spot[0].slug == "legs" ? `translate(-140 -100)`
                                     :
-                                    bodyPart.slug == "torso" ? `translate(-140 -100)`
+                                    bodyPart.melanomaDoc.spot[0].slug == "torso" ? `translate(-140 -100)`
                                     :
-                                    bodyPart.slug == "feet" ? `translate(-140 -100)`
+                                    bodyPart.melanomaDoc.spot[0].slug == "feet" ? `translate(-140 -100)`
                                     :
-                                    bodyPart.slug == "abs" ? `translate(-60 -390)`
+                                    bodyPart.melanomaDoc.spot[0].slug == "abs" ? `translate(-60 -390)`
                                     :
-                                    bodyPart.slug == "left-hand" ? `translate(40 -670)`
+                                    bodyPart.melanomaDoc.spot[0].slug == "left-hand" ? `translate(40 -670)`
                                     :
-                                    bodyPart.slug == "right-hand" ? `translate(-480 -670)`
+                                    bodyPart.melanomaDoc.spot[0].slug == "right-hand" ? `translate(-480 -670)`
                                     :
-                                    bodyPart.slug == "left-arm" ? `translate(120 -420)`
+                                    bodyPart.melanomaDoc.spot[0].slug == "left-arm" ? `translate(120 -420)`
                                     :
-                                    bodyPart.slug == "right-arm" ? `translate(-300 -230)`
+                                    bodyPart.melanomaDoc.spot[0].slug == "right-arm" ? `translate(-300 -230)`
                                     :
-                                    bodyPart.slug == "upper-leg-left" ? `translate(0 -650)`
+                                    bodyPart.melanomaDoc.spot[0].slug == "upper-leg-left" ? `translate(0 -650)`
                                     :
-                                    bodyPart.slug == "upper-leg-right" ? `translate(-170 -650)`
+                                    bodyPart.melanomaDoc.spot[0].slug == "upper-leg-right" ? `translate(-170 -650)`
                                     :
-                                    bodyPart.slug == "lower-leg-left" ? `translate(-20 -950)`
+                                    bodyPart.melanomaDoc.spot[0].slug == "lower-leg-left" ? `translate(-20 -950)`
                                     :
-                                    bodyPart.slug == "lower-leg-right" ? `translate(-170 -950)`
+                                    bodyPart.melanomaDoc.spot[0].slug == "lower-leg-right" ? `translate(-170 -950)`
                                     :
-                                    bodyPart.slug == "left-feet" ? `translate(-130 -1200)`
+                                    bodyPart.melanomaDoc.spot[0].slug == "left-feet" ? `translate(-130 -1200)`
                                     :
-                                    bodyPart.slug == "right-feet" ? `translate(-290 -1200)`
+                                    bodyPart.melanomaDoc.spot[0].slug == "right-feet" ? `translate(-290 -1200)`
                                     :
                                     null}
                                 scale={
-                                    bodyPart.slug == "left-hand" ? "1.3" 
+                                    bodyPart.melanomaDoc.spot[0].slug == "left-hand" ? "1.3" 
                                     : 
-                                    bodyPart.slug == "right-hand" ? "1.3"
+                                    bodyPart.melanomaDoc.spot[0].slug == "right-hand" ? "1.3"
                                     :
-                                    bodyPart.slug == "chest" ? "1" 
+                                    bodyPart.melanomaDoc.spot[0].slug == "chest" ? "1" 
                                     :
-                                    bodyPart.slug == "head" ? "0.8"
+                                    bodyPart.melanomaDoc.spot[0].slug == "head" ? "0.8"
                                     :
-                                    bodyPart.slug == "legs" ? "0.8"
+                                    bodyPart.melanomaDoc.spot[0].slug == "legs" ? "0.8"
                                     :
-                                    bodyPart.slug == "torso" ? "0.8"
+                                    bodyPart.melanomaDoc.spot[0].slug == "torso" ? "0.8"
                                     :
-                                    bodyPart.slug == "feet" ? "0.8"
+                                    bodyPart.melanomaDoc.spot[0].slug == "feet" ? "0.8"
                                     :
-                                    bodyPart.slug == "abs" ? "0.6"
+                                    bodyPart.melanomaDoc.spot[0].slug == "abs" ? "0.6"
                                     :
-                                    bodyPart.slug == "left-arm" ? "0.6"
+                                    bodyPart.melanomaDoc.spot[0].slug == "left-arm" ? "0.6"
                                     :
-                                    bodyPart.slug == "right-arm" ? "0.6"
+                                    bodyPart.melanomaDoc.spot[0].slug == "right-arm" ? "0.6"
                                     :
-                                    bodyPart.slug == "upper-leg-left" ? "0.65"
+                                    bodyPart.melanomaDoc.spot[0].slug == "upper-leg-left" ? "0.65"
                                     :
-                                    bodyPart.slug == "upper-leg-right" ? "0.65"
+                                    bodyPart.melanomaDoc.spot[0].slug == "upper-leg-right" ? "0.65"
                                     :
-                                    bodyPart.slug == "lower-leg-left" ? "0.7"
+                                    bodyPart.melanomaDoc.spot[0].slug == "lower-leg-left" ? "0.7"
                                     :
-                                    bodyPart.slug == "lower-leg-right" ? "0.7"
+                                    bodyPart.melanomaDoc.spot[0].slug == "lower-leg-right" ? "0.7"
                                     :
-                                    bodyPart.slug == "left-feet" ? "1.2"
+                                    bodyPart.melanomaDoc.spot[0].slug == "left-feet" ? "1.2"
                                     :
-                                    bodyPart.slug == "right-feet" ? "1.2 "
+                                    bodyPart.melanomaDoc.spot[0].slug == "right-feet" ? "1.2 "
                                     :
                                     null}
                                 
                             />
-                    ))
-                ))}
+                    ))}
         
-                    <Circle cx={melanomaData.melanomaDoc.location.x} cy={melanomaData.melanomaDoc.location.y} r="5" fill="red" />
+                    <Circle cx={bodyPart.melanomaDoc.location.x} cy={bodyPart.melanomaDoc.location.y} r="5" fill="red" />
             </Svg>
     
         )
@@ -136,7 +119,7 @@ const SinglePartAnalasis = ({ route }) => {
 
 return(
     <View style={styles.container}>
-        {melanomaData != null ? dotSelectOnPart():null}
+        {bodyPart != null ? dotSelectOnPart():null}
     </View>
 )}
 

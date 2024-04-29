@@ -7,6 +7,8 @@ import { setDoc , doc , collection, addDoc} from "firebase/firestore"
 import { melanomaSpotUpload } from '../../../server.js';
 import { useAuth } from '../../../context/UserAuthContext.jsx';
 
+
+
 const PartAnalasis = () => {
     const [selectedSide, setSelectedSide] = useState("front");
     const [userData , setUserData] = useState({"melanoma": { 
@@ -29,7 +31,7 @@ const PartAnalasis = () => {
 
     const dotSelectOnPart = () => {
         return (
-            <Svg preserveAspectRatio="xMidYMid meet" style={{borderWidth:1}} height={200} width={350} > 
+            <Svg preserveAspectRatio="xMidYMid meet" height={200} width={350} > 
         
                 {selectedPart.map(bodyPart => (
                     bodyPart.pathArray.map((path, index) => (
@@ -191,7 +193,6 @@ const PartAnalasis = () => {
         
                     <Circle cx={redDotLocation.x} cy={redDotLocation.y} r="5" fill="red" />
             </Svg>
-    
         )
     }
 
