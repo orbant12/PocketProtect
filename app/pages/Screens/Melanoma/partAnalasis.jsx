@@ -9,12 +9,9 @@ import { useAuth } from '../../../context/UserAuthContext.jsx';
 
 
 
-const PartAnalasis = () => {
+const PartAnalasis = ({route}) => {
     const [selectedSide, setSelectedSide] = useState("front");
-    const [userData , setUserData] = useState({"melanoma": { 
-        gender : "female",
-    }
-    });
+    const userData = route.params.data;
     const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
     const [selectedPart, setSelectedPart] = useState([]);
     const [firstSelectedPart, setFirstSelectedPart] = useState(null);
@@ -49,7 +46,7 @@ const PartAnalasis = () => {
                                     null
                                 }
                                 transform={
-                                    userData.melanoma.gender == "male" ? (
+                                    userData.gender == "male" ? (
                                         bodyPart.slug == "chest" ? `translate(-180 -270)` 
                                         :
                                         bodyPart.slug == "head" ? `translate(-140 -70)`
@@ -118,7 +115,7 @@ const PartAnalasis = () => {
                                         )
                                 }
                                 scale={
-                                    userData.melanoma.gender == "male" ? (
+                                    userData.gender == "male" ? (
                                         bodyPart.slug == "left-hand" ? "1.3" 
                                         : 
                                         bodyPart.slug == "right-hand" ? "1.3"
@@ -227,14 +224,24 @@ const PartAnalasis = () => {
                         { slug: `${firstSelectedPart}`, intensity: 1 },
                         ]}
                     scale={scale}
-                    gender={userData.melanoma.gender}
-                    side='front'
+                    gender={userData.gender}
+                    side={selectedSide}
                     onBodyPartPress={(e) => handleSelectedPart(e)}
                 />
                     <Text>
                         <Text style={{fontWeight:600}}>Selected Part:</Text> 
                         {`${firstSelectedPart}`}
                     </Text>
+
+                    <View style={styles.positionSwitch}>
+                        <Pressable onPress={() => setSelectedSide("front")}>
+                            <Text style={selectedSide == "front" ? {fontWeight:600}:{opacity:0.5}}>Front</Text>
+                        </Pressable>
+                        <Text>|</Text>
+                        <Pressable onPress={() => setSelectedSide("back")}>
+                            <Text style={selectedSide == "back" ? {fontWeight:600}:{opacity:0.5}}>Back</Text>
+                        </Pressable>
+                    </View>
             </View>
 
             <View style={{width:"100%",alignItems:"center"}}>
@@ -295,6 +302,20 @@ const styles = StyleSheet.create({
         alignItems:"center",
         justifyContent:"center",
         marginTop: 20,
+    },
+    positionSwitch: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        position: 'relative',
+        marginTop: 10,
+        width:"45%",
+        borderWidth: 1,
+        padding: 10,
+        paddingRight: 20,
+        paddingLeft: 20,
+        borderRadius: 10,
+    
     },
 });
 

@@ -60,8 +60,7 @@ export const fetchUserData = async ({
         const ref = doc(db, "users", userId);
         const docSnap = await getDoc(ref);
         if (docSnap.exists()) {
-            console.log("User data:", docSnap.data());
-            return docSnap.data();
+            return docSnap
         } else {
             console.log("No such document!");
         }
