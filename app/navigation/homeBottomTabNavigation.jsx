@@ -11,10 +11,11 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 //COMPONENTS
 import TabOneScreen from '../pages/home';
-import ForYouPage from '../pages/forYou';
+import ForYouPage from '../pages/DetectionScreens/melanoma';
 import Profile from '../pages/profile';
 import AssistantPage from '../pages/Personal_Assistant';
 import Detecttion from '../pages/detection';
+import HealthMesure from '../pages/DetectionScreens/healthMesure';
 
 
 //ICONS
@@ -61,19 +62,19 @@ return (
 
       {/* ASSISTANT NAVIGATION */}
       <Tab.Screen
-        name={'Assistant'}
-        component={isExplore ? AssistantPage : ForYouPage}
+        name={'Detection'}
+        component={isExplore ? HealthMesure : ForYouPage}
         options={{
           headerShown: true,
           headerTransparent: true,
           header : () => (
           <>
-            <View style={{marginTop:60,marginLeft:95,marginRight:"auto",flexDirection:"row",justifyContent:"space-evenly",alignItems:"center",width:"50%",zIndex:5}}>
+            <View style={{marginTop:60,marginLeft:75,marginRight:"auto",flexDirection:"row",justifyContent:"space-evenly",alignItems:"center",width:"60%",zIndex:5}}>
               <TouchableOpacity onPress={() => setIsExplore(true)} style={isExplore? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
-                <Text style={isExplore?{fontWeight:"800",color:"black"}:{opacity:0.4,fontWeight:800,color:"black"}}>Assistant</Text>
+                <Text style={isExplore?{fontWeight:"800",color:"black"}:{opacity:0.4,fontWeight:800,color:"black"}}>Health Score</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={() => setIsExplore(false)} style={!isExplore? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
-                <Text style={isExplore?{opacity:0.4,fontWeight:800,color:"black"}:{fontWeight:"800",color:"black"}}>Your Data</Text>
+                <Text style={isExplore?{opacity:0.4,fontWeight:800,color:"black"}:{fontWeight:"800",color:"black"}}>Melanoma</Text>
               </TouchableOpacity>
             </View>
           </>
@@ -86,10 +87,21 @@ return (
 
       {/* Detection */}
       <Tab.Screen
-        name={'Detection'}
-        component={Detecttion}
+        name={'Assistant'}
+        component={AssistantPage}
         options={{
-          headerShown: false,
+          header : () => (
+            <>
+              <View style={{marginTop:60,marginLeft:65,marginRight:"auto",flexDirection:"row",justifyContent:"space-evenly",alignItems:"center",width:"65%",zIndex:5}}>
+                <TouchableOpacity onPress={() => setIsExplore(true)} style={isExplore? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
+                  <Text style={isExplore?{fontWeight:"800",color:"black"}:{opacity:0.4,fontWeight:800,color:"black"}}>AI Assistant</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => setIsExplore(false)} style={!isExplore? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
+                  <Text style={isExplore?{opacity:0.4,fontWeight:800,color:"black"}:{fontWeight:"800",color:"black"}}>Context Panel</Text>
+                </TouchableOpacity>
+              </View>
+            </>
+            ),
           headerTransparent: true,
           tabBarIcon: ({color}) => (
             <Entypo name={'heart'} size={25} color={color} />

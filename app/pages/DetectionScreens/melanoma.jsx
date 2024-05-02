@@ -14,8 +14,8 @@ import moment from 'moment'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 //CONTEXT
-import { useAuth } from '../context/UserAuthContext';
-import CalendarNoLabel from '../components/HomePage/HorizontalCallendarNoLabel';
+import { useAuth } from '../../context/UserAuthContext';
+import CalendarNoLabel from '../../components/HomePage/HorizontalCallendarNoLabel';
 import Body from "react-native-body-highlighter";
 
 import {bodyFemaleFront} from "/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/assets/bodyFemaleFront.ts"
@@ -23,7 +23,7 @@ import {bodyFemaleBack} from "/Users/tamas/Programming Projects/DetectionApp/nod
 import {bodyFront} from "/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/assets/bodyFront.ts"
 import {bodyBack} from "/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/assets/bodyBack.ts"
 
-import { fetchAllMelanomaSpotData, fetchUserData } from '../server';
+import { fetchAllMelanomaSpotData, fetchUserData } from '../../server';
 
 const ForYouPage = ({navigation}) => {
 
@@ -46,6 +46,8 @@ const ForYouPage = ({navigation}) => {
     const [melanomaData, setMelanomaData] = useState([])
 
     const [bodySlugs, setBodySlugs] = useState(null)
+
+    const [ affectedSlugs,setAffectedSlugs ] = useState([])
 
 
 //<********************FUNCTIONS************************>
@@ -84,15 +86,32 @@ const BodySvgSelector = () => {
     }
 }
 
+const AffectedSlugMap = () => {
+    if(melanomaData != null){
+        const affectedSlug = melanomaData.map((data) => (
+            { slug: data.melanomaDoc.spot[0].slug, intesity: 2 }
+        ))
+        setAffectedSlugs(affectedSlug)
+    }
+}
+
 useEffect(() => {
     fetchAllMelanomaData();
     fetchAllUserData();
     BodySvgSelector()
+    AffectedSlugMap()
 }, []);
 
 useEffect(() => {
     BodySvgSelector()
-}, [userData, selectedSide]);
+    AffectedSlugMap()
+}, [userData, selectedSide,melanomaData]);
+
+
+const handleAddMelanoma = () => {
+    navigation.navigate("MelanomaAdd", { data: userData });
+}
+
 
 const dotSelectOnPart = (bodyPart) => {
     return (
@@ -364,6 +383,16 @@ const dotSelectOnPart = (bodyPart) => {
     )
 }
 
+function MelanomaAdd(){
+    return(
+        <Pressable onPress={handleAddMelanoma} style={Mstyles.AddMelanomaBtn}>
+            <Text>
+                + Add Melanoma
+            </Text>
+        </Pressable>
+    )
+}
+
 
 //<******************** MELANOMA ************************>
 
@@ -384,16 +413,13 @@ function MelanomaMonitoring(){
                 />
             </View>
             <Body
-                data={[
-                { slug: "chest", intensity: 1 },
-                { slug: "neck", intensity: 2 },
-                ]}
+                data={affectedSlugs}
                 gender={userData.gender}
                 side={selectedSide}
                 scale={1.1}
                 //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
                 colors={{ 0: "#FF0000", 1: "#00FF00", 2: "#0000FF" }}
-                onBodyPartPress={(slug) => navigation.navigate("BodyPartAnalasis", { data: userData })}
+                onBodyPartPress={(slug) => navigation.navigate("SlugAnalasis", { data: slug })}
                 zoomOnPress={true}
             />
 
@@ -419,10 +445,12 @@ function MelanomaMonitoring(){
                 </Pressable>
             </View>
 
+            <MelanomaAdd />
+
             <View style={Mstyles.analasisSection}>
                 <View style={Mstyles.melanomaTitle}>
                     <View style={Mstyles.melanomaTitleLeft}>
-                        <Text style={styles.titleTag}>Artifical Inteligence</Text>
+                        <Text style={Mstyles.titleTag}>Artifical Inteligence</Text>
                         <Text style={{fontSize:20,fontWeight:'bold'}}>Analasis</Text>
                         <Text style={{fontSize:15}}>Your personal score is 0.0</Text>   
                     </View>
@@ -461,6 +489,26 @@ function MelanomaMonitoring(){
 }
 
 const Mstyles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        flexDirection: 'column',
+        paddingTop:100,
+        width: '100%',
+        alignItems: 'center',
+    },
+    titleTag: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        fontSize: 10,
+        fontWeight: 500,
+        color: 'black',
+        borderWidth: 1,
+        width: "57%",
+        padding: 3,
+        borderRadius: 5,
+        marginBottom: 5,
+    },
     MelanomaMonitorSection: {
         flexDirection: 'column',
         alignItems: 'center',
@@ -594,361 +642,36 @@ const Mstyles = StyleSheet.create({
         borderRadius: 10,
         margin: 10,
     },
-
+    AddMelanomaBtn: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        width: "70%",
+        height: 80,
+        borderRadius: 10,
+        margin: 10,
+        marginTop:30
+    },
 
 })
 
 
-//<******************** SCORE ************************>
-
-function DataSection(){
-    return(
-        <View>
-        <View style={styles.personalScoreSection}>
-
-            <View style={styles.scoreTitle}>
-                <View style={styles.scoreTitleLeft}>
-                    <Text style={styles.titleTag}>Artifical Inteligence</Text>
-                    <Text style={{fontSize:20,fontWeight:'bold'}}>Personal Score</Text>
-                    <Text style={{fontSize:15}}>Your personal score is 0.0</Text>   
-                </View>
-                <MaterialCommunityIcons
-                    name="information-outline"
-                    size={30}
-                    color="black"
-                    style={{marginLeft:10}}
-                />
-            </View>
-            <View style={styles.scoreCircle}>
-                <Text style={{fontSize:50,fontWeight:'bold'}}>17</Text>
-                <Text style={{fontSize:15,fontWeight:700}}>out of 100</Text>
-
-            </View>
-
-            <View style={styles.ResultsScoreSection}>
-                <View style={styles.ResultsScoreTitleRow}>
-                    <Text style={{fontSize:18,fontWeight:700}}>Results</Text>
-                    <Pressable onPress={() => navigation.navigate("Assistant")}>
-                        <Text style={{fontSize:13,fontWeight:500,opacity:0.7}}>My Data</Text>
-                    </Pressable>
-                </View>
-                <ScrollView horizontal style={{paddingBottom:20}} >
-                    <View style={styles.ResultBox}>
-                        <MaterialCommunityIcons
-                            name="heart-pulse"
-                            size={50}
-                            color="black"
-                        />
-                        <Text style={styles.BoxPoint}>+5 points</Text>
-                        <Text style={styles.BoxTitle}>Balanced Blood Work</Text>
-
-                        <MaterialCommunityIcons
-                            name="information-outline"
-                            size={30}
-                            color="black"
-                            style={{position:'absolute',top:0,right:0}}
-                        />
-                    </View>
-
-                    <View style={styles.ResultBox}>
-                        <MaterialCommunityIcons
-                            name="heart-pulse"
-                            size={50}
-                            color="black"
-                        />
-                        <Text style={styles.BoxPoint}>+5 points</Text>
-                        <Text style={styles.BoxTitle}>Balanced Blood Work</Text>
-
-
-                        <MaterialCommunityIcons
-                            name="information-outline"
-                            size={30}
-                            color="black"
-                            style={{position:'absolute',top:0,right:0}}
-                        />
-                    </View>
-
-                    <View style={styles.ResultBox}>
-                        <MaterialCommunityIcons
-                            name="heart-pulse"
-                            size={50}
-                            color="black"
-                        />
-                        <Text style={styles.BoxPoint}>+5 points</Text>
-                        <Text style={styles.BoxTitle}>Balanced Blood Work</Text>
-
-
-                        <MaterialCommunityIcons
-                            name="information-outline"
-                            size={30}
-                            color="black"
-                            style={{position:'absolute',top:0,right:0}}
-                        />
-                    </View>
-
-                    <View style={styles.ResultBox}>
-                        <MaterialCommunityIcons
-                            name="heart-pulse"
-                            size={50}
-                            color="black"
-                        />
-                        <Text style={styles.BoxPoint}>+5 points</Text>
-                        <Text style={styles.BoxTitle}>Balanced Blood Work</Text>
-
-
-                        <MaterialCommunityIcons
-                            name="information-outline"
-                            size={30}
-                            color="black"
-                            style={{position:'absolute',top:0,right:0}}
-                        />
-                    </View>
-                </ScrollView>
-            </View>
-        </View>
-
-
-        <View style={styles.DetectionSection}>
-            <View style={styles.ResultsScoreTitleRow}>
-            <View style={styles.scoreTitle}>
-            <View style={styles.scoreTitleLeft}>
-                <Text style={styles.titleTag}>Digital and Downloadable</Text>
-                <Text style={{fontSize:20,fontWeight:'bold'}}>Medical Data</Text>
-                <Text style={{fontSize:15}}>Find your medical records any time all in one place</Text>   
-            </View>
-            <MaterialCommunityIcons
-                name="information-outline"
-                size={30}
-                color="black"
-                style={{marginLeft:10}}
-            />
-        </View>
-            </View>
-                <View style={styles.DetectBox}>
-                    <View style={styles.DataCol}>
-                        <Text style={styles.BoxTitle}>Blood Work</Text>
-                        <Text style={styles.BoxPoint}>Test Date: 2003.11.17</Text>
-                        <Text style={styles.BoxPoint}>Repeat Recommended: in <Text style={{fontWeight:800}}>30 days</Text></Text>
-                    </View>
-
-                    <Pressable style={styles.showMedicalBtn}>
-                        <MaterialCommunityIcons
-                            name="file-document-outline"
-                            size={20}
-                            color="black"
-                            style={{marginRight:10}}
-                        />
-                        <Text>Show</Text>
-                    </Pressable>
-
-                    <MaterialCommunityIcons
-                        name="information-outline"
-                        size={30}
-                        color="black"
-                        style={{position:'absolute',top:0,right:0}}
-                    />
-                </View>
-
-                <View style={styles.DetectBox}>
-                    <View style={styles.DataCol}>
-                        <Text style={styles.BoxTitle}>Allergies</Text>
-                        <Text style={styles.BoxPoint}>Test Date: 2003.11.17</Text>
-                        <Text style={styles.BoxPoint}>Repeat Recommended: in <Text style={{fontWeight:800}}>30 days</Text></Text>
-                    </View>
-
-                    <Pressable style={styles.showMedicalBtn}>
-                        <MaterialCommunityIcons
-                            name="file-document-outline"
-                            size={20}
-                            color="black"
-                            style={{marginRight:10}}
-                        />
-                        <Text>Show</Text>
-                    </Pressable>
-
-                    <MaterialCommunityIcons
-                        name="information-outline"
-                        size={30}
-                        color="black"
-                        style={{position:'absolute',top:0,right:0}}
-                    />
-                </View>
-
-                <View style={styles.DetectBox}>
-                    <View style={styles.DataCol}>
-                        <Text style={styles.BoxTitle}>Allergies</Text>
-                        <Text style={styles.BoxPoint}>Test Date: 2003.11.17</Text>
-                        <Text style={styles.BoxPoint}>Repeat Recommended: in <Text style={{fontWeight:800}}>30 days</Text></Text>
-                    </View>
-
-                    <Pressable style={styles.showMedicalBtn}>
-                        <MaterialCommunityIcons
-                            name="file-document-outline"
-                            size={20}
-                            color="black"
-                            style={{marginRight:10}}
-                        />
-                        <Text>Show</Text>
-                    </Pressable>
-
-                    <MaterialCommunityIcons
-                        name="information-outline"
-                        size={30}
-                        color="black"
-                        style={{position:'absolute',top:0,right:0}}
-                    />
-                </View>
-        </View>
-        </View>
-    )
-}
 
 
 //<******************** BASE ************************>
 
 return(
 
-    <ScrollView style={styles.container}>
-        <CalendarNoLabel onSelectDate={setSelectedDate} selected={selectedDate} />
-        <StatusBar style="auto" />
-        {!swipeActive == "data" ?
-            <DataSection />
-            :
+    <ScrollView >
+        <View style={Mstyles.container}>
             <MelanomaMonitoring />
-        }
-            
+        </View>
     </ScrollView>
 
 )}
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        flexDirection: 'column',
-        paddingTop:50,
-        width: '100%',
-    },
-    personalScoreSection: {
-        padding: 20,
-        borderBottomColor: 'black',
-        alignItems: 'center',
-        maxWidth: '100%',
-    },
-    titleTag: {
-        flexDirection: 'column',
-        alignItems: 'center',
-        fontSize: 10,
-        fontWeight: 500,
-        color: 'black',
-        borderWidth: 1,
-        width: "57%",
-        padding: 3,
-        borderRadius: 5,
-        marginBottom: 5,
-    },
-    scoreTitle: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        marginBottom: 20,
-        width: '100%',
-    },
-    scoreTitleLeft: {
-        flexDirection: 'column',
-        width: '55%',
-        justifyContent:'space-between',
-    },
-    scoreCircle: {
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 1,
-        borderRadius: 100,
-        width: 170,
-        height: 170,
-        borderColor: 'black',
-        marginTop: 20,
-        borderStyle: 'dashed',
-    },
-    //RESULTS
-    ResultsScoreSection: {
-        flexDirection: 'column',
-        alignItems: 'left',
-        justifyContent:'left',
-        width: '100%',
-        marginTop: 20,
-    },
-    ResultsScoreTitleRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        width: '100%',
-        alignItems: 'center',
-        marginBottom: 20,
-    },
-    ResultsScoreTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-    },
-    ResultBox: {
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 1,
-        width: 150,
-        height: 150,
-        borderRadius: 10,
-        marginRight: 20,
-    },
-    BoxTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom:5,
-        margin: 5,
-    },
-    BoxPoint: {
-        fontSize: 12,
-        fontWeight: 'bold',
-        margin:5
-    },
-    //DETECTION
-    DetectionSection: {
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent:'center',
-        width: '100%',
-        marginTop: 20,
-    },
-    DataCol: {
-        flexDirection: 'column',
-        alignItems: 'left',
-        justifyContent:'left',
-        width: '100%',
-        margin:5,
-        marginLeft:20,
-    },
-    DetectBox: {
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 1,
-        width: 300,
-        height: 150,
-        borderRadius: 10,
-        marginBottom: 30,
-    },
-    showMedicalBtn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 1,
-        width: "80%",
-        height: 30,
-        borderRadius: 10,
-        margin: 10,
-    },
-
-});
 
 
 

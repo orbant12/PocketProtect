@@ -3,13 +3,12 @@ import React, {useState} from 'react';
 import { Text, View, StyleSheet,Pressable ,ScrollView} from 'react-native';
 import Body from 'react-native-body-highlighter';
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
-import { setDoc , doc , collection, addDoc} from "firebase/firestore"
 import { melanomaSpotUpload } from '../../../server.js';
 import { useAuth } from '../../../context/UserAuthContext.jsx';
 
 
 
-const PartAnalasis = ({route}) => {
+const MelanomaAdd = ({route}) => {
     const [selectedSide, setSelectedSide] = useState("front");
     const userData = route.params.data;
     const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
@@ -416,4 +415,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default PartAnalasis;
+export default MelanomaAdd;
