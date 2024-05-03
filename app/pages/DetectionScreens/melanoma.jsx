@@ -52,10 +52,11 @@ const ForYouPage = ({navigation}) => {
 
 //<********************FUNCTIONS************************>
 
-const fetchAllMelanomaData = async () => {
+const fetchAllMelanomaData = async (gender) => {
     if(currentuser){
         const response = await fetchAllMelanomaSpotData({
             userId: currentuser.uid,
+            gender
         });
         const melanomaData = response;
         setMelanomaData(melanomaData);
@@ -70,6 +71,7 @@ const fetchAllUserData = async () => {
         const docSnapshot = response;
         const elementData = docSnapshot.data();
         setUserData(elementData);
+        fetchAllMelanomaData(elementData.gender)
     }
 }
 
@@ -96,7 +98,6 @@ const AffectedSlugMap = () => {
 }
 
 useEffect(() => {
-    fetchAllMelanomaData();
     fetchAllUserData();
     BodySvgSelector()
     AffectedSlugMap()
@@ -371,7 +372,7 @@ const dotSelectOnPart = (bodyPart) => {
                 ))
             ):null}
             {melanomaData.map((data) => (
-                    data.melanomaDoc.spot[0].slug == bodyPart.slug ? (
+                    data.melanomaDoc.spot[0].slug == bodyPart.slug && data.gender == userData.gender  ? (
                         <>
                             <Circle cx={data.melanomaDoc.location.x} cy={data.melanomaDoc.location.y} r="5" fill="red" />
                         </>
@@ -473,7 +474,7 @@ function MelanomaMonitoring(){
                             <View>
                                 {dotSelectOnPart(bodyPart)}
                             </View>
-                            <Pressable style={Mstyles.showMoreBtn} onPress={() => navigation.navigate("SlugAnalasis",{ data: bodyPart})}>
+                            <Pressable style={Mstyles.showMoreBtn} onPress={() => navigation.navigate("SlugAnalasis",{ data: bodyPart,gender: userData.gender})}>
                                 <Text style={{fontSize:15,fontWeight:500,opacity:0.7}}>Show Analasis</Text>
                             </Pressable>
                             <View style={Mstyles.redDotLabel} />

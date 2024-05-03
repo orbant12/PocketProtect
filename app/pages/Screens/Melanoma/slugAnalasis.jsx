@@ -12,11 +12,9 @@ const SlugAnalasis = ({ route,navigation }) => {
 //<***************************  Variables ******************************************>
 
     const [melanomaData, setMelanomaData] = useState([]);
-    const [userData , setUserData] = useState({"melanoma": { 
-        gender : "female",
-    }
-    });
     const { currentuser } = useAuth();
+    const gender = route.params.gender
+    const bodyPart = route.params.data;
 
 //<***************************  Functions ******************************************>
 
@@ -24,13 +22,12 @@ const SlugAnalasis = ({ route,navigation }) => {
         if(currentuser){
             const response = await fetchAllMelanomaSpotData({
                 userId: currentuser.uid,
+                gender
             });
             const melanomaData = response;
             setMelanomaData(melanomaData);
         }
     }
-
-    const bodyPart = route.params.data;
 
     useEffect(() => {
         fetchAllMelanomaData();
@@ -49,14 +46,14 @@ return(
         <View style={styles.TopPart}>
             {melanomaData != null ? dotsSelectOnPart({
                 bodyPart: bodyPart,
-                userData: userData,
                 melanomaData: melanomaData,
+                gender
             }):null}
         </View>
         <View style={styles.BirthmarkContainer}>
             <ScrollView style={{width:"100%"}} >
                 {melanomaData.map((data,index) => (
-                    data.melanomaDoc.spot[0].slug == bodyPart.slug ? (
+                    data.melanomaDoc.spot[0].slug == bodyPart.slug  ? (
                     <View key={index} style={styles.melanomaBox}>
                         <View style={styles.melanomaBoxL}>
                             <Text style={{fontSize:16,fontWeight:600}}>{data.melanomaId}</Text>
@@ -65,10 +62,10 @@ return(
                         <Pressable onPress={() => handleSpotOpen(data)} style={styles.melanomaBoxR}>
                             <Text style={{fontSize:13,fontWeight:500}}>Open</Text>
                         </Pressable>
-                       
                     </View>
                     ):null
                 ))}
+                {melanomaData.length == 0 ? <Text>No Melanoma Data</Text>:null}
             </ScrollView>
         </View>
     </View>
@@ -76,14 +73,18 @@ return(
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
         width: "100%",
         height: "100%",
         alignItems: "center",
+        justifyContent: "center",
+        paddingTop: 100,
     },
     TopPart: {
         width: "100%",
-        alignItems: "center",
         borderWidth: 1,
+        flexDirection: "column",
+        alignItems: "center",
         justifyContent: "center",
     },
     BirthmarkContainer: {

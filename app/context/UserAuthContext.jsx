@@ -70,6 +70,13 @@ const Login = async (email,password) => {
 }
 
 
+// <====> GOOGLE HANDLER <====>
+
+const GoogleLogin = async (result) => {
+  const user = result.user;
+  console.log(user)
+}
+
 // <====> REGISTER HANDLER <====>
 
 const RegisterUserData = async ({

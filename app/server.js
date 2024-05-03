@@ -42,11 +42,19 @@ export const fetchMelanomaSpotData = async ({
 
 export const fetchAllMelanomaSpotData = async ({
     userId,
+    gender,
 }) => {
     try{
         const ref = collection(db, "users", userId, "Melanoma");
         const snapshot = await getDocs(ref);
-        const melanomaData = snapshot.docs.map(doc => doc.data());
+        //ONLY PUT IF doc.data().gender == gender
+        let melanomaData = [];
+        snapshot.forEach((doc) => {
+            if(doc.data().gender == gender){
+                melanomaData.push(doc.data());
+            }
+        }
+        );
         return melanomaData;
     } catch (error) {
         console.log(error);

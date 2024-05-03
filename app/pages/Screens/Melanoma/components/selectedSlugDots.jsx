@@ -4,8 +4,8 @@ import Svg, { Circle, Path,TextPath,Text } from '/Users/tamas/Programming Projec
 
 export const dotsSelectOnPart = ({
     bodyPart,
-    userData,
     melanomaData,
+    gender
 }) => {
     return (
         <Svg preserveAspectRatio="xMidYMid meet" height={200} width={350} > 
@@ -22,10 +22,14 @@ export const dotsSelectOnPart = ({
                                 :
                                 bodyPart.slug == "left-arm" ? "20"
                                 :
+                                bodyPart.slug == "right-arm(back)" ? "-20"
+                                :
+                                bodyPart.slug == "left-arm(back)" ? "20"
+                                :
                                 null
                             }
                             transform={
-                                userData.melanoma.gender == "male" ? (
+                                gender == "male" ? (
                                     bodyPart.slug == "chest" ? `translate(-180 -270)` 
                                     :
                                     bodyPart.slug == "head" ? `translate(-140 -70)`
@@ -57,7 +61,31 @@ export const dotsSelectOnPart = ({
                                     bodyPart.slug == "left-feet" ? `translate(-130 -1200)`
                                     :
                                     bodyPart.slug == "right-feet" ? `translate(-290 -1200)`
-                                    :null
+                                    :
+                                    //BACK
+                                    bodyPart.slug == "head(back)" ? `translate(-860 -80)`
+                                    :
+                                    bodyPart.slug == "back" ? `translate(-800 -290)`
+                                    :
+                                    bodyPart.slug == "left-arm(back)" ? `translate(-600 -430)`
+                                    :
+                                    bodyPart.slug == "right-arm(back)" ? `translate(-1000 -230)`
+                                    :
+                                    bodyPart.slug == "gluteal" ? `translate(-900 -590)`
+                                    :
+                                    bodyPart.slug == "right-palm" ? `translate(-1190 -675)`
+                                    :
+                                    bodyPart.slug == "left-palm" ? `translate(-680 -670)`
+                                    :
+                                    bodyPart.slug == "left-leg(back)" ? `translate(-550 -750)`
+                                    :
+                                    bodyPart.slug == "right-leg(back)" ? `translate(-700 -750)`
+                                    :
+                                    bodyPart.slug == "left-feet(back)" ? `translate(-840 -1230)`
+                                    :
+                                    bodyPart.slug == "right-feet(back)" ? `translate(-1000 -1230)`
+                                    :
+                                    null
                                     ):(
                                     bodyPart.slug == "chest" ? `translate(-145 -270)` 
                                     :
@@ -90,11 +118,35 @@ export const dotsSelectOnPart = ({
                                     bodyPart.slug == "left-feet" ? `translate(-130 -1280)`
                                     :
                                     bodyPart.slug == "right-feet" ? `translate(-220 -1280)`
+                                    :
+                                    //BACK
+                                    bodyPart.slug == "head(back)" ? `translate(-900 -30)`
+                                    :
+                                    bodyPart.slug == "back" ? `translate(-850 -280)`
+                                    :
+                                    bodyPart.slug == "left-arm(back)" ? `translate(-650 -450)`
+                                    :
+                                    bodyPart.slug == "right-arm(back)" ? `translate(-1100 -230)`
+                                    :
+                                    bodyPart.slug == "gluteal" ? `translate(-960 -590)`
+                                    :
+                                    bodyPart.slug == "right-palm" ? `translate(-1270 -620)`
+                                    :
+                                    bodyPart.slug == "left-palm" ? `translate(-730 -630)`
+                                    :
+                                    bodyPart.slug == "left-leg(back)" ? `translate(-600 -750)`
+                                    :
+                                    bodyPart.slug == "right-leg(back)" ? `translate(-700 -750)`
+                                    :
+                                    bodyPart.slug == "left-feet(back)" ? `translate(-940 -1330)`
+                                    :
+                                    bodyPart.slug == "right-feet(back)" ? `translate(-1050 -1330)`
+                                    
                                     :null
                                     )
                             }
                             scale={
-                                userData.melanoma.gender == "male" ? (
+                                gender == "male" ? (
                                     bodyPart.slug == "left-hand" ? "1.3" 
                                     : 
                                     bodyPart.slug == "right-hand" ? "1.3"
@@ -126,6 +178,29 @@ export const dotsSelectOnPart = ({
                                     bodyPart.slug == "left-feet" ? "1.2"
                                     :
                                     bodyPart.slug == "right-feet" ? "1.2 "
+                                    :
+                                    //BACK
+                                    bodyPart.slug == "head(back)" ? "0.8"
+                                    :
+                                    bodyPart.slug == "back" ? "0.6"
+                                    :
+                                    bodyPart.slug == "left-arm(back)" ? "0.6"
+                                    :
+                                    bodyPart.slug == "right-arm(back)" ? "0.6"
+                                    :
+                                    bodyPart.slug == "gluteal" ? "1"
+                                    :
+                                    bodyPart.slug == "right-palm" ? "1.3"
+                                    :
+                                    bodyPart.slug == "left-palm" ? "1.3"
+                                    :
+                                    bodyPart.slug == "left-leg(back)" ? "0.37"
+                                    :
+                                    bodyPart.slug == "right-leg(back)" ? "0.37"
+                                    :
+                                    bodyPart.slug == "left-feet(back)" ? "1.2"
+                                    :
+                                    bodyPart.slug == "right-feet(back)" ? "1.2"
                                     :
                                     null):(
                                     bodyPart.slug == "left-hand" ? "1.3" 
@@ -160,13 +235,36 @@ export const dotsSelectOnPart = ({
                                     :
                                     bodyPart.slug == "right-feet" ? "1.2 "
                                     :
+                                    //BACK
+                                    bodyPart.slug == "head(back)" ? "0.8"
+                                    :
+                                    bodyPart.slug == "back" ? "0.6"
+                                    :
+                                    bodyPart.slug == "left-arm(back)" ? "0.6"
+                                    :
+                                    bodyPart.slug == "right-arm(back)" ? "0.6"
+                                    :
+                                    bodyPart.slug == "gluteal" ? "1"
+                                    :
+                                    bodyPart.slug == "right-palm" ? "1.3"
+                                    :
+                                    bodyPart.slug == "left-palm" ? "1.3"
+                                    :
+                                    bodyPart.slug == "left-leg(back)" ? "0.37"
+                                    :
+                                    bodyPart.slug == "right-leg(back)" ? "0.37"
+                                    :
+                                    bodyPart.slug == "left-feet(back)" ? "1.2"
+                                    :
+                                    bodyPart.slug == "right-feet(back)" ? "1.2"
+                                    :
                                     null)
-                                        }
+                            }
                         />
                 ))
             }
             {melanomaData.map((data) => (
-                    data.melanomaDoc.spot[0].slug == bodyPart.slug ? (
+                    data.melanomaDoc.spot[0].slug == bodyPart.slug && gender == data.gender ? (
                         <>
                             <Circle cx={data.melanomaDoc.location.x} cy={data.melanomaDoc.location.y} r="5" fill="red" />
                             <Text fill="red" x={data.melanomaDoc.location.x+5}  y={data.melanomaDoc.location.y-5}>

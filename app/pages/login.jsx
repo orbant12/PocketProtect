@@ -13,7 +13,7 @@ import { useAuth } from '../context/UserAuthContext'
 
 //FIREBASE
 import { auth } from '../firebase';
-import { sendPasswordResetEmail } from 'firebase/auth';
+import { sendPasswordResetEmail, GoogleAuthProvider,signInWithRedirect } from 'firebase/auth';
 
 //ICON
 import { Icon } from 'react-native-elements';
@@ -24,6 +24,9 @@ const LoginPage = ({navigation}) => {
 
 //CURRENT USER | LOGIN
 const {Login, currentuser} = useAuth()
+
+//USER | LOGIN
+const {GoogleLogin, user} = useAuth()
 
 //INPUTS | LOGIN
 const [inputEmail, setInputEmail] = useState('')
@@ -53,6 +56,12 @@ const handleForgotPass = async() => {
 
 const handleNavigation = () => {
   navigation.navigate('Register')
+}
+
+const handleGoogleAuth = async() => {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithRedirect(auth, provider)
+    GoogleLogin(result)
 }
 
 
@@ -110,7 +119,7 @@ return (
 
         <Text>or continue with</Text>
 
-        <Pressable style={styles.button} onPress={SubmitHandler}>
+        <Pressable style={styles.button} onPress={handleGoogleAuth}>
             <Text style={styles.buttonTitle} >Google</Text>
         </Pressable>
 
