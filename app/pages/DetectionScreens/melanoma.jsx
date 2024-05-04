@@ -80,7 +80,6 @@ const BodySvgSelector = () => {
         setBodySlugs(bodyFront);
     } else if ( userData.gender == "female" && selectedSide == 'front' ){
         setBodySlugs(bodyFemaleFront);
-        console.log(bodyFemaleFront)
     } else if ( userData.gender == "male" && selectedSide == 'back' ){
         setBodySlugs(bodyBack);
     } else if ( userData.gender == "female" && selectedSide == 'back' ){
@@ -90,12 +89,16 @@ const BodySvgSelector = () => {
 
 const AffectedSlugMap = () => {
     if(melanomaData != null){
-        const affectedSlug = melanomaData.map((data) => (
-            { slug: data.melanomaDoc.spot[0].slug, intesity: 2 }
-        ))
-        setAffectedSlugs(affectedSlug)
+        const affectedSlug = melanomaData.map((data, index) => {
+            const spotSlug = data.melanomaDoc.spot[0]?.slug;
+            const intensity = data.risk >= 0.5 ? (data.risk >= 0.8 ? 1 : 3) : 2;
+            return { slug: spotSlug, intensity, key: index }; // Adding a unique key
+        });
+        setAffectedSlugs(affectedSlug);
     }
 }
+
+
 
 useEffect(() => {
     fetchAllUserData();
@@ -371,10 +374,10 @@ const dotSelectOnPart = (bodyPart) => {
                         />
                 ))
             ):null}
-            {melanomaData.map((data) => (
+            {melanomaData.map((data,index) => (
                     data.melanomaDoc.spot[0].slug == bodyPart.slug && data.gender == userData.gender  ? (
                         <>
-                            <Circle cx={data.melanomaDoc.location.x} cy={data.melanomaDoc.location.y} r="5" fill="red" />
+                            <Circle cx={data.melanomaDoc.location.x} cy={data.melanomaDoc.location.y} r="5" fill="red" key={`${"circle"}_${index}`} />
                         </>
                     ):null
                 ))
@@ -419,7 +422,7 @@ function MelanomaMonitoring(){
                 side={selectedSide}
                 scale={1.1}
                 //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
-                colors={{ 0: "#FF0000", 1: "#00FF00", 2: "#0000FF" }}
+                colors={['#FF0000', '#A6FF9B','#FFA8A8']}
                 onBodyPartPress={(slug) => navigation.navigate("SlugAnalasis", { data: slug })}
                 zoomOnPress={true}
             />
@@ -466,20 +469,20 @@ function MelanomaMonitoring(){
 
 
                     {bodySlugs != null ? (
-                        bodySlugs.map(bodyPart => (
-                            <View style={Mstyles.melanomaBox}>
-                            <Text style={{fontSize:20,fontWeight:700}}>{bodyPart.slug}</Text>
-                            <Text style={{fontSize:15,fontWeight:500,opacity:0.7}}>Birthmarks: 21</Text>
-                            <Text style={{fontSize:15,fontWeight:500,opacity:0.7}}>Risky ones: 2</Text>
-                            <View>
-                                {dotSelectOnPart(bodyPart)}
-                            </View>
-                            <Pressable style={Mstyles.showMoreBtn} onPress={() => navigation.navigate("SlugAnalasis",{ data: bodyPart,gender: userData.gender})}>
-                                <Text style={{fontSize:15,fontWeight:500,opacity:0.7}}>Show Analasis</Text>
-                            </Pressable>
-                            <View style={Mstyles.redDotLabel} />
+                        bodySlugs.map((bodyPart,index) => (
+                            <View style={Mstyles.melanomaBox} key={`box_${bodyPart.slug}_${index}`}>
+                                <Text style={{fontSize:20,fontWeight:700}}>{bodyPart.slug}</Text>
+                                <Text style={{fontSize:15,fontWeight:500,opacity:0.7}}>Birthmarks: 21</Text>
+                                
+                                <View>
+                                    {dotSelectOnPart(bodyPart)}
+                                </View>
+                                <Pressable style={Mstyles.showMoreBtn} onPress={() => navigation.navigate("SlugAnalasis",{ data: bodyPart,gender: userData.gender})}>
+                                    <Text style={{fontSize:15,fontWeight:500,opacity:0.7}}>Show Analasis</Text>
+                                </Pressable>
+                                <View style={Mstyles.redDotLabel} />
 
-                        </View>
+                            </View>
                         ))
                     ):null}
                 
@@ -591,10 +594,10 @@ const Mstyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         borderWidth: 1,
-        width: 300,
-        height: 400,
+        width: 250,
+        height: 350,
         borderRadius: 10,
-        marginRight: 20,
+        marginRight: 10,
         marginLeft:20,
         padding: 20,
         marginBottom: 70,

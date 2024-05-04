@@ -12,6 +12,7 @@ const SlugAnalasis = ({ route,navigation }) => {
 //<***************************  Variables ******************************************>
 
     const [melanomaData, setMelanomaData] = useState([]);
+    const [highlighted, setHighlighted] = useState(null);
     const { currentuser } = useAuth();
     const gender = route.params.gender
     const bodyPart = route.params.data;
@@ -26,6 +27,7 @@ const SlugAnalasis = ({ route,navigation }) => {
             });
             const melanomaData = response;
             setMelanomaData(melanomaData);
+            setHighlighted(melanomaData[0].melanomaId);
         }
     }
 
@@ -34,7 +36,11 @@ const SlugAnalasis = ({ route,navigation }) => {
     },[])
 
     const handleSpotOpen = (data) => {
-        navigation.navigate("SinglePartAnalasis",{ "data": data });
+        navigation.navigate("SinglePartAnalasis",{ "data": data,"gender":gender });
+    }
+
+    const showSpot = (melanomaId) => {
+        setHighlighted(melanomaId);
     }
 
 //<***************************  Components ******************************************>
@@ -47,7 +53,8 @@ return(
             {melanomaData != null ? dotsSelectOnPart({
                 bodyPart: bodyPart,
                 melanomaData: melanomaData,
-                gender
+                gender,
+                highlighted
             }):null}
         </View>
         <View style={styles.BirthmarkContainer}>
@@ -57,8 +64,11 @@ return(
                     <View key={index} style={styles.melanomaBox}>
                         <View style={styles.melanomaBoxL}>
                             <Text style={{fontSize:16,fontWeight:600}}>{data.melanomaId}</Text>
-                            <Text style={{fontSize:13,fontWeight:500}}>Risk: 0.3</Text>
+                            <Text style={{fontSize:13,fontWeight:500}}>Risk: {data.risk}</Text>
                         </View>
+                        <Pressable onPress={() => showSpot(data.melanomaId)} style={highlighted != data.melanomaId ? styles.melanomaShowBoxI : styles.melanomaShowBoxA}>
+                            <Text style={{fontSize:13,fontWeight:500}}>Show</Text>
+                        </Pressable>
                         <Pressable onPress={() => handleSpotOpen(data)} style={styles.melanomaBoxR}>
                             <Text style={{fontSize:13,fontWeight:500}}>Open</Text>
                         </Pressable>
@@ -94,6 +104,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     melanomaBox: {
+        maxWidth: "100%",
         width: "100%",
         height: 100,
         padding: 20,
@@ -103,7 +114,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
     },
     melanomaBoxL: {
-        width: "80%",
+        width: "50%",
         height: "100%",
         justifyContent: "center",
     },
@@ -114,6 +125,27 @@ const styles = StyleSheet.create({
         alignItems: "center",
         borderWidth: 1,
         borderRadius: 10,
+        marginLeft: 10,
+    },
+    melanomaShowBoxI: {
+        width: "20%",
+        height: "60%",
+        justifyContent: "center",
+        alignItems: "center",
+        borderWidth: 1,
+        borderRadius: 10,
+        backgroundColor: "white",
+        marginLeft: 10,
+    },
+    melanomaShowBoxA: {
+        width: "20%",
+        height: "60%",
+        justifyContent: "center",
+        alignItems: "center",
+        borderWidth: 1,
+        borderRadius: 10,
+        backgroundColor: "red",
+        marginLeft: 10,
     }
 
 })

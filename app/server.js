@@ -1,9 +1,9 @@
 import { setDoc , doc , collection,getDoc,getDocs} from "firebase/firestore"
 import { db,storage } from './firebase.js';
-import { ref, uploadString, getDownloadURL, uploadBytes, uploadBytesResumable, } from "firebase/storage";
+import { ref,  getDownloadURL, uploadBytes } from "firebase/storage";
 
-import { decode } from 'base-64';
 
+ 
 
 //<===> Melanoma <====>
 
@@ -24,7 +24,7 @@ export const melanomaSpotUpload = async ({
             melanomaPictureUrl: melanomaPictureUrl,
             storage_location: storageLocation,
         });
-        console.log("Melanoma spot uploaded");
+        return true;
     } catch (error) {
         console.log(error);
     }
@@ -35,12 +35,9 @@ export const melanomaUploadToStorage = async ({
     storageLocation,
 }) => {
     try{ 
-        if(typeof atob === 'undefined') {
-            global.atob = decode;
-          }
         const base64TypeMetaData = "data:image/jpeg;base64,";
         const storageRef = ref(storage, storageLocation);
-        await uploadString(storageRef,melanomaPicFile);
+        await uploadBytes(storageRef,melanomaPicFile);
         const url = await getDownloadURL(storageRef);
         return url;
     } catch (error) {

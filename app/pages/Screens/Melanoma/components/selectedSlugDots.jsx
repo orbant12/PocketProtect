@@ -5,7 +5,8 @@ import Svg, { Circle, Path,TextPath,Text } from '/Users/tamas/Programming Projec
 export const dotsSelectOnPart = ({
     bodyPart,
     melanomaData,
-    gender
+    gender,
+    highlighted
 }) => {
     return (
         <Svg preserveAspectRatio="xMidYMid meet" height={200} width={350} > 
@@ -265,13 +266,23 @@ export const dotsSelectOnPart = ({
             }
             {melanomaData.map((data) => (
                     data.melanomaDoc.spot[0].slug == bodyPart.slug && gender == data.gender ? (
-                        <>
+                        highlighted == data.melanomaId ? (
+                            <>
                             <Circle cx={data.melanomaDoc.location.x} cy={data.melanomaDoc.location.y} r="5" fill="red" />
                             <Text fill="red" x={data.melanomaDoc.location.x+5}  y={data.melanomaDoc.location.y-5}>
                                 {data.melanomaId}
                             </Text>
                             
                         </>
+                        ):(
+                            <>
+                            <Circle cx={data.melanomaDoc.location.x} cy={data.melanomaDoc.location.y} r="5" fill="black" />
+                            <Text fill="black" x={data.melanomaDoc.location.x+5}  y={data.melanomaDoc.location.y-5}>
+                                {data.melanomaId}
+                            </Text>
+                            
+                        </>
+                        )
                     ):null
                 ))
             }

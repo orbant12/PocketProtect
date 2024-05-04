@@ -6,13 +6,12 @@ import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionAp
 import { melanomaSpotUpload,melanomaUploadToStorage  } from '../../../server.js';
 import { useAuth } from '../../../context/UserAuthContext.jsx';
 import * as ImagePicker from 'expo-image-picker';
-import { decode } from 'base-64';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 
 
-const MelanomaAdd = ({route}) => {
+const MelanomaAdd = ({route,navigaton}) => {
     const [selectedSide, setSelectedSide] = useState("front");
     const userData = route.params.data;
     const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
@@ -323,28 +322,25 @@ const MelanomaAdd = ({route}) => {
         setRedDotLocation({ x: locationX, y: locationY })    
     }
 
- 
-
-
     const handleSaveSvg = async() => {
         const storageLocation = `users/${currentuser.uid}/melanomaImages/${birthmarkId}`;
 
-        const uploadToStorage = async() => {
-            const convertPictureFromFileUrlToBase64 = async() => {
-                const response = await fetch(uploadedSpotPicture);
-                const blob = await response.blob();
-                const reader = new FileReader();
-                reader.readAsDataURL(blob);
-                return new Promise((resolve, reject) => {
-                    reader.onloadend = () => {
-                        resolve(reader.result);
-                    }
-                })
-            }
-            const convertPart = await convertPictureFromFileUrlToBase64();
-            console.log(convertPart);
+        const uploadToStorage = async(uri) => {
+            const blob = await new Promise((resolve, reject) => {
+                const xhr = new XMLHttpRequest();
+                xhr.onload = function () {
+                  resolve(xhr.response);
+                };
+                xhr.onerror = function (e) {
+                  console.log(e);
+                  reject(new TypeError("Network request failed"));
+                };
+                xhr.responseType = "blob";
+                xhr.open("GET", uri, true);
+                xhr.send(null);
+            });
             const response = await melanomaUploadToStorage({
-                melanomaPicFile: convertPart,
+                melanomaPicFile: blob,
                 userId: currentuser.uid,
                 birthmarkId: birthmarkId,
                 storageLocation: storageLocation,
@@ -352,8 +348,8 @@ const MelanomaAdd = ({route}) => {
             return response;
         }
 
-        const pictureUrl = await uploadToStorage();
-        melanomaSpotUpload({
+        const pictureUrl = await uploadToStorage(uploadedSpotPicture);
+        const res = melanomaSpotUpload({
             userId: currentuser.uid,
             melanomaDocument: {"spot": selectedPart, "location": redDotLocation},
             gender: userData.gender,
@@ -361,6 +357,14 @@ const MelanomaAdd = ({route}) => {
             birthmarkId: birthmarkId,
             storageLocation: storageLocation,
         })
+        if (res == true) {
+            //NAVIGATE BACK
+            alert("Melanoma spot saved successfully");
+            setFirstSelectedPart("");
+            setRedDotLocation({ x: -100, y: 10 });
+            setUploadedSpotPicture(null);
+            setBirthmarkId(`Birthmark#${Math.floor(Math.random() * 100)}`);
+        }
     }
 
     const handlePictureUpload = async() => {
@@ -376,8 +380,6 @@ const MelanomaAdd = ({route}) => {
             setUploadedSpotPicture(result.assets[0].uri);
         }
     };           
-
-
 
 
     //const routeData = route.params.data;
