@@ -1,6 +1,8 @@
 import { setDoc , doc , collection,getDoc,getDocs} from "firebase/firestore"
-import { db } from './firebase.js';
+import { db,storage } from './firebase.js';
+import { ref, uploadString, getDownloadURL, uploadBytes, uploadBytesResumable, } from "firebase/storage";
 
+import { decode } from 'base-64';
 
 
 //<===> Melanoma <====>
@@ -8,19 +10,47 @@ import { db } from './firebase.js';
 export const melanomaSpotUpload = async ({
     userId,
     melanomaDocument,
+    gender,
+    birthmarkId,
+    melanomaPictureUrl,
+    storageLocation,
 }) => {
     try{
-        const birthMarkId = "Birthmark#4";
-        const ref = doc(db, "users", userId, "Melanoma", birthMarkId);
+        const ref = doc(db, "users", userId, "Melanoma", birthmarkId);
         await setDoc(ref, {
-            melanomaId: "Birthmark#4",
+            melanomaId: birthmarkId,
             melanomaDoc:melanomaDocument,
+            gender: gender,
+            melanomaPictureUrl: melanomaPictureUrl,
+            storage_location: storageLocation,
         });
         console.log("Melanoma spot uploaded");
     } catch (error) {
         console.log(error);
     }
 }
+
+export const melanomaUploadToStorage = async ({
+    melanomaPicFile,
+    storageLocation,
+}) => {
+    try{ 
+        if(typeof atob === 'undefined') {
+            global.atob = decode;
+          }
+        const base64TypeMetaData = "data:image/jpeg;base64,";
+        const storageRef = ref(storage, storageLocation);
+        await uploadString(storageRef,melanomaPicFile);
+        const url = await getDownloadURL(storageRef);
+        return url;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+
+
 
 export const fetchMelanomaSpotData = async ({
     userId,

@@ -1,10 +1,14 @@
 
 import React, {useState} from 'react';
-import { Text, View, StyleSheet,Pressable ,ScrollView} from 'react-native';
+import { Text, View, StyleSheet,Pressable ,ScrollView,Image} from 'react-native';
 import Body from 'react-native-body-highlighter';
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
-import { melanomaSpotUpload } from '../../../server.js';
+import { melanomaSpotUpload,melanomaUploadToStorage  } from '../../../server.js';
 import { useAuth } from '../../../context/UserAuthContext.jsx';
+import * as ImagePicker from 'expo-image-picker';
+import { decode } from 'base-64';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
 
 
 
@@ -13,8 +17,13 @@ const MelanomaAdd = ({route}) => {
     const userData = route.params.data;
     const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
     const [selectedPart, setSelectedPart] = useState([]);
-    const [firstSelectedPart, setFirstSelectedPart] = useState(null);
+    const [selectedPartOwnSlug, setSelectedPartOwnSlug] = useState([]);
+    const [firstSelectedPart, setFirstSelectedPart] = useState("");
     const [selectedExportedSvg, setSelectedExportedSvg] = useState(null);
+    const [selectedSlugType, setSelectedSlugType] = useState("ownSlug");
+    const [uploadedSpotPicture, setUploadedSpotPicture] = useState(null);
+    const [birthmarkId, setBirthmarkId] = useState(`Birthmark#${Math.floor(Math.random() * 100)}`);
+
     const { currentuser } = useAuth()
     const scale = 1;
 
@@ -290,20 +299,84 @@ const MelanomaAdd = ({route}) => {
         )
     }
 
+    const ownSelectedPart = () => {
+        return (
+            <View>
+            {selectedPartOwnSlug.length > 0 ? (
+                <View>
+                    <Text>sdsds</Text>
+                </View>
+            ) : (
+                <View style={{alignItems:"center",flexDirection:"column",justifyContent:"center",padding:20}}>
+                    <Text style={{maxWidth:250,textAlign:"center"}}>You haven't uploaded your own <Text style={{fontWeight:600,fontSize:15}}>{firstSelectedPart}</Text> yet</Text>
+                    <Pressable style={{marginTop:25,borderRadius:10,backgroundColor:"lightgray",width:150,alignItems:"center"}}>
+                        <Text style={{color:"black",padding:15,fontWeight:500,opacity:0.6}}>Make a scan</Text>
+                    </Pressable>
+                </View>
+            )}
+        </View>
+        )
+    }
+
     const handlePartClick = (e) => {
         const { locationX, locationY } = e.nativeEvent;
         setRedDotLocation({ x: locationX, y: locationY })    
     }
 
-    const handleSaveSvg = () => {
+ 
+
+
+    const handleSaveSvg = async() => {
+        const storageLocation = `users/${currentuser.uid}/melanomaImages/${birthmarkId}`;
+
+        const uploadToStorage = async() => {
+            const convertPictureFromFileUrlToBase64 = async() => {
+                const response = await fetch(uploadedSpotPicture);
+                const blob = await response.blob();
+                const reader = new FileReader();
+                reader.readAsDataURL(blob);
+                return new Promise((resolve, reject) => {
+                    reader.onloadend = () => {
+                        resolve(reader.result);
+                    }
+                })
+            }
+            const convertPart = await convertPictureFromFileUrlToBase64();
+            console.log(convertPart);
+            const response = await melanomaUploadToStorage({
+                melanomaPicFile: convertPart,
+                userId: currentuser.uid,
+                birthmarkId: birthmarkId,
+                storageLocation: storageLocation,
+            })
+            return response;
+        }
+
+        const pictureUrl = await uploadToStorage();
         melanomaSpotUpload({
             userId: currentuser.uid,
-            melanomaDocument: {"spot": selectedPart, "location": redDotLocation}
+            melanomaDocument: {"spot": selectedPart, "location": redDotLocation},
+            gender: userData.gender,
+            melanomaPictureUrl: pictureUrl,
+            birthmarkId: birthmarkId,
+            storageLocation: storageLocation,
         })
     }
 
-    const handlePictureUpload = () => {
-    }
+    const handlePictureUpload = async() => {
+        //UPLOAD PICTURE OR OPEN CAMERA
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.All,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setUploadedSpotPicture(result.assets[0].uri);
+        }
+    };           
+
 
 
 
@@ -311,9 +384,16 @@ const MelanomaAdd = ({route}) => {
     return (
         <View style={styles.container}>
         <ScrollView style={{width:"100%",height:"100%"}}>
-            <View style={{width:"100%",alignItems:"center"}}>
+            <View style={styles.OwnSlugAddBtn}>
+                <Text style={{fontWeight:600,opacity:0.6}}>+ Use your own Body Parts</Text>
+            </View>
+
+          
+
+
+            <View style={{width:"100%",alignItems:"center",marginBottom:30}}>
                 <View style={{flexDirection:"column",width:"90%",marginTop:10}}>
-                    <Text>First Step 1/3</Text>
+                    <Text>First Step <Text style={firstSelectedPart == "" ? {opacity:0.3}:{color:"green",fontWeight:600}}>1/3</Text></Text>
                     <Text style={{fontSize:20,fontWeight:600}}>Select a body part</Text>
                 </View>
                 <Body
@@ -341,32 +421,97 @@ const MelanomaAdd = ({route}) => {
                     </View>
             </View>
 
-            <View style={{width:"100%",alignItems:"center"}}>
-                <View style={{flexDirection:"column",width:"90%",marginTop:40}}>
-                    <Text>Secound Step 2/3</Text>
+            <View style={{width:"100%",borderWidth:1}} />
+
+            <View style={{width:"100%",alignItems:"center",marginBottom:30}}>
+                <View style={{flexDirection:"column",width:"90%",marginTop:30}}>
+                    <Text>Secound Step <Text style={redDotLocation.x == -100 ? {opacity:0.3}:{color:"green",fontWeight:600}}>2/3</Text></Text>
                     <Text style={{fontSize:20,fontWeight:600}}>Where is your spot ?</Text>
                 </View>
-                
+              
                     <Pressable style={{position:"relative",alignItems:"center",justifyContent:"center",width:"500px",height:"500px",marginTop:20}} onPress={(e) => handlePartClick(e)}>
-                            {dotSelectOnPart()}
+                        
+                            {selectedSlugType == "defaultSlug" ? dotSelectOnPart() : ownSelectedPart()}
                     </Pressable>
 
-
+                    <View style={styles.positionSwitch}>
+                        <Pressable onPress={() => setSelectedSlugType("ownSlug")}>
+                            <Text style={selectedSlugType == "ownSlug" ? {fontWeight:600}:{opacity:0.5}}>Own</Text>
+                        </Pressable>
+                        <Text>|</Text>
+                        <Pressable onPress={() => setSelectedSlugType("defaultSlug")}>
+                            <Text style={selectedSlugType == "defaultSlug" ? {fontWeight:600}:{opacity:0.5}}>Default</Text>
+                        </Pressable>
+                    </View>
             </View>
 
-            <View style={{width:"100%",alignItems:"center",marginBottom:70}}>
+            <View style={{width:"100%",borderWidth:1}} />
+
+            <View style={{width:"100%",alignItems:"center",marginBottom:10,marginTop:0}}>
                 <View style={{flexDirection:"column",width:"90%",marginTop:30}}>
-                    <Text>Final Step 3/3</Text>
+                    <Text>Final Step <Text style={uploadedSpotPicture == null ? {opacity:0.3}:{color:"green",fontWeight:600}}>3/3</Text></Text>
                     <Text style={{fontSize:20,fontWeight:600}}>Take a picture of your spot</Text>
+                    {uploadedSpotPicture == null ? (
+                        <>
+                            <View style={{flexDirection:"row",width:"100%",justifyContent:"space-between",maxWidth:"100%",alignItems:"center",marginTop:20}}>
+                            <Image
+                                source={"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/melanoma/melanoma-skin-cancer-what-is-melanoma.jpg"}
+                                style={{width:150,height:150,borderWidth:1,borderRadius:10}}
+                            />
+    
+                            <View style={{width:"50%",height:120,justifyContent:"space-between"}}>
+                                <Text style={{fontWeight:600,fontSize:13}}>Make sure your Image ...</Text>
+                                <Text style={{fontWeight:400,fontSize:10}}>• As clean as possible - remove all noise</Text>
+                                <Text style={{fontWeight:400,fontSize:10}} >• Lighting is simular to this image</Text>
+                                <Text style={{fontWeight:400,fontSize:10}}>• Birthmark is on the spotlight with the same ration as in this image</Text>
+                            </View>
+                            </View>
+                            <Pressable style={styles.uploadButton} onPress={handlePictureUpload}>
+                                <Text style={{color:"white"}}>Upload</Text>
+                            </Pressable>
+                        </>
+                        ):(
+                            <View style={{flexDirection:"column",width:"100%",alignItems:"center",justifyContent:"space-between",height:220}}>
+                                <Image
+                                    source={{uri: uploadedSpotPicture}}
+                                    style={{width:150,height:150,borderWidth:1,borderRadius:10,marginTop:20}}
+                                />
+                                <Pressable onPress={() => setUploadedSpotPicture(null)} style={{borderWidth:2,borderRadius:10,borderColor:"red"}}>
+                                    <MaterialCommunityIcons
+                                        name="close"
+                                        size={30}
+                                        color="red"
+                                        style={{padding:2}}
+                                    />
+                                </Pressable>
+                            </View>
+                        )
+                    }
+                
 
-                    <Pressable style={styles.uploadButton} onPress={handlePictureUpload}>
-                        <Text style={{color:"white"}}>Upload</Text>
-                    </Pressable>
+             
                 </View>
-                <Pressable style={styles.saveButton} onPress={handleSaveSvg}>
-                        <Text style={{color:"white"}}>Save</Text>
-                    </Pressable>
             </View>
+
+            <View style={{width:"100%",borderWidth:1}} />
+
+            <View style={{width:"100%",alignItems:"center",marginBottom:20,marginTop:10}}>
+                <Pressable 
+                    style={
+                        firstSelectedPart != "" && redDotLocation.x != -100 && uploadedSpotPicture != null ?
+                        styles.saveButtonActive : styles.saveButtonInActive
+                    } onPress={handleSaveSvg}>
+
+                    <Text style={{color:"white"}}>Save</Text>
+                </Pressable>
+                {firstSelectedPart != "" && redDotLocation.x != -100 && uploadedSpotPicture != null ? (
+                    <Text style={{color:"green",fontWeight:300,fontSize:10}}>3/3 - All Steps Completed</Text> 
+                ):(
+                    <Text style={{fontWeight:300,opacity:0.5,fontSize:10}}>Not All Steps Completed</Text>
+                )}
+         
+            </View>
+
         </ScrollView>
         </View>
     )
@@ -381,23 +526,36 @@ const styles = StyleSheet.create({
         color: 'white',
         width: '100%',
     },
-    saveButton: {
+    saveButtonActive: {
         backgroundColor: 'blue',
-        padding: 10,
+        padding: 15,
         borderRadius: 5,
-        width: 100,
+        width: 200,
         alignItems:"center",
         justifyContent:"center",
-        marginTop: 20,
+        marginTop: 10,
+        marginBottom: 10,
+    },
+    saveButtonInActive: {
+        backgroundColor: 'blue',
+        padding: 15,
+        borderRadius: 5,
+        width: 200,
+        alignItems:"center",
+        justifyContent:"center",
+        marginTop: 10,
+        marginBottom: 10,
+        opacity:0.5
     },
     uploadButton: {
         backgroundColor: 'blue',
-        padding: 10,
+        padding: 15,
         borderRadius: 5,
         width: "100%",
         alignItems:"center",
         justifyContent:"center",
-        marginTop: 20,
+        marginTop: 30,
+        marginBottom:30,
     },
     positionSwitch: {
         flexDirection: 'row',
@@ -412,6 +570,18 @@ const styles = StyleSheet.create({
         paddingLeft: 20,
         borderRadius: 10,
     
+    },
+    OwnSlugAddBtn: {
+        width: "80%",
+        height: 50,
+        backgroundColor: "lightgrey",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: 10,
+        marginTop: 20,
+        marginBottom: 20,
+        marginLeft:"auto",
+        marginRight:"auto",
     },
 });
 
