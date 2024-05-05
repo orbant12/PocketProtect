@@ -1,9 +1,9 @@
 import { View,Text,StyleSheet,Pressable,Animated,Image,ScrollView } from "react-native"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import React, {useState,useEffect} from "react";
+import React, {useState,useEffect,useRef} from "react";
 import * as ImagePicker from 'expo-image-picker';
 import ProgressBar from 'react-native-progress/Bar';
-import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
+import { dotSelectOnPart } from './melanomaDotSelect.jsx'
 
 import {bodyFemaleFront} from "/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/assets/bodyFemaleFront.ts"
 import {bodyFemaleBack} from "/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/assets/bodyFemaleBack.ts"
@@ -15,18 +15,45 @@ const MelanomaFullProcess = () => {
     const [progress, setProgress] = useState(0.1)
 
     const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
-    const [bodyPart, setBodyPart] = useState([]);
-    const [orderedParts,setOrderedParts] = useState("head")
+    const [bodyPart, setBodyPart] = useState([bodyFemaleFront[0]]);
+    const [orderedParts,setOrderedParts] = useState(
+        [
+            "head",
+            "chest",
+            "left-arm",
+            "right-arm",
+            "right-hand",
+            "left-hand",
+            "upper-leg-left",
+            "upper-leg-right",
+            "lower-leg-left",
+            "lower-leg-right",
+            "left-feet",
+            "right-feet",
+        ])
+
+    const [orderedPartsCounter, setOrderedPartsCounter] = useState(0)
+
     const [gender, setGender]= useState("female")
     const [uploadedSpotPicture, setUploadedSpotPicture] = useState(null);
     const [isFinished,setIsFinished] = useState(false)
+    const [currentSlugMemory, setCurrentSlugMemory ] = useState([])
+    const [birthmarkId, setBirthmarkId] = useState(`Birthmark#${Math.floor(Math.random() * 100)}`);
+
+    const scrollViewRef = useRef(null);
 
     
+
+
     useEffect(() => {
-        if(orderedParts == "head" && gender == "female"){
+        if(orderedParts[orderedPartsCounter] == "head" && gender == "female"){
             setBodyPart(bodyFemaleFront[0])
+        } else if(orderedParts[orderedPartsCounter] == "chest" && gender == "female"){
+            setBodyPart(bodyFemaleFront[1])
+        } else if(orderedParts[orderedPartsCounter] == "left-arm" && gender == "female"){
+            setBodyPart(bodyFemaleFront[2])
         }
-    }, []);
+    }, [orderedPartsCounter]);
 
     const handlePartClick = (e) => {
         const { locationX, locationY } = e.nativeEvent;
@@ -47,268 +74,27 @@ const MelanomaFullProcess = () => {
         }
     };  
 
-    const dotSelectOnPart = () => {
-        return (
-            <Svg preserveAspectRatio="xMidYMid meet" height={200} width={350} > 
-        
-                    {bodyPart.pathArray.map((path, index) => (
-                            <Path
-                                key={`${bodyPart.slug}_${index}`} 
-                                d={path}
-                                fill="blue" 
-                                stroke={bodyPart.color} 
-                                strokeWidth="2"
-                                rotation={
-                                    bodyPart.slug == "right-arm" ? "-20"
-                                    :
-                                    bodyPart.slug == "left-arm" ? "20"
-                                    :
-                                    bodyPart.slug == "right-arm(back)" ? "-20"
-                                    :
-                                    bodyPart.slug == "left-arm(back)" ? "20"
-                                    :
-                                    null
-                                }
-                                transform={
-                                    gender == "male" ? (
-                                        bodyPart.slug == "chest" ? `translate(-180 -270)` 
-                                        :
-                                        bodyPart.slug == "head" ? `translate(-140 -70)`
-                                        :
-                                        bodyPart.slug == "legs" ? `translate(-140 -100)`
-                                        :
-                                        bodyPart.slug == "torso" ? `translate(-140 -100)`
-                                        :
-                                        bodyPart.slug == "feet" ? `translate(-140 -100)`
-                                        :
-                                        bodyPart.slug == "abs" ? `translate(-60 -390)`
-                                        :
-                                        bodyPart.slug == "left-hand" ? `translate(40 -670)`
-                                        :
-                                        bodyPart.slug == "right-hand" ? `translate(-480 -670)`
-                                        :
-                                        bodyPart.slug == "left-arm" ? `translate(120 -420)`
-                                        :
-                                        bodyPart.slug == "right-arm" ? `translate(-300 -230)`
-                                        :
-                                        bodyPart.slug == "upper-leg-left" ? `translate(0 -650)`
-                                        :
-                                        bodyPart.slug == "upper-leg-right" ? `translate(-170 -650)`
-                                        :
-                                        bodyPart.slug == "lower-leg-left" ? `translate(-20 -950)`
-                                        :
-                                        bodyPart.slug == "lower-leg-right" ? `translate(-170 -950)`
-                                        :
-                                        bodyPart.slug == "left-feet" ? `translate(-130 -1200)`
-                                        :
-                                        bodyPart.slug == "right-feet" ? `translate(-290 -1200)`
-                                        :
-                                        //BACK
-                                        bodyPart.slug == "head(back)" ? `translate(-860 -80)`
-                                        :
-                                        bodyPart.slug == "back" ? `translate(-800 -290)`
-                                        :
-                                        bodyPart.slug == "left-arm(back)" ? `translate(-600 -430)`
-                                        :
-                                        bodyPart.slug == "right-arm(back)" ? `translate(-1000 -230)`
-                                        :
-                                        bodyPart.slug == "gluteal" ? `translate(-900 -590)`
-                                        :
-                                        bodyPart.slug == "right-palm" ? `translate(-1190 -675)`
-                                        :
-                                        bodyPart.slug == "left-palm" ? `translate(-680 -670)`
-                                        :
-                                        bodyPart.slug == "left-leg(back)" ? `translate(-550 -750)`
-                                        :
-                                        bodyPart.slug == "right-leg(back)" ? `translate(-700 -750)`
-                                        :
-                                        bodyPart.slug == "left-feet(back)" ? `translate(-840 -1230)`
-                                        :
-                                        bodyPart.slug == "right-feet(back)" ? `translate(-1000 -1230)`
-                                        :
-                                        null
-                                        ):(
-                                        bodyPart.slug == "chest" ? `translate(-145 -270)` 
-                                        :
-                                        bodyPart.slug == "head" ? `translate(-50 -10)`
-                                        :
-                                        bodyPart.slug == "legs" ? `translate(-140 -100)`
-                                        :
-                                        bodyPart.slug == "torso" ? `translate(-140 -100)`
-                                        :
-                                        bodyPart.slug == "feet" ? `translate(-140 -100)`
-                                        :
-                                        bodyPart.slug == "abs" ? `translate(-20 -380)`
-                                        :
-                                        bodyPart.slug == "left-hand" ? `translate(100 -630)`
-                                        :
-                                        bodyPart.slug == "right-hand" ? `translate(-460 -640)`
-                                        :
-                                        bodyPart.slug == "left-arm" ? `translate(180 -420)`
-                                        :
-                                        bodyPart.slug == "right-arm" ? `translate(-300 -230)`
-                                        :
-                                        bodyPart.slug == "upper-leg-left" ? `translate(0 -650)`
-                                        :
-                                        bodyPart.slug == "upper-leg-right" ? `translate(-110 -650)`
-                                        :
-                                        bodyPart.slug == "lower-leg-left" ? `translate(-20 -950)`
-                                        :
-                                        bodyPart.slug == "lower-leg-right" ? `translate(-120 -950)`
-                                        :
-                                        bodyPart.slug == "left-feet" ? `translate(-130 -1280)`
-                                        :
-                                        bodyPart.slug == "right-feet" ? `translate(-220 -1280)`
-                                        :
-                                        //BACK
-                                        bodyPart.slug == "head(back)" ? `translate(-900 -30)`
-                                        :
-                                        bodyPart.slug == "back" ? `translate(-850 -280)`
-                                        :
-                                        bodyPart.slug == "left-arm(back)" ? `translate(-650 -450)`
-                                        :
-                                        bodyPart.slug == "right-arm(back)" ? `translate(-1100 -230)`
-                                        :
-                                        bodyPart.slug == "gluteal" ? `translate(-960 -590)`
-                                        :
-                                        bodyPart.slug == "right-palm" ? `translate(-1270 -620)`
-                                        :
-                                        bodyPart.slug == "left-palm" ? `translate(-730 -630)`
-                                        :
-                                        bodyPart.slug == "left-leg(back)" ? `translate(-600 -750)`
-                                        :
-                                        bodyPart.slug == "right-leg(back)" ? `translate(-700 -750)`
-                                        :
-                                        bodyPart.slug == "left-feet(back)" ? `translate(-940 -1330)`
-                                        :
-                                        bodyPart.slug == "right-feet(back)" ? `translate(-1050 -1330)`
-                                        
-                                        :null
-                                        )
-                                }
-                                scale={
-                                    gender == "male" ? (
-                                        bodyPart.slug == "left-hand" ? "1.3" 
-                                        : 
-                                        bodyPart.slug == "right-hand" ? "1.3"
-                                        :
-                                        bodyPart.slug == "chest" ? "1" 
-                                        :
-                                        bodyPart.slug == "head" ? "0.8"
-                                        :
-                                        bodyPart.slug == "legs" ? "0.8"
-                                        :
-                                        bodyPart.slug == "torso" ? "0.8"
-                                        :
-                                        bodyPart.slug == "feet" ? "0.8"
-                                        :
-                                        bodyPart.slug == "abs" ? "0.6"
-                                        :
-                                        bodyPart.slug == "left-arm" ? "0.6"
-                                        :
-                                        bodyPart.slug == "right-arm" ? "0.6"
-                                        :
-                                        bodyPart.slug == "upper-leg-left" ? "0.65"
-                                        :
-                                        bodyPart.slug == "upper-leg-right" ? "0.65"
-                                        :
-                                        bodyPart.slug == "lower-leg-left" ? "0.7"
-                                        :
-                                        bodyPart.slug == "lower-leg-right" ? "0.7"
-                                        :
-                                        bodyPart.slug == "left-feet" ? "1.2"
-                                        :
-                                        bodyPart.slug == "right-feet" ? "1.2 "
-                                        :
-                                        //BACK
-                                        bodyPart.slug == "head(back)" ? "0.8"
-                                        :
-                                        bodyPart.slug == "back" ? "0.6"
-                                        :
-                                        bodyPart.slug == "left-arm(back)" ? "0.6"
-                                        :
-                                        bodyPart.slug == "right-arm(back)" ? "0.6"
-                                        :
-                                        bodyPart.slug == "gluteal" ? "1"
-                                        :
-                                        bodyPart.slug == "right-palm" ? "1.3"
-                                        :
-                                        bodyPart.slug == "left-palm" ? "1.3"
-                                        :
-                                        bodyPart.slug == "left-leg(back)" ? "0.37"
-                                        :
-                                        bodyPart.slug == "right-leg(back)" ? "0.37"
-                                        :
-                                        bodyPart.slug == "left-feet(back)" ? "1.2"
-                                        :
-                                        bodyPart.slug == "right-feet(back)" ? "1.2"
-                                        :
-                                        null):(
-                                        bodyPart.slug == "left-hand" ? "1.3" 
-                                        : 
-                                        bodyPart.slug == "right-hand" ? "1.3"
-                                        :
-                                        bodyPart.slug == "chest" ? "1" 
-                                        :
-                                        bodyPart.slug == "head" ? "0.65"
-                                        :
-                                        bodyPart.slug == "legs" ? "0.8"
-                                        :
-                                        bodyPart.slug == "torso" ? "0.8"
-                                        :
-                                        bodyPart.slug == "feet" ? "0.8"
-                                        :
-                                        bodyPart.slug == "abs" ? "0.6"
-                                        :
-                                        bodyPart.slug == "left-arm" ? "0.6"
-                                        :
-                                        bodyPart.slug == "right-arm" ? "0.6"
-                                        :
-                                        bodyPart.slug == "upper-leg-left" ? "0.65"
-                                        :
-                                        bodyPart.slug == "upper-leg-right" ? "0.65"
-                                        :
-                                        bodyPart.slug == "lower-leg-left" ? "0.7"
-                                        :
-                                        bodyPart.slug == "lower-leg-right" ? "0.7"
-                                        :
-                                        bodyPart.slug == "left-feet" ? "1.2"
-                                        :
-                                        bodyPart.slug == "right-feet" ? "1.2 "
-                                        :
-                                        //BACK
-                                        bodyPart.slug == "head(back)" ? "0.8"
-                                        :
-                                        bodyPart.slug == "back" ? "0.6"
-                                        :
-                                        bodyPart.slug == "left-arm(back)" ? "0.6"
-                                        :
-                                        bodyPart.slug == "right-arm(back)" ? "0.6"
-                                        :
-                                        bodyPart.slug == "gluteal" ? "1"
-                                        :
-                                        bodyPart.slug == "right-palm" ? "1.3"
-                                        :
-                                        bodyPart.slug == "left-palm" ? "1.3"
-                                        :
-                                        bodyPart.slug == "left-leg(back)" ? "0.37"
-                                        :
-                                        bodyPart.slug == "right-leg(back)" ? "0.37"
-                                        :
-                                        bodyPart.slug == "left-feet(back)" ? "1.2"
-                                        :
-                                        bodyPart.slug == "right-feet(back)" ? "1.2"
-                                        :
-                                        null)
-                                }
-                                
-                            />
-                    ))}
-        
-                    <Circle cx={redDotLocation.x} cy={redDotLocation.y} r="5" fill="red" />
-            </Svg>
-        )
+    const BirthmarkIdGenerator = () => {
+        return `Birthmark#${Math.floor(Math.random() * 100)}`
     }
+
+    const handleNextSlug = () => {
+        setOrderedPartsCounter(orderedPartsCounter + 1)
+        scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });
+        setProgress(progress + 0.1)
+    }
+
+    const handleMoreBirthmark = () => {
+        setCurrentSlugMemory([...currentSlugMemory,
+            {
+                location: redDotLocation,
+                id: BirthmarkIdGenerator()
+            }
+        ])
+        scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });
+    }
+
+
 
     function FirstScreen(){
         return(
@@ -331,16 +117,37 @@ const MelanomaFullProcess = () => {
     function SecoundScreen(){
         return(
             <View style={styles.startScreen}>
-                <ScrollView style={{marginTop:30}}>  
-                    <View style={{width:"100%",alignItems:"center",marginBottom:30}}>
-                        <Text style={{fontWeight:"400",marginTop:10,padding:10,backgroundColor:"lightgray",alignSelf:"flex-end"}}>Part: <Text style={{fontWeight:"600"}}>{orderedParts}</Text></Text>
+                <ScrollView ref={scrollViewRef} style={{marginTop:30}}>  
+                    <View 
+                        style={{
+                            width:"100%",
+                            alignItems:"center",
+                            marginBottom:30
+                        }}
+                    >
+                        <Text 
+                            style={{
+                                fontWeight:"400",
+                                marginTop:10,
+                                padding:10,
+                                backgroundColor:"lightgray",
+                                alignSelf:"flex-end"
+                            }}
+                        >
+                            Part: <Text style={{fontWeight:"600"}}>{orderedParts[orderedPartsCounter]}</Text>
+                        </Text>
                         <View style={{flexDirection:"column",width:"90%",marginTop:-20}}>
                             <Text>Body Parts <Text style={redDotLocation.x == -100 ? {opacity:0.3}:{color:"green",fontWeight:600}}>1/2</Text></Text>
                             <Text style={{fontSize:20,fontWeight:600}}>Where is your spot ?</Text>
                         </View>
 
                         <Pressable style={{position:"relative",alignItems:"center",justifyContent:"center",width:"500px",height:"500px",marginTop:20}} onPress={(e) => handlePartClick(e)}>
-                                {dotSelectOnPart()}
+                                {dotSelectOnPart({
+                                    bodyPart,
+                                    redDotLocation,
+                                    currentSlugMemory,
+                                    gender
+                                })}
                         </Pressable>
 
                         <View style={{width:"100%",alignItems:"center",marginBottom:10,marginTop:0}}>
@@ -395,11 +202,11 @@ const MelanomaFullProcess = () => {
                             <Text style={{fontWeight:800,opacity:0.5,fontSize:10,marginBottom:10,color:"red"}}>Not All Steps Completed</Text>
                         )}
                         <View style={{width:"100%",borderWidth:1,marginBottom:30}} />
-                            <Pressable style={styles.MoreSpotButton}>
-                                <Text style={{padding:15,color:"white",fontWeight:"700"}}>More birthmarks on my {orderedParts}</Text>
+                            <Pressable onPress={handleMoreBirthmark} style={styles.MoreSpotButton}>
+                                <Text style={{padding:15,color:"white",fontWeight:"700"}}>More birthmarks on my {orderedParts[orderedPartsCounter]}</Text>
                             </Pressable>
 
-                            <Pressable style={styles.AllSpotButton}>
+                            <Pressable onPress={handleNextSlug} style={styles.AllSpotButton}>
                                 <Text style={{padding:15,color:"black",fontWeight:"500"}}>Marked all birthmarks</Text>
                             </Pressable>
                         </View>
@@ -429,11 +236,10 @@ const MelanomaFullProcess = () => {
             </View>
             {progress == 0.1 ? 
             FirstScreen()
-            : progress == 0.2 ? 
+            : progress >= 0.2 ? 
             SecoundScreen()
             :
-            null
-            
+            null 
             }
         </View>
     )
