@@ -1,11 +1,12 @@
 
-import { View,Text,StyleSheet,FlatList,ScrollView } from "react-native"
+import { View,Text,StyleSheet,FlatList,ScrollView, Pressable } from "react-native"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const AddDetection = () => {
+const AddDetection = ({navigation}) => {
 
     const CancerDetectionData = [
-        {
+        {   
+            id: "melanoma",
             title: "Melanoma Monitoring",
             desc: "Scan all of your birthmark and let us keep you protected 24/7",
             state: "ready"
@@ -16,6 +17,13 @@ const AddDetection = () => {
             state: "soon"
         }
     ]
+
+
+    function handleNavigation(id){
+        if (id == "melanoma"){
+            navigation.navigate("FullMelanomaProcess")
+        }
+    }
 
     //<==========> Components <===============>
 
@@ -68,7 +76,7 @@ const AddDetection = () => {
         item
     }){
         return(
-            <View style={item.state == "soon" ? styles.DetBoxSoon : styles.DetBox }>
+            <Pressable onPress={() => handleNavigation(item.id)} style={item.state == "soon" ? styles.DetBoxSoon : styles.DetBox }>
                 <View    style={{padding:10,borderWidth:0,borderRadius:25,backgroundColor:"orange"}}>
                     <MaterialCommunityIcons 
                         size={30}
@@ -80,7 +88,7 @@ const AddDetection = () => {
                     <Text style={{marginLeft:10,fontWeight:600}} >{item.title}</Text>
                     <Text style={{marginLeft:10,fontWeight:300,fontSize:10,maxWidth:"90%",marginTop:3}} >{item.desc}</Text>
                 </View>
-            </View> 
+            </Pressable> 
         )
     }
 

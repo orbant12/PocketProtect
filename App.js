@@ -21,6 +21,7 @@ import RegisterPage from "./app/pages/register";
 import MelanomaAdd from "./app/pages/Screens/Melanoma/melanomaAdd";
 import SinglePartAnalasis from "./app/pages/Screens/Melanoma/singlePart";
 import SlugAnalasis from "./app/pages/Screens/Melanoma/slugAnalasis";
+import MelanomaFullProcess from "./app/pages/ProcessScreens/melanomaFullProcess";
 
 
 //CREATING THE NAVIGATION STACK
@@ -42,6 +43,8 @@ return (
             <Stack.Screen name="SinglePartAnalasis" component={SinglePartAnalasis}   options={({ route }) => ({ title: route.params.data.melanomaId.charAt(0).toUpperCase() + route.params.data.melanomaId.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
             <Stack.Screen name="SlugAnalasis" component={SlugAnalasis}   options={({ route }) => ({ title: route.params.data.slug.charAt(0).toUpperCase() + route.params.data.slug.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
             <Stack.Screen name="FolderPage" component={FolderPage}   options={({ route }) => ({ title: route.params.data.title, headerStyle: { backgroundColor: "#18191a"},headerTintColor: "white"  })} />
+            <Stack.Screen name="FullMelanomaProcess" component={MelanomaFullProcess}   options={({ route }) => ({ title: "Full Melanoma Process",headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
+
         </ Stack.Navigator>
     </UserAuthContext>
 </NavigationContainer>   
