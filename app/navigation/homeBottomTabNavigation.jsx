@@ -6,7 +6,7 @@
 
 //BASIC IMPORTS
 import React,{useState} from 'react';
-import {Image, Text,View,TouchableOpacity} from 'react-native';
+import {Image, Text,View,TouchableOpacity,Animated} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 //COMPONENTS
@@ -16,6 +16,7 @@ import Profile from '../pages/profile';
 import AssistantPage from '../pages/Personal_Assistant';
 import Detecttion from '../pages/detection';
 import HealthMesure from '../pages/DetectionScreens/healthMesure';
+import AddDetection from '../pages/addDetection'
 
 
 //ICONS
@@ -46,6 +47,7 @@ return (
         backgroundColor: '#fff',
       },
       activeTintColor: 'magenta',
+   
     }}>
       {/* HOME NAVIGATION */}
       <Tab.Screen
@@ -80,10 +82,44 @@ return (
           </>
           ),
           tabBarIcon: ({color}) => (
-            <Entypo name={'plus'} size={25} color={color} />
+            <Entypo name={'folder'} size={25} color={color} />
           ),
         }}
       />
+
+
+    <Tab.Screen
+      name={'add-detection'}
+      component={AddDetection}
+      options={{
+        header: () => (
+          // Customized header component with a unique visual element
+          <>
+          </>
+        ),
+        title: "", // Dynamic title
+        headerTransparent: true,
+        tabBarIcon: ({ color, focused }) => (
+          // Enhanced tabBarIcon with a more visually appealing design
+          <Animated.View
+            style={{
+              borderRadius: 5,
+              backgroundColor: focused ? "magenta" : "lightgray",
+              padding:5,
+              opacity:focused ? 1: 0.5,
+              transform: [
+                {
+                  scale: focused ? 1.3 : 1.3, // Animate scale when focused
+                },
+              ],
+            }}
+          >
+            <Entypo name={'plus'} size={25} color={focused ? "white" : color} />
+          </Animated.View>
+        ),
+      }}
+    />
+
 
       {/* Detection */}
       <Tab.Screen
