@@ -1,100 +1,30 @@
 import { View,Text,StyleSheet,Pressable,Animated,Image,ScrollView } from "react-native"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import React, {useState,useEffect,useRef} from "react";
-import * as ImagePicker from 'expo-image-picker';
 import ProgressBar from 'react-native-progress/Bar';
-import { dotSelectOnPart } from './melanomaDotSelect.jsx'
+import { useAuth } from "../../context/UserAuthContext.jsx";
+import Body from "react-native-body-highlighter";
+import { fetchAllMelanomaSpotData, fetchUserData } from '../../server';
 
-import {bodyFemaleFront} from "/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/assets/bodyFemaleFront.ts"
-import {bodyFemaleBack} from "/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/assets/bodyFemaleBack.ts"
-import {bodyFront} from "/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/assets/bodyFront.ts"
-import {bodyBack} from "/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/assets/bodyBack.ts"
-
-const MelanomaFullProcess = () => {
+const MelanomaFullProcess = ({navigation}) => {
 
     const [progress, setProgress] = useState(0.1)
-
-    const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
-    const [bodyPart, setBodyPart] = useState([bodyFemaleFront[0]]);
-    const [orderedParts,setOrderedParts] = useState(
-        [
-            "head",
-            "chest",
-            "left-arm",
-            "right-arm",
-            "right-hand",
-            "left-hand",
-            "upper-leg-left",
-            "upper-leg-right",
-            "lower-leg-left",
-            "lower-leg-right",
-            "left-feet",
-            "right-feet",
-        ])
-
-    const [orderedPartsCounter, setOrderedPartsCounter] = useState(0)
-
     const [gender, setGender]= useState("female")
-    const [uploadedSpotPicture, setUploadedSpotPicture] = useState(null);
-    const [isFinished,setIsFinished] = useState(false)
-    const [currentSlugMemory, setCurrentSlugMemory ] = useState([])
-    const [birthmarkId, setBirthmarkId] = useState(`Birthmark#${Math.floor(Math.random() * 100)}`);
-
-    const scrollViewRef = useRef(null);
-
+    const [ affectedSlugs,setAffectedSlugs ] = useState([])
+    const [completedParts, setCompletedParts ] = useState([])
+    const {currentuser} = useAuth()
     
 
-
     useEffect(() => {
-        if(orderedParts[orderedPartsCounter] == "head" && gender == "female"){
-            setBodyPart(bodyFemaleFront[0])
-        } else if(orderedParts[orderedPartsCounter] == "chest" && gender == "female"){
-            setBodyPart(bodyFemaleFront[1])
-        } else if(orderedParts[orderedPartsCounter] == "left-arm" && gender == "female"){
-            setBodyPart(bodyFemaleFront[2])
+        if(currentuser){
+            const allMelanomaData = fetchAllMelanomaSpotData({
+                userId: currentuser.uid,
+                gender
+            })
+            setCompletedParts(allMelanomaData)
+            console.log(allMelanomaData)
         }
-    }, [orderedPartsCounter]);
-
-    const handlePartClick = (e) => {
-        const { locationX, locationY } = e.nativeEvent;
-        setRedDotLocation({ x: locationX, y: locationY })    
-    }
-
-        const handlePictureUpload = async() => {
-        //UPLOAD PICTURE OR OPEN CAMERA
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            setUploadedSpotPicture(result.assets[0].uri);
-        }
-    };  
-
-    const BirthmarkIdGenerator = () => {
-        return `Birthmark#${Math.floor(Math.random() * 100)}`
-    }
-
-    const handleNextSlug = () => {
-        setOrderedPartsCounter(orderedPartsCounter + 1)
-        scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });
-        setProgress(progress + 0.1)
-    }
-
-    const handleMoreBirthmark = () => {
-        setCurrentSlugMemory([...currentSlugMemory,
-            {
-                location: redDotLocation,
-                id: BirthmarkIdGenerator()
-            }
-        ])
-        scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });
-    }
-
-
+    }, []);
 
     function FirstScreen(){
         return(
@@ -117,116 +47,38 @@ const MelanomaFullProcess = () => {
     function SecoundScreen(){
         return(
             <View style={styles.startScreen}>
-                <ScrollView ref={scrollViewRef} style={{marginTop:30}}>  
-                    <View 
-                        style={{
-                            width:"100%",
-                            alignItems:"center",
-                            marginBottom:30
-                        }}
-                    >
-                        <Text 
-                            style={{
-                                fontWeight:"400",
-                                marginTop:10,
-                                padding:10,
-                                backgroundColor:"lightgray",
-                                alignSelf:"flex-end"
-                            }}
-                        >
-                            Part: <Text style={{fontWeight:"600"}}>{orderedParts[orderedPartsCounter]}</Text>
-                        </Text>
-                        <View style={{flexDirection:"column",width:"90%",marginTop:-20}}>
-                            <Text>Body Parts <Text style={redDotLocation.x == -100 ? {opacity:0.3}:{color:"green",fontWeight:600}}>1/2</Text></Text>
-                            <Text style={{fontSize:20,fontWeight:600}}>Where is your spot ?</Text>
+                <View style={{marginTop:60,alignItems:"center"}}>  
+                    <Text style={{marginBottom:10,fontWeight:"700",fontSize:20}}>Press the body part to monitor:</Text>
+                    <ProgressBar progress={progress - 1} width={150} height={10} color={"lightgreen"}backgroundColor={"white"} />
+                    <Body
+                        data={affectedSlugs}
+                        gender={gender}
+                        side={"front"}
+                        scale={1.1}
+                        //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
+                        colors={['#FF0000', '#A6FF9B','#FFA8A8']}
+                        onBodyPartPress={(slug) => navigation.navigate("MelanomaProcessSingleSlug", { data: slug, gender: gender })}
+                        zoomOnPress={true}
+                    />
+
+                <View style={styles.colorExplain}>
+                    <View style={styles.colorExplainRow} >
+                        <View style={styles.redDot} />
+                            <Text style={{position:"relative",marginLeft:10,fontWeight:500,opacity:0.8}}>Empty</Text>
                         </View>
 
-                        <Pressable style={{position:"relative",alignItems:"center",justifyContent:"center",width:"500px",height:"500px",marginTop:20}} onPress={(e) => handlePartClick(e)}>
-                                {dotSelectOnPart({
-                                    bodyPart,
-                                    redDotLocation,
-                                    currentSlugMemory,
-                                    gender
-                                })}
-                        </Pressable>
-
-                        <View style={{width:"100%",alignItems:"center",marginBottom:10,marginTop:0}}>
-                            <View style={{flexDirection:"column",width:"90%",marginTop:30}}>
-                                <Text>Final Step <Text style={uploadedSpotPicture == null ? {opacity:0.3}:{color:"green",fontWeight:600}}>2/2</Text></Text>
-                                <Text style={{fontSize:20,fontWeight:600}}>Take a picture of your spot</Text>
-                                {uploadedSpotPicture == null ? (
-                                    <>
-                                        <View style={{flexDirection:"row",width:"100%",justifyContent:"space-between",maxWidth:"100%",alignItems:"center",marginTop:20}}>
-                                        <Image
-                                            source={"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/melanoma/melanoma-skin-cancer-what-is-melanoma.jpg"}
-                                            style={{width:150,height:150,borderWidth:1,borderRadius:10}}
-                                        />
-
-                                        <View style={{width:"50%",height:120,justifyContent:"space-between"}}>
-                                            <Text style={{fontWeight:600,fontSize:13}}>Make sure your Image ...</Text>
-                                            <Text style={{fontWeight:400,fontSize:10}}>• As clean as possible - remove all noise</Text>
-                                            <Text style={{fontWeight:400,fontSize:10}} >• Lighting is simular to this image</Text>
-                                            <Text style={{fontWeight:400,fontSize:10}}>• Birthmark is on the spotlight with the same ration as in this image</Text>
-                                        </View>
-                                        </View>
-                                        <Pressable style={styles.uploadButton} onPress={handlePictureUpload}>
-                                            <Text style={{color:"white"}}>Upload</Text>
-                                        </Pressable>
-
-                                    </>
-                                    ):(
-                                        <View style={{flexDirection:"column",width:"100%",alignItems:"center",justifyContent:"space-between",height:220}}>
-                                            <Image
-                                                source={{uri: uploadedSpotPicture}}
-                                                style={{width:150,height:150,borderWidth:1,borderRadius:10,marginTop:20}}
-                                            />
-                                            <Pressable onPress={() => setUploadedSpotPicture(null)} style={{borderWidth:2,borderRadius:10,borderColor:"red"}}>
-                                                <MaterialCommunityIcons
-                                                    name="close"
-                                                    size={30}
-                                                    color="red"
-                                                    style={{padding:2}}
-                                                />
-                                            </Pressable>
-                                        </View>
-                                    )
-                                }
-                            </View>
-                        </View>
-                        
-
-                        <View style={{width:"100%",alignItems:"center",marginBottom:10,marginTop:30}}>
-                        {redDotLocation.x != -100 && uploadedSpotPicture != null ? (
-                            <Text style={{color:"green",fontWeight:300,fontSize:10,marginBottom:10}}>2/2 - All Steps Completed</Text> 
-                        ):(
-                            <Text style={{fontWeight:800,opacity:0.5,fontSize:10,marginBottom:10,color:"red"}}>Not All Steps Completed</Text>
-                        )}
-                        <View style={{width:"100%",borderWidth:1,marginBottom:30}} />
-                            <Pressable onPress={handleMoreBirthmark} style={styles.MoreSpotButton}>
-                                <Text style={{padding:15,color:"white",fontWeight:"700"}}>More birthmarks on my {orderedParts[orderedPartsCounter]}</Text>
-                            </Pressable>
-
-                            <Pressable onPress={handleNextSlug} style={styles.AllSpotButton}>
-                                <Text style={{padding:15,color:"black",fontWeight:"500"}}>Marked all birthmarks</Text>
-                            </Pressable>
+                        <View style={styles.colorExplainRow}>
+                            <View style={styles.greenDot} />
+                            <Text style={{position:"relative",marginLeft:10,fontWeight:500,opacity:0.8}}>Complete</Text>
                         </View>
                     </View>
-                </ScrollView>
-                {isFinished == true ? (
-                    <View style={{width:"100%",alignItems:"center"}}>
-                        <Pressable onPress={() => setProgress(progress + 0.1)} style={styles.startButton} >
-                            <Text style={{padding:10,fontWeight:"600",}}>Next</Text>
-                        </Pressable>
-                        <Pressable onPress={() => setProgress(progress - 0.1)} style={styles.backButton}>
-                            <Text style={{padding:10,fontWeight:"500",fontSize:13}}>Back</Text>
-                        </Pressable>
-                    </View>
-                ):null
-                }
+                </View>
+                <Pressable onPress={() => setProgress(progress + 0.1)} style={styles.startButton}>
+                    <Text style={{padding:10,fontWeight:"600"}}>Next</Text>
+                </Pressable>
             </View>
         )
     }
-
 
     return(
         <View style={styles.container}>
@@ -236,10 +88,11 @@ const MelanomaFullProcess = () => {
             </View>
             {progress == 0.1 ? 
             FirstScreen()
-            : progress >= 0.2 ? 
+            :
+            progress == 0.2 ? 
             SecoundScreen()
             :
-            null 
+            null
             }
         </View>
     )
@@ -360,7 +213,42 @@ const styles = StyleSheet.create({
         width:250,
         alignItems:"center",
         opacity:0.8
-    }
+    },
+    redDot: {
+        width: 10,
+        height: 10,
+        borderRadius: 100,
+        backgroundColor: 'gray',
+        position: 'relative',
+        borderWidth: 1,
+        borderColor: 'gray'
+    },
+    greenDot: {
+        width: 10,
+        height: 10,
+        borderRadius: 100,
+        backgroundColor: '#00FF00',
+        position: 'relative',
+        borderWidth: 1,
+        borderColor: 'gray'
+    },
+    colorExplain: {
+        flexDirection: 'column',
+        alignItems: 'left',
+        position: 'absolute',
+        marginTop: 10,
+        top: 140,
+        left: 0,
+    },
+    colorExplainRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'relative',
+        marginTop: 10,
+        top: 200,
+        left: 0,
+    },
 })
 
 export default MelanomaFullProcess

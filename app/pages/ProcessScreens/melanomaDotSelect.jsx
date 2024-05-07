@@ -4,7 +4,8 @@ export const dotSelectOnPart = ({
     bodyPart,
     redDotLocation,
     currentSlugMemory,
-    gender
+    gender,
+    highlighted
 }) => {
     return (
         <Svg preserveAspectRatio="xMidYMid meet" height={200} width={350} > 
@@ -265,9 +266,15 @@ export const dotSelectOnPart = ({
     
                 <Circle cx={redDotLocation.x} cy={redDotLocation.y} r="5" fill="red" />
                 {currentSlugMemory.map((data) =>
+                    highlighted != data.id ?
                     <>
                         <Circle cx={data.location.x} cy={data.location.y} r="5" fill="black" />
                         <Text fill="black" x={data.location.x+5}  y={data.location.y-5}>{data.id}</Text>
+                    </>
+                    :
+                    <>
+                        <Circle cx={data.location.x} cy={data.location.y} r="5" fill="red" />
+                        <Text fill="red" x={data.location.x+5}  y={data.location.y-5}>{data.id}</Text>
                     </>
                 )}
             
