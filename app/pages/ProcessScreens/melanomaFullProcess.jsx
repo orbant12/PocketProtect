@@ -5,11 +5,13 @@ import ProgressBar from 'react-native-progress/Bar';
 import { useAuth } from "../../context/UserAuthContext.jsx";
 import Body from "../../components/BodyParts/index.tsx";
 import { fetchAllMelanomaSpotData,} from '../../server';
+import doctorImage from "../../assets/doc.jpg"
+
 
 const MelanomaFullProcess = ({navigation,route}) => {
 
     const [progress, setProgress] = useState(0.1)
-    const [gender, setGender]= useState("female")
+    const [gender, setGender]= useState("")
     const [completedParts, setCompletedParts] = useState([])
     const {currentuser} = useAuth()
     const [completedAreaMarker, setCompletedAreaMarker] = useState([])
@@ -52,8 +54,12 @@ const MelanomaFullProcess = ({navigation,route}) => {
     function FirstScreen(){
         return(
             <View style={styles.startScreen}>
-                <View style={{marginTop:60}}>  
-                    <Text style={{marginBottom:10,fontWeight:"700",fontSize:20}}>About This Analasis you will need:</Text>
+                <View style={{marginTop:50,alignItems:"center"}}>  
+                    <Text style={{marginBottom:10,fontWeight:"700",fontSize:20,backgroundColor:"white"}}>About This Analasis you will need:</Text>
+                    <Image 
+                        source={doctorImage}
+                        style={{width:200,height:200,marginTop:-20,zIndex:-1}}
+                    />
                     <Text>• 15 minutes</Text>
                     <Text>• 15 minutes</Text>
                     <Text>• 15 minutes</Text>
@@ -63,6 +69,44 @@ const MelanomaFullProcess = ({navigation,route}) => {
                 <Pressable onPress={() => setProgress(progress + 0.1)} style={styles.startButton}>
                     <Text style={{padding:10,fontWeight:"600"}}>Start Now</Text>
                 </Pressable>
+            </View>
+        )
+    }
+
+    function ThirdScreen(){
+        return(
+            <View style={styles.startScreen}>
+                <View style={{marginTop:50,alignItems:"center"}}>  
+                    <Text style={{marginBottom:10,fontWeight:"700",fontSize:20,backgroundColor:"white"}}>What body type do you have ?</Text>
+                    
+                </View>
+                <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:50}}>
+                        <Pressable onPress={() => setGender("male")} style={gender == "male" ? styles.genderOptionButtonA : styles.genderOptionButton}>
+                            <MaterialCommunityIcons 
+                                name="weight"
+                                size={20}
+                                style={{marginBottom:1}}
+                            />
+                            <Text style={{fontWeight:"600",fontSize:17}}>Male</Text>
+                        </Pressable>
+                        <Pressable onPress={() => setGender("female")} style={gender == "female" ? styles.genderOptionButtonA : styles.genderOptionButton}>
+                            <MaterialCommunityIcons 
+                                name="heart"
+                                size={20}
+                                style={{marginBottom:1}}
+                            />
+                            <Text style={{fontWeight:"600",fontSize:17}}>Female</Text>
+                        </Pressable>
+                    </View>
+                    {gender != "" ? 
+                        <Pressable onPress={() => setProgress(progress + 0.1)} style={styles.startButton}>
+                            <Text style={{padding:10,fontWeight:"600"}}>Next</Text>
+                        </Pressable>
+                        :
+                        <Pressable style={styles.startButtonNA}>
+                            <Text style={{padding:10,fontWeight:"600"}}>Not Selected Yet</Text>
+                        </Pressable>
+                    }
             </View>
         )
     }
@@ -109,14 +153,10 @@ const MelanomaFullProcess = ({navigation,route}) => {
             <View style={styles.ProgressBar}>
                 <ProgressBar progress={progress} width={350} height={10} color={"magenta"}backgroundColor={"white"} />
             </View>
-            {progress == 0.1 ? 
-            FirstScreen()
-            :
-            progress == 0.2 ? 
-            SecoundScreen()
-            :
-            null
-            }
+            {progress == 0.1 ? FirstScreen():null}
+            {progress == 0.2 ? ThirdScreen():null}
+            {progress >= 0.3 ? SecoundScreen():null}
+
         </View>
     )
 }
@@ -135,7 +175,9 @@ const styles = StyleSheet.create({
         width:"100%",
         alignItems:"center",
         height:"100%",
-        justifyContent:"space-between"
+        justifyContent:"space-between",
+        backgroundColor:"white",
+        zIndex:-1
     },
     startButton:{
         borderWidth:1,
@@ -143,6 +185,14 @@ const styles = StyleSheet.create({
         width:"90%",
         borderRadius:20,
         marginBottom:10
+    },
+    startButtonNA:{
+        borderWidth:1,
+        alignItems:"center",
+        width:"90%",
+        borderRadius:20,
+        marginBottom:10,
+        opacity:0.3
     },
     backButton:{
         borderWidth:0,
@@ -272,6 +322,27 @@ const styles = StyleSheet.create({
         top: 200,
         left: 0,
     },
+    genderOptionButton:{
+        flexDirection:"column",
+        width:150,
+        alignItems:"center",
+        justifyContent:"center",
+        height:150,
+        borderWidth:1,
+        borderRadius:30,
+        padding:20,
+    },
+    genderOptionButtonA:{
+        flexDirection:"column",
+        width:150,
+        alignItems:"center",
+        justifyContent:"center",
+        height:150,
+        borderWidth:1,
+        borderRadius:30,
+        padding:20,
+        backgroundColor:"lightblue"
+    }
 })
 
 export default MelanomaFullProcess
