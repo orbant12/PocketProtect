@@ -3,7 +3,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import React, {useState,useEffect,useRef} from "react";
 import ProgressBar from 'react-native-progress/Bar';
 import { useAuth } from "../../context/UserAuthContext.jsx";
-import Body from "react-native-body-highlighter";
+import Body from "../../components/BodyParts/index.tsx";
 import { fetchAllMelanomaSpotData,} from '../../server';
 
 const MelanomaFullProcess = ({navigation,route}) => {

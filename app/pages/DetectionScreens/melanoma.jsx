@@ -16,12 +16,12 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 //CONTEXT
 import { useAuth } from '../../context/UserAuthContext';
 import CalendarNoLabel from '../../components/HomePage/HorizontalCallendarNoLabel';
-import Body from "react-native-body-highlighter";
+import Body from "../../components/BodyParts/index";
 
-import {bodyFemaleFront} from "/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/assets/bodyFemaleFront.ts"
-import {bodyFemaleBack} from "/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/assets/bodyFemaleBack.ts"
-import {bodyFront} from "/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/assets/bodyFront.ts"
-import {bodyBack} from "/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/assets/bodyBack.ts"
+import {bodyFemaleFront} from "../../components/BodyParts/bodyFemaleFront.ts"
+import {bodyFemaleBack} from "../../components/BodyParts/bodyFemaleBack.ts"
+import {bodyFront} from "../../components/BodyParts/bodyFront.ts"
+import {bodyBack} from "../../components/BodyParts/bodyBack.ts"
 
 import { fetchAllMelanomaSpotData, fetchUserData } from '../../server';
 
@@ -91,7 +91,7 @@ const AffectedSlugMap = () => {
     if(melanomaData != null){
         const affectedSlug = melanomaData.map((data, index) => {
             const spotSlug = data.melanomaDoc.spot[0]?.slug;
-            const intensity = data.risk >= 0.5 ? (data.risk >= 0.8 ? 1 : 3) : 2;
+            const intensity = data.risk >= 0.3 ? (data.risk >= 0.8 ? 1 : 3) : 2;
             return { slug: spotSlug, intensity, key: index }; // Adding a unique key
         });
         setAffectedSlugs(affectedSlug);
@@ -423,7 +423,7 @@ function MelanomaMonitoring(){
                 scale={1.1}
                 //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
                 colors={['#FF0000', '#A6FF9B','#FFA8A8']}
-                onBodyPartPress={(slug) => navigation.navigate("SlugAnalasis", { data: slug })}
+                onBodyPartPress={(slug) => navigation.navigate("SlugAnalasis", { data: slug,gender:userData.gender })}
                 zoomOnPress={true}
             />
 
