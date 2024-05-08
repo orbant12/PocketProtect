@@ -21,7 +21,7 @@ const AddDetection = ({navigation}) => {
 
     function handleNavigation(id){
         if (id == "melanoma"){
-            navigation.navigate("FullMelanomaProcess",{data:null})
+            navigation.navigate("FullMelanomaProcess",{sessionMemory:[]})
         }
     }
 

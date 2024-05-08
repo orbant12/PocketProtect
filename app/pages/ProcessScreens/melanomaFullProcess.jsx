@@ -4,27 +4,50 @@ import React, {useState,useEffect,useRef} from "react";
 import ProgressBar from 'react-native-progress/Bar';
 import { useAuth } from "../../context/UserAuthContext.jsx";
 import Body from "react-native-body-highlighter";
-import { fetchAllMelanomaSpotData, fetchUserData } from '../../server';
+import { fetchAllMelanomaSpotData,} from '../../server';
 
-const MelanomaFullProcess = ({navigation}) => {
+const MelanomaFullProcess = ({navigation,route}) => {
 
     const [progress, setProgress] = useState(0.1)
     const [gender, setGender]= useState("female")
-    const [ affectedSlugs,setAffectedSlugs ] = useState([])
-    const [completedParts, setCompletedParts ] = useState([])
+    const [completedParts, setCompletedParts] = useState([])
     const {currentuser} = useAuth()
-    
+    const [completedAreaMarker, setCompletedAreaMarker] = useState([])
+    const [bodyProgress, setBodyProgress] = useState(0)
+    const sessionMemory = route.params.sessionMemory
 
-    useEffect(() => {
+
+    const completedArea = async (sessionMemory) => {
+        setCompletedAreaMarker([])
+        const response = sessionMemory.map((data,index) =>{
+                return { slug: data.slug, intensity: 0, key: index }
+        })
+        setCompletedAreaMarker(response)
+        setBodyProgress(response.length / 13)
+    }
+    
+    const fetchAllMelanoma = async () => {
         if(currentuser){
-            const allMelanomaData = fetchAllMelanomaSpotData({
+            const allMelanomaData = await fetchAllMelanomaSpotData({
                 userId: currentuser.uid,
                 gender
             })
             setCompletedParts(allMelanomaData)
-            console.log(allMelanomaData)
+            completedArea(sessionMemory);
         }
+    }
+
+    useEffect(() => {
+        fetchAllMelanoma()
+        completedArea(sessionMemory);
     }, []);
+
+
+
+    useEffect(() => {
+        completedArea(sessionMemory);
+    }, [sessionMemory,]); 
+
 
     function FirstScreen(){
         return(
@@ -49,15 +72,15 @@ const MelanomaFullProcess = ({navigation}) => {
             <View style={styles.startScreen}>
                 <View style={{marginTop:60,alignItems:"center"}}>  
                     <Text style={{marginBottom:10,fontWeight:"700",fontSize:20}}>Press the body part to monitor:</Text>
-                    <ProgressBar progress={progress - 1} width={150} height={10} color={"lightgreen"}backgroundColor={"white"} />
+                    <ProgressBar progress={bodyProgress} width={150} height={10} color={"lightgreen"}backgroundColor={"white"} />
                     <Body
-                        data={affectedSlugs}
+                        data={completedAreaMarker}
                         gender={gender}
                         side={"front"}
                         scale={1.1}
                         //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
-                        colors={['#FF0000', '#A6FF9B','#FFA8A8']}
-                        onBodyPartPress={(slug) => navigation.navigate("MelanomaProcessSingleSlug", { data: slug, gender: gender })}
+                        colors={['#A6FF9B']}
+                        onBodyPartPress={(slug) => navigation.navigate("MelanomaProcessSingleSlug", { data: slug, gender: gender, userId: currentuser.uid, sessionMemory:sessionMemory })}
                         zoomOnPress={true}
                     />
 
@@ -73,7 +96,7 @@ const MelanomaFullProcess = ({navigation}) => {
                         </View>
                     </View>
                 </View>
-                <Pressable onPress={() => setProgress(progress + 0.1)} style={styles.startButton}>
+                <Pressable onPress={() => setProgress(progress + 0.1)} style={bodyProgress == 1 ? styles.startButton : {opacity:0.2,borderWidth:1,alignItems:"center",width:"90%",borderRadius:20,marginBottom:10}}>
                     <Text style={{padding:10,fontWeight:"600"}}>Next</Text>
                 </Pressable>
             </View>

@@ -1,9 +1,7 @@
-import { setDoc , doc , collection,getDoc,getDocs} from "firebase/firestore"
+import { setDoc , doc , collection,getDoc,getDocs,updateDoc} from "firebase/firestore"
 import { db,storage } from './firebase.js';
 import { ref,  getDownloadURL, uploadBytes } from "firebase/storage";
 
-
- 
 
 //<===> Melanoma <====>
 
@@ -23,6 +21,7 @@ export const melanomaSpotUpload = async ({
             gender: gender,
             melanomaPictureUrl: melanomaPictureUrl,
             storage_location: storageLocation,
+            risk: 0.0,
         });
         return true;
     } catch (error) {
@@ -44,8 +43,6 @@ export const melanomaUploadToStorage = async ({
         console.log(error);
     }
 }
-
-
 
 
 
@@ -88,6 +85,28 @@ export const fetchAllMelanomaSpotData = async ({
     }
 }
 
+export const fetchSlugMelanomaData = async ({
+    userId,
+    gender,
+    slug,
+}) => {
+    try{
+        const ref = collection(db, "users", userId, "Melanoma");
+        const snapshot = await getDocs(ref);
+        //ONLY PUT IF doc.data().gender == gender
+        let melanomaData = [];
+        snapshot.forEach((doc) => {
+            if(doc.data().gender == gender && doc.data().melanomaDoc.spot[0].slug == slug){
+                melanomaData.push(doc.data());
+            }
+        }
+        );
+        return melanomaData;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 export const fetchUserData = async ({
     userId,
 }) => {
@@ -103,3 +122,5 @@ export const fetchUserData = async ({
         console.log(error);
     }
 }
+
+

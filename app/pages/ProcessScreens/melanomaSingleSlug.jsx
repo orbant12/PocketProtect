@@ -1,10 +1,10 @@
-import { View,Text,StyleSheet,Pressable,Animated,Image,ScrollView } from "react-native"
+import { View,Text,StyleSheet,Pressable,Animated,Image,ScrollView,ActivityIndicator } from "react-native"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import React, {useState,useEffect,useRef} from "react";
 import * as ImagePicker from 'expo-image-picker';
 import ProgressBar from 'react-native-progress/Bar';
 import { dotSelectOnPart } from './melanomaDotSelect.jsx'
-
+import { fetchSlugMelanomaData ,melanomaSpotUpload,melanomaUploadToStorage } from '../../server';
 
 const MelanomaSingleSlug = ({route,navigation}) => {
 
@@ -12,11 +12,13 @@ const MelanomaSingleSlug = ({route,navigation}) => {
     const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
     const bodyPart = route.params.data
     const gender = route.params.gender
-
+    const sessionMemory = route.params.sessionMemory
+    const currentuserUID = route.params.userId
     const [uploadedSpotPicture, setUploadedSpotPicture] = useState(null);
     const [currentSlugMemory, setCurrentSlugMemory ] = useState([])
     const [highlighted, setHighlighted] = useState()
-
+    const [markedAsComplete ,setMarkedAsComplete] = useState(false)
+    const [isScreenLoading,setIsScreenLoading ]  = useState(false)
     const scrollViewRef = useRef(null);
 
     const handlePartClick = (e) => {
@@ -24,7 +26,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
         setRedDotLocation({ x: locationX, y: locationY })    
     }
 
-        const handlePictureUpload = async() => {
+    const handlePictureUpload = async() => {
         //UPLOAD PICTURE OR OPEN CAMERA
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
@@ -38,34 +40,119 @@ const MelanomaSingleSlug = ({route,navigation}) => {
         }
     };  
 
-    const BirthmarkIdGenerator = () => {
-        return `Birthmark#${Math.floor(Math.random() * 100)}`
-    }
-
-
-    const handleMoreBirthmark = () => {
+    const handleMoreBirthmark = async () => {
+        const BirthmarkIdGenerator = () => {
+            return `Birthmark#${Math.floor(Math.random() * 100)}`
+        }
         const ID =  BirthmarkIdGenerator()
-        setCurrentSlugMemory([...currentSlugMemory,
-            {
-                location: redDotLocation,
-                id: ID,
-                picture: uploadedSpotPicture,
+        const storageLocation = `users/${currentuserUID}/melanomaImages/${ID}`;
+        setIsScreenLoading(true)
+        try{
+            const uploadToStorage = async(uri) => {
+                const blob = await new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.onload = function () {
+                        resolve(xhr.response);
+                    };
+                    xhr.onerror = function (e) {
+                        console.log(e);
+                        reject(new TypeError("Network request failed"));
+                    };
+                    xhr.responseType = "blob";
+                    xhr.open("GET", uri, true);
+                    xhr.send(null);
+                });
+                const response = await melanomaUploadToStorage({
+                    melanomaPicFile: blob,
+                    userId: currentuserUID,
+                    birthmarkId: ID,
+                    storageLocation: storageLocation,
+                })
+                return response;
             }
-        ])
-        scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });
-        setHighlighted(ID);
-        setUploadedSpotPicture(null)
+
+            const pictureUrl = await uploadToStorage(uploadedSpotPicture);
+
+            const res = await melanomaSpotUpload({
+                userId: currentuserUID,
+                melanomaDocument: {"spot": [bodyPart], "location": redDotLocation},
+                gender: gender,
+                melanomaPictureUrl: pictureUrl,
+                birthmarkId: ID,
+                storageLocation: storageLocation,
+            })
+            if (res == true) {
+                setIsScreenLoading(false)
+                setRedDotLocation({ x: -100, y: 10 });
+                scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });
+                setHighlighted(ID);
+                setUploadedSpotPicture(null)
+                setCurrentSlugMemory([...currentSlugMemory,
+                    {
+                        location: redDotLocation,
+                        id: ID,
+                        picture: pictureUrl,
+                    }
+                ])
+            }
+        } catch {
+            alert("Something went wrong !")
+        }
     }
 
-    const handleMarkeAsComplete = () => {
-        //UPLOAD
+
+    const handleMarkeAsComplete = (action) => {
+        let updatedSessionMemory;
+
+        if (action === "add" || action === "remove") {
+            updatedSessionMemory = [...sessionMemory];
+
+            if (action === "add") {
+                updatedSessionMemory.push({ slug: bodyPart.slug });
+            } else if (action === "remove") {
+                updatedSessionMemory = updatedSessionMemory.filter(item => item.slug !== bodyPart.slug);
+            }
+
+            navigation.navigate("FullMelanomaProcess", { sessionMemory: updatedSessionMemory });
+        }
     }
+    
+
+    const fetchSlugSpots = async () =>{
+        const response = await fetchSlugMelanomaData({
+            userId: currentuserUID,
+            gender,
+            slug: bodyPart.slug
+        })
+
+        const format = response.map((data) =>{
+            return {
+                location: data.melanomaDoc.location,
+                id: data.melanomaId,
+                picture: data.melanomaPictureUrl
+            }
+        })
+
+        setCurrentSlugMemory(format)
+    }
+
+    const isThisPartCompleted = async (sessionMemory) => {
+        const isCompleted = sessionMemory.some((session) => session.slug === bodyPart.slug);
+        setMarkedAsComplete(!isCompleted);
+    }
+
+    useEffect(() => {
+        fetchSlugSpots()
+        isThisPartCompleted(sessionMemory)
+    },[])
 
 
     function SecoundScreen(){
         return(
+            <>
+
             <View style={styles.startScreen}>
-                <ScrollView ref={scrollViewRef} style={{marginTop:30}}>  
+                <ScrollView ref={scrollViewRef} style={{marginTop:30}} showsVerticalScrollIndicator={false}>  
                     <View 
                         style={{
                             width:"100%",
@@ -147,7 +234,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                                     <>
                                         <View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:300,borderWidth:0.8,borderColor:"lightgray",padding:10,marginTop:10,borderRadius:20}}>
                                             <Image
-                                                source={{uri:`${data.picture}`}}
+                                                source={{uri: data.picture }}
                                                 style={{width:75,height:75,borderWidth:1,borderRadius:10,}}
                                             />
                                             <Text>{data.id}</Text>
@@ -176,25 +263,40 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                         
 
                         <View style={{width:"100%",alignItems:"center",marginBottom:10,marginTop:30}}>
-                
-                        {redDotLocation.x != -100 && uploadedSpotPicture != null ? (
-                            <Text style={{color:"green",fontWeight:300,fontSize:10,marginBottom:20}}>2/2 - All Steps Completed</Text> 
-                        ):(
-                            <Text style={{fontWeight:800,opacity:0.5,fontSize:10,marginBottom:20,color:"red"}}>Not All Steps Completed</Text>
-                        )}
-                        
-                            <Pressable onPress={handleMoreBirthmark} style={styles.MoreSpotButton}>
-                                <Text style={{padding:15,color:"white",fontWeight:"700"}}>More birthmarks on my {bodyPart.slug}</Text>
-                            </Pressable>
 
-                            <Pressable onPress={handleMarkeAsComplete} style={styles.AllSpotButton}>
-                                <Text style={{padding:15,color:"black",fontWeight:"500"}}>Marked all birthmarks</Text>
+                            <Pressable onPress={handleMoreBirthmark} style={redDotLocation.x != -100 && uploadedSpotPicture != null ? styles.MoreSpotButton : {opacity:0.3,backgroundColor:"magenta",borderRadius:10,marginBottom:15,marginTop:20,width:150,alignItems:"center",borderWidth:1}}>
+                                <Text style={{padding:15,color:"white",fontWeight:"700"}}>Add</Text>
                             </Pressable>
+                
+                            {redDotLocation.x != -100 && uploadedSpotPicture != null ? (
+                                <Text style={{color:"green",fontWeight:300,fontSize:10,marginBottom:20}}>2/2 - All Steps Completed</Text> 
+                            ):(
+                                <Text style={{fontWeight:800,opacity:0.5,fontSize:10,marginBottom:20,color:"red"}}>Not All Steps Completed</Text>
+                            )}
+                        
+                            <View style={{width:"100%",borderWidth:0.5,marginBottom:20}} />
+                            {markedAsComplete ?
+                                <Pressable onPress={() => handleMarkeAsComplete("add")} style={styles.AllSpotButton}>
+                                    <Text style={{padding:15,color:"white",fontWeight:"700"}}>Mark as complete</Text>
+                                </Pressable>
+                                :
+                                <Pressable onPress={() => handleMarkeAsComplete("remove")} style={styles.RallSpotButton}>
+                                    <Text style={{padding:15,color:"white",fontWeight:"700"}}>Remove the complete mark</Text>
+                                </Pressable>
+                            }
                         </View>
                     </View>
                 </ScrollView>
 
             </View>
+            {isScreenLoading ? 
+            <View style={styles.loadingModal}>
+                <ActivityIndicator size="large" color="white" />
+            </View>
+            :
+            null
+            }
+            </>
         )
     }
 
@@ -313,18 +415,35 @@ const styles = StyleSheet.create({
     MoreSpotButton:{
         backgroundColor:"magenta",
         borderRadius:10,
-        marginBottom:20,
-        width:250,
+        marginBottom:15,
+        marginTop:20,
+        width:150,
         alignItems:"center",
         borderWidth:1
     },
     AllSpotButton:{
-        backgroundColor:"white",
+        backgroundColor:"green",
+        borderRadius:10,
+        borderWidth:0.5,
+        width:250,
+        alignItems:"center",
+        opacity:0.7
+    },
+    RallSpotButton:{
+        backgroundColor:"red",
         borderRadius:10,
         borderWidth:1,
         width:250,
         alignItems:"center",
         opacity:0.8
+    },
+    loadingModal:{
+        alignItems:"center",
+        justifyContent:"center",
+        position:"absolute",
+        width:"100%",
+        height:"100%",
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
     }
 })
 
