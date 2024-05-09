@@ -296,6 +296,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
             :
             null
             }
+            
             </>
         )
     }
@@ -444,7 +445,8 @@ const styles = StyleSheet.create({
         width:"100%",
         height:"100%",
         backgroundColor: "rgba(0, 0, 0, 0.6)",
-    }
+    },
+
 })
 
 export default MelanomaSingleSlug

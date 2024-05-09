@@ -24,149 +24,151 @@ const [selectedDate, setSelectedDate] = useState(format);
 //<********************FUNCTIONS************************>
 
 return (
-<ScrollView style={styles.container}>
-    <Calendar onSelectDate={setSelectedDate} selected={selectedDate} />
-    <StatusBar style="auto" />
+<>
 
-    <View style={styles.personalScoreSection}>
-        <View style={styles.scoreTitle}>
-            <View style={styles.scoreTitleLeft}>
-                <Text style={styles.titleTag}>Artifical Inteligence</Text>
-                <Text style={{fontSize:20,fontWeight:'bold'}}>Personal Score</Text>
-                <Text style={{fontSize:15}}>Your personal score is 0.0</Text>   
-            </View>
-            <MaterialCommunityIcons
-                name="information-outline"
-                size={30}
-                color="black"
-                style={{marginLeft:10}}
-            />
-        </View>
-        <View style={styles.scoreCircle}>
-            <Text style={{fontSize:50,fontWeight:'bold'}}>17</Text>
-            <Text style={{fontSize:15,fontWeight:700}}>out of 100</Text>
+    <ScrollView style={styles.container}>
+        <Calendar onSelectDate={setSelectedDate} selected={selectedDate} />
+        <StatusBar style="auto" />
 
-        </View>
-
-        <View style={styles.ResultsScoreSection}>
-            <View style={styles.ResultsScoreTitleRow}>
-                <Text style={{fontSize:18,fontWeight:700}}>Results</Text>
-                <Pressable onPress={() => navigation.navigate("Assistant")}>
-                    <Text style={{fontSize:13,fontWeight:500,opacity:0.7}}>My Data</Text>
-                </Pressable>
-            </View>
-            <ScrollView horizontal style={{paddingBottom:20}} >
-                <View style={styles.ResultBox}>
-                    <MaterialCommunityIcons
-                        name="heart-pulse"
-                        size={50}
-                        color="black"
-                    />
-                    <Text style={styles.BoxPoint}>+5 points</Text>
-                    <Text style={styles.BoxTitle}>Balanced Blood Work</Text>
-
-                    <MaterialCommunityIcons
-                        name="information-outline"
-                        size={30}
-                        color="black"
-                        style={{position:'absolute',top:0,right:0}}
-                    />
-                </View>
-
-                <View style={styles.ResultBox}>
-                    <MaterialCommunityIcons
-                        name="heart-pulse"
-                        size={50}
-                        color="black"
-                    />
-                    <Text style={styles.BoxPoint}>+5 points</Text>
-                    <Text style={styles.BoxTitle}>Balanced Blood Work</Text>
-
-
-                    <MaterialCommunityIcons
-                        name="information-outline"
-                        size={30}
-                        color="black"
-                        style={{position:'absolute',top:0,right:0}}
-                    />
-                </View>
-
-                <View style={styles.ResultBox}>
-                    <MaterialCommunityIcons
-                        name="heart-pulse"
-                        size={50}
-                        color="black"
-                    />
-                    <Text style={styles.BoxPoint}>+5 points</Text>
-                    <Text style={styles.BoxTitle}>Balanced Blood Work</Text>
-
-
-                    <MaterialCommunityIcons
-                        name="information-outline"
-                        size={30}
-                        color="black"
-                        style={{position:'absolute',top:0,right:0}}
-                    />
-                </View>
-
-                <View style={styles.ResultBox}>
-                    <MaterialCommunityIcons
-                        name="heart-pulse"
-                        size={50}
-                        color="black"
-                    />
-                    <Text style={styles.BoxPoint}>+5 points</Text>
-                    <Text style={styles.BoxTitle}>Balanced Blood Work</Text>
-
-
-                    <MaterialCommunityIcons
-                        name="information-outline"
-                        size={30}
-                        color="black"
-                        style={{position:'absolute',top:0,right:0}}
-                    />
-                </View>
-            </ScrollView>
-        </View>
-
-        <View style={styles.DetectionSection}>
-            <View style={styles.ResultsScoreTitleRow}>
+        <View style={styles.personalScoreSection}>
             <View style={styles.scoreTitle}>
-            <View style={styles.scoreTitleLeft}>
-                <Text style={styles.titleTag}>Artifical Inteligence</Text>
-                <Text style={{fontSize:20,fontWeight:'bold'}}>Diases Detection</Text>
-                <Text style={{fontSize:15}}>Your personal score is 0.0</Text>   
+                <View style={styles.scoreTitleLeft}>
+                    <Text style={styles.titleTag}>Artifical Inteligence</Text>
+                    <Text style={{fontSize:20,fontWeight:'bold'}}>Personal Score</Text>
+                    <Text style={{fontSize:15}}>Your personal score is 0.0</Text>   
+                </View>
+                <MaterialCommunityIcons
+                    name="information-outline"
+                    size={30}
+                    color="black"
+                    style={{marginLeft:10}}
+                />
             </View>
-            <MaterialCommunityIcons
-                name="information-outline"
-                size={30}
-                color="black"
-                style={{marginLeft:10}}
-            />
-        </View>
+            <View style={styles.scoreCircle}>
+                <Text style={{fontSize:50,fontWeight:'bold'}}>17</Text>
+                <Text style={{fontSize:15,fontWeight:700}}>out of 100</Text>
+
             </View>
-                <View style={styles.DetectBox}>
-                    <MaterialCommunityIcons
-                        name="heart-pulse"
-                        size={50}
-                        color="black"
-                    />
-                    <Text style={styles.BoxPoint}>+5 points</Text>
-                    <Text style={styles.BoxTitle}>Balanced Blood Work</Text>
 
-                    <MaterialCommunityIcons
-                        name="information-outline"
-                        size={30}
-                        color="black"
-                        style={{position:'absolute',top:0,right:0}}
-                    />
-                </View>     
+            <View style={styles.ResultsScoreSection}>
+                <View style={styles.ResultsScoreTitleRow}>
+                    <Text style={{fontSize:18,fontWeight:700}}>Results</Text>
+                    <Pressable onPress={() => navigation.navigate("Assistant")}>
+                        <Text style={{fontSize:13,fontWeight:500,opacity:0.7}}>My Data</Text>
+                    </Pressable>
+                </View>
+                <ScrollView horizontal style={{paddingBottom:20}} >
+                    <View style={styles.ResultBox}>
+                        <MaterialCommunityIcons
+                            name="heart-pulse"
+                            size={50}
+                            color="black"
+                        />
+                        <Text style={styles.BoxPoint}>+5 points</Text>
+                        <Text style={styles.BoxTitle}>Balanced Blood Work</Text>
+
+                        <MaterialCommunityIcons
+                            name="information-outline"
+                            size={30}
+                            color="black"
+                            style={{position:'absolute',top:0,right:0}}
+                        />
+                    </View>
+
+                    <View style={styles.ResultBox}>
+                        <MaterialCommunityIcons
+                            name="heart-pulse"
+                            size={50}
+                            color="black"
+                        />
+                        <Text style={styles.BoxPoint}>+5 points</Text>
+                        <Text style={styles.BoxTitle}>Balanced Blood Work</Text>
+
+
+                        <MaterialCommunityIcons
+                            name="information-outline"
+                            size={30}
+                            color="black"
+                            style={{position:'absolute',top:0,right:0}}
+                        />
+                    </View>
+
+                    <View style={styles.ResultBox}>
+                        <MaterialCommunityIcons
+                            name="heart-pulse"
+                            size={50}
+                            color="black"
+                        />
+                        <Text style={styles.BoxPoint}>+5 points</Text>
+                        <Text style={styles.BoxTitle}>Balanced Blood Work</Text>
+
+
+                        <MaterialCommunityIcons
+                            name="information-outline"
+                            size={30}
+                            color="black"
+                            style={{position:'absolute',top:0,right:0}}
+                        />
+                    </View>
+
+                    <View style={styles.ResultBox}>
+                        <MaterialCommunityIcons
+                            name="heart-pulse"
+                            size={50}
+                            color="black"
+                        />
+                        <Text style={styles.BoxPoint}>+5 points</Text>
+                        <Text style={styles.BoxTitle}>Balanced Blood Work</Text>
+
+
+                        <MaterialCommunityIcons
+                            name="information-outline"
+                            size={30}
+                            color="black"
+                            style={{position:'absolute',top:0,right:0}}
+                        />
+                    </View>
+                </ScrollView>
+            </View>
+
+            <View style={styles.DetectionSection}>
+                <View style={styles.ResultsScoreTitleRow}>
+                <View style={styles.scoreTitle}>
+                <View style={styles.scoreTitleLeft}>
+                    <Text style={styles.titleTag}>Artifical Inteligence</Text>
+                    <Text style={{fontSize:20,fontWeight:'bold'}}>Diases Detection</Text>
+                    <Text style={{fontSize:15}}>Your personal score is 0.0</Text>   
+                </View>
+                <MaterialCommunityIcons
+                    name="information-outline"
+                    size={30}
+                    color="black"
+                    style={{marginLeft:10}}
+                />
+            </View>
+                </View>
+                    <View style={styles.DetectBox}>
+                        <MaterialCommunityIcons
+                            name="heart-pulse"
+                            size={50}
+                            color="black"
+                        />
+                        <Text style={styles.BoxPoint}>+5 points</Text>
+                        <Text style={styles.BoxTitle}>Balanced Blood Work</Text>
+
+                        <MaterialCommunityIcons
+                            name="information-outline"
+                            size={30}
+                            color="black"
+                            style={{position:'absolute',top:0,right:0}}
+                        />
+                    </View>     
+            </View>
+
         </View>
 
-    </View>
-
-</ScrollView>
-
+    </ScrollView>
+</>
 );
 }
 

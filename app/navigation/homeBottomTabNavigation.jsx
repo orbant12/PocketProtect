@@ -65,21 +65,12 @@ return (
       {/* ASSISTANT NAVIGATION */}
       <Tab.Screen
         name={'Detection'}
-        component={isExplore ? HealthMesure : ForYouPage}
+        component={HealthMesure}
         options={{
-          headerShown: true,
+          headerShown: false,
           headerTransparent: true,
           header : () => (
-          <>
-            <View style={{marginTop:60,marginLeft:75,marginRight:"auto",flexDirection:"row",justifyContent:"space-evenly",alignItems:"center",width:"60%",zIndex:5}}>
-              <TouchableOpacity onPress={() => setIsExplore(true)} style={isExplore? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
-                <Text style={isExplore?{fontWeight:"800",color:"black"}:{opacity:0.4,fontWeight:800,color:"black"}}>Health Score</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setIsExplore(false)} style={!isExplore? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
-                <Text style={isExplore?{opacity:0.4,fontWeight:800,color:"black"}:{fontWeight:"800",color:"black"}}>Melanoma</Text>
-              </TouchableOpacity>
-            </View>
-          </>
+            <></>
           ),
           tabBarIcon: ({color}) => (
             <Entypo name={'folder'} size={25} color={color} />

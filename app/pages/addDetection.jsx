@@ -1,6 +1,8 @@
 
 import { View,Text,StyleSheet,FlatList,ScrollView, Pressable } from "react-native"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import { FontAwesome6 } from '@expo/vector-icons';
 
 const AddDetection = ({navigation}) => {
 
@@ -9,12 +11,41 @@ const AddDetection = ({navigation}) => {
             id: "melanoma",
             title: "Melanoma Monitoring",
             desc: "Scan all of your birthmark and let us keep you protected 24/7",
-            state: "ready"
+            state: "ready",
+            icon: "magnifying-glass-location"
         },
         {
             title: "Skin Cancer",
             desc: "Coming early 2025 ! - Not Avalible Yet",
-            state: "soon"
+            state: "soon",
+            icon: "magnifying-glass-location"
+        },
+        {
+            title: "Health Assesment",
+            desc: "Coming early 2025 ! - Not Avalible Yet",
+            state: "soon",
+            icon: "magnifying-glass-location"
+        },
+        {
+            title: "Longevity Prediction",
+            desc: "Coming early 2025 ! - Not Avalible Yet",
+            state: "soon",
+            icon: "magnifying-glass-location"
+        }
+    ]
+
+    const OverallHealthData = [
+        {
+            title: "Health Assesment",
+            desc: "Coming early 2025 ! - Not Avalible Yet",
+            state: "soon",
+            icon: "magnifying-glass-location"
+        },
+        {
+            title: "Longevity Prediction",
+            desc: "Coming early 2025 ! - Not Avalible Yet",
+            state: "soon",
+            icon: "magnifying-glass-location"
         }
     ]
 
@@ -35,6 +66,21 @@ const AddDetection = ({navigation}) => {
                 </View>
                 <View style={styles.FlatlistStyle}>
                     {CancerDetectionData.map((data) => (
+                        <DetectionBox item={data} />
+                    ))}
+                </View>
+            </View>
+        )
+    }
+
+    function OverallHealthSection(){
+        return(
+            <View style={{width:"100%",alignItems:"center",justifyContent:"center"}}>
+                <View style={styles.FlatTitleStyle}>
+                    <Text style={styles.FlatTitleStyleText}>Overall Health</Text>
+                </View>
+                <View style={styles.FlatlistStyle}>
+                    {OverallHealthData.map((data) => (
                         <DetectionBox item={data} />
                     ))}
                 </View>
@@ -77,12 +123,8 @@ const AddDetection = ({navigation}) => {
     }){
         return(
             <Pressable onPress={() => handleNavigation(item.id)} style={item.state == "soon" ? styles.DetBoxSoon : styles.DetBox }>
-                <View    style={{padding:10,borderWidth:0,borderRadius:25,backgroundColor:"orange"}}>
-                    <MaterialCommunityIcons 
-                        size={30}
-                        name="heart-pulse"
-                        color={"black"}
-                    />
+                <View    style={{padding:10,borderWidth:0,borderRadius:25,backgroundColor:"white"}}>
+                    <FontAwesome6 name={item.icon} size={24} color="black" />
                 </View>
                 <View>
                     <Text style={{marginLeft:10,fontWeight:600}} >{item.title}</Text>
@@ -95,6 +137,7 @@ const AddDetection = ({navigation}) => {
     return(
         <View style={styles.container}>
             <ScrollView style={{width:"100%"}}>
+                {OverallHealthSection()}
                 {CancerSection()}
                 {DiabetesSection()}
                 {BloodSection()}
@@ -138,7 +181,7 @@ const styles = StyleSheet.create({
         borderColor:"gray"
     },
     DetBoxSoon:{
-        opacity:0.6,
+        opacity:0.3,
         borderWidth:1,
         width:"90%",
         flexDirection:"row",
