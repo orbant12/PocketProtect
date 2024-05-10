@@ -7,6 +7,10 @@ import Body from "../../components/BodyParts/index.tsx";
 import { fetchAllMelanomaSpotData,} from '../../server';
 import doctorImage from "../../assets/doc.jpg"
 
+import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import "react-native-gesture-handler"
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 
 
 const MelanomaFullProcess = ({navigation,route}) => {
@@ -21,11 +25,18 @@ const MelanomaFullProcess = ({navigation,route}) => {
     const sessionMemory = route.params.sessionMemory
     const [isModalUp, setIsModalUp] = useState(false)
     const [currentSide, setCurrentSide] = useState("front")
+     //SKIN BURN
     const [sunBurn, setSunBurn] = useState("never")
     const [haveBeenBurned, setHaveBeenBurned] = useState(false)
     const [selectedBurnSide, setSelectedBurnSide] = useState("front")
     const [selectedBurnSlug, setSelectedBurnSlug] = useState("Not Selected")
+    //SKIN TYPE
     const [skinType, setSkinType] = useState(null)
+    //PARENT DIAGNOSED
+    const [ diagnosedFamilyMember,setDiagnosedFamilyMember] = useState("")
+
+    const bottomSheetRef = useRef(null);
+    const snapPoints = ['90%'];
 
 
     const completedArea = async (sessionMemory) => {
@@ -57,11 +68,41 @@ const MelanomaFullProcess = ({navigation,route}) => {
         completedArea(sessionMemory);
     }, []);
 
-
-
     useEffect(() => {
         completedArea(sessionMemory);
     }, [sessionMemory,]); 
+
+    const handleOpenBottomSheet = (state) => {
+        if(state == "open"){
+            bottomSheetRef.current.present();
+        } else if (state == "hide"){
+            bottomSheetRef.current.close();
+            setProgress(progress + 0.1)
+        }
+    }
+
+    const familyMemberOptions = [
+        {
+            member:"father",
+        },
+        {
+            member:"grandfather",
+        },
+        {
+            member:"mother",
+        },
+        {
+            member:"sibling",
+        },
+        {
+            member:"grandmother",
+        },
+        {
+            member:"other",
+        }
+    ]
+
+    //COMPONENETS
 
     function FirstScreen(){
         return(
@@ -123,7 +164,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
         )
     }
 
-    function EmptyScreen(){
+    function SkinBurnScreen(){
         return(
             <>
             {!haveBeenBurned ? 
@@ -178,12 +219,12 @@ const MelanomaFullProcess = ({navigation,route}) => {
                             </Pressable>
                             :
                             sunBurn == "stage2" ? 
-                            <Pressable style={styles.startButton}>
+                            <Pressable onPress={() => setHaveBeenBurned(!haveBeenBurned)} style={styles.startButton}>
                                 <Text style={{padding:10,fontWeight:"600"}}>Where ?</Text>
                             </Pressable>
                             :
                             sunBurn == "stage3" ? 
-                            <Pressable style={styles.startButton}>
+                            <Pressable onPress={() => setHaveBeenBurned(!haveBeenBurned)} style={styles.startButton}>
                                 <Text style={{padding:10,fontWeight:"600"}}>Where ?</Text>
                             </Pressable>
                             :
@@ -266,39 +307,49 @@ const MelanomaFullProcess = ({navigation,route}) => {
 
     function FamilyTreeScreen(){
         return(
-            <View style={styles.startScreen}>
-                <View style={{marginTop:50,alignItems:"center"}}>  
-                    <Text style={{marginBottom:10,fontWeight:"700",fontSize:20,backgroundColor:"white",textAlign:"center"}}>Has anyone in your family been diagnosed with <Text style={{color:"lightblue"}}>Melanoma </Text> before ?</Text>
-                    
-                </View>
-                <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:50}}>
-                        <Pressable onPress={() => setSunBurn ("never")} style={sunBurn == "never" ? styles.genderOptionButtonA : styles.genderOptionButton}>
-                            <MaterialCommunityIcons 
-                                name="weight"
-                                size={20}
-                                style={{marginBottom:1}}
-                            />
-                            <Text style={{fontWeight:"600",fontSize:17}}>Yes</Text>
-                        </Pressable>
-                        <Pressable onPress={() => setSunBurn ("stage1")} style={familyMelanoma  == "stage1" ? styles.genderOptionButtonA : styles.genderOptionButton}>
-                            <MaterialCommunityIcons 
-                                name="heart"
-                                size={20}
-                                style={{marginBottom:1}}
-                            />
-                            <Text style={{fontWeight:"600",fontSize:17}}>No</Text>
-                        </Pressable>
+        <GestureHandlerRootView style={{ flex: 1,zIndex:-1,width:"100%" }}>
+            <BottomSheetModalProvider>
+                <View style={styles.startScreen}>
+                    <View style={{marginTop:150,alignItems:"center",backgroundColor:"lightblue",padding:30,borderRadius:10}}>  
+                        <Text style={{marginBottom:10,fontWeight:"700",fontSize:20,textAlign:"center",}}>Has anyone in your family been diagnosed with <Text style={{color:"white"}}>Melanoma </Text> before ?</Text>
                     </View>
-                    {gender != "" ? 
-                        <Pressable onPress={() => setProgress(0.6)} style={styles.startButton}>
-                            <Text style={{padding:10,fontWeight:"600"}}>Next</Text>
+                    <View style={{width:"100%",alignItems:"center"}}>
+                        <Pressable onPress={() => handleOpenBottomSheet("open")} style={styles.startButton}>
+                            <Text style={{padding:10,fontWeight:"600"}}>Yes</Text>
                         </Pressable>
-                        :
-                        <Pressable style={styles.startButtonNA}>
-                            <Text style={{padding:10,fontWeight:"600"}}>Not Selected Yet</Text>
+                        
+                        <Pressable onPress={() => setProgress(0.6)} style={[styles.startButton,{backgroundColor:"black"}]}>
+                            <Text style={{padding:10,fontWeight:"700",color:"white"}}>No</Text>
                         </Pressable>
-                    }
-            </View>
+                    </View> 
+
+                    <BottomSheetModal
+                        ref={bottomSheetRef}
+                        snapPoints={snapPoints}
+                        enablePanDownToClose={true}
+                        handleStyle={{backgroundColor:"black",borderTopLeftRadius:20,borderTopRightRadius:20,borderBottomWidth:2,height:30,color:"white"}}
+                        handleIndicatorStyle={{backgroundColor:"white"}}
+                    >
+                        <View style={{width:"100%",alignItems:"center",flexDirection:"column",backgroundColor:"#fff",padding:10,marginTop:30}}>
+                            <Text style={{fontWeight:700,textAlign:"center",fontSize:20}}>Please select whom from your family had been diagnosed ...</Text>
+                            <ScrollView horizontal style={{width:"100%",marginTop:50}} showsHorizontalScrollIndicator={false}>
+                                {familyMemberOptions.map((data) => (
+                                    <Pressable key={data.member} onPress={() => setDiagnosedFamilyMember(data.member)} style={diagnosedFamilyMember == data.member ? styles.selectableBubbleA : styles.selectableBubble} >
+                                        <MaterialCommunityIcons
+                                            name="heart"
+                                        />
+                                        <Text>{data.member}</Text>
+                                    </Pressable>
+                                ))}
+                            </ScrollView>
+                            <Pressable onPress={() => handleOpenBottomSheet("hide")} style={{marginTop:50,borderWidth:1,borderRadius:8,width:130,height:40,alignItems:"center",justifyContent:"center",backgroundColor:"black"}}>
+                                <Text style={{fontWeight:"700",color:"white"}}>Done</Text>
+                            </Pressable>
+                        </View>
+                    </BottomSheetModal>
+                </View>
+            </BottomSheetModalProvider>
+        </GestureHandlerRootView >
         )
     }
 
@@ -454,7 +505,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
             </View>
             {progress === 0.1 ? FirstScreen():null}
             {progress === 0.2 ? SecoundScreen():null}
-            {progress === 0.3 ? EmptyScreen():null}
+            {progress === 0.3 ? SkinBurnScreen():null}
             {progress === 0.4 ? SkinTypeScreen():null}
             {progress === 0.5 ? FamilyTreeScreen():null}
             {progress === 0.6 ? ThirdScreen():null}
@@ -727,6 +778,30 @@ const styles = StyleSheet.create({
         marginBottom:20
     
     },
+    selectableBubble:{
+        height:180,
+        width:200,
+        alignItems:"center",
+        flexDirection:"column",
+        justifyContent:"center",
+        borderWidth:1,
+        borderRadius:20,
+        marginLeft:20,
+        marginRight:20
+    },
+    selectableBubbleA:{
+        height:180,
+        width:200,
+        alignItems:"center",
+        flexDirection:"column",
+        justifyContent:"center",
+        borderRadius:20,
+        marginLeft:20,
+        marginRight:20,
+        borderWidth:2,
+        borderColor:"lightblue",
+        borderRadius:20,
+    }
 })
 
 export default MelanomaFullProcess

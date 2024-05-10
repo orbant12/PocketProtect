@@ -81,7 +81,7 @@ export const fetchAllMelanomaSpotData = async ({
         );
         return melanomaData;
     } catch (error) {
-        console.log(error);
+        return false
     }
 }
 

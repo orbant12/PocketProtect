@@ -20,18 +20,7 @@ const AddDetection = ({navigation}) => {
             state: "soon",
             icon: "magnifying-glass-location"
         },
-        {
-            title: "Health Assesment",
-            desc: "Coming early 2025 ! - Not Avalible Yet",
-            state: "soon",
-            icon: "magnifying-glass-location"
-        },
-        {
-            title: "Longevity Prediction",
-            desc: "Coming early 2025 ! - Not Avalible Yet",
-            state: "soon",
-            icon: "magnifying-glass-location"
-        }
+
     ]
 
     const OverallHealthData = [
@@ -48,6 +37,7 @@ const AddDetection = ({navigation}) => {
             icon: "magnifying-glass-location"
         }
     ]
+
 
 
     function handleNavigation(id){
@@ -139,8 +129,6 @@ const AddDetection = ({navigation}) => {
             <ScrollView style={{width:"100%"}}>
                 {OverallHealthSection()}
                 {CancerSection()}
-                {DiabetesSection()}
-                {BloodSection()}
             </ScrollView>
         </View>
     )

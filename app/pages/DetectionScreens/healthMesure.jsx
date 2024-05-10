@@ -290,6 +290,8 @@ const HealthMesure = ({navigation}) => {
 
     const [ affectedSlugs,setAffectedSlugs ] = useState([])
 
+    const [ isFirstMelanoma, setIsFirstMelanoma ] = useState(false)
+
 
 //<********************FUNCTIONS************************>
 
@@ -300,7 +302,11 @@ const fetchAllMelanomaData = async (gender) => {
             gender
         });
         const melanomaData = response;
-        setMelanomaData(melanomaData);
+        if(melanomaData != false){
+            setMelanomaData(melanomaData);
+        } else {
+            setIsFirstMelanoma(true)
+        }
     }
 }
 
@@ -640,7 +646,7 @@ function MelanomaAdd(){
 
     return(
         <>
-            <ScrollView horizontal style={{position:"absolute",marginTop:60,paddingLeft:40,marginRight:"auto",flexDirection:"row",width:"100%",zIndex:5}}>
+            <ScrollView horizontal style={{position:"absolute",marginTop:60,paddingLeft:80,marginRight:"auto",flexDirection:"row",width:"100%",zIndex:5}}>
                 <TouchableOpacity onPress={() => setIsSelected("HealthScore")} style={isSelected == "HealthScore" ? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
                     <Text style={isSelected == "HealthScore"?{fontWeight:"800",color:"black"}:{opacity:0.4,fontWeight:800,color:"black"}}>Health Score</Text>
                 </TouchableOpacity>
@@ -654,8 +660,12 @@ function MelanomaAdd(){
                 <HealthScore />
             )
             :isSelected == "Melanoma" ? 
-            (
+            (!isFirstMelanoma ?
                 <MelanomaMonitoring />
+                :
+                <View style={Mstyles.container} >
+                    <Text>DSDS</Text>
+                </View>
             )
             :
             null
