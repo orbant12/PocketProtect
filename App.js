@@ -23,6 +23,7 @@ import SinglePartAnalasis from "./app/pages/Screens/Melanoma/singlePart";
 import SlugAnalasis from "./app/pages/Screens/Melanoma/slugAnalasis";
 import MelanomaFullProcess from "./app/pages/ProcessScreens/melanomaFullProcess";
 import MelanomaSingleSlug from "./app/pages/ProcessScreens/melanomaSingleSlug";
+import AuthHub from "./app/pages/Screens/Login/authHub"
 
 
 //CREATING THE NAVIGATION STACK
@@ -33,8 +34,9 @@ return (
 <NavigationContainer>
     <UserAuthContext>
         <Stack.Navigator initialRouteName="LoginPage">
-            <Stack.Screen name="Login" component={LoginPage} options={{ headerShown:false}} />
-            <Stack.Screen name="Register" component={RegisterPage} options={{ headerShown:false}} />
+            <Stack.Screen name="AuthHub" component={AuthHub} options={{ headerShown:false}} />
+            <Stack.Screen name="Login" component={LoginPage}  />
+            <Stack.Screen name="Register" component={RegisterPage}  />
             <Stack.Screen name="Home" component={HomeBottomTabNavigator} options={{ headerShown:false}} />
             <Stack.Screen name="ClipPage" component={FilePage}   options={({ route }) => ({ title: route.params.data.title,headerStyle: { backgroundColor: "#fff"},headerTintColor: "white" })} />
             <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown:true,title:"Settings"}} />

@@ -8,18 +8,28 @@ import { fetchSlugMelanomaData ,melanomaSpotUpload,melanomaUploadToStorage } fro
 
 const MelanomaSingleSlug = ({route,navigation}) => {
 
-    const [progress, setProgress] = useState(0.1)
-    const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
+    //<==============> VARTIABLES <=============> 
+
+    //ROUTE DATA
+    const progress = route.params.progress
     const bodyPart = route.params.data
     const gender = route.params.gender
     const sessionMemory = route.params.sessionMemory
     const currentuserUID = route.params.userId
+    //Add Melanoma Data
+    const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
     const [uploadedSpotPicture, setUploadedSpotPicture] = useState(null);
+    //Slug Birthmark Data
     const [currentSlugMemory, setCurrentSlugMemory ] = useState([])
     const [highlighted, setHighlighted] = useState()
+    //Toggles
     const [markedAsComplete ,setMarkedAsComplete] = useState(false)
     const [isScreenLoading,setIsScreenLoading ]  = useState(false)
+    //Ref for Top Animation
     const scrollViewRef = useRef(null);
+
+
+    //<==============> Functions <=============> 
 
     const handlePartClick = (e) => {
         const { locationX, locationY } = e.nativeEvent;
@@ -100,7 +110,6 @@ const MelanomaSingleSlug = ({route,navigation}) => {
         }
     }
 
-
     const handleMarkeAsComplete = (action) => {
         let updatedSessionMemory;
 
@@ -116,7 +125,6 @@ const MelanomaSingleSlug = ({route,navigation}) => {
             navigation.navigate("FullMelanomaProcess", { sessionMemory: updatedSessionMemory });
         }
     }
-    
 
     const fetchSlugSpots = async () =>{
         const response = await fetchSlugMelanomaData({
@@ -147,164 +155,165 @@ const MelanomaSingleSlug = ({route,navigation}) => {
     },[])
 
 
+    //<==============> Child Components <=============> 
+
     function SecoundScreen(){
         return(
             <>
-
-            <View style={styles.startScreen}>
-                <ScrollView ref={scrollViewRef} style={{marginTop:30}} showsVerticalScrollIndicator={false}>  
-                    <View 
-                        style={{
-                            width:"100%",
-                            alignItems:"center",
-                            marginBottom:30
-                        }}
-                    >
-                        <Text 
+                <View style={styles.startScreen}>
+                    <ScrollView ref={scrollViewRef} style={{marginTop:30}} showsVerticalScrollIndicator={false}>  
+                        <View 
                             style={{
-                                fontWeight:"400",
-                                marginTop:10,
-                                padding:10,
-                                backgroundColor:"lightgray",
-                                alignSelf:"flex-end"
+                                width:"100%",
+                                alignItems:"center",
+                                marginBottom:30
                             }}
                         >
-                            Part: <Text style={{fontWeight:"600"}}>{bodyPart.slug}</Text>
-                        </Text>
-                        <View style={{flexDirection:"column",width:"90%",marginTop:-20}}>
-                            <Text>Body Parts <Text style={redDotLocation.x == -100 ? {opacity:0.3}:{color:"green",fontWeight:600}}>1/2</Text></Text>
-                            <Text style={{fontSize:20,fontWeight:600}}>Where is your spot ?</Text>
-                        </View>
-
-                        <Pressable style={{position:"relative",alignItems:"center",justifyContent:"center",width:"500px",height:"500px",marginTop:20}} onPress={(e) => handlePartClick(e)}>
-                                {dotSelectOnPart({
-                                    bodyPart,
-                                    redDotLocation,
-                                    currentSlugMemory,
-                                    gender: gender,
-                                    highlighted
-                                })}
-                        </Pressable>
-
-                        <View style={{width:"100%",alignItems:"center",marginBottom:10,marginTop:0}}>
-                            <View style={{flexDirection:"column",width:"90%",marginTop:30}}>
-                                <Text>Final Step <Text style={uploadedSpotPicture == null ? {opacity:0.3}:{color:"green",fontWeight:600}}>2/2</Text></Text>
-                                <Text style={{fontSize:20,fontWeight:600}}>Take a picture of your spot</Text>
-                                {uploadedSpotPicture == null ? (
-                                    <>
-                                        <View style={{flexDirection:"row",width:"100%",justifyContent:"space-between",maxWidth:"100%",alignItems:"center",marginTop:20}}>
-                                        <Image
-                                            source={"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/melanoma/melanoma-skin-cancer-what-is-melanoma.jpg"}
-                                            style={{width:150,height:150,borderWidth:1,borderRadius:10}}
-                                        />
-
-                                        <View style={{width:"50%",height:120,justifyContent:"space-between"}}>
-                                            <Text style={{fontWeight:600,fontSize:13}}>Make sure your Image ...</Text>
-                                            <Text style={{fontWeight:400,fontSize:10}}>• As clean as possible - remove all noise</Text>
-                                            <Text style={{fontWeight:400,fontSize:10}} >• Lighting is simular to this image</Text>
-                                            <Text style={{fontWeight:400,fontSize:10}}>• Birthmark is on the spotlight with the same ration as in this image</Text>
-                                        </View>
-                                        </View>
-                                        <Pressable style={styles.uploadButton} onPress={handlePictureUpload}>
-                                            <Text style={{color:"white"}}>Upload</Text>
-                                        </Pressable>
-
-                                    </>
-                                    ):(
-                                        <View style={{flexDirection:"column",width:"100%",alignItems:"center",justifyContent:"space-between",height:220,marginBottom:20}}>
-                                            <Image
-                                                source={{uri: uploadedSpotPicture}}
-                                                style={{width:150,height:150,borderWidth:1,borderRadius:10,marginTop:20}}
-                                            />
-                                            <Pressable onPress={() => setUploadedSpotPicture(null)} style={{borderWidth:2,borderRadius:10,borderColor:"red"}}>
-                                                <MaterialCommunityIcons
-                                                    name="close"
-                                                    size={30}
-                                                    color="red"
-                                                    style={{padding:2}}
-                                                />
-                                            </Pressable>
-                                        </View>
-                                    )
-                                }
+                            <Text 
+                                style={{
+                                    fontWeight:"400",
+                                    marginTop:10,
+                                    padding:10,
+                                    backgroundColor:"lightgray",
+                                    alignSelf:"flex-end"
+                                }}
+                            >
+                                Part: <Text style={{fontWeight:"600"}}>{bodyPart.slug}</Text>
+                            </Text>
+                            <View style={{flexDirection:"column",width:"90%",marginTop:-20}}>
+                                <Text>Body Parts <Text style={redDotLocation.x == -100 ? {opacity:0.3}:{color:"green",fontWeight:600}}>1/2</Text></Text>
+                                <Text style={{fontSize:20,fontWeight:600}}>Where is your spot ?</Text>
                             </View>
-                            {currentSlugMemory.length != 0 ? <View style={{width:"100%",borderWidth:1,marginBottom:10}} />:null}
-                            {currentSlugMemory.length != 0 ?
-                                currentSlugMemory.map((data) => (
-                                    <>
-                                        <View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:300,borderWidth:0.8,borderColor:"lightgray",padding:10,marginTop:10,borderRadius:20}}>
+
+                            <Pressable style={{position:"relative",alignItems:"center",justifyContent:"center",width:"500px",height:"500px",marginTop:20}} onPress={(e) => handlePartClick(e)}>
+                                    {dotSelectOnPart({
+                                        bodyPart,
+                                        redDotLocation,
+                                        currentSlugMemory,
+                                        gender: gender,
+                                        highlighted
+                                    })}
+                            </Pressable>
+
+                            <View style={{width:"100%",alignItems:"center",marginBottom:10,marginTop:0}}>
+                                <View style={{flexDirection:"column",width:"90%",marginTop:30}}>
+                                    <Text>Final Step <Text style={uploadedSpotPicture == null ? {opacity:0.3}:{color:"green",fontWeight:600}}>2/2</Text></Text>
+                                    <Text style={{fontSize:20,fontWeight:600}}>Take a picture of your spot</Text>
+                                    {uploadedSpotPicture == null ? (
+                                        <>
+                                            <View style={{flexDirection:"row",width:"100%",justifyContent:"space-between",maxWidth:"100%",alignItems:"center",marginTop:20}}>
                                             <Image
-                                                source={{uri: data.picture }}
-                                                style={{width:75,height:75,borderWidth:1,borderRadius:10,}}
+                                                source={"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/melanoma/melanoma-skin-cancer-what-is-melanoma.jpg"}
+                                                style={{width:150,height:150,borderWidth:1,borderRadius:10}}
                                             />
-                                            <Text>{data.id}</Text>
-                                            <View style={{flexDirection:"row",alignItems:"center"}}>
-                                                <MaterialCommunityIcons
-                                                    name="eye"
-                                                    size={25}
-                                                    color={highlighted == data.id ? "red" : "black"}
-                                                    style={{padding:2}}
-                                                    onPress={() => {setHighlighted(data.id); scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });}}
+
+                                            <View style={{width:"50%",height:120,justifyContent:"space-between"}}>
+                                                <Text style={{fontWeight:600,fontSize:13}}>Make sure your Image ...</Text>
+                                                <Text style={{fontWeight:400,fontSize:10}}>• As clean as possible - remove all noise</Text>
+                                                <Text style={{fontWeight:400,fontSize:10}} >• Lighting is simular to this image</Text>
+                                                <Text style={{fontWeight:400,fontSize:10}}>• Birthmark is on the spotlight with the same ration as in this image</Text>
+                                            </View>
+                                            </View>
+                                            <Pressable style={styles.uploadButton} onPress={handlePictureUpload}>
+                                                <Text style={{color:"white"}}>Upload</Text>
+                                            </Pressable>
+
+                                        </>
+                                        ):(
+                                            <View style={{flexDirection:"column",width:"100%",alignItems:"center",justifyContent:"space-between",height:220,marginBottom:20}}>
+                                                <Image
+                                                    source={{uri: uploadedSpotPicture}}
+                                                    style={{width:150,height:150,borderWidth:1,borderRadius:10,marginTop:20}}
                                                 />
-                                                <MaterialCommunityIcons
-                                                        name="delete"
+                                                <Pressable onPress={() => setUploadedSpotPicture(null)} style={{borderWidth:2,borderRadius:10,borderColor:"red"}}>
+                                                    <MaterialCommunityIcons
+                                                        name="close"
                                                         size={30}
                                                         color="red"
-                                                        style={{padding:2,marginLeft:10}}
+                                                        style={{padding:2}}
                                                     />
+                                                </Pressable>
                                             </View>
-                                        </View>
-                                    </>
-                                ))
-                                :null
-                            }
-    
-                        </View>
-                        
+                                        )
+                                    }
+                                </View>
+                                {currentSlugMemory.length != 0 ? <View style={{width:"100%",borderWidth:1,marginBottom:10}} />:null}
+                                {currentSlugMemory.length != 0 ?
+                                    currentSlugMemory.map((data) => (
+                                        <>
+                                            <View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:300,borderWidth:0.8,borderColor:"lightgray",padding:10,marginTop:10,borderRadius:20}}>
+                                                <Image
+                                                    source={{uri: data.picture }}
+                                                    style={{width:75,height:75,borderWidth:1,borderRadius:10,}}
+                                                />
+                                                <Text>{data.id}</Text>
+                                                <View style={{flexDirection:"row",alignItems:"center"}}>
+                                                    <MaterialCommunityIcons
+                                                        name="eye"
+                                                        size={25}
+                                                        color={highlighted == data.id ? "red" : "black"}
+                                                        style={{padding:2}}
+                                                        onPress={() => {setHighlighted(data.id); scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });}}
+                                                    />
+                                                    <MaterialCommunityIcons
+                                                            name="delete"
+                                                            size={30}
+                                                            color="red"
+                                                            style={{padding:2,marginLeft:10}}
+                                                        />
+                                                </View>
+                                            </View>
+                                        </>
+                                    ))
+                                    :null
+                                }
+        
+                            </View>
+                            
 
-                        <View style={{width:"100%",alignItems:"center",marginBottom:10,marginTop:30}}>
+                            <View style={{width:"100%",alignItems:"center",marginBottom:10,marginTop:30}}>
 
-                            <Pressable onPress={handleMoreBirthmark} style={redDotLocation.x != -100 && uploadedSpotPicture != null ? styles.MoreSpotButton : {opacity:0.3,backgroundColor:"magenta",borderRadius:10,marginBottom:15,marginTop:20,width:150,alignItems:"center",borderWidth:1}}>
-                                <Text style={{padding:15,color:"white",fontWeight:"700"}}>Add</Text>
-                            </Pressable>
-                
-                            {redDotLocation.x != -100 && uploadedSpotPicture != null ? (
-                                <Text style={{color:"green",fontWeight:300,fontSize:10,marginBottom:20}}>2/2 - All Steps Completed</Text> 
-                            ):(
-                                <Text style={{fontWeight:800,opacity:0.5,fontSize:10,marginBottom:20,color:"red"}}>Not All Steps Completed</Text>
-                            )}
-                        
-                            <View style={{width:"100%",borderWidth:0.5,marginBottom:20}} />
-                            {markedAsComplete ?
-                                <Pressable onPress={() => handleMarkeAsComplete("add")} style={styles.AllSpotButton}>
-                                    <Text style={{padding:15,color:"white",fontWeight:"700"}}>Mark as complete</Text>
+                                <Pressable onPress={handleMoreBirthmark} style={redDotLocation.x != -100 && uploadedSpotPicture != null ? styles.MoreSpotButton : {opacity:0.3,backgroundColor:"magenta",borderRadius:10,marginBottom:15,marginTop:20,width:150,alignItems:"center",borderWidth:1}}>
+                                    <Text style={{padding:15,color:"white",fontWeight:"700"}}>Add</Text>
                                 </Pressable>
-                                :
-                                <Pressable onPress={() => handleMarkeAsComplete("remove")} style={styles.RallSpotButton}>
-                                    <Text style={{padding:15,color:"white",fontWeight:"700"}}>Remove the complete mark</Text>
-                                </Pressable>
-                            }
+                    
+                                {redDotLocation.x != -100 && uploadedSpotPicture != null ? (
+                                    <Text style={{color:"green",fontWeight:300,fontSize:10,marginBottom:20}}>2/2 - All Steps Completed</Text> 
+                                ):(
+                                    <Text style={{fontWeight:800,opacity:0.5,fontSize:10,marginBottom:20,color:"red"}}>Not All Steps Completed</Text>
+                                )}
+                            
+                                <View style={{width:"100%",borderWidth:0.5,marginBottom:20}} />
+                                {markedAsComplete ?
+                                    <Pressable onPress={() => handleMarkeAsComplete("add")} style={styles.AllSpotButton}>
+                                        <Text style={{padding:15,color:"white",fontWeight:"700"}}>Mark as complete</Text>
+                                    </Pressable>
+                                    :
+                                    <Pressable onPress={() => handleMarkeAsComplete("remove")} style={styles.RallSpotButton}>
+                                        <Text style={{padding:15,color:"white",fontWeight:"700"}}>Remove the complete mark</Text>
+                                    </Pressable>
+                                }
+                            </View>
                         </View>
-                    </View>
-                </ScrollView>
+                    </ScrollView>
 
-            </View>
-            {isScreenLoading ? 
-            <View style={styles.loadingModal}>
-                <ActivityIndicator size="large" color="white" />
-            </View>
-            :
-            null
-            }
-            
+                </View>
+                {isScreenLoading ? 
+                <View style={styles.loadingModal}>
+                    <ActivityIndicator size="large" color="white" />
+                </View>
+                :
+                null
+                }            
             </>
         )
     }
 
 
+    //<==============> Main Component Return <=============> 
+
     return(
         <View style={styles.container}>
-
             <View style={styles.ProgressBar}>
                 <ProgressBar progress={progress} width={350} height={10} color={"magenta"}backgroundColor={"white"} />
             </View>

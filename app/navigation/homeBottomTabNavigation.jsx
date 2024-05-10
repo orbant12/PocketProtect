@@ -11,11 +11,9 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 //COMPONENTS
 import TabOneScreen from '../pages/home';
-import ForYouPage from '../pages/DetectionScreens/melanoma';
 import Profile from '../pages/profile';
 import AssistantPage from '../pages/Personal_Assistant';
-import Detecttion from '../pages/detection';
-import HealthMesure from '../pages/DetectionScreens/healthMesure';
+import DetectionLibary from '../pages/detection';
 import AddDetection from '../pages/addDetection'
 
 
@@ -52,7 +50,7 @@ return (
       {/* HOME NAVIGATION */}
       <Tab.Screen
         name={'Home'}
-        component={isExplore ? TabOneScreen : ForYouPage}
+        component={TabOneScreen}
         options={{
           headerShown: false,
           headerTransparent: true,
@@ -65,7 +63,7 @@ return (
       {/* ASSISTANT NAVIGATION */}
       <Tab.Screen
         name={'Detection'}
-        component={HealthMesure}
+        component={DetectionLibary}
         options={{
           headerShown: false,
           headerTransparent: true,

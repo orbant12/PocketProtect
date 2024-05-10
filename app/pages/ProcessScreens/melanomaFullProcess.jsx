@@ -4,9 +4,7 @@ import React, {useState,useEffect,useRef} from "react";
 import ProgressBar from 'react-native-progress/Bar';
 import { useAuth } from "../../context/UserAuthContext.jsx";
 import Body from "../../components/BodyParts/index.tsx";
-import { fetchAllMelanomaSpotData,} from '../../server';
 import doctorImage from "../../assets/doc.jpg"
-
 import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -15,17 +13,22 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 const MelanomaFullProcess = ({navigation,route}) => {
 
-    const [progress, setProgress] = useState(0.1)
-    const [gender, setGender]= useState("")
-    const [completedParts, setCompletedParts] = useState([])
+    //<===============> Variables  <===============> 
+
     const {currentuser} = useAuth()
-    const [completedAreaMarker, setCompletedAreaMarker] = useState([])
+    //Progress Trackers
+    const [progress, setProgress] = useState(0.1)
     const [bodyProgress, setBodyProgress] = useState(0)
     const [bodyProgressBack, setBodyProgressBack] = useState(0)
-    const sessionMemory = route.params.sessionMemory
-    const [isModalUp, setIsModalUp] = useState(false)
+    //Body for Birthmark
     const [currentSide, setCurrentSide] = useState("front")
-     //SKIN BURN
+    const [gender, setGender]= useState("")
+    const [completedAreaMarker, setCompletedAreaMarker] = useState([])
+    //ROUTING MEMORY
+    const sessionMemory = route.params.sessionMemory
+    //Modal toggle
+    const [isModalUp, setIsModalUp] = useState(false)
+    //SKIN BURN
     const [sunBurn, setSunBurn] = useState("never")
     const [haveBeenBurned, setHaveBeenBurned] = useState(false)
     const [selectedBurnSide, setSelectedBurnSide] = useState("front")
@@ -34,53 +37,6 @@ const MelanomaFullProcess = ({navigation,route}) => {
     const [skinType, setSkinType] = useState(null)
     //PARENT DIAGNOSED
     const [ diagnosedFamilyMember,setDiagnosedFamilyMember] = useState("")
-
-    const bottomSheetRef = useRef(null);
-    const snapPoints = ['90%'];
-
-
-    const completedArea = async (sessionMemory) => {
-        setCompletedAreaMarker([])
-        const response = sessionMemory.map((data,index) =>{
-                return { slug: data.slug, intensity: 0, key: index }
-        })
-        setCompletedAreaMarker(response)
-        if(currentSide == "front"){
-            setBodyProgress(response.length / 13)
-        } else if (currentSide == "back"){
-            setBodyProgressBack(response.length / 11)
-        }
-    }
-    
-    const fetchAllMelanoma = async () => {
-        if(currentuser){
-            const allMelanomaData = await fetchAllMelanomaSpotData({
-                userId: currentuser.uid,
-                gender
-            })
-            setCompletedParts(allMelanomaData)
-            completedArea(sessionMemory);
-        }
-    }
-
-    useEffect(() => {
-        fetchAllMelanoma()
-        completedArea(sessionMemory);
-    }, []);
-
-    useEffect(() => {
-        completedArea(sessionMemory);
-    }, [sessionMemory,]); 
-
-    const handleOpenBottomSheet = (state) => {
-        if(state == "open"){
-            bottomSheetRef.current.present();
-        } else if (state == "hide"){
-            bottomSheetRef.current.close();
-            setProgress(progress + 0.1)
-        }
-    }
-
     const familyMemberOptions = [
         {
             member:"father",
@@ -101,8 +57,41 @@ const MelanomaFullProcess = ({navigation,route}) => {
             member:"other",
         }
     ]
+    //Bottom Sheet
+    const bottomSheetRef = useRef(null);
+    const snapPoints = ['90%'];
 
-    //COMPONENETS
+
+
+    //<===============> Functions  <===============> 
+
+    const completedArea = async (sessionMemory) => {
+        setCompletedAreaMarker([])
+        const response = sessionMemory.map((data,index) =>{
+                return { slug: data.slug, intensity: 0, key: index }
+        })
+        setCompletedAreaMarker(response)
+        if(currentSide == "front"){
+            setBodyProgress(response.length / 13)
+        } else if (currentSide == "back"){
+            setBodyProgressBack(response.length / 11)
+        }
+    }
+    
+    useEffect(() => {
+        completedArea(sessionMemory);
+    }, [sessionMemory,]); 
+
+    const handleOpenBottomSheet = (state) => {
+        if(state == "open"){
+            bottomSheetRef.current.present();
+        } else if (state == "hide"){
+            bottomSheetRef.current.close();
+            setProgress(progress + 0.1)
+        }
+    }
+
+    //<==============> Components  <=============> 
 
     function FirstScreen(){
         return(
@@ -367,7 +356,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
                             scale={1.1}
                             //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
                             colors={['#A6FF9B']}
-                            onBodyPartPress={(slug) => navigation.navigate("MelanomaProcessSingleSlug", { data: slug, gender: gender, userId: currentuser.uid, sessionMemory:sessionMemory })}
+                            onBodyPartPress={(slug) => navigation.navigate("MelanomaProcessSingleSlug", { data: slug, gender: gender, userId: currentuser.uid, sessionMemory:sessionMemory, progress:progress })}
                             zoomOnPress={true}
                         />
 
@@ -496,6 +485,8 @@ const MelanomaFullProcess = ({navigation,route}) => {
             </View>
         )
     }
+
+     //<==============> Main Component Return <=============> 
 
     return(
         <View style={styles.container}>
