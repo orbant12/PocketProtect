@@ -1,5 +1,6 @@
 import { View,Text,Pressable,StyleSheet } from "react-native"
 import { useNavigation } from "@react-navigation/core";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const AuthHub = () => {
 
@@ -17,10 +18,18 @@ const navigation = useNavigation();
             </View>
             <View style={styles.BottomFormSection}>
                 <Pressable style={[styles.Button,{backgroundColor:"white"}]}>
-                    <Text style={{fontWeight:600,fontSize:15}}>Continue with Apple</Text>
+                    <MaterialCommunityIcons 
+                        name="apple"
+                        size={20}
+                    />
+                    <Text style={{fontWeight:600,fontSize:15,marginLeft:10}}>Continue with Apple</Text>
                 </Pressable>
                 <Pressable style={[styles.Button,{ backgroundColor:"magenta" }]}>
-                    <Text style={{fontWeight:700,fontSize:15,color:"white"}}>Continue with Google</Text>
+                    <MaterialCommunityIcons 
+                        name="google"
+                        size={20}
+                    />
+                    <Text style={{fontWeight:700,fontSize:15,color:"white",marginLeft:10}}>Continue with Google</Text>
                 </Pressable>
                 <Pressable onPress={() => handleNavigation("Login")} style={[styles.Button,{backgroundColor:"black",borderWidth:1,borderColor:"white"}]}>
                     <Text style={{fontWeight:600,fontSize:15,color:"white"}}>Log in</Text>

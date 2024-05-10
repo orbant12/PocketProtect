@@ -1,5 +1,5 @@
 //<********************************************>
-//Last Update: 2023/12/04
+//Last Update: 2024/05/10
 //Edited by: Orban Tamas
 //Desc: This is the main file of the application. It contains the navigation stack and the context provider.
 //<********************************************>
@@ -24,6 +24,7 @@ import SlugAnalasis from "./app/pages/Screens/Melanoma/slugAnalasis";
 import MelanomaFullProcess from "./app/pages/ProcessScreens/melanomaFullProcess";
 import MelanomaSingleSlug from "./app/pages/ProcessScreens/melanomaSingleSlug";
 import AuthHub from "./app/pages/Screens/Login/authHub"
+import RegOnBoarding from "./app/pages/Screens/Login/regOnBoarding";
 
 
 //CREATING THE NAVIGATION STACK
@@ -33,10 +34,11 @@ export default function App() {
 return (
 <NavigationContainer>
     <UserAuthContext>
-        <Stack.Navigator initialRouteName="LoginPage">
+        <Stack.Navigator initialRouteName="AuthHub">
             <Stack.Screen name="AuthHub" component={AuthHub} options={{ headerShown:false}} />
-            <Stack.Screen name="Login" component={LoginPage}  />
-            <Stack.Screen name="Register" component={RegisterPage}  />
+            <Stack.Screen name="RegOnBoarding" component={RegOnBoarding} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
+            <Stack.Screen name="Login" component={LoginPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
+            <Stack.Screen name="Register" component={RegisterPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
             <Stack.Screen name="Home" component={HomeBottomTabNavigator} options={{ headerShown:false}} />
             <Stack.Screen name="ClipPage" component={FilePage}   options={({ route }) => ({ title: route.params.data.title,headerStyle: { backgroundColor: "#fff"},headerTintColor: "white" })} />
             <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown:true,title:"Settings"}} />

@@ -25,13 +25,8 @@ const UserAuthContext = ({ children }) => {
 
 //<********************VARIABLES************************>
 
-//SET CURRENT USER WITH PROPER DATA
 const [currentuser, setuser] = useState()
-
-//ERROR HANDLING
 const [error, setError] = useState("")
-
-//NAVIGATION
 const navigation = useNavigation();
 
 //<********************FUNCTIONS************************>
@@ -43,7 +38,7 @@ onAuthStateChanged(auth, user => {
     if (user) {
       setuser(user)
       console.log("u are logged in")
-      navigation.navigate("Home")
+      navigation.navigate("Home") 
     }
     else {
       navigation.navigate("AuthHub") 
@@ -61,7 +56,7 @@ const Login = async (email,password) => {
     .then((userCredential) => {
       // Signed in 
       const user = userCredential.user;
-      console.log(user)
+    
     })
   } catch(error) {
     console.log(error)
@@ -94,7 +89,6 @@ const RegisterUserData = async ({
       user_since: new Date().toLocaleDateString(),
     });
     console.log("Document successfully added!");
-
     await sendEmailVerification(signeduser)
   } catch (error) {
     console.error("Error adding document: ", error);
@@ -118,6 +112,7 @@ const SignUp = async (email, password, FullName) => {
       userFullName,
       regEmail,
     });
+    return true
   } catch(err) {
     //ERROR IF ITS IN ALREADY USE
     if (err.code === "auth/email-already-in-use") {
@@ -133,6 +128,7 @@ const SignUp = async (email, password, FullName) => {
     } else {
       setError(err.message);
     }
+    return err.message
   }
 }
 

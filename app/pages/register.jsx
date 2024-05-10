@@ -38,8 +38,14 @@ const SubmitHandler = async (e) => {
     const email = inputEmail;
     const password = inputPassword;
     const FullName = inputFullName;
-    SignUp(email, password, FullName)
+    const response = await SignUp(email, password, FullName)
     {currentuser && setInputEmail("") && setInputPassword("") && setInputFullName("")}
+
+    if (response == true){
+        navigation.navigate("RegOnBoarding")
+    } else {
+        alert(response)
+    }
 };
 
 //FORGOT PASSWORD | LOGIN
@@ -115,28 +121,20 @@ return (
                 onChangeText={text => setInputPassword(text)}
             />
         </View>
-
-
-        <Pressable style={styles.button} onPress={SubmitHandler}>
-            <Text style={styles.buttonTitle} >Register</Text>
-        </Pressable>
-
-        <Text>or continue with</Text>
-
-        <Pressable style={styles.button} onPress={SubmitHandler}>
-            <Text style={styles.buttonTitle} >Google</Text>
-        </Pressable>
-
-        <View style={styles.bottomText} >
-            <Text>Already a user ?</Text>
-            <Pressable onPress={() => handleNavigation()}>
-                <Text> Login</Text>
-            </Pressable>
-        </View>
     </View>
 
+    <Pressable style={styles.button} onPress={SubmitHandler}>
+            <Text style={styles.buttonTitle} >Register</Text>
+    </Pressable>
 
-  </View>
+    <View style={styles.bottomText} >
+        <Text>Already a user ?</Text>
+        <Pressable onPress={() => handleNavigation()}>
+            <Text> Login</Text>
+        </Pressable>
+    </View>
+
+</View>
 </SafeAreaView>
 )
 }
@@ -152,6 +150,7 @@ const styles = StyleSheet.create({
         height: '100%',
         borderTopLeftRadius: 0,
         backgroundColor: 'white',
+        justifyContent:"space-between"
     },
     //TITLE
     titleSection:{
@@ -171,11 +170,11 @@ const styles = StyleSheet.create({
     //INPUT FIELDS
     inputArea:{
         width:'100%',
-        height:'70%',
+        height:250,
         flexDirection:'column',
         justifyContent:'space-between',
         alignItems:'center',
-        marginTop:20,
+        marginBottom:20,
         borderColor:'black',
     },
     text: {
@@ -200,12 +199,12 @@ const styles = StyleSheet.create({
         flexDirection:'row',
         justifyContent:'center',
         alignItems:'center',
-        width:'90%',
+        width:'85%',
         alignSelf:'center',
         backgroundColor:'white',
         borderColor:'black',
-        borderWidth:1,
-        borderRadius:50,
+        borderWidth:0.3,
+        borderRadius:10,
         padding:20,
         fontSize:20,
         fontWeight:'500'
@@ -224,6 +223,7 @@ const styles = StyleSheet.create({
         bottomText:{
             flexDirection:'row',
             justifyContent:'center',
+            marginBottom:30
         },
 })
 

@@ -45,7 +45,6 @@ return (
         backgroundColor: '#fff',
       },
       activeTintColor: 'magenta',
-   
     }}>
       {/* HOME NAVIGATION */}
       <Tab.Screen
