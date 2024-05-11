@@ -1,15 +1,49 @@
 import { View,Text,Pressable,StyleSheet } from "react-native"
 import { useNavigation } from "@react-navigation/core";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useAuth } from '../../../context/UserAuthContext'
+import { auth,} from '../../../firebase';
+import { GoogleAuthProvider,signInWithCredential,signInWithPopup } from "firebase/auth";
+import React, {useState,useEffect} from "react";
+
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+WebBrowser.maybeCompleteAuthSession();
 
 const AuthHub = () => {
 
+    const [request, response, promptAsync] = Google.useAuthRequest({
+        androidClientId: "567381254436-b0cqltfecu40o0skrmiq77iiqp2h9njl.apps.googleusercontent.com",
+        iosClientId: "567381254436-1mi5rsbhrhfe3lhf7if2nhqmf6fnuf22.apps.googleusercontent.com",
+        webClientId: "567381254436-3d9t89faq4qm38ucnf1hqrr25hkle4ek.apps.googleusercontent.com",
+    });
+  
+    useEffect(() => {
+        if(response?.type == "success"){
+            const { id_token } = response.params;
+            console.log(id_token)
+            const credential = GoogleAuthProvider.credential(id_token);
+            signInWithCredential(auth, credential)
+        }
+    },[response])
+
+    //USER | LOGIN
+    const {GoogleLogin, user} = useAuth()
     //NAVIGATION
 const navigation = useNavigation();
 
     const handleNavigation = (path) => {
         navigation.navigate(path)
     }
+
+    const handleGoogleAuth = async() => {
+        const provider = new GoogleAuthProvider();
+        const result = await signInWithPopup(auth, provider)
+        GoogleLogin(result)
+    }
+    
 
     return(
         <View style={styles.container}>
@@ -24,7 +58,7 @@ const navigation = useNavigation();
                     />
                     <Text style={{fontWeight:600,fontSize:15,marginLeft:10}}>Continue with Apple</Text>
                 </Pressable>
-                <Pressable style={[styles.Button,{ backgroundColor:"magenta" }]}>
+                <Pressable onPress={() => promptAsync()} style={[styles.Button,{ backgroundColor:"magenta" }]}>
                     <MaterialCommunityIcons 
                         name="google"
                         size={20}

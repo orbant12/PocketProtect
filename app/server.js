@@ -123,4 +123,27 @@ export const fetchUserData = async ({
     }
 }
 
+export const changePersonalData = async ({
+    type,
+    toChange,
+    userId,
+}) => {
+    const changeData = (field) => {
+        const data = { [field]: toChange }; // Dynamically create an object property
+        const ref = doc(db, "users", userId);
+        updateDoc(ref, data);
+    };
+    try{
+        if (type == "gender"){
+            changeData(type)
+        }
+        if (type == "birth_date"){
+            changeData(type)
+        }
+        return true
+    } catch {
+        return false
+    }
+}
+
 

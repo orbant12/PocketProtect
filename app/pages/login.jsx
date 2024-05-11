@@ -17,8 +17,6 @@ const LoginPage = ({navigation}) => {
 
 //CURRENT USER | LOGIN
 const {Login, currentuser} = useAuth()
-//USER | LOGIN
-const {GoogleLogin, user} = useAuth()
 //INPUTS | LOGIN
 const [inputEmail, setInputEmail] = useState('')
 const [inputPassword, setInputPassword] = useState('')
@@ -49,13 +47,6 @@ const handleForgotPass = async() => {
 const handleNavigation = () => {
     navigation.navigate('Register')
 }
-
-const handleGoogleAuth = async() => {
-    const provider = new GoogleAuthProvider();
-    const result = await signInWithRedirect(auth, provider)
-    GoogleLogin(result)
-}
-
 
 return (
     <SafeAreaView style={styles.container}>

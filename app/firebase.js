@@ -37,7 +37,9 @@ export const db = getFirestore(app);
 export const storage = getStorage();
 
 
+// IOS: 567381254436-1mi5rsbhrhfe3lhf7if2nhqmf6fnuf22.apps.googleusercontent.com
 
+// ANDROID: 567381254436-b0cqltfecu40o0skrmiq77iiqp2h9njl.apps.googleusercontent.com
 
 
 

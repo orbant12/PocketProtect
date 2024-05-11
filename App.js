@@ -36,7 +36,7 @@ return (
     <UserAuthContext>
         <Stack.Navigator initialRouteName="AuthHub">
             <Stack.Screen name="AuthHub" component={AuthHub} options={{ headerShown:false}} />
-            <Stack.Screen name="RegOnBoarding" component={RegOnBoarding} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
+            <Stack.Screen name="RegOnBoarding" component={RegOnBoarding} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerLeftShown:false,headerTitle:"Welcome !"}} />
             <Stack.Screen name="Login" component={LoginPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
             <Stack.Screen name="Register" component={RegisterPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
             <Stack.Screen name="Home" component={HomeBottomTabNavigator} options={{ headerShown:false}} />

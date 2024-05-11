@@ -12,7 +12,7 @@ import React,{useEffect, useState} from "react";
 import { View,Text,StyleSheet,TouchableHighlight,ScrollView,TextInput } from "react-native";
 import {Video} from "expo-av";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import TempScreen from "../../components/ProfilePage/Clippyfy/richTextEditor";
+
 import FileContainer from "../../components/ProfilePage/Clippyfy/fileContainer";
 import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import ChatMessage from "../../components/ProfilePage/Clippyfy/chatLog";
@@ -287,7 +287,7 @@ return(
                 </View>
                 {/* Rich Text Editor */}
                 <View>
-                    <TempScreen />
+              
                 </View>
 
             </View>

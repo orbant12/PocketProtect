@@ -13,6 +13,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useAuth } from '../context/UserAuthContext';
 import Calendar from '../components/HomePage/HorizontalCallendar';
 
+import { getWeather, dailyForecast, showWeather, getLocation } from 'react-native-weather-api';
+
 export default function TabOneScreen({navigation}) {
 
 const today = new Date();
@@ -23,6 +25,23 @@ const [selectedDate, setSelectedDate] = useState(format);
 
 //<********************FUNCTIONS************************>
 
+const [ temp , setTemp ] = useState()
+
+
+
+useEffect(() => {
+    getWeather({
+			
+        key: "your_key",
+        city: "London",
+        country: "GB"
+    
+    }).then(() => {
+        let data = new showWeather();
+        setTemp(data.temp)
+    });
+},[])
+
 return (
 <ScrollView style={styles.container}>
     <Calendar onSelectDate={setSelectedDate} selected={selectedDate} />
@@ -30,7 +49,7 @@ return (
 
     <View style={styles.TodaySection}>
         <View style={styles.titleRow}>
-            <Text style={styles.title}>Enviroment</Text>
+            <Text style={styles.title}>Enviroment {temp}</Text>
             <Text style={styles.titleLeft}>Budapest</Text>
         </View>
   

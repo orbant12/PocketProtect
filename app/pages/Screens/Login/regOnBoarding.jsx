@@ -1,27 +1,58 @@
-import { View,StyleSheet,Text,Pressable,Image } from "react-native"
+import { View,StyleSheet,Text,Pressable,Image,DateT } from "react-native"
 import ProgressBar from 'react-native-progress/Bar';
 import React,{useState,useEffect} from "react";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Onboarding from 'react-native-onboarding-swiper';
 import "react-native-gesture-handler"
+import { changePersonalData } from "../../../server"
+import { useAuth } from "../../../context/UserAuthContext";
+import DateTimePicker from '@react-native-community/datetimepicker';
 
-const RegOnBoarding = () => {
+
+const RegOnBoarding = ({navigation}) => {
 
     // <===> Variable <====> 
 
     const [ progress, setProgress] = useState(0.2)
     const [gender, setGender ] = useState("")
+    const [birthDate, setBirthDate] = useState(new Date(1598051730000));
+    const {currentuser} = useAuth()
 
+    // <===> FUNCTIONS <====> 
+    
+    const handleFinishOnboarding = async () => {
+        const response = await changePersonalData({
+            type: "gender",
+            toChange: gender,
+            userId: currentuser.uid,
+        })
+        const response2 = await changePersonalData({
+            type: "birth_date",
+            toChange: birthDate,
+            userId: currentuser.uid,
+        })
+        if (response == true && response2 == true){
+            navigation.navigate("Home")
+        } else {
+            alert("Something went wrong !")
+        }
+    }
+
+    const onDateChange = (event, selectedDate) => {
+        const currentDate = selectedDate;
+        setBirthDate(currentDate);
+      };
 
      // <===> Child Component <====> 
 
     function FirstScreen(){
         return(
             <View style={styles.startScreen}>
-                <View style={styles.TopSection}>
-                    <Text>Hello</Text>
+                <View style={{marginTop:200,alignItems:"center"}}>  
+                    <Text style={{marginBottom:10,fontWeight:"700",fontSize:23,backgroundColor:"white"}}>When were you born ?</Text>
+                    <DateTimePicker onChange={onDateChange} value={birthDate} mode="date" style={{marginTop:10}} />
                 </View>
-                <Pressable onPress={() => setProgress(progress + 0.2)} style={styles.startButton}>
+                <Pressable onPress={() => setProgress(progress + 0.2)} style={[styles.startButton,{marginBottom:10}]}>
                     <Text style={{padding:14,fontWeight:"600",color:"white"}}>Start Now</Text>
                 </Pressable>
             </View>
@@ -53,6 +84,7 @@ const RegOnBoarding = () => {
                             <Text style={{fontWeight:"600",fontSize:17}}>Female</Text>
                         </Pressable>
                     </View>
+                    <View style={{width:"100%",alignItems:"center"}}>
                     {gender != "" ? 
                         <Pressable onPress={() => setProgress(0.6)} style={styles.startButton}>
                             <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
@@ -62,6 +94,10 @@ const RegOnBoarding = () => {
                             <Text style={{padding:10,fontWeight:"600"}}>Not Selected Yet</Text>
                         </Pressable>
                     }
+                    <Pressable onPress={() => setProgress(0.2)} style={{marginBottom:10}}>
+                        <Text style={{padding:14,fontWeight:"600",color:"black"}}>Back</Text>
+                    </Pressable>
+                </View>
             </View>
         )
     }
@@ -87,7 +123,9 @@ const RegOnBoarding = () => {
         return(
             <View style={{width:"100%",height:"100%",zIndex:-1}}>
                 <Onboarding
-                    onDone={() => alert("Done")}
+                    onDone={() => setProgress(1)}
+
+                    onSkip={() => setProgress(0.4)}
                     pages={[
                     // 1.) UPLOAD PODCAST
                     {
@@ -108,6 +146,37 @@ const RegOnBoarding = () => {
             </View>
     )}
 
+    function FinalScreen(){
+        return(
+            <View style={styles.startScreen}>
+                <View style={{marginTop:200,alignItems:"center"}}>  
+                    <Text style={{marginBottom:10,fontWeight:"700",fontSize:20,backgroundColor:"white",textAlign:"center"}}>Congratulations, let start your protection !</Text>
+                    <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:40}}>
+                        <View style={{width:70,height:70,borderWidth:1}} />
+                        <View style={{width:70,height:70,borderWidth:1}} />
+                        <View style={{width:70,height:70,borderWidth:1}} />
+                    </View>
+                    <Text style={{marginBottom:10,fontSize:12,backgroundColor:"white",textAlign:"center",marginTop:10}}>Currently Avalible Detections - Version 1.0</Text>
+               
+                </View>
+                <View style={{width:"100%",alignItems:"center"}}>
+                {gender != "" ? 
+                    <Pressable onPress={() => handleFinishOnboarding()} style={styles.startButton}>
+                        <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
+                    </Pressable>
+                    :
+                    <Pressable style={styles.startButtonNA}>
+                        <Text style={{padding:10,fontWeight:"600"}}>Not Selected Yet</Text>
+                    </Pressable>
+                }
+                    <Pressable onPress={() => setProgress(0.6)} style={{}}>
+                        <Text style={{padding:14,fontWeight:"600",color:"black"}}>Back</Text>
+                    </Pressable>
+                </View>
+            </View>
+        )
+    }
+
     return(
         <View style={styles.container}>
             <View style={styles.ProgressBar}>
@@ -116,6 +185,7 @@ const RegOnBoarding = () => {
             {progress == 0.2 ? FirstScreen():null}
             {progress == 0.4 ? SecoundScreen():null}
             {progress == 0.6 ? ThirdScreen():null}
+            {progress == 1 ? FinalScreen():null}
         </View>
     )
 }
@@ -153,7 +223,7 @@ const styles = StyleSheet.create({
         alignItems:"center",
         width:"90%",
         borderRadius:10,
-        marginBottom:10,
+        marginBottom:2,
         backgroundColor:"black"
     },
     TopSection:{

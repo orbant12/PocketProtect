@@ -87,6 +87,8 @@ const RegisterUserData = async ({
       email: regEmail,
       profilePictureURL: "",
       user_since: new Date().toLocaleDateString(),
+      gender: "",
+      birth_date: null,
     });
     console.log("Document successfully added!");
     await sendEmailVerification(signeduser)
