@@ -3,16 +3,16 @@ import { StyleSheet, Text, View, ScrollView } from 'react-native'
 import moment from 'moment'
 import Date from './Date'
 
-export const Calendar = ({ onSelectDate, selected }) => {
+export const Calendar = ({ onSelectDate, selected, today, todayDate }) => {
         
     const [dates, setDates] = useState([])
     const [scrollPosition, setScrollPosition] = useState()
     const [currentMonth, setCurrentMonth] = useState()
     const [currentYear, setCurrentYear] = useState()
-
     const [notTouched, setNotTouched] = useState(true)
 
      // <=====> Get Accurate Callendar Date Informations <=====>
+
 
     const getDates = () => {
         const _dates = []
@@ -59,6 +59,7 @@ export const Calendar = ({ onSelectDate, selected }) => {
 return (
 <>
     <View style={styles.dateTitle}>
+        { selected == today ? <Text style={styles.title}>Today •</Text> : null}
         <Text style={styles.title}>{currentMonth}</Text>
         <Text style={styles.title}>{currentYear}</Text>
     </View>
@@ -80,6 +81,7 @@ return (
                 <Date
                 key={index}
                 date={date}
+                today={today}
                 onSelectDate={onSelectDate}
                 selected={selected}
                 />
@@ -107,12 +109,12 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-        marginRight: 10,
+        marginRight: 5,
         fontWeight: 'bold',
     },
     dateSection: {
         width: '100%',
-        paddingTop:20,
+        paddingTop:5,
     },
     scroll: {
         height: 100,

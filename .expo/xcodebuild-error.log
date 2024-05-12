@@ -1,10 +1,9 @@
-2024-05-11 18:09:56.632 xcodebuild[18187:179906] DVTCoreDeviceEnabledState: DVTCoreDeviceEnabledState_Disabled set via user default (DVTEnableCoreDevice=disabled)
 --- xcodebuild: WARNING: Using the first of multiple matching destinations:
-{ platform:iOS Simulator, id:8798A611-7A9A-4034-A9AA-1CF611718CA0, OS:16.4, name:iPhone SE (3rd generation) }
-{ platform:iOS Simulator, id:8798A611-7A9A-4034-A9AA-1CF611718CA0, OS:16.4, name:iPhone SE (3rd generation) }
+{ platform:iOS Simulator, id:426A22B7-F77D-4D8A-A06C-84C13A0F3418, OS:17.4, name:iPhone SE (3rd generation) }
+{ platform:iOS Simulator, id:426A22B7-F77D-4D8A-A06C-84C13A0F3418, OS:17.4, name:iPhone SE (3rd generation) }
 ** BUILD FAILED **
 
 
 The following build commands failed:
-	PhaseScriptExecution [CP-User]\ Generate\ Specs /Users/tamas/Library/Developer/Xcode/DerivedData/LupodyMobile-gfburidlwzcouxexcaoabnodhbwt/Build/Intermediates.noindex/Pods.build/Debug-iphonesimulator/React-Codegen.build/Script-46EB2E0001BF00.sh (in target 'React-Codegen' from project 'Pods')
+	PhaseScriptExecution [CP-User]\ Generate\ Specs /Users/tamas/Library/Developer/Xcode/DerivedData/LupodyMobile-gfburidlwzcouxexcaoabnodhbwt/Build/Intermediates.noindex/Pods.build/Debug-iphonesimulator/React-Codegen.build/Script-46EB2E0001BC00.sh (in target 'React-Codegen' from project 'Pods')
 (1 failure)

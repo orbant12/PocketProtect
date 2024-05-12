@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import moment from 'moment'
 
-const Date = ({ date, onSelectDate, selected }) => {
+const Date = ({ date, onSelectDate, selected,today }) => {
 
   const day = moment(date).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') ? moment(date).format('dd'):moment(date).format('dd')
   const dayNumber = moment(date).format('D')
@@ -10,12 +10,12 @@ const Date = ({ date, onSelectDate, selected }) => {
   return (
     <TouchableOpacity
       onPress={() => onSelectDate(fullDate)}
-      style={[styles.card, selected === fullDate && { backgroundColor: "#6146c6",borderRadius: 6, }]}
+      style={[styles.card, selected === fullDate ? { backgroundColor: "magenta",borderRadius: 6, } : today == fullDate ? {backgroundColor:"#ffb3ff"} : {backgroundColor:"black"} ]}
     >
       <Text
-        style={[styles.big, selected === fullDate && { color: "#fff" }]}
+        style={[styles.big, selected === fullDate ? { color: "#fff" , fontSize:13 }: today == fullDate ? {fontSize:13} : {fontSize: 15}]}
       >
-        {day}
+        {today != fullDate ? day:"Today"}
       </Text>
       <View style={{ height: 10 }} />
       <Text
@@ -34,7 +34,6 @@ export default Date
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#eee',
     borderRadius: 5,
     borderColor: '#ddd',
     padding: 10,
@@ -46,9 +45,10 @@ const styles = StyleSheet.create({
   },
   big: {
     fontWeight: 'bold',
-    fontSize: 15,
+    color:"white"
   },
   medium: {
     fontSize: 13,
+    color:"white"
   },
 })

@@ -18,7 +18,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
     const {currentuser} = useAuth()
     //Progress Trackers
     const [progress, setProgress] = useState(0.1)
-    const [bodyProgress, setBodyProgress] = useState(0)
+    const [bodyProgress, setBodyProgress] = useState(1)
     const [bodyProgressBack, setBodyProgressBack] = useState(0)
     //Body for Birthmark
     const [currentSide, setCurrentSide] = useState("front")
@@ -96,20 +96,48 @@ const MelanomaFullProcess = ({navigation,route}) => {
     function FirstScreen(){
         return(
             <View style={styles.startScreen}>
-                <View style={{marginTop:50,alignItems:"center"}}>  
-                    <Text style={{marginBottom:10,fontWeight:"700",fontSize:20,backgroundColor:"white"}}>About This Analasis you will need:</Text>
-                    <Image 
-                        source={doctorImage}
-                        style={{width:200,height:200,marginTop:-20,zIndex:-1}}
-                    />
-                    <Text>• 15 minutes</Text>
-                    <Text>• 15 minutes</Text>
-                    <Text>• 15 minutes</Text>
-                    <Text>• 15 minutes</Text>
-                    <Text>• 15 minutes</Text>
+                <View style={{marginTop:60,alignItems:"center"}}>  
+                    <Text style={{marginBottom:10,fontWeight:"700",fontSize:23,backgroundColor:"white"}}>Why complete this report ?</Text>
+                    <View style={{width:"80%",marginTop:50,height:200,justifyContent:"space-between"}}>
+                        <View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:"100%"}}>
+                            <MaterialCommunityIcons 
+                                name="magnify-scan"
+                                size={20}
+                            />
+                            <Text style={{marginLeft:10,fontWeight:"500",fontSize:13,backgroundColor:"white",width:"100%"}}>Designed by medical researchers and doctors</Text>
+                        </View>
+                        <View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:"100%"}}>
+                            <MaterialCommunityIcons 
+                                name="creation"
+                                size={20}
+                            />
+                            <Text style={{marginLeft:10,fontWeight:"500",fontSize:13,backgroundColor:"white"}}>Most diaseses can be detected by tracking reccourant symtoms daily</Text>
+                        </View>
+
+                        <View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:"100%"}}>
+                            <MaterialCommunityIcons 
+                                name="calendar-today"
+                                size={20}
+                            />
+                            <Text style={{marginLeft:10,fontWeight:"500",fontSize:13,backgroundColor:"white"}}>We can monitor and keep track of your health and potential reoccuring symptoms</Text>
+                        </View>
+
+
+                        <View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:"100%"}}>
+                            <MaterialCommunityIcons 
+                                name="doctor"
+                                size={20}
+                            />
+                            <Text style={{marginLeft:10,fontWeight:"500",fontSize:13,backgroundColor:"white"}}>Our Ai Model can see your daily reports and use them for more accurate analasis and health advice</Text>
+                        </View>                                        
+                    </View>
+
+                    <View style={{width:"80%",borderRadius:5,backgroundColor:"lightgray",padding:10,marginTop:60,opacity:0.8}}>
+                        <Text style={{marginLeft:10,fontWeight:"600",fontSize:13,}}>Imagine visiting your doctor daily, reporting your health that can be used to make analasis today and can be used in the future</Text>
+                    </View>
                 </View>
-                <Pressable onPress={() => setProgress(progress + 0.1)} style={styles.startButton}>
-                    <Text style={{padding:10,fontWeight:"600"}}>Start Now</Text>
+                <Pressable onPress={() => setProgress(0.2)} style={[styles.startButton,{marginBottom:10}]}>
+                    <Text style={{padding:14,fontWeight:"600",color:"white"}}>Start Now</Text>
                 </Pressable>
             </View>
         )
@@ -140,15 +168,20 @@ const MelanomaFullProcess = ({navigation,route}) => {
                             <Text style={{fontWeight:"600",fontSize:17}}>Female</Text>
                         </Pressable>
                     </View>
+                    <View style={{width:"100%",alignItems:"center"}}>
                     {gender != "" ? 
                         <Pressable onPress={() => setProgress(0.3)} style={styles.startButton}>
-                            <Text style={{padding:10,fontWeight:"600"}}>Next</Text>
+                            <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
                         </Pressable>
                         :
                         <Pressable style={styles.startButtonNA}>
                             <Text style={{padding:10,fontWeight:"600"}}>Not Selected Yet</Text>
                         </Pressable>
                     }
+                    <Pressable onPress={() => setProgress(0.1)} style={{marginBottom:10}}>
+                        <Text style={{padding:14,fontWeight:"600",color:"black"}}>Back</Text>
+                    </Pressable>
+                </View>
             </View>
         )
     }
@@ -198,35 +231,39 @@ const MelanomaFullProcess = ({navigation,route}) => {
                                 <Text style={{fontWeight:"600",fontSize:17}}>Stage III</Text>
                             </Pressable>
                         </View>
+                        <View style={{width:"100%",alignItems:"center"}}>
                         {sunBurn == "never" ? 
                             <Pressable  onPress={() => setProgress(0.4)} style={styles.startButton}>
-                                <Text style={{padding:10,fontWeight:"600"}}>Next</Text>
+                                <Text style={{padding:10,fontWeight:"600",color:"white"}}>Next</Text>
                             </Pressable>
                             :sunBurn == "stage1" ? 
                             <Pressable onPress={() => setHaveBeenBurned(!haveBeenBurned)} style={styles.startButton}>
-                                <Text style={{padding:10,fontWeight:"600"}}>Where ?</Text>
+                                <Text style={{padding:10,fontWeight:"600",color:"white"}}>Where ?</Text>
                             </Pressable>
                             :
                             sunBurn == "stage2" ? 
                             <Pressable onPress={() => setHaveBeenBurned(!haveBeenBurned)} style={styles.startButton}>
-                                <Text style={{padding:10,fontWeight:"600"}}>Where ?</Text>
+                                <Text style={{padding:10,fontWeight:"600",color:"white"}}>Where ?</Text>
                             </Pressable>
                             :
                             sunBurn == "stage3" ? 
                             <Pressable onPress={() => setHaveBeenBurned(!haveBeenBurned)} style={styles.startButton}>
-                                <Text style={{padding:10,fontWeight:"600"}}>Where ?</Text>
+                                <Text style={{padding:10,fontWeight:"600",color:"white"}}>Where ?</Text>
                             </Pressable>
                             :
                             <Pressable style={styles.startButtonNA}>
-                                <Text style={{padding:10,fontWeight:"600"}}>Not Selected Yet</Text>
+                                <Text style={{padding:10,fontWeight:"600",color:"white"}}>Not Selected Yet</Text>
                             </Pressable>
                         }
+                        <Pressable onPress={() => setProgress(0.2)} style={{marginBottom:10}}>
+                            <Text style={{padding:14,fontWeight:"600",color:"black"}}>Back</Text>
+                        </Pressable>
+                    </View>
                 </View>
                 :
                 <View style={styles.startScreen}>
                 <View style={{marginTop:50,alignItems:"center"}}>  
-                    <Text style={{marginBottom:10,fontWeight:"700",fontSize:20,backgroundColor:"white",textAlign:"center"}}>Select where the sunburn has occured ?</Text>
-                    <Text style={{marginBottom:10,fontWeight:"400",fontSize:12,backgroundColor:"white",textAlign:"center"}}>Burnt Slug: <Text style={{fontWeight:"600"}}>{selectedBurnSlug}</Text></Text>
+                    <Text style={{marginBottom:10,fontWeight:"700",fontSize:18,backgroundColor:"white",textAlign:"center"}}>Select where the sunburn has occured ?</Text>
                 </View>
                 <View style={{flexDirection:"column",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:0,borderTopWidth:1}}>
                         <Body 
@@ -246,15 +283,20 @@ const MelanomaFullProcess = ({navigation,route}) => {
                             </Pressable>
                         </View>
                 </View>
-                {selectedBurnSlug != "Not Selected" ? 
-                    <Pressable onPress={() => setProgress(0.4)} style={styles.startButton}>
-                        <Text style={{padding:10,fontWeight:"600"}}>Next</Text>
+                <View style={{width:"100%",alignItems:"center"}}>
+                    {selectedBurnSlug != "Not Selected" ? 
+                        <Pressable onPress={() => {setProgress(0.4)}} style={styles.startButton}>
+                            <Text style={{padding:10,fontWeight:"600",color:"white"}}>Next</Text>
+                        </Pressable>
+                        :
+                        <Pressable style={styles.startButtonNA}>
+                            <Text style={{padding:10,fontWeight:"600"}}>Not Selected Yet</Text>
+                        </Pressable>
+                    }
+                    <Pressable onPress={() => setHaveBeenBurned(!haveBeenBurned)} style={{marginBottom:10}}>
+                        <Text style={{padding:14,fontWeight:"600",color:"black"}}>Back</Text>
                     </Pressable>
-                    :
-                    <Pressable style={styles.startButtonNA}>
-                        <Text style={{padding:10,fontWeight:"600"}}>Not Selected Yet</Text>
-                    </Pressable>
-                }
+                </View>
                 </View> 
             }
             </>
@@ -281,15 +323,20 @@ const MelanomaFullProcess = ({navigation,route}) => {
             
                     
                     </View>
+                    <View style={{width:"100%",alignItems:"center"}}>
                     {skinType!= null ? 
                         <Pressable onPress={() => setProgress(0.5)} style={styles.startButton}>
-                            <Text style={{padding:10,fontWeight:"600"}}>Next</Text>
+                            <Text style={{padding:10,fontWeight:"600",color:"white"}}>Next</Text>
                         </Pressable>
                         :
                         <Pressable style={styles.startButtonNA}>
                             <Text style={{padding:10,fontWeight:"600"}}>Not Selected Yet</Text>
                         </Pressable>
                     }
+                    <Pressable onPress={() => setProgress(0.3)} style={{marginBottom:10}}>
+                        <Text style={{padding:14,fontWeight:"600",color:"black"}}>Back</Text>
+                    </Pressable>
+                    </View>
             </View>
         )
     }
@@ -303,12 +350,16 @@ const MelanomaFullProcess = ({navigation,route}) => {
                         <Text style={{marginBottom:10,fontWeight:"700",fontSize:20,textAlign:"center",}}>Has anyone in your family been diagnosed with <Text style={{color:"white"}}>Melanoma </Text> before ?</Text>
                     </View>
                     <View style={{width:"100%",alignItems:"center"}}>
-                        <Pressable onPress={() => handleOpenBottomSheet("open")} style={styles.startButton}>
+                        <Pressable onPress={() => handleOpenBottomSheet("open")} style={[styles.startButton,{backgroundColor:"white",marginBottom:10}]}>
                             <Text style={{padding:10,fontWeight:"600"}}>Yes</Text>
                         </Pressable>
                         
-                        <Pressable onPress={() => setProgress(0.6)} style={[styles.startButton,{backgroundColor:"black"}]}>
+                        <Pressable onPress={() => setProgress(0.6)} style={[styles.startButton]}>
                             <Text style={{padding:10,fontWeight:"700",color:"white"}}>No</Text>
+                        </Pressable>
+
+                        <Pressable onPress={() => setProgress(0.4)} style={{marginBottom:10}}>
+                            <Text style={{padding:14,fontWeight:"600",color:"black"}}>Back</Text>
                         </Pressable>
                     </View> 
 
@@ -346,35 +397,39 @@ const MelanomaFullProcess = ({navigation,route}) => {
         return(
             <>
                 <View style={styles.startScreen}>
-                    <View style={{marginTop:60,alignItems:"center"}}>  
+                    <View style={{marginTop:50,alignItems:"center"}}>  
                         <Text style={{marginBottom:10,fontWeight:"700",fontSize:20}}>Press the body part to monitor:</Text>
                         <ProgressBar progress={bodyProgress} width={150} height={10} color={"lightgreen"}backgroundColor={"white"} />
-                        <Body
-                            data={completedAreaMarker}
-                            gender={gender}
-                            side={currentSide}
-                            scale={1.1}
-                            //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
-                            colors={['#A6FF9B']}
-                            onBodyPartPress={(slug) => navigation.navigate("MelanomaProcessSingleSlug", { data: slug, gender: gender, userId: currentuser.uid, sessionMemory:sessionMemory, progress:progress })}
-                            zoomOnPress={true}
-                        />
+                            <Body
+                                data={completedAreaMarker}
+                                gender={gender}
+                                side={currentSide}
+                                scale={1}
+                                //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
+                                colors={['#A6FF9B']}
+                                onBodyPartPress={(slug) => navigation.navigate("MelanomaProcessSingleSlug", { data: slug, gender: gender, userId: currentuser.uid, sessionMemory:sessionMemory, progress:progress })}
+                                zoomOnPress={true}
+                            />
 
-                    <View style={styles.colorExplain}>
-                        <View style={styles.colorExplainRow} >
-                            <View style={styles.redDot} />
-                                <Text style={{position:"relative",marginLeft:10,fontWeight:500,opacity:0.8}}>Empty</Text>
-                            </View>
+                            <View style={styles.colorExplain}>
+                                <View style={styles.colorExplainRow} >
+                                <View style={styles.redDot} />
+                                    <Text style={{position:"relative",marginLeft:10,fontWeight:500,opacity:0.8}}>Empty</Text>
+                                </View>
 
-                            <View style={styles.colorExplainRow}>
-                                <View style={styles.greenDot} />
-                                <Text style={{position:"relative",marginLeft:10,fontWeight:500,opacity:0.8}}>Complete</Text>
+                                <View style={styles.colorExplainRow}>
+                                    <View style={styles.greenDot} />
+                                    <Text style={{position:"relative",marginLeft:10,fontWeight:500,opacity:0.8}}>Complete</Text>
+                                </View>
                             </View>
-                        </View>
                     </View>
 
-                    <Pressable onPress={() => bodyProgress == 1 ? setProgress(progress + 0.1) : setIsModalUp(!isModalUp)} style={bodyProgress == 1 ? styles.startButton : {opacity:0.5,borderWidth:1,alignItems:"center",width:"90%",borderRadius:20,marginBottom:10}}>
-                        <Text style={{padding:10,fontWeight:"600"}}>Next</Text>
+                    <Pressable onPress={() => bodyProgress == 1 ? setProgress(progress + 0.1) : setIsModalUp(!isModalUp)} style={bodyProgress == 1 ? styles.startButton : {opacity:0.5,borderWidth:1,alignItems:"center",width:"90%",borderRadius:20,marginBottom:0,backgroundColor:"black"}}>
+                        <Text style={{padding:10,fontWeight:"600",color:"white"}}>Next</Text>
+                    </Pressable>
+
+                    <Pressable onPress={() => setProgress(0.5)} style={{marginTop:-5}}>
+                        <Text style={{padding:14,fontWeight:"600",color:"black"}}>Back</Text>
                     </Pressable>
                 </View>
                 {isModalUp ?
@@ -414,7 +469,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
                         data={completedAreaMarker}
                         gender={gender}
                         side={currentSide}
-                        scale={1.1}
+                        scale={1}
                         //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
                         colors={['#A6FF9B']}
                         onBodyPartPress={(slug) => navigation.navigate("MelanomaProcessSingleSlug", { data: slug, gender: gender, userId: currentuser.uid, sessionMemory:sessionMemory })}
@@ -434,8 +489,12 @@ const MelanomaFullProcess = ({navigation,route}) => {
                     </View>
                 </View>
 
-                <Pressable onPress={() => bodyProgressBack == 1 ? setProgress(progress + 0.1) : setIsModalUp(!isModalUp)} style={bodyProgress == 1 ? styles.startButton : {opacity:0.5,borderWidth:1,alignItems:"center",width:"90%",borderRadius:20,marginBottom:10}}>
-                    <Text style={{padding:10,fontWeight:"600"}}>Next</Text>
+                <Pressable onPress={() => bodyProgress == 1 ? setProgress(0.8) : setIsModalUp(!isModalUp)} style={bodyProgress == 1 ? styles.startButton : {opacity:0.5,borderWidth:1,alignItems:"center",width:"90%",borderRadius:20,marginBottom:0,backgroundColor:"black"}}>
+                    <Text style={{padding:10,fontWeight:"600",color:"white"}}>Next</Text>
+                </Pressable>
+
+                <Pressable onPress={() => {setProgress(0.6);setCurrentSide("front")}} style={{marginTop:-5}}>
+                    <Text style={{padding:14,fontWeight:"600",color:"black"}}>Back</Text>
                 </Pressable>
             </View>
             {isModalUp ?
@@ -451,7 +510,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
                             <Text style={{fontWeight:"700",color:"white"}}>No</Text>
                         </Pressable>
 
-                        <Pressable onPress={() => setProgress(progress + 0.1)} style={styles.modalNoBtn}>
+                        <Pressable onPress={() => setProgress(0.8)} style={styles.modalNoBtn}>
                             <Text style={{fontWeight:"700"}}>Yes</Text>
                         </Pressable>
 
@@ -529,8 +588,9 @@ const styles = StyleSheet.create({
         borderWidth:1,
         alignItems:"center",
         width:"90%",
-        borderRadius:20,
-        marginBottom:10
+        borderRadius:10,
+        marginBottom:2,
+        backgroundColor:"black"
     },
     startButtonNA:{
         borderWidth:1,
@@ -656,7 +716,7 @@ const styles = StyleSheet.create({
         alignItems: 'left',
         position: 'absolute',
         marginTop: 10,
-        top: 140,
+        top: 100,
         left: 0,
     },
     colorExplainRow: {
