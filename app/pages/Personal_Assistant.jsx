@@ -1,6 +1,6 @@
 
 //BASIC IMPORTS
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState,useRef} from 'react';
 import { ScrollView,StyleSheet,Text,View,FlatList, Pressable,Image,TextInput,TouchableOpacity,Switch } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 //FIREBASE CLASSES
@@ -15,6 +15,10 @@ import ChatMessage from "../components/Assistant/chatLog";
 import { useAuth } from '../context/UserAuthContext';
 import Calendar from '../components/HomePage/HorizontalCallendar';
 
+import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
+import "react-native-gesture-handler"
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 const AssistantPage = ({navigation}) => {
 
 
@@ -24,6 +28,8 @@ const [isInputActive,setIsInputActive] = useState(false);
 
 const [headerSelect, setHeaderSelect] = useState(false)
 
+const [assistantType, setAssistantType] = useState("")
+
 const [inputText,setInputText] = useState('');
 
 const [chatLog,setChatLog] = useState([]);
@@ -31,6 +37,8 @@ const [chatLog,setChatLog] = useState([]);
 const [isFirstQuestion,setIsFirstQuestion] = useState(true);
 
 const [questionLoading,setQuestionLoading] = useState(false);
+
+const [isContextPanelOpen,setIsContextPanelOpen] = useState(false)
 
 const [ contextToggles , setContextToggles ] = useState({
   useBloodWork:false,
@@ -61,6 +69,12 @@ const ContextOptions = [
   },
 ]
 
+//Bottom Sheet
+const bottomSheetRef = useRef(null);
+const chatSheetRef = useRef(null);
+const snapPoints = ['80%'];
+const chatSnapPoints = ["100%"];
+
 const functions = getFunctions(app);
 
 //<********************FUNCTIONS************************>
@@ -82,19 +96,17 @@ const generateTextFromPrompt = async (request) => {
 
 const handlePromptTrigger = (e) => { 
   if (questionLoading == false){
-      setIsFirstQuestion(false)
       setIsInputActive(false)
       // Do something when Enter is pressed, e.g., trigger a function or submit a form
       e.preventDefault();
       setQuestionLoading(true)
-
+      chatSheetRef.current.present()
       const  question =  inputText;
       let chatLogNew = [...chatLog, {user: "me", message: `${question}`} ];
       //Loading GPT
       setChatLog([...chatLogNew, {user: "gpt", message: "Loading..."}]);
       //FUNCTION EVENT
       generateTextFromPrompt(question);
-      setIsFirstQuestion(false)
       setInputText("")
     } else {
         alert("Wait for the answer !")
@@ -115,149 +127,114 @@ const handleSwitch = (name,e) => {
   }
 }
 
+const handleOpenBottomSheet = (state) => {
+  if(state == "open"){
+      bottomSheetRef.current.present();
+    
+  } else if (state == "hide"){
+      bottomSheetRef.current.close();
+      setProgress(progress + 0.1)
+  }
+}
+
 
 //<******************** CHild Components ************************>
 
   function AiAssistant(){
     return(
-    <View style={styles.container}>
+          <View style={styles.container}>
 
-      {isFirstQuestion ? (
-        <>
-          <ScrollView style={{flexDirection:"row"}} horizontal>
-          <View style={styles.assistantQuestionsContainer}>
-            <View style={styles.assistantQuestionBox}>
-              <MaterialCommunityIcons
-                name="heart-pulse"
-                size={25}
-                color="black"
-              />
-              <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
-              <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
-            </View>
+            {isFirstQuestion ? (
+              <View style={styles.assistantQuestionsContainer}>
+
+                <View style={{borderWidth:2,padding:20,width:"40%",marginTop:20,borderRadius:10,marginRight:20}}>
+                  <Text style={{fontWeight:"500",fontSize:10}}>Taed concerns !</Text>
+                  <Text style={{fontWeight:"800",fontSize:15,marginTop:3}}>Ask anything</Text>
+                  <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:2,borderColor:"magenta",borderRadius:20,padding:3,justifyContent:"center",backgroundColor:"white",marginTop:10}]}>
+                      <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:10}}>Ask</Text>
+                      <MaterialCommunityIcons 
+                        name='arrow-right'
+                        color={"magenta"}
+                        size={12}
+                      />
+                    </Pressable>
+                </View>
       
-            <View style={styles.assistantQuestionBox}>
-              <MaterialCommunityIcons
-                name="heart-pulse"
-                size={25}
-                color="black"
-              />
-              <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
-              <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
-            </View>
+                <View style={{borderWidth:2,padding:20,width:"40%",marginTop:20,borderRadius:10}}>
+                  <Text style={{fontWeight:"500",fontSize:10}}>Taed concerns !</Text>
+                  <Text style={{fontWeight:"800",fontSize:15,marginTop:3}}>Ask anything</Text>
+                  <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:2,borderColor:"magenta",borderRadius:20,padding:8,justifyContent:"center",backgroundColor:"white",marginTop:20}]}>
+                      <Text style={{color:"black",marginRight:10,fontWeight:"600"}}>Ask</Text>
+                      <MaterialCommunityIcons 
+                        name='arrow-right'
+                        color={"magenta"}
+                        size={15}
+                      />
+                    </Pressable>
+                </View>
+
+                <View style={{borderWidth:2,padding:20,width:"40%",marginTop:20,borderRadius:10,marginRight:20}}>
+                  <Text style={{fontWeight:"500",fontSize:10}}>Taed concerns !</Text>
+                  <Text style={{fontWeight:"800",fontSize:15,marginTop:3}}>Ask anything</Text>
+                  <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:2,borderColor:"magenta",borderRadius:20,padding:8,justifyContent:"center",backgroundColor:"white",marginTop:20}]}>
+                      <Text style={{color:"black",marginRight:10,fontWeight:"600"}}>Ask</Text>
+                      <MaterialCommunityIcons 
+                        name='arrow-right'
+                        color={"magenta"}
+                        size={15}
+                      />
+                    </Pressable>
+                </View>
       
-            <View style={styles.assistantQuestionBox}>
-              <MaterialCommunityIcons
-                name="heart-pulse"
-                size={25}
-                color="black"
-              />
-              <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
-              <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
+                <View style={{borderWidth:2,padding:20,width:"40%",marginTop:20,borderRadius:10}}>
+                  <Text style={{fontWeight:"500",fontSize:10}}>Taed concerns !</Text>
+                  <Text style={{fontWeight:"800",fontSize:15,marginTop:3}}>Ask anything</Text>
+                  <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:2,borderColor:"magenta",borderRadius:20,padding:8,justifyContent:"center",backgroundColor:"white",marginTop:20}]}>
+                      <Text style={{color:"black",marginRight:10,fontWeight:"600"}}>Ask</Text>
+                      <MaterialCommunityIcons 
+                        name='arrow-right'
+                        color={"magenta"}
+                        size={15}
+                      />
+                    </Pressable>
+                </View>
+              </View>
+            ):(
+              <ScrollView style={{height:100,marginTop:20,width:"100%"}}>
+                {chatLog.map((message,index) => (
+                    <ChatMessage message={message} key={index} />
+                ))}
+              </ScrollView>
+              )}
+
+            <View style={[!isInputActive ? {width:"75%",position:"absolute",bottom:80,left:20}:{width:"100%",position:"absolute",bottom:235,left:20,backgroundColor:"white",paddingBottom:30,paddingTop:20},assistantType == "" && {opacity:1}]}>
+              <Pressable onPress={() => handleOpenBottomSheet("open")} style={styles.horizontalQuBox}>
+                <Text style={{padding:10,fontSize:10,fontWeight:"600"}}>Open Context Panel</Text>
+              </Pressable>
+             
             </View>
-      
-            <View style={styles.assistantQuestionBox}>
-              <MaterialCommunityIcons
-                name="heart-pulse"
-                size={25}
-                color="black"
+            
+            <View style={[!isInputActive ? styles.inputContainerNotActive : styles.inputContainerActive, assistantType == "" && {opacity:0.4}]}>
+              <TextInput 
+                placeholder='Type here ...' 
+                style={styles.inputField} 
+                onChangeText={(e) => setInputText(e)} 
+                onFocus={() => setIsInputActive(true)} 
+                onEndEditing={() => setIsInputActive(false)} 
+                onSubmitEditing={handlePromptTrigger} 
+                onTouchCancel={() => setIsInputActive(false)} 
+                onTouchEnd={() => setIsInputActive(false)}
               />
-              <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
-              <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
+              <Pressable onPress={handlePromptTrigger} style={{backgroundColor:"#CFFFFE",marginLeft:20,borderWidth:0.3,borderRadius:5,width:50,height:50,justifyContent:"center",alignItems:"center"}}>
+                <MaterialCommunityIcons 
+                  name="send"
+                  size={25}
+                  color="black"
+                />
+              </Pressable>
             </View>
           </View>
-          <View style={styles.assistantQuestionsContainer}>
-            <View style={styles.assistantQuestionBox}>
-              <MaterialCommunityIcons
-                name="heart-pulse"
-                size={25}
-                color="black"
-              />
-              <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
-              <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
-            </View>
-      
-            <View style={styles.assistantQuestionBox}>
-              <MaterialCommunityIcons
-                name="heart-pulse"
-                size={25}
-                color="black"
-              />
-              <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
-              <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
-            </View>
-      
-            <View style={styles.assistantQuestionBox}>
-              <MaterialCommunityIcons
-                name="heart-pulse"
-                size={25}
-                color="black"
-              />
-              <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
-              <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
-            </View>
-      
-            <View style={styles.assistantQuestionBox}>
-              <MaterialCommunityIcons
-                name="heart-pulse"
-                size={25}
-                color="black"
-              />
-              <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
-              <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
-            </View>
-          </View>
-        </ScrollView>
-        </>
-      ):(
-        <ScrollView style={{height:100,marginTop:20,width:"100%"}}>
-          {chatLog.map((message,index) => (
-              <ChatMessage message={message} key={index} />
-          ))}
-        </ScrollView>
-        )}
 
-      <ScrollView horizontal style={!isInputActive ? {width:"100%",position:"absolute",bottom:80,left:20}:{width:"100%",position:"absolute",bottom:235,left:20,backgroundColor:"white",paddingBottom:30,paddingTop:20}} showsHorizontalScrollIndicator={false}>
-        <View style={styles.horizontalQuBox}>
-          <Text style={{padding:10,fontSize:10}}>What is my .... ?</Text>
-        </View>
-        <View style={styles.horizontalQuBox}>
-          <Text style={{padding:10,fontSize:10}}>What is my .... ?</Text>
-        </View>
-
-        <View style={styles.horizontalQuBox}>
-          <Text style={{padding:10,fontSize:10}}>What is my .... ?</Text>
-        </View>
-
-        <View style={styles.horizontalQuBox}>
-          <Text style={{padding:10,fontSize:10}}>What is my .... ?</Text>
-        </View>
-
-        <View style={styles.horizontalQuBox}>
-          <Text style={{padding:10,fontSize:10}}>What is my .... ?</Text>
-        </View>
-      </ScrollView>
-
-      <View style={!isInputActive ? styles.inputContainerNotActive : styles.inputContainerActive}>
-        <TextInput 
-          placeholder='Type here ...' 
-          style={styles.inputField} 
-          onChangeText={(e) => setInputText(e)} 
-          onFocus={() => setIsInputActive(true)} 
-          onEndEditing={() => setIsInputActive(false)} 
-          onSubmitEditing={handlePromptTrigger} 
-          onTouchCancel={() => setIsInputActive(false)} 
-          onTouchEnd={() => setIsInputActive(false)}
-        />
-        <Pressable onPress={handlePromptTrigger} style={{backgroundColor:"#CFFFFE",marginLeft:20,borderWidth:0.3,borderRadius:5,width:50,height:50,justifyContent:"center",alignItems:"center"}}>
-          <MaterialCommunityIcons 
-            name="send"
-            size={25}
-            color="black"
-          />
-        </Pressable>
-      </View>
-    </View>
     )
   }
 
@@ -308,35 +285,69 @@ const handleSwitch = (name,e) => {
 return (
 
   <>
-    <View style={{width:"100%",backgroundColor:"rgba(0,0,0,1)",padding:10,textAlign:"center",position:"relative",height:120,justifyContent:"center",alignItems:"center",paddingTop:30}}>
-          {headerSelect ? 
+    <GestureHandlerRootView style={{ flex: 1,width:"100%" }}>
+    <BottomSheetModalProvider>
+    <View style={[{width:"100%",backgroundColor:"rgba(0,0,0,1)",padding:10,textAlign:"center",position:"relative",height:120,justifyContent:"center",alignItems:"center",paddingTop:30},!isFirstQuestion && headerSelect && {height:0}]}>
+          {!isContextPanelOpen ?
+            headerSelect ? (
                   <View>
-                    <Text style={{fontSize:25,fontWeight:600,color:"white"}}>Hi,</Text>
-                    <Text style={{fontSize:25,fontWeight:600,color:"white"}}>How can I help you ?</Text>
-                    </View>
-                  :
-              <Text style={{fontWeight:"700",fontSize:20,width:"100%",color:"white",textAlign:"center",position:"relative"}}>
-                <Text style={{color:"gray",fontWeight:"800",}}> Pick the data </Text>
-                you want <Text style={{color:"gray",fontWeight:"800"}}>Ai</Text> to see during your assistance
+                    <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>Are you having suspicious sympthoms ?</Text>
+                    <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Ask anything</Text>
+                  </View>
+                  ):(
+                  
+                  <View>
+                    <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>Are you having suspicious sympthoms ?</Text>
+                    <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Get a diagnosis</Text>
+                  </View>
+                  )
+            :
+            <Text style={{fontWeight:"700",fontSize:20,width:"100%",color:"white",textAlign:"center",position:"relative"}}>
+              <Text style={{color:"gray",fontWeight:"800",}}> Pick the data </Text>
+              you want <Text style={{color:"gray",fontWeight:"800"}}>Ai</Text> to see during your assistance
             </Text> 
             
           }
     </View> 
 
-    <View style={{flexDirection:"row",justifyContent:"space-evenly",alignItems:"center",width:"100%",zIndex:5, position:"relative",backgroundColor:"rgba(0,0,0,0.9)",height:50}}>
+    <View style={{flexDirection:"row",justifyContent:"space-evenly",alignItems:"center",width:"100%",zIndex:0, position:"relative",backgroundColor:"rgba(0,0,0,0.9)",height:50}}>
       <TouchableOpacity onPress={() => setHeaderSelect(true)} style={headerSelect ? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
         <Text style={headerSelect?{fontWeight:"600",color:"white"}:{opacity:0.4,fontWeight:600,color:"white"}}>AI Assistant</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => setHeaderSelect(false)} style={!headerSelect ? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
-        <Text style={headerSelect?{opacity:0.4,fontWeight:600,color:"white"}:{fontWeight:"600",color:"white"}}>Context Panel</Text>
+        <Text style={headerSelect?{opacity:0.4,fontWeight:600,color:"white"}:{fontWeight:"600",color:"white"}}>Diagnosis</Text>
       </TouchableOpacity>
     </View>
       
     {headerSelect ? 
       <AiAssistant />
       :
-      <ContextPanel />
+      null
     }
+      <BottomSheetModal
+        ref={bottomSheetRef}
+        snapPoints={snapPoints}
+        onChange={() => setIsContextPanelOpen(!isContextPanelOpen)}
+        enablePanDownToClose={true}
+        handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:30,color:"white"}}
+        handleIndicatorStyle={{backgroundColor:"white"}}
+      >
+        {ContextPanel()}
+      </BottomSheetModal>
+
+      <BottomSheetModal
+        ref={chatSheetRef}
+        snapPoints={chatSnapPoints}
+        enablePanDownToClose={true}
+        onChange={() => setIsFirstQuestion(!isFirstQuestion)}
+        handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:30,color:"white"}}
+        handleIndicatorStyle={{backgroundColor:"white"}}
+      >
+        {AiAssistant()}
+      </BottomSheetModal>
+
+    </BottomSheetModalProvider>
+    </GestureHandlerRootView >
   </>
 )}
 
@@ -416,7 +427,7 @@ const styles = StyleSheet.create({
     alignItems:'center',
     justifyContent:'center',
     flexDirection:'column',
-    opacity:0.6,
+    opacity:1,
     marginRight:15
   },
   contextBox:{
