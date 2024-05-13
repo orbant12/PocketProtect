@@ -28,15 +28,20 @@ const MelanomaFullProcess = ({navigation,route}) => {
     const sessionMemory = route.params.sessionMemory
     //Modal toggle
     const [isModalUp, setIsModalUp] = useState(false)
+    const [ melanomaMetaData, setMelanomaMetaData] = useState({
+        sunburn:{
+            stage:0,
+            slug:""
+        },
+        skin_type: null,
+        detected_relative:"none",
+
+    })
     //SKIN BURN
-    const [sunBurn, setSunBurn] = useState("never")
     const [haveBeenBurned, setHaveBeenBurned] = useState(false)
     const [selectedBurnSide, setSelectedBurnSide] = useState("front")
-    const [selectedBurnSlug, setSelectedBurnSlug] = useState("Not Selected")
-    //SKIN TYPE
-    const [skinType, setSkinType] = useState(null)
+
     //PARENT DIAGNOSED
-    const [ diagnosedFamilyMember,setDiagnosedFamilyMember] = useState("")
     const familyMemberOptions = [
         {
             member:"father",
@@ -88,6 +93,34 @@ const MelanomaFullProcess = ({navigation,route}) => {
         } else if (state == "hide"){
             bottomSheetRef.current.close();
             setProgress(progress + 0.1)
+        }
+    }
+
+    const handleMelanomaDataChange = (type,data) => {
+        if(type == "slug"){
+            setMelanomaMetaData({
+                ...melanomaMetaData,
+                "sunburn":{
+                    [type]: data
+                } 
+            })
+        } else if (type == "stage"){
+            setMelanomaMetaData({
+                ...melanomaMetaData,
+                sunburn:{
+                    stage:data
+                }
+            })
+        } else if (type == "skin_type"){
+            setMelanomaMetaData({
+                ...melanomaMetaData,
+                [type]:data
+            })
+        } else if (type ==  "detected_relative"){
+            setMelanomaMetaData({
+                ...melanomaMetaData,
+                detected_relative:data
+            })
         }
     }
 
@@ -192,11 +225,11 @@ const MelanomaFullProcess = ({navigation,route}) => {
             {!haveBeenBurned ? 
                 <View style={styles.startScreen}>
                     <View style={{marginTop:50,alignItems:"center"}}>  
-                        <Text style={{marginBottom:10,fontWeight:"700",fontSize:20,backgroundColor:"white"}}>Have you been sunburned ?</Text>
+                        <Text style={{marginBottom:10,fontWeight:"700",fontSize:20,backgroundColor:"white"}}>Have you been sunburnt ?</Text>
                         
                     </View>
                     <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:0}}>
-                            <Pressable onPress={() => setSunBurn ("never")} style={sunBurn == "never" ? styles.genderOptionButtonA : styles.genderOptionButton}>
+                            <Pressable onPress={() => handleMelanomaDataChange("stage",0)} style={melanomaMetaData.sunburn.stage  == 0 ? styles.genderOptionButtonA : styles.genderOptionButton}>
                                 <MaterialCommunityIcons 
                                     name="weight"
                                     size={20}
@@ -204,7 +237,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
                                 />
                                 <Text style={{fontWeight:"600",fontSize:17}}>Never</Text>
                             </Pressable>
-                            <Pressable onPress={() => setSunBurn ("stage1")} style={sunBurn  == "stage1" ? styles.genderOptionButtonA : styles.genderOptionButton}>
+                            <Pressable onPress={() => handleMelanomaDataChange("stage",1)} style={melanomaMetaData.sunburn.stage  == 1 ? styles.genderOptionButtonA : styles.genderOptionButton}>
                                 <MaterialCommunityIcons 
                                     name="heart"
                                     size={20}
@@ -214,7 +247,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
                             </Pressable>
                         </View>
                         <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:50}}>
-                            <Pressable onPress={() => setSunBurn ("stage2")} style={sunBurn  == "stage2" ? styles.genderOptionButtonA : styles.genderOptionButton}>
+                            <Pressable onPress={() => handleMelanomaDataChange("stage",2)} style={melanomaMetaData.sunburn.stage  == 2 ? styles.genderOptionButtonA : styles.genderOptionButton}>
                                 <MaterialCommunityIcons 
                                     name="weight"
                                     size={20}
@@ -222,7 +255,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
                                 />
                                 <Text style={{fontWeight:"600",fontSize:17}}>Stage II</Text>
                             </Pressable>
-                            <Pressable onPress={() => setSunBurn ("stage3")} style={sunBurn == "stage3" ? styles.genderOptionButtonA : styles.genderOptionButton}>
+                            <Pressable onPress={() => handleMelanomaDataChange("stage",3)}style={melanomaMetaData.sunburn.stage  == 3 ? styles.genderOptionButtonA : styles.genderOptionButton}>
                                 <MaterialCommunityIcons 
                                     name="heart"
                                     size={20}
@@ -232,21 +265,21 @@ const MelanomaFullProcess = ({navigation,route}) => {
                             </Pressable>
                         </View>
                         <View style={{width:"100%",alignItems:"center"}}>
-                        {sunBurn == "never" ? 
+                        {melanomaMetaData.sunburn.stage  == 0 ? 
                             <Pressable  onPress={() => setProgress(0.4)} style={styles.startButton}>
                                 <Text style={{padding:10,fontWeight:"600",color:"white"}}>Next</Text>
                             </Pressable>
-                            :sunBurn == "stage1" ? 
+                            :melanomaMetaData.sunburn.stage== 1 ? 
                             <Pressable onPress={() => setHaveBeenBurned(!haveBeenBurned)} style={styles.startButton}>
                                 <Text style={{padding:10,fontWeight:"600",color:"white"}}>Where ?</Text>
                             </Pressable>
                             :
-                            sunBurn == "stage2" ? 
+                            melanomaMetaData.sunburn.stage == 2 ? 
                             <Pressable onPress={() => setHaveBeenBurned(!haveBeenBurned)} style={styles.startButton}>
                                 <Text style={{padding:10,fontWeight:"600",color:"white"}}>Where ?</Text>
                             </Pressable>
                             :
-                            sunBurn == "stage3" ? 
+                            melanomaMetaData.sunburn.stage == 3 ? 
                             <Pressable onPress={() => setHaveBeenBurned(!haveBeenBurned)} style={styles.startButton}>
                                 <Text style={{padding:10,fontWeight:"600",color:"white"}}>Where ?</Text>
                             </Pressable>
@@ -267,11 +300,11 @@ const MelanomaFullProcess = ({navigation,route}) => {
                 </View>
                 <View style={{flexDirection:"column",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:0,borderTopWidth:1}}>
                         <Body 
-                            data={[{slug: selectedBurnSlug}]}
+                            data={[{slug: melanomaMetaData.sunburn.slug}]}
                             side={selectedBurnSide}
                             gender={gender}
                             scale={0.9}
-                            onBodyPartPress={(slug) => setSelectedBurnSlug(slug.slug)}
+                            onBodyPartPress={(slug) => handleMelanomaDataChange("slug",slug.slug)}
                         />
                         <View style={styles.positionSwitch}>
                             <Pressable onPress={() => setSelectedBurnSide("front")}>
@@ -284,7 +317,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
                         </View>
                 </View>
                 <View style={{width:"100%",alignItems:"center"}}>
-                    {selectedBurnSlug != "Not Selected" ? 
+                    {melanomaMetaData.sunburn.slug != "Not Selected" ? 
                         <Pressable onPress={() => {setProgress(0.4)}} style={styles.startButton}>
                             <Text style={{padding:10,fontWeight:"600",color:"white"}}>Next</Text>
                         </Pressable>
@@ -311,20 +344,20 @@ const MelanomaFullProcess = ({navigation,route}) => {
                     
                 </View>
                 <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:0}}>
-                        <Pressable onPress={() => setSkinType(0)} style={[{ backgroundColor:"#fde3ce"}, skinType == 0 ? styles.skinTypeOptionButtonA : styles.skinTypeOptionButton]} />
+                        <Pressable onPress={() => handleMelanomaDataChange("skin_type",0)} style={[{ backgroundColor:"#fde3ce"}, melanomaMetaData.skin_type == 0 ? styles.skinTypeOptionButtonA : styles.skinTypeOptionButton]} />
                         
-                        <Pressable onPress={() => setSkinType (1)} style={[{ backgroundColor:"#fbc79d"},skinType  == 1 ? styles.skinTypeOptionButtonA : styles.skinTypeOptionButton]} />                                    
+                        <Pressable onPress={() => handleMelanomaDataChange("skin_type",1)} style={[{ backgroundColor:"#fbc79d"},melanomaMetaData.skin_type  == 1 ? styles.skinTypeOptionButtonA : styles.skinTypeOptionButton]} />                                    
                 </View>
 
                     <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:50}}>
-                        <Pressable onPress={() => setSkinType(2)} style={[{ backgroundColor:"#934506"},skinType  == 2 ? styles.skinTypeOptionButtonA: styles.skinTypeOptionButton]} />
+                        <Pressable onPress={() => handleMelanomaDataChange("skin_type",2)} style={[{ backgroundColor:"#934506"},melanomaMetaData.skin_type  == 2 ? styles.skinTypeOptionButtonA: styles.skinTypeOptionButton]} />
                         
-                        <Pressable onPress={() => setSkinType(3)} style={[{ backgroundColor:"#311702"},skinType == 3 ? styles.skinTypeOptionButtonA : styles.skinTypeOptionButton]} />
+                        <Pressable onPress={() => handleMelanomaDataChange("skin_type",3)} style={[{ backgroundColor:"#311702"},melanomaMetaData.skin_type == 3 ? styles.skinTypeOptionButtonA : styles.skinTypeOptionButton]} />
             
                     
                     </View>
                     <View style={{width:"100%",alignItems:"center"}}>
-                    {skinType!= null ? 
+                    {melanomaMetaData.skin_type != null ? 
                         <Pressable onPress={() => setProgress(0.5)} style={styles.startButton}>
                             <Text style={{padding:10,fontWeight:"600",color:"white"}}>Next</Text>
                         </Pressable>
@@ -374,7 +407,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
                             <Text style={{fontWeight:700,textAlign:"center",fontSize:20}}>Please select whom from your family had been diagnosed ...</Text>
                             <ScrollView horizontal style={{width:"100%",marginTop:50}} showsHorizontalScrollIndicator={false}>
                                 {familyMemberOptions.map((data) => (
-                                    <Pressable key={data.member} onPress={() => setDiagnosedFamilyMember(data.member)} style={diagnosedFamilyMember == data.member ? styles.selectableBubbleA : styles.selectableBubble} >
+                                    <Pressable key={data.member} onPress={() => handleMelanomaDataChange("detected_relative",data.member)} style={melanomaMetaData.detected_relative == data.member ? styles.selectableBubbleA : styles.selectableBubble} >
                                         <MaterialCommunityIcons
                                             name="heart"
                                         />
@@ -852,6 +885,14 @@ const styles = StyleSheet.create({
         borderWidth:2,
         borderColor:"lightblue",
         borderRadius:20,
+    },
+    progressDot:{
+        width:6,
+        height:6,
+        borderRadius:100,
+        backgroundColor:"black",
+        position:"absolute",
+        bottom:70
     }
 })
 

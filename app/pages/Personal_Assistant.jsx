@@ -1,7 +1,7 @@
 
 //BASIC IMPORTS
 import React, {useEffect, useState} from 'react';
-import { ScrollView,StyleSheet,Text,View,FlatList, Pressable,Image,TextInput } from 'react-native';
+import { ScrollView,StyleSheet,Text,View,FlatList, Pressable,Image,TextInput,TouchableOpacity,Switch } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 //FIREBASE CLASSES
 import moment, { max } from 'moment'
@@ -15,12 +15,14 @@ import ChatMessage from "../components/Assistant/chatLog";
 import { useAuth } from '../context/UserAuthContext';
 import Calendar from '../components/HomePage/HorizontalCallendar';
 
-export default function AssistantPage({navigation}) {
+const AssistantPage = ({navigation}) => {
 
 
 //<**********************VARIABLES******************************>
 
 const [isInputActive,setIsInputActive] = useState(false);
+
+const [headerSelect, setHeaderSelect] = useState(false)
 
 const [inputText,setInputText] = useState('');
 
@@ -29,6 +31,35 @@ const [chatLog,setChatLog] = useState([]);
 const [isFirstQuestion,setIsFirstQuestion] = useState(true);
 
 const [questionLoading,setQuestionLoading] = useState(false);
+
+const [ contextToggles , setContextToggles ] = useState({
+  useBloodWork:false,
+  useWeatherEffect:false,
+})
+
+
+const ContextOptions = [
+  {
+    title:"Blood Work",
+    stateName:contextToggles.useBloodWork,
+    stateID:"useBloodWork"
+  },
+  {
+    title:"Weather Effects",
+    stateName:contextToggles.useWeatherEffect,
+    stateID:"useWeatherEffect"
+  },
+  {
+    title:"Weather Effects",
+    stateName:contextToggles.useWeatherEffect,
+    stateID:"useWeatherEffect"
+  },
+  {
+    title:"Weather Effects",
+    stateName:contextToggles.useWeatherEffect,
+    stateID:"useWeatherEffect"
+  },
+]
 
 const functions = getFunctions(app);
 
@@ -70,152 +101,244 @@ const handlePromptTrigger = (e) => {
     }
 };
 
-return (
-<View style={styles.container}>
-
-  {isFirstQuestion ? (
-    <>
-      <View style={styles.assistantTitle}>
-      <Text style={{fontSize:25,fontWeight:600}}>Hi,</Text>
-      <Text style={{fontSize:25,fontWeight:600}}>How can I help you ?</Text>
-    </View>
-      <ScrollView style={{flexDirection:"row"}} horizontal>
-      <View style={styles.assistantQuestionsContainer}>
-        <View style={styles.assistantQuestionBox}>
-          <MaterialCommunityIcons
-            name="heart-pulse"
-            size={25}
-            color="black"
-          />
-          <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
-          <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
-        </View>
-  
-        <View style={styles.assistantQuestionBox}>
-          <MaterialCommunityIcons
-            name="heart-pulse"
-            size={25}
-            color="black"
-          />
-          <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
-          <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
-        </View>
-  
-        <View style={styles.assistantQuestionBox}>
-          <MaterialCommunityIcons
-            name="heart-pulse"
-            size={25}
-            color="black"
-          />
-          <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
-          <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
-        </View>
-  
-        <View style={styles.assistantQuestionBox}>
-          <MaterialCommunityIcons
-            name="heart-pulse"
-            size={25}
-            color="black"
-          />
-          <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
-          <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
-        </View>
-      </View>
-      <View style={styles.assistantQuestionsContainer}>
-        <View style={styles.assistantQuestionBox}>
-          <MaterialCommunityIcons
-            name="heart-pulse"
-            size={25}
-            color="black"
-          />
-          <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
-          <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
-        </View>
-  
-        <View style={styles.assistantQuestionBox}>
-          <MaterialCommunityIcons
-            name="heart-pulse"
-            size={25}
-            color="black"
-          />
-          <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
-          <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
-        </View>
-  
-        <View style={styles.assistantQuestionBox}>
-          <MaterialCommunityIcons
-            name="heart-pulse"
-            size={25}
-            color="black"
-          />
-          <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
-          <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
-        </View>
-  
-        <View style={styles.assistantQuestionBox}>
-          <MaterialCommunityIcons
-            name="heart-pulse"
-            size={25}
-            color="black"
-          />
-          <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
-          <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
-        </View>
-      </View>
-    </ScrollView>
-    </>
-  ):(
-    <ScrollView style={{height:100,marginTop:20,width:"100%"}}>
-      {chatLog.map((message,index) => (
-          <ChatMessage message={message} key={index} />
-      ))}
-    </ScrollView>
-    )}
-
-  <ScrollView horizontal style={!isInputActive ? {width:"100%",position:"absolute",bottom:80,left:20}:{width:"100%",position:"absolute",bottom:235,left:20,backgroundColor:"white",paddingBottom:30,paddingTop:20}} showsHorizontalScrollIndicator={false}>
-    <View style={styles.horizontalQuBox}>
-      <Text style={{padding:10,fontSize:10}}>What is my .... ?</Text>
-    </View>
-    <View style={styles.horizontalQuBox}>
-      <Text style={{padding:10,fontSize:10}}>What is my .... ?</Text>
-    </View>
-
-    <View style={styles.horizontalQuBox}>
-      <Text style={{padding:10,fontSize:10}}>What is my .... ?</Text>
-    </View>
-
-    <View style={styles.horizontalQuBox}>
-      <Text style={{padding:10,fontSize:10}}>What is my .... ?</Text>
-    </View>
-
-    <View style={styles.horizontalQuBox}>
-      <Text style={{padding:10,fontSize:10}}>What is my .... ?</Text>
-    </View>
-  </ScrollView>
-
-  <View style={!isInputActive ? styles.inputContainerNotActive : styles.inputContainerActive}>
-    <TextInput 
-      placeholder='Type here ...' 
-      style={styles.inputField} 
-      onChangeText={(e) => setInputText(e)} 
-      onFocus={() => setIsInputActive(true)} 
-      onEndEditing={() => setIsInputActive(false)} 
-      onSubmitEditing={handlePromptTrigger} 
-      onTouchCancel={() => setIsInputActive(false)} 
-      onTouchEnd={() => setIsInputActive(false)}
-    />
-    <Pressable onPress={handlePromptTrigger} style={{backgroundColor:"#CFFFFE",marginLeft:20,borderWidth:0.3,borderRadius:5,width:50,height:50,justifyContent:"center",alignItems:"center"}}>
-      <MaterialCommunityIcons 
-        name="send"
-        size={25}
-        color="black"
-      />
-    </Pressable>
-  </View>
-</View>
-
-);
+const handleSwitch = (name,e) => {
+  if ( name == "useBloodWork"){
+    setContextToggles({
+      ...contextToggles,
+      [name]:e
+    })
+  }  else if ( name == "useWeatherEffect"){
+    setContextToggles({
+      ...contextToggles,
+      [name]:e
+    })
+  }
 }
+
+
+//<******************** CHild Components ************************>
+
+  function AiAssistant(){
+    return(
+    <View style={styles.container}>
+
+      {isFirstQuestion ? (
+        <>
+          <ScrollView style={{flexDirection:"row"}} horizontal>
+          <View style={styles.assistantQuestionsContainer}>
+            <View style={styles.assistantQuestionBox}>
+              <MaterialCommunityIcons
+                name="heart-pulse"
+                size={25}
+                color="black"
+              />
+              <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
+              <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
+            </View>
+      
+            <View style={styles.assistantQuestionBox}>
+              <MaterialCommunityIcons
+                name="heart-pulse"
+                size={25}
+                color="black"
+              />
+              <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
+              <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
+            </View>
+      
+            <View style={styles.assistantQuestionBox}>
+              <MaterialCommunityIcons
+                name="heart-pulse"
+                size={25}
+                color="black"
+              />
+              <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
+              <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
+            </View>
+      
+            <View style={styles.assistantQuestionBox}>
+              <MaterialCommunityIcons
+                name="heart-pulse"
+                size={25}
+                color="black"
+              />
+              <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
+              <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
+            </View>
+          </View>
+          <View style={styles.assistantQuestionsContainer}>
+            <View style={styles.assistantQuestionBox}>
+              <MaterialCommunityIcons
+                name="heart-pulse"
+                size={25}
+                color="black"
+              />
+              <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
+              <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
+            </View>
+      
+            <View style={styles.assistantQuestionBox}>
+              <MaterialCommunityIcons
+                name="heart-pulse"
+                size={25}
+                color="black"
+              />
+              <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
+              <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
+            </View>
+      
+            <View style={styles.assistantQuestionBox}>
+              <MaterialCommunityIcons
+                name="heart-pulse"
+                size={25}
+                color="black"
+              />
+              <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
+              <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
+            </View>
+      
+            <View style={styles.assistantQuestionBox}>
+              <MaterialCommunityIcons
+                name="heart-pulse"
+                size={25}
+                color="black"
+              />
+              <Text style={{fontSize:20,fontWeight:500}}>Health</Text>
+              <Text style={{fontSize:13,fontWeight:400}}>Can you list all ?</Text>
+            </View>
+          </View>
+        </ScrollView>
+        </>
+      ):(
+        <ScrollView style={{height:100,marginTop:20,width:"100%"}}>
+          {chatLog.map((message,index) => (
+              <ChatMessage message={message} key={index} />
+          ))}
+        </ScrollView>
+        )}
+
+      <ScrollView horizontal style={!isInputActive ? {width:"100%",position:"absolute",bottom:80,left:20}:{width:"100%",position:"absolute",bottom:235,left:20,backgroundColor:"white",paddingBottom:30,paddingTop:20}} showsHorizontalScrollIndicator={false}>
+        <View style={styles.horizontalQuBox}>
+          <Text style={{padding:10,fontSize:10}}>What is my .... ?</Text>
+        </View>
+        <View style={styles.horizontalQuBox}>
+          <Text style={{padding:10,fontSize:10}}>What is my .... ?</Text>
+        </View>
+
+        <View style={styles.horizontalQuBox}>
+          <Text style={{padding:10,fontSize:10}}>What is my .... ?</Text>
+        </View>
+
+        <View style={styles.horizontalQuBox}>
+          <Text style={{padding:10,fontSize:10}}>What is my .... ?</Text>
+        </View>
+
+        <View style={styles.horizontalQuBox}>
+          <Text style={{padding:10,fontSize:10}}>What is my .... ?</Text>
+        </View>
+      </ScrollView>
+
+      <View style={!isInputActive ? styles.inputContainerNotActive : styles.inputContainerActive}>
+        <TextInput 
+          placeholder='Type here ...' 
+          style={styles.inputField} 
+          onChangeText={(e) => setInputText(e)} 
+          onFocus={() => setIsInputActive(true)} 
+          onEndEditing={() => setIsInputActive(false)} 
+          onSubmitEditing={handlePromptTrigger} 
+          onTouchCancel={() => setIsInputActive(false)} 
+          onTouchEnd={() => setIsInputActive(false)}
+        />
+        <Pressable onPress={handlePromptTrigger} style={{backgroundColor:"#CFFFFE",marginLeft:20,borderWidth:0.3,borderRadius:5,width:50,height:50,justifyContent:"center",alignItems:"center"}}>
+          <MaterialCommunityIcons 
+            name="send"
+            size={25}
+            color="black"
+          />
+        </Pressable>
+      </View>
+    </View>
+    )
+  }
+
+  function ContextPanel(){
+    return(
+      
+      <View style={Cstyles.container}>
+        <ScrollView style={{width:"100%",marginLeft:"auto",marginRight:"auto",backgroundColor:"white",height:"100%",paddingTop:0}} showsVerticalScrollIndicator={false}>
+          <View style={{width:"100%",alignItems:"center"}}>
+          {ContextOptions.map((data,index)=>(
+              <View key={index} style={[styles.contextBox, !data.stateName ? {backgroundColor:"magenta"} : {backgroundColor:"lightgreen"}]}>
+              <View style={[styles.cardRight, !data.stateName && {}]}>
+                <View>
+                  {!data.stateName ? 
+                    <Text style={{color:"magenta",fontWeight:"500",fontSize:10}}>Not Active</Text>
+                  :
+                    <Text style={{color:"lightgreen",fontWeight:"500",fontSize:10}}>Active  </Text>
+                  }
+            
+                  <Text style={{color:"white",fontWeight:"700",fontSize:20}}>
+                    {data.title}
+                </Text>
+                </View>
+
+                <Pressable style={[{flexDirection:"row",alignItems:"center",borderWidth:0,borderColor:"magenta",borderRadius:20,padding:8,justifyContent:"center",backgroundColor:"white"}, !data.stateName ? {borderColor:"magenta"} : {borderColor:"lightgreen"}]}>
+                    <Text style={{color:"black",marginRight:10,fontWeight:"600"}}>See Data</Text>
+                    <MaterialCommunityIcons 
+                      name='arrow-right'
+                      color={!data.stateName? "magenta" : "lightgreen"}
+                      size={15}
+                    />
+                </Pressable>
+              </View>
+              <View style={[styles.cardLeft,  !data.stateName && {}]}>
+                <Switch value={data.stateName} onValueChange={(e) => handleSwitch(data.stateID,e)} thumbColor={"white"} trackColor={"magenta"} ios_backgroundColor={"magenta"} />
+              </View>
+              </View>
+          ))
+          }     
+          </View>
+        </ScrollView>
+     
+      </View>
+   
+    )
+  }
+
+return (
+
+  <>
+    <View style={{width:"100%",backgroundColor:"rgba(0,0,0,1)",padding:10,textAlign:"center",position:"relative",height:120,justifyContent:"center",alignItems:"center",paddingTop:30}}>
+          {headerSelect ? 
+                  <View>
+                    <Text style={{fontSize:25,fontWeight:600,color:"white"}}>Hi,</Text>
+                    <Text style={{fontSize:25,fontWeight:600,color:"white"}}>How can I help you ?</Text>
+                    </View>
+                  :
+              <Text style={{fontWeight:"700",fontSize:20,width:"100%",color:"white",textAlign:"center",position:"relative"}}>
+                <Text style={{color:"gray",fontWeight:"800",}}> Pick the data </Text>
+                you want <Text style={{color:"gray",fontWeight:"800"}}>Ai</Text> to see during your assistance
+            </Text> 
+            
+          }
+    </View> 
+
+    <View style={{flexDirection:"row",justifyContent:"space-evenly",alignItems:"center",width:"100%",zIndex:5, position:"relative",backgroundColor:"rgba(0,0,0,0.9)",height:50}}>
+      <TouchableOpacity onPress={() => setHeaderSelect(true)} style={headerSelect ? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
+        <Text style={headerSelect?{fontWeight:"600",color:"white"}:{opacity:0.4,fontWeight:600,color:"white"}}>AI Assistant</Text>
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => setHeaderSelect(false)} style={!headerSelect ? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
+        <Text style={headerSelect?{opacity:0.4,fontWeight:600,color:"white"}:{fontWeight:"600",color:"white"}}>Context Panel</Text>
+      </TouchableOpacity>
+    </View>
+      
+    {headerSelect ? 
+      <AiAssistant />
+      :
+      <ContextPanel />
+    }
+  </>
+)}
 
 const styles = StyleSheet.create({
 
@@ -223,9 +346,11 @@ const styles = StyleSheet.create({
       flex: 1,
       backgroundColor: '#fff',
       flexDirection: 'column',
-      paddingTop:100,
+      paddingTop:0,
       width:'100%',
-      alignItems:'center'
+      alignItems:'center',
+      position:"relative",
+      height:"100%"
   },
   assistantTitle:{
     flexDirection:'column',
@@ -240,6 +365,7 @@ const styles = StyleSheet.create({
     width:'100%',
     maxWidth:'100%',
     height:100,
+    marginTop:40,
     justifyContent:'center',
     alignItems:'center',
   },
@@ -292,5 +418,52 @@ const styles = StyleSheet.create({
     flexDirection:'column',
     opacity:0.6,
     marginRight:15
+  },
+  contextBox:{
+    height:160,
+    width:"90%",
+    marginTop:40,
+    borderRadius:20,
+    flexDirection:"row",
+    alignItems:"flex-end",
+    justifyContent:"center"
+  },
+  cardRight:{
+    width:"72%",
+    height:"90%",
+    borderRightWidth:10,
+    backgroundColor:"black",
+    borderRadius:10,
+    borderTopRightRadius:0,
+    borderTopLeftRadius:0,
+    borderBottomRightRadius:0,
+    padding:20,
+    justifyContent:"space-between"
+  },
+  cardLeft:{
+    padding:8,
+    alignItems:"center",
+    width:"28%",
+    height:"100%",
+    borderTopLeftRadius:20,
+    borderTopRightRadius:15,
+    borderBottomRightRadius:10,
+    backgroundColor:"black"
   }
 });
+
+const Cstyles = StyleSheet.create({
+
+  container: {
+      flex: 1,
+      backgroundColor: '#fff',
+      flexDirection: 'column',
+      paddingTop:0,
+      width:'100%',
+      alignItems:'center',
+      position:"relative",
+      height:"100%"
+  },
+});
+
+export default AssistantPage

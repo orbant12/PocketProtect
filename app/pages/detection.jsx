@@ -30,7 +30,7 @@ const DetectionLibary = ({navigation}) => {
     const format = moment(today).format('YYYY-MM-DD')
     const { currentuser } = useAuth();
 
-    const [isSelected, setIsSelected ] = useState("")
+    const [isSelected, setIsSelected ] = useState("Melanoma")
     const [selectedDate, setSelectedDate] = useState(format);
     const [swipeActive, setSwipeActive] = useState("data");
     const [userData , setUserData] = useState([]);
@@ -211,6 +211,20 @@ function MelanomaMonitoring(){
                             ):null}
                         
                         </ScrollView>
+                    </View>
+
+                    <View style={Mstyles.educationSection}>
+                        <View style={{width:"90%",height:100,borderWidth:1,alignItems:"center",justifyContent:"center",borderRadius:10,marginBottom:20}}>
+                            <Text style={{fontSize:15,fontWeight:"600"}}>How do we detect moles ?</Text>
+                        </View>
+
+                        <View style={{width:"90%",height:100,borderWidth:1,alignItems:"center",justifyContent:"center",borderRadius:10,marginBottom:20}}>
+                            <Text style={{fontSize:15,fontWeight:"600"}}>How can you detect moles ?</Text>
+                        </View>
+
+                        <View style={{width:"90%",height:100,borderWidth:1,alignItems:"center",justifyContent:"center",borderRadius:10,marginBottom:20}}>
+                            <Text style={{fontSize:15,fontWeight:"600"}}>How to protect yourself ?</Text>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -938,6 +952,10 @@ const Mstyles = StyleSheet.create({
         margin: 10,
         marginTop:30
     },
+    educationSection:{
+        width:"100%",
+        alignItems:"center"
+    }
 
 })
 

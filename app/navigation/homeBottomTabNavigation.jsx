@@ -40,11 +40,11 @@ const [isExplore,setIsExplore] = useState(true);
 
 return (
   <Tab.Navigator
-    tabBarOptions={{
+    screenOptions={{
       tabStyle: {
         backgroundColor: '#fff',
       },
-      activeTintColor: 'magenta',
+      tabBarActiveTintColor: "magenta"
     }}>
       {/* HOME NAVIGATION */}
       <Tab.Screen
@@ -114,18 +114,7 @@ return (
         name={'Assistant'}
         component={AssistantPage}
         options={{
-          header : () => (
-            <>
-              <View style={{marginTop:60,marginLeft:65,marginRight:"auto",flexDirection:"row",justifyContent:"space-evenly",alignItems:"center",width:"65%",zIndex:5}}>
-                <TouchableOpacity onPress={() => setIsExplore(true)} style={isExplore? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
-                  <Text style={isExplore?{fontWeight:"800",color:"black"}:{opacity:0.4,fontWeight:800,color:"black"}}>AI Assistant</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setIsExplore(false)} style={!isExplore? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
-                  <Text style={isExplore?{opacity:0.4,fontWeight:800,color:"black"}:{fontWeight:"800",color:"black"}}>Context Panel</Text>
-                </TouchableOpacity>
-              </View>
-            </>
-            ),
+          headerShown:false,
           headerTransparent: true,
           tabBarIcon: ({color}) => (
             <Entypo name={'heart'} size={25} color={color} />

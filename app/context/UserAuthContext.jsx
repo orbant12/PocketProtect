@@ -38,7 +38,7 @@ onAuthStateChanged(auth, user => {
     if (user) {
       setuser(user)
       console.log("u are logged in")
-      navigation.navigate("Home") 
+      navigation.navigate("Main") 
     }
     else {
       navigation.navigate("AuthHub") 
