@@ -40,11 +40,14 @@ const [isAddTriggered, setIsAddTriggered] = useState(false)
 
 const [isContextPanelOpen,setIsContextPanelOpen] = useState(false)
 
+const [sympthomInput, setSympthomInput] = useState('')
+
 const [ contextToggles , setContextToggles ] = useState({
   useBloodWork:false,
   useWeatherEffect:false,
 })
 
+const [addedSymptoms, setAddedSymptoms] = useState([])
 
 const ContextOptions = [
   {
@@ -77,6 +80,9 @@ const snapPoints = ['80%'];
 const chatSnapPoints = ["95%"];
 
 const functions = getFunctions(app);
+
+const [ isDiagnosisLoading, setIsDiagnosisLoading] = useState(false)
+const [ isDiagnosisDone, setIsDiagnosDone] = useState(false)
 
 //<********************FUNCTIONS************************>
 
@@ -142,11 +148,32 @@ const handleAddingSwitch = async () => {
 }
 
 useEffect(()=>{
-  if(isAddTriggered == true){
+  if(isAddTriggered == true && addingInput.current.focus() != null){
     addingInput.current.focus()
   } else if(isAddTriggered == false){
   }
 },[isAddTriggered])
+
+const handleAddSympthoms = () => {
+  setAddedSymptoms([
+    ...addedSymptoms,
+    sympthomInput
+  ])
+  setSympthomInput('')
+}
+
+const handleRemoveSymptom = (symptomToRemove) => {
+  // Filter out the symptom to remove
+  const updatedSymptoms = addedSymptoms.filter(symptom => symptom !== symptomToRemove);
+  
+  // Update the state with the filtered array
+  setAddedSymptoms(updatedSymptoms);
+};
+
+const handleStartDiagnosis = () => {
+  setIsDiagnosisLoading(true)
+  setIsDiagnosDone(true)
+}
 
 
 //<******************** CHild Components ************************>
@@ -348,58 +375,102 @@ useEffect(()=>{
     )
   }
 
-  function AiDiagnosis(){
+  function AiDiagnosis({sympthomInput}){
     return(
-          <View style={Dstyles.container}>         
-                {isAddTriggered ?
-                  (
-                    <>
-                    <View style={styles.searchInputContainer}>
-                        <MaterialCommunityIcons 
-                        name='plus'
-                        color={"black"}
-                        size={20}
-                        style={{opacity:0.3}}
-                      />
-                      <TextInput
-                        ref={addingInput}
-                        placeholder="Search for symphtoms"
-                        style={styles.searchInput}
-                      />
-                    </View>
-                    <TouchableOpacity style={{borderRadius:30,borderWidth:1,backgroundColor:"black",marginTop:20}}>
-                      <MaterialCommunityIcons 
-                        name='plus'
-                        color={"white"}
-                        size={22}
-                        style={{opacity:1,padding:12}}
-                      />
-                    </TouchableOpacity>
+      <View style={Dstyles.container}>
+            {isAddTriggered ?
+              !isDiagnosisLoading ?
+              (
+                <>
+                <View style={styles.searchInputContainer}>
+                    <MaterialCommunityIcons 
+                    name='memory'
+                    color={"black"}
+                    size={20}
+                    style={{opacity:0.3}}
+                  />
+                  <TextInput
+                    ref={addingInput}
+                    placeholder="Type in your symphtom"
+                    style={styles.searchInput}
+                    onChangeText={(e) => setSympthomInput(e)}
+                    value={sympthomInput}
+                  />
+                </View>
+                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-evenly",alignItems:"center",marginTop:5}}>
+                  <TouchableOpacity onPress={handleAddSympthoms} style={{borderRadius:30,borderWidth:1,backgroundColor:"black",marginTop:15}}>
+                    <MaterialCommunityIcons 
+                      name='plus'
+                      color={"white"}
+                      size={25}
+                      style={{opacity:1,padding:12}}
+                    />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={handleStartDiagnosis} style={{borderRadius:10,borderWidth:1,backgroundColor:"black",marginTop:15}}>
+                    <Text style={{color:"white",padding:10,fontWeight:"700",paddingLeft:10,paddingRight:10,opacity:1,fontSize:12}}>Start Diagnosis</Text>
+                  </TouchableOpacity>
+                </View>
+                
 
-                    <TouchableOpacity onPress={() => setIsAddTriggered(!isAddTriggered)} style={{borderRadius:30,borderWidth:0,position:"absolute",right:5,top:0,backgroundColor:"red",marginTop:10,opacity:0.5}}>
+                <TouchableOpacity onPress={() => setIsAddTriggered(!isAddTriggered)} style={{borderRadius:30,borderWidth:0,position:"absolute",right:5,top:0,backgroundColor:"red",marginTop:10,opacity:0.5}}>
+                  <MaterialCommunityIcons 
+                    name='close'
+                    color={"white"}
+                    size={13}
+                    style={{opacity:1,padding:5}}
+                  />
+                </TouchableOpacity>
+
+                <View style={{width:"100%",height:50,backgroundColor:"black",marginTop:30,alignItems:"center",justifyContent:"center",flexDirection:"row"}}>
+                  <Text style={{color:"white",fontWeight:"700",fontSize:18}}>Your Sympthoms</Text>
+                  <Text style={{color:"white",fontWeight:"700",fontSize:12,right:18,position:"absolute",borderWidth:1,borderColor:"magenta",paddingVertical:6,borderRadius:15,paddingHorizontal:10,opacity:0.7}}>{addedSymptoms.length}</Text>
+                </View>
+                {addedSymptoms.length == 0 ?
+                <View style={{width:"100%",justifyContent:"center",alignItems:"center",backgroundColor:"rgba(0,0,0,0.05)",height:200,marginBottom:190}}>
+                  <Text style={{padding:40,fontWeight:"700",fontSize:18,textAlign:"center"}}>This is where your added symphtoms will go ...</Text>
+                </View>
+                :
+                <ScrollView style={{width:"100%",borderWidth:1,marginBottom:100}}>
+                  <View style={{width:"100%",height:300,alignItems:"center",padding:10}}>
+                  {addedSymptoms.map((data)=>(
+                    <View style={{borderWidth:0.3,padding:10,marginBottom:20,width:"80%",justifyContent:"space-between",flexDirection:"row",alignItems:"center",borderRadius:10}}>
+                      <Text>{data}</Text>
                       <MaterialCommunityIcons 
                         name='close'
-                        color={"white"}
+                        color={"red"}
                         size={13}
                         style={{opacity:1,padding:5}}
+                        onPress={() => handleRemoveSymptom(data)}
                       />
-                    </TouchableOpacity>
-
-                    </>
-                  ) : (
-                    <TouchableOpacity onPress={() => handleAddingSwitch()} style={styles.addInputContainer}>
-                      <MaterialCommunityIcons 
-                        name='plus'
-                        color={"white"}
-                        size={20}
-                        style={{opacity:0.3}}
-                      />
-                      <Text style={{color:"white",fontWeight:"400",marginLeft:20}}>Add Symthom</Text>
-                    </TouchableOpacity >
-                  )
+                    </View>
+                  ))}  
+                  </View>
+                </ScrollView>
                 }
-          </View>
+                </>
+              ) : (
+                !isDiagnosisDone ?
+                <View>
 
+                </View>
+                :
+                <>
+                  <Text>Done</Text>
+                </>
+              )
+              : (
+                <TouchableOpacity onPress={() => handleAddingSwitch()} style={styles.addInputContainer}>
+                  <MaterialCommunityIcons 
+                    name='plus'
+                    color={"white"}
+                    size={20}
+                    style={{opacity:0.3}}
+                  />
+                  <Text style={{color:"white",fontWeight:"400",marginLeft:20}}>Add Symthom</Text>
+                </TouchableOpacity >
+              )
+            }
+      </View>
     )
   }
 
@@ -460,7 +531,24 @@ return (
                     <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Ask anything</Text>
                   </View>
                   ):(
-                  
+                  isAddTriggered ?
+                    !isDiagnosisLoading ?
+                    <View>
+                      <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>One by one !</Text>
+                      <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Type in your symphtoms</Text>
+                    </View>
+                    :
+                    !isDiagnosisDone ?
+                      <View>
+                        <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>Done in a moment !</Text>
+                        <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Diagnosis in process ...</Text>
+                      </View>
+                      :
+                      <View>
+                        <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>Done in a moment !</Text>
+                        <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Here is your diagnosis</Text>
+                      </View>
+                  :
                   <View>
                     <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>Are you having suspicious sympthoms ?</Text>
                     <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Get a diagnosis</Text>
@@ -482,19 +570,12 @@ return (
       <TouchableOpacity onPress={() => setHeaderSelect(false)} style={!headerSelect ? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
         <Text style={headerSelect?{opacity:0.4,fontWeight:600,color:"white"}:{fontWeight:"600",color:"white"}}>Diagnosis</Text>
       </TouchableOpacity>
-    </View>
-
-  
-      
+    </View>        
     {headerSelect ? 
       AiAssistant({setInputText,inputText})
       :
-      <AiDiagnosis />
-    }
-
-            
- 
-
+      AiDiagnosis({sympthomInput})
+    }            
       <BottomSheetModal
         ref={bottomSheetRef}
         snapPoints={snapPoints}
@@ -675,12 +756,12 @@ const styles = StyleSheet.create({
   searchInputContainer:{
     flexDirection:"row",
     alignItems:"center",
-    borderWidth:1,
+    borderWidth:2,
     width:"80%",
-    marginTop:80,
+    marginTop:50,
     borderRadius:10,
     padding:10,
-    justifyContent:"center"
+    justifyContent:"center",
   },
   searchInput:{
     borderWidth:0,
