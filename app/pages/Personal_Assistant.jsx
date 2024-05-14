@@ -34,9 +34,9 @@ const [inputText,setInputText] = useState('');
 
 const [chatLog,setChatLog] = useState([]);
 
-const [isFirstQuestion,setIsFirstQuestion] = useState(true);
-
 const [questionLoading,setQuestionLoading] = useState(false);
+
+const [isAddTriggered, setIsAddTriggered] = useState(false)
 
 const [isContextPanelOpen,setIsContextPanelOpen] = useState(false)
 
@@ -72,8 +72,9 @@ const ContextOptions = [
 //Bottom Sheet
 const bottomSheetRef = useRef(null);
 const chatSheetRef = useRef(null);
+const addingInput = useRef(null);
 const snapPoints = ['80%'];
-const chatSnapPoints = ["100%"];
+const chatSnapPoints = ["95%"];
 
 const functions = getFunctions(app);
 
@@ -87,7 +88,6 @@ const generateTextFromPrompt = async (request) => {
       const result = await generateTextFunction({name: request});
       //SETT LOADING FALSE
       setChatLog([...chatLogNew, {user: "gpt", message: `${result.data.data.choices[0].message.content}`}])
-      setSummerisingIsLoading(false)
       setQuestionLoading(false)
   } catch (error) {
       console.error('Firebase function invocation failed:', error);
@@ -137,93 +137,204 @@ const handleOpenBottomSheet = (state) => {
   }
 }
 
+const handleAddingSwitch = async () => {
+  setIsAddTriggered(!isAddTriggered)
+}
+
+useEffect(()=>{
+  if(isAddTriggered == true){
+    addingInput.current.focus()
+  } else if(isAddTriggered == false){
+  }
+},[isAddTriggered])
+
 
 //<******************** CHild Components ************************>
 
-  function AiAssistant(){
+  const AiAssistant = ({setInputText,inputText}) => {
     return(
-          <View style={styles.container}>
+      <>
+          <View style={styles.container}>      
+              <ScrollView horizontal style={{width:"100%",borderWidth:3,paddingTop:30,paddingBottom:30}} >
+                  <View  style={styles.assistantQuestionsContainer}>
 
-            {isFirstQuestion ? (
-              <View style={styles.assistantQuestionsContainer}>
-
-                <View style={{borderWidth:2,padding:20,width:"40%",marginTop:20,borderRadius:10,marginRight:20}}>
-                  <Text style={{fontWeight:"500",fontSize:10}}>Taed concerns !</Text>
-                  <Text style={{fontWeight:"800",fontSize:15,marginTop:3}}>Ask anything</Text>
-                  <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:2,borderColor:"magenta",borderRadius:20,padding:3,justifyContent:"center",backgroundColor:"white",marginTop:10}]}>
-                      <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:10}}>Ask</Text>
-                      <MaterialCommunityIcons 
-                        name='arrow-right'
-                        color={"magenta"}
-                        size={12}
-                      />
-                    </Pressable>
-                </View>
-      
-                <View style={{borderWidth:2,padding:20,width:"40%",marginTop:20,borderRadius:10}}>
-                  <Text style={{fontWeight:"500",fontSize:10}}>Taed concerns !</Text>
-                  <Text style={{fontWeight:"800",fontSize:15,marginTop:3}}>Ask anything</Text>
-                  <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:2,borderColor:"magenta",borderRadius:20,padding:8,justifyContent:"center",backgroundColor:"white",marginTop:20}]}>
-                      <Text style={{color:"black",marginRight:10,fontWeight:"600"}}>Ask</Text>
-                      <MaterialCommunityIcons 
-                        name='arrow-right'
-                        color={"magenta"}
-                        size={15}
-                      />
-                    </Pressable>
-                </View>
-
-                <View style={{borderWidth:2,padding:20,width:"40%",marginTop:20,borderRadius:10,marginRight:20}}>
-                  <Text style={{fontWeight:"500",fontSize:10}}>Taed concerns !</Text>
-                  <Text style={{fontWeight:"800",fontSize:15,marginTop:3}}>Ask anything</Text>
-                  <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:2,borderColor:"magenta",borderRadius:20,padding:8,justifyContent:"center",backgroundColor:"white",marginTop:20}]}>
-                      <Text style={{color:"black",marginRight:10,fontWeight:"600"}}>Ask</Text>
-                      <MaterialCommunityIcons 
-                        name='arrow-right'
-                        color={"magenta"}
-                        size={15}
-                      />
-                    </Pressable>
-                </View>
-      
-                <View style={{borderWidth:2,padding:20,width:"40%",marginTop:20,borderRadius:10}}>
-                  <Text style={{fontWeight:"500",fontSize:10}}>Taed concerns !</Text>
-                  <Text style={{fontWeight:"800",fontSize:15,marginTop:3}}>Ask anything</Text>
-                  <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:2,borderColor:"magenta",borderRadius:20,padding:8,justifyContent:"center",backgroundColor:"white",marginTop:20}]}>
-                      <Text style={{color:"black",marginRight:10,fontWeight:"600"}}>Ask</Text>
-                      <MaterialCommunityIcons 
-                        name='arrow-right'
-                        color={"magenta"}
-                        size={15}
-                      />
-                    </Pressable>
-                </View>
-              </View>
-            ):(
-              <ScrollView style={{height:100,marginTop:20,width:"100%"}}>
-                {chatLog.map((message,index) => (
-                    <ChatMessage message={message} key={index} />
-                ))}
-              </ScrollView>
-              )}
-
-            <View style={[!isInputActive ? {width:"75%",position:"absolute",bottom:80,left:20}:{width:"100%",position:"absolute",bottom:235,left:20,backgroundColor:"white",paddingBottom:30,paddingTop:20},assistantType == "" && {opacity:1}]}>
-              <Pressable onPress={() => handleOpenBottomSheet("open")} style={styles.horizontalQuBox}>
-                <Text style={{padding:10,fontSize:10,fontWeight:"600"}}>Open Context Panel</Text>
-              </Pressable>
-             
-            </View>
+                    <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
+                      <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                      <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                          <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                          <MaterialCommunityIcons 
+                            name='arrow-right'
+                            color={"magenta"}
+                            size={15}
+                          />
+                        </Pressable>
+                    </View>
+          
             
-            <View style={[!isInputActive ? styles.inputContainerNotActive : styles.inputContainerActive, assistantType == "" && {opacity:0.4}]}>
+                    <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:0,opacity:0.7}}>
+                      <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                      <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                          <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                          <MaterialCommunityIcons 
+                            name='arrow-right'
+                            color={"magenta"}
+                            size={15}
+                          />
+                        </Pressable>
+                    </View>
+
+              
+                    <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
+                      <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                      <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                          <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                          <MaterialCommunityIcons 
+                            name='arrow-right'
+                            color={"magenta"}
+                            size={15}
+                          />
+                        </Pressable>
+                    </View>
+                    
+                
+                    <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:0,opacity:0.7}}>
+                      <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                      <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                          <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                          <MaterialCommunityIcons 
+                            name='arrow-right'
+                            color={"magenta"}
+                            size={15}
+                          />
+                        </Pressable>
+                    </View>
+
+                  </View> 
+
+                  <View  style={styles.assistantQuestionsContainer}>
+
+                  <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
+                    <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                    <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                        <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                        <MaterialCommunityIcons 
+                          name='arrow-right'
+                          color={"magenta"}
+                          size={15}
+                        />
+                      </Pressable>
+                  </View>
+
+
+                  <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:0,opacity:0.7}}>
+                    <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                    <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                        <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                        <MaterialCommunityIcons 
+                          name='arrow-right'
+                          color={"magenta"}
+                          size={15}
+                        />
+                      </Pressable>
+                  </View>
+
+
+                  <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
+                    <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                    <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                        <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                        <MaterialCommunityIcons 
+                          name='arrow-right'
+                          color={"magenta"}
+                          size={15}
+                        />
+                      </Pressable>
+                  </View>
+
+
+                  <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:0,opacity:0.7}}>
+                    <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                    <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                        <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                        <MaterialCommunityIcons 
+                          name='arrow-right'
+                          color={"magenta"}
+                          size={15}
+                        />
+                      </Pressable>
+                  </View>
+
+                  </View> 
+
+                  <View  style={[styles.assistantQuestionsContainer,{marginRight:-280}]}>
+
+                  <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
+                    <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                    <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                        <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                        <MaterialCommunityIcons 
+                          name='arrow-right'
+                          color={"magenta"}
+                          size={15}
+                        />
+                      </Pressable>
+                  </View>
+
+
+                  <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:0,opacity:0.7}}>
+                    <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                    <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                        <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                        <MaterialCommunityIcons 
+                          name='arrow-right'
+                          color={"magenta"}
+                          size={15}
+                        />
+                      </Pressable>
+                  </View>
+
+
+                  <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
+                    <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                    <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                        <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                        <MaterialCommunityIcons 
+                          name='arrow-right'
+                          color={"magenta"}
+                          size={15}
+                        />
+                      </Pressable>
+                  </View>
+
+
+                  <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:0,opacity:0.7}}>
+                    <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                    <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                        <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                        <MaterialCommunityIcons 
+                          name='arrow-right'
+                          color={"magenta"}
+                          size={15}
+                        />
+                      </Pressable>
+                  </View>
+
+                  </View> 
+
+              </ScrollView> 
+              <Pressable onPress={() => handleOpenBottomSheet("open")} style={styles.horizontalQuBox}>
+                  <Text style={{padding:10,fontSize:12,fontWeight:"600",color:"white"}}>Open Context Panel</Text>
+              </Pressable>  
+          </View>
+
+            <View style={[!isInputActive ? styles.inputContainerNotActive : styles.inputContainerActive,{zIndex:0}]}>
               <TextInput 
                 placeholder='Type here ...' 
                 style={styles.inputField} 
                 onChangeText={(e) => setInputText(e)} 
                 onFocus={() => setIsInputActive(true)} 
-                onEndEditing={() => setIsInputActive(false)} 
                 onSubmitEditing={handlePromptTrigger} 
-                onTouchCancel={() => setIsInputActive(false)} 
-                onTouchEnd={() => setIsInputActive(false)}
+                value={inputText}
               />
               <Pressable onPress={handlePromptTrigger} style={{backgroundColor:"#CFFFFE",marginLeft:20,borderWidth:0.3,borderRadius:5,width:50,height:50,justifyContent:"center",alignItems:"center"}}>
                 <MaterialCommunityIcons 
@@ -233,6 +344,60 @@ const handleOpenBottomSheet = (state) => {
                 />
               </Pressable>
             </View>
+            </>
+    )
+  }
+
+  function AiDiagnosis(){
+    return(
+          <View style={Dstyles.container}>         
+                {isAddTriggered ?
+                  (
+                    <>
+                    <View style={styles.searchInputContainer}>
+                        <MaterialCommunityIcons 
+                        name='plus'
+                        color={"black"}
+                        size={20}
+                        style={{opacity:0.3}}
+                      />
+                      <TextInput
+                        ref={addingInput}
+                        placeholder="Search for symphtoms"
+                        style={styles.searchInput}
+                      />
+                    </View>
+                    <TouchableOpacity style={{borderRadius:30,borderWidth:1,backgroundColor:"black",marginTop:20}}>
+                      <MaterialCommunityIcons 
+                        name='plus'
+                        color={"white"}
+                        size={22}
+                        style={{opacity:1,padding:12}}
+                      />
+                    </TouchableOpacity>
+
+                    <TouchableOpacity onPress={() => setIsAddTriggered(!isAddTriggered)} style={{borderRadius:30,borderWidth:0,position:"absolute",right:5,top:0,backgroundColor:"red",marginTop:10,opacity:0.5}}>
+                      <MaterialCommunityIcons 
+                        name='close'
+                        color={"white"}
+                        size={13}
+                        style={{opacity:1,padding:5}}
+                      />
+                    </TouchableOpacity>
+
+                    </>
+                  ) : (
+                    <TouchableOpacity onPress={() => handleAddingSwitch()} style={styles.addInputContainer}>
+                      <MaterialCommunityIcons 
+                        name='plus'
+                        color={"white"}
+                        size={20}
+                        style={{opacity:0.3}}
+                      />
+                      <Text style={{color:"white",fontWeight:"400",marginLeft:20}}>Add Symthom</Text>
+                    </TouchableOpacity >
+                  )
+                }
           </View>
 
     )
@@ -287,7 +452,7 @@ return (
   <>
     <GestureHandlerRootView style={{ flex: 1,width:"100%" }}>
     <BottomSheetModalProvider>
-    <View style={[{width:"100%",backgroundColor:"rgba(0,0,0,1)",padding:10,textAlign:"center",position:"relative",height:120,justifyContent:"center",alignItems:"center",paddingTop:30},!isFirstQuestion && headerSelect && {height:0}]}>
+    <View style={[{width:"100%",backgroundColor:"rgba(0,0,0,1)",padding:10,textAlign:"center",position:"relative",height:120,justifyContent:"center",alignItems:"center",paddingTop:30},]}>
           {!isContextPanelOpen ?
             headerSelect ? (
                   <View>
@@ -318,12 +483,18 @@ return (
         <Text style={headerSelect?{opacity:0.4,fontWeight:600,color:"white"}:{fontWeight:"600",color:"white"}}>Diagnosis</Text>
       </TouchableOpacity>
     </View>
+
+  
       
     {headerSelect ? 
-      <AiAssistant />
+      AiAssistant({setInputText,inputText})
       :
-      null
+      <AiDiagnosis />
     }
+
+            
+ 
+
       <BottomSheetModal
         ref={bottomSheetRef}
         snapPoints={snapPoints}
@@ -331,6 +502,7 @@ return (
         enablePanDownToClose={true}
         handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:30,color:"white"}}
         handleIndicatorStyle={{backgroundColor:"white"}}
+
       >
         {ContextPanel()}
       </BottomSheetModal>
@@ -339,11 +511,47 @@ return (
         ref={chatSheetRef}
         snapPoints={chatSnapPoints}
         enablePanDownToClose={true}
-        onChange={() => setIsFirstQuestion(!isFirstQuestion)}
+        onDismiss={() => {setQuestionLoading(false);setChatLog([]);setInputText("")}}
         handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:30,color:"white"}}
         handleIndicatorStyle={{backgroundColor:"white"}}
+        handleComponent={() => 
+          <View style={{width:"100%",height:60,backgroundColor:"black",justifyContent:"center",alignItems:"center",borderRadius:0}}>
+            <View style={{borderWidth:1,borderColor:"white",width:30}} />
+            <Text style={{color:"white",marginTop:10,fontWeight:"700",fontSize:15}}>AI Chat Log</Text>
+            <MaterialCommunityIcons 
+              name='close'
+              color={"white"}
+              size={20}
+              style={{position:"absolute",right:10,padding:5,borderWidth:0.7,borderColor:"white",borderRadius:10,opacity:0.6}}
+              onPress={() => {chatSheetRef.current.close();setQuestionLoading(false);setChatLog([])}}
+            />
+          </View>
+        }
       >
-        {AiAssistant()}
+
+          <ScrollView style={{width:"100%",marginBottom:90,borderWidth:1}}>
+            {chatLog.map((message,index) => (
+                <ChatMessage message={message} key={index} />
+            ))}
+          </ScrollView>
+  
+            <View style={[!isInputActive ? styles.inputContainerNotActive : styles.inputContainerActive]}>
+              <TextInput 
+                placeholder='Type here ...' 
+                style={styles.inputField} 
+                onChangeText={(e) => setInputText(e)} 
+                onFocus={() => setIsInputActive(true)} 
+                onSubmitEditing={handlePromptTrigger}
+                value={inputText}
+              />
+              <Pressable onPress={handlePromptTrigger} style={{backgroundColor:"#CFFFFE",marginLeft:20,borderWidth:0.3,borderRadius:5,width:50,height:50,justifyContent:"center",alignItems:"center"}}>
+                <MaterialCommunityIcons 
+                  name="send"
+                  size={25}
+                  color="black"
+                />
+              </Pressable>
+            </View>
       </BottomSheetModal>
 
     </BottomSheetModalProvider>
@@ -354,14 +562,12 @@ return (
 const styles = StyleSheet.create({
 
   container: {
-      flex: 1,
       backgroundColor: '#fff',
       flexDirection: 'column',
       paddingTop:0,
       width:'100%',
       alignItems:'center',
       position:"relative",
-      height:"100%"
   },
   assistantTitle:{
     flexDirection:'column',
@@ -375,14 +581,14 @@ const styles = StyleSheet.create({
     flexWrap:'wrap',
     width:'100%',
     maxWidth:'100%',
-    height:100,
-    marginTop:40,
+    marginTop:0,
     justifyContent:'center',
     alignItems:'center',
+    borderWidth:0,
   },
   assistantQuestionBox:{
     width:150,
-    height:90,
+    height:0,
     borderWidth:1,
     margin:10,
     borderRadius:1,
@@ -401,17 +607,19 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     position:'absolute',
     bottom:0,
+    zIndex:5,
   },
   inputContainerActive:{
     width:'100%',
     padding:20,
     borderWidth:1,
-    alignItems:'center',
+    alignItems:'flex-start',
     justifyContent:'center',
     position:'absolute',
-    bottom:160,
+    bottom:0,
     backgroundColor:'white',
     flexDirection:'row',
+    height:"60%"
   },
   inputField:{
     width:'80%',
@@ -419,16 +627,19 @@ const styles = StyleSheet.create({
     borderWidth:1,
     borderRadius:5,
     padding:10,
+    zIndex:5,
   },
   horizontalQuBox:{
-    backgroundColor:'lightgrey',
+    backgroundColor:'black',
     borderRadius:5,
-    height:30,
+    height:60,
     alignItems:'center',
     justifyContent:'center',
     flexDirection:'column',
+    marginTop:30,
+    marginBottom:10,
     opacity:1,
-    marginRight:15
+    width:"80%"
   },
   contextBox:{
     height:160,
@@ -460,7 +671,33 @@ const styles = StyleSheet.create({
     borderTopRightRadius:15,
     borderBottomRightRadius:10,
     backgroundColor:"black"
-  }
+  },
+  searchInputContainer:{
+    flexDirection:"row",
+    alignItems:"center",
+    borderWidth:1,
+    width:"80%",
+    marginTop:80,
+    borderRadius:10,
+    padding:10,
+    justifyContent:"center"
+  },
+  searchInput:{
+    borderWidth:0,
+    width:"70%",
+    marginLeft:20,
+  },
+  addInputContainer:{
+    flexDirection:"row",
+    alignItems:"center",
+    borderWidth:1,
+    width:"50%",
+    marginTop:10,
+    borderRadius:50,
+    padding:12,
+    backgroundColor:"black",
+    justifyContent:"center"
+  },
 });
 
 const Cstyles = StyleSheet.create({
@@ -475,6 +712,20 @@ const Cstyles = StyleSheet.create({
       position:"relative",
       height:"100%"
   },
+});
+
+const Dstyles = StyleSheet.create({
+
+  container: {
+    backgroundColor: '#fff',
+    flexDirection: 'column',
+    paddingTop:0,
+    width:'100%',
+    alignItems:'center',
+    position:"relative",
+    height:"100%",
+    justifyContent:"center"
+},
 });
 
 export default AssistantPage
