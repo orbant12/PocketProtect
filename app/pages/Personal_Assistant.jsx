@@ -40,6 +40,9 @@ const [isAddTriggered, setIsAddTriggered] = useState(false)
 
 const [isContextPanelOpen,setIsContextPanelOpen] = useState(false)
 
+const [isDiagnosisSurveyDone , setIsDiagnosisSurveyDone] = useState(false)
+const [diagnosisSurvey , setDiagnosisSurvey] = useState([])
+
 const [sympthomInput, setSympthomInput] = useState('')
 
 const [ contextToggles , setContextToggles ] = useState({
@@ -111,6 +114,7 @@ const generateDiagnosisFromPrompt = async (request) => {
       return `${result.data.data.choices[0].message.content}`
   } catch (error) {
       console.error('Firebase function invocation failed:', error);
+      return error
   }
 };
 
@@ -183,6 +187,9 @@ const handleRemoveSymptom = (symptomToRemove) => {
   // Update the state with the filtered array
   setAddedSymptoms(updatedSymptoms);
 };
+
+
+//<=======> Feature Engineering <=======>
 
 const ProcessSingleDiagnosis = async () => {
   const type = "diagnosis"
@@ -266,6 +273,48 @@ const handleStartDiagnosis = async () => {
     alert(`Something went wrong ${error}`)
   }
   setIsDiagnosDone(true)
+}
+
+const ProcessAllPossibleOutcomes = async () => {
+  const type = "causes"
+  let symptonScript = addedSymptoms.join(", ");
+  const sympthomsPrompt = `Sympthoms: ${symptonScript}`;
+  const prompt = `${sympthomsPrompt}. Can you give me the most probable causes from the following symphtoms. It is important that your answer must only contain the name of the cause with a , seperating them. Cause can be a diagnosis , lifestyle choice, food / weather / allergy effect or any reasonable cause `;
+  const response = await generateDiagnosisFromPrompt(prompt)
+  console.log(response)
+  return response
+}
+
+const ProcessCreateSurvey= async (causes) => {
+  let symptonScript = addedSymptoms.join(", ");
+  const sympthomsPrompt = `Client reported sympthoms: ${symptonScript}`;
+  const causesPrompt = `Possible causes: ${causes}`
+  const prompt = `${causesPrompt}.${sympthomsPrompt}. You are a doctor trying to diagnose your patient, simulate your question stlyes like you are having a conversation with your patient. Create a servey from which you will be able to determine which causes is the most likely one. Servey must only contain forms of these: yes or no (qid:binary), client feedback required (qid:feedback). Your answer must be only contain the survey and each question asked like this:
+  binary,Have you ...? \n
+  feedback,Please describe ... \n `;
+  const response = await generateDiagnosisFromPrompt(prompt)
+  console.log(response)
+  const formattedData = response.split('\n').map(line => {
+    const [type, question] = line.split(',');
+    return { type, q: question };
+  });
+  console.log(formattedData)
+  setDiagnosisSurvey(formattedData) 
+
+  return formattedData
+}
+
+const handleStartSurvey = async () => {
+  setIsDiagnosisLoading(true)
+  const possibleOutcomes = await ProcessAllPossibleOutcomes()
+  if (possibleOutcomes != "qid:too_broad"){
+    const survey = await ProcessCreateSurvey(possibleOutcomes)
+    if (survey) {
+      navigation.navigate("SurveyScreen", {data: survey})
+    }
+  } else if (possibleOutcomes == "qid:too_broad"){
+    alert("too broad")
+  }
 }
 
 const handleAccurateDiagnosis = () => {
@@ -550,7 +599,8 @@ const handleAccurateDiagnosis = () => {
   function AiDiagnosis({sympthomInput}){
     return(
       <View style={Dstyles.container}>
-            {isAddTriggered ?                        
+            {isAddTriggered ?
+              !isDiagnosisLoading ?                    
                 <>
                 <View style={styles.searchInputContainer}>
                     <MaterialCommunityIcons 
@@ -582,7 +632,7 @@ const handleAccurateDiagnosis = () => {
                     </TouchableOpacity>
 
                   {!addedSymptoms.length == 0 &&
-                    <TouchableOpacity onPress={handleStartDiagnosis} style={{borderRadius:10,borderWidth:2,backgroundColor:"white",marginTop:15}}>
+                    <TouchableOpacity onPress={handleStartSurvey} style={{borderRadius:10,borderWidth:2,backgroundColor:"white",marginTop:15}}>
                       <Text style={{color:"black",padding:10,fontWeight:"700",paddingLeft:10,paddingRight:10,opacity:1,fontSize:12}}>Start Diagnosis</Text>
                     </TouchableOpacity>
                   }       
@@ -624,7 +674,12 @@ const handleAccurateDiagnosis = () => {
                   </View>
                 </ScrollView>
                 }
-                </>    
+                </>
+                :
+                <View style={styles.loadingModal}>
+                  <Text style={{fontSize:20,marginBottom:20,fontWeight:"800",color:"black"}}>Your diagnosis is in process ...</Text>
+                  <ActivityIndicator size="large" color="black" />
+                </View>
               : (
                 <View style={{width:"100%",height:"100%",alignItems:"center"}}>   
                   <View style={{width:"100%",borderWidth:1,paddingBottom:20}}>

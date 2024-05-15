@@ -24,6 +24,7 @@ import MelanomaSingleSlug from "./app/pages/ProcessScreens/melanomaSingleSlug";
 import AuthHub from "./app/pages/Screens/Login/authHub"
 import RegOnBoarding from "./app/pages/Screens/Login/regOnBoarding";
 import DailyReport from "./app/pages/DailyReportScreens/dailyReportOnboarding";
+import SurveyScreeen from "./app/pages/Screens/Diagnosis/SurveyScreen";
 
 
 //CREATING THE NAVIGATION STACK
@@ -37,6 +38,7 @@ return (
             <Stack.Screen name="AuthHub" component={AuthHub} options={{ headerShown:false}} />
             <Stack.Screen name="RegOnBoarding" component={RegOnBoarding} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerLeftShown:false,headerTitle:"Welcome !"}} />
             <Stack.Screen name="Login" component={LoginPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
+            <Stack.Screen name="SurveyScreen" component={SurveyScreeen} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
             <Stack.Screen name="DailyReport" component={DailyReport} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerTitle:"Daily Report" }} />
             <Stack.Screen name="Register" component={RegisterPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
             <Stack.Screen name="Main" component={HomeBottomTabNavigator} options={{ headerShown:false}} />
