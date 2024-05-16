@@ -25,7 +25,7 @@ const [selectedDate, setSelectedDate] = useState(format);
 //<********************FUNCTIONS************************>
 
 const handleNavigation  = (path) => {
-    navigation.navigate(path)
+    navigation.navigate(path,{data:[{q:"valami",type:"binary"}], outcomes:""})
 }
 
 

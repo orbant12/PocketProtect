@@ -8,7 +8,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { getFunctions, httpsCallable } from "firebase/functions";
 import {app} from "../../../firebase"
 
-const SurveyScreeen = ({route}) => {
+const SurveyScreeen = ({route,navigation}) => {
 
     const functions = getFunctions(app);
 
@@ -27,6 +27,8 @@ const SurveyScreeen = ({route}) => {
     const [ indexToEdit, setIndexToEdit] = useState(0)
     // KEEP TRACK OF EDIT MADE TO THE SURVEY --> Less API call to OpenAi
     const [ editedtTracker , setEditedTracker] = useState(false)
+
+    const [ isSaveModalActive, setIsSaveModalActive] = useState(false)
 
 
     const generateDiagnosisFromPrompt = async (request) => {
@@ -253,17 +255,69 @@ const SurveyScreeen = ({route}) => {
         setEditedTracker(true)
     }
 
+    const handleBack = (permission) => {
+        if (progress == 0 || permission == true){
+            navigation.goBack()
+        } else {
+            setProgress(progress - 1)
+        }
+    }
+
+
+    const ExitModal = ({isSaveModalActive}) => {
+        return(
+            <>
+            {isSaveModalActive &&
+                <View style={styles.modal}>
+                    <View style={styles.modalCard}>
+                        <Text style={{fontWeight:"700",fontSize:17,borderWidth:0,paddingTop:30}}>Your diagnosis progression is going to be lost. Do you want to save it ?</Text>
+                        <View style={{width:"100%",justifyContent:"space-between",flexDirection:"row",borderTopWidth:0.3,padding:5,paddingTop:20}}>
+                            <TouchableOpacity style={{backgroundColor:"black",padding:10,borderRadius:10,alignItems:"center"}} onPress={() => setIsSaveModalActive(!isSaveModalActive)}>
+                                <Text style={{color:"white",fontWeight:"500"}}>Back to diagnosis</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{backgroundColor:"white",padding:10,borderRadius:10,borderWidth:1,alignItems:"center",marginLeft:20}} onPress={() => setIsSaveModalActive(!isSaveModalActive)}>
+                                <Text style={{color:"black",fontWeight:"500"}}>Save</Text>
+                            </TouchableOpacity>    
+                            <TouchableOpacity style={{backgroundColor:"red",padding:10,borderRadius:10,alignItems:"center",}} onPress={() => handleBack(true)}>
+                                <Text style={{color:"white",fontWeight:"600"}}>Exit</Text>
+                            </TouchableOpacity>                      
+                        </View> 
+                    </View>
+                </View>
+            }
+            </>
+        )
+    }
+
     return(
         <>
             <GestureHandlerRootView>
                 <BottomSheetModalProvider>
+                    {ExitModal({isSaveModalActive})}
                     {progress != numberOfQuestions ?
                     <View style={styles.container}>
                         <View style={styles.ProgressBar}>
-                            <ProgressBar progress={progress / numberOfQuestions} width={350} height={10} color={"magenta"}backgroundColor={"white"} />
+                            <TouchableOpacity onPress={handleBack} style={{backgroundColor:"white",borderRadius:30}}>
+                                <MaterialCommunityIcons 
+                                    name="arrow-left"
+                                    size={20}
+                                    style={{padding:5}}
+                                />
+                            </TouchableOpacity>
+        
+                            <ProgressBar progress={progress / numberOfQuestions} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
+                            <TouchableOpacity onPress={() => setIsSaveModalActive(!isSaveModalActive)} style={{backgroundColor:"white",borderRadius:30}}>
+                                <MaterialCommunityIcons 
+                                    name="close"
+                                    size={20}
+                                    style={{padding:5}}
+                                />
+                            </TouchableOpacity>
                         </View>
-                            <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:20,position:"absolute",right:10,top:40}}>{progress} / {numberOfQuestions}</Text>
-                            <Text style={{fontWeight:"700",fontSize:"20",marginBottom:100,width:"90%",textAlign:"center"}}>{dataFixed[progress].q}</Text>
+                            <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:10,position:"absolute",right:10,top:60}}>{progress + 1} / {numberOfQuestions}</Text>
+                            <View style={{width:"90%",alignItems:"center",backgroundColor:"white",justifyContent:"center",marginBottom:100,padding:20,borderRadius:20}}>
+                                <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress].q}</Text>
+                            </View>                         
                             {dataFixed[progress].type == "binary" ?
                             <View style={{width:"75%",justifyContent:"space-between",flexDirection:"row"}}> 
                                 <TouchableOpacity style={styles.btn}  onPress={() => {handleBinaryAnswer(progress,"yes");setProgress(progress + 1)}}>
@@ -391,6 +445,8 @@ const SurveyScreeen = ({route}) => {
                     })}
                     </BottomSheetModal>
 
+              
+
                 </BottomSheetModalProvider>
             </GestureHandlerRootView >
         </>
@@ -405,7 +461,9 @@ const styles = StyleSheet.create({
         padding:10,
         position:"absolute",
         top:0,
-        backgroundColor:"lightgray"
+        backgroundColor:"transparent",
+        flexDirection:"row",
+        justifyContent:"space-between"
     },
     container:{
         alignItems:"center",
@@ -430,6 +488,25 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(0, 0, 0, 0)",
         paddingBottom:10
     },
+    modal:{
+        width:"100%",
+        height:"100%",
+        zIndex:10
+,        backgroundColor:"rgba(0,0,0,0.85)",
+        justifyContent:"center",
+        alignItems:"center",
+        position:"absolute"
+    },
+    modalCard:{
+        width:330,
+        height:200,
+        backgroundColor:"white",
+        marginBottom:50,
+        borderRadius:20,
+        justifyContent:"space-between",
+        alignItems:"center",
+        padding:15
+    }
 })
 
 const Dstyles = StyleSheet.create({

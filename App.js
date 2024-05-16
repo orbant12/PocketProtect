@@ -26,6 +26,8 @@ import RegOnBoarding from "./app/pages/Screens/Login/regOnBoarding";
 import DailyReport from "./app/pages/DailyReportScreens/dailyReportOnboarding";
 import SurveyScreeen from "./app/pages/Screens/Diagnosis/SurveyScreen";
 
+import { View, Text } from "react-native"
+
 
 //CREATING THE NAVIGATION STACK
 const Stack = createNativeStackNavigator();
@@ -38,7 +40,20 @@ return (
             <Stack.Screen name="AuthHub" component={AuthHub} options={{ headerShown:false}} />
             <Stack.Screen name="RegOnBoarding" component={RegOnBoarding} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerLeftShown:false,headerTitle:"Welcome !"}} />
             <Stack.Screen name="Login" component={LoginPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
-            <Stack.Screen name="SurveyScreen" component={SurveyScreeen} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",title:"a"} } />
+            <Stack.Screen name="SurveyScreen" component={SurveyScreeen} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerLeftShown:false,
+                header : () => (
+                    <View style={{width:"100%",height:100,justifyContent:"center",backgroundColor:"black",padding:20,alignItems:"center"}}>
+                        <View style={{justifyContent:"center",borderWidth:0,borderColor:"white"}}>
+                            <Text style={{fontWeight:"600",color:"white",fontSize:15,opacity:0.6,marginBottom:5}}>
+                                For a more accurate diagnosis !
+                            </Text>
+
+                            <Text style={{fontWeight:"700",color:"white",fontSize:20}}>
+                                Please answer these questions
+                            </Text>
+                        </View>                                            
+                    </View>
+            ),} } />
             <Stack.Screen name="DailyReport" component={DailyReport} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerTitle:"Daily Report" }} />
             <Stack.Screen name="Register" component={RegisterPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
             <Stack.Screen name="Main" component={HomeBottomTabNavigator} options={{ headerShown:false}} />

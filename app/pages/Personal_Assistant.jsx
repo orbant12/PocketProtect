@@ -168,6 +168,7 @@ const handleAddSympthoms = () => {
     sympthomInput
   ])
   setSympthomInput('')
+  addingInput.current.blur()
 }
 
 const handleRemoveSymptom = (symptomToRemove) => {
@@ -215,6 +216,7 @@ const handleStartSurvey = async () => {
     const survey = await ProcessCreateSurvey(possibleOutcomes)
     if (survey) {
       navigation.navigate("SurveyScreen", {data: survey, outcomes: possibleOutcomes})
+      setIsDiagnosisLoading(false)
     }
   } else if (possibleOutcomes == "qid:too_broad"){
     alert("too broad")
@@ -420,8 +422,6 @@ const handleStartSurvey = async () => {
     )
   }
 
-
-
   function AiDiagnosis({sympthomInput}){
     return(
       <View style={Dstyles.container}>
@@ -442,10 +442,10 @@ const handleStartSurvey = async () => {
                     onChangeText={(e) => setSympthomInput(e)}
                     value={sympthomInput}
                   />
-                  <TouchableOpacity onPress={handleAddSympthoms} style={{borderRadius:8,borderWidth:1,backgroundColor:"black",position:"absolute",right:0,top:0,borderTopLeftRadius:0,borderBottomLeftRadius:0}}>
+                  <TouchableOpacity onPress={handleAddSympthoms} style={[{borderRadius:8,borderWidth:1,backgroundColor:"black",position:"absolute",right:0,top:0,borderTopLeftRadius:0,borderBottomLeftRadius:0},sympthomInput == "" && {backgroundColor:"white"}]}>
                     <MaterialCommunityIcons 
                       name='plus'
-                      color={"white"}
+                      color={sympthomInput != "" ?  "white" : "black"}
                       size={25}
                       style={{opacity:1,padding:8}}
                     />
