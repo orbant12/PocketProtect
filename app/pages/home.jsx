@@ -65,7 +65,7 @@ const handleNavigation  = (path) => {
                     <View style={styles.TaskBox}>
                         <Text style={styles.TaskTitle}>Daily Health Report</Text>
                         <Text style={styles.TaskSubTitle}>Do your daily report so our AI model can have a better accuracy in detecting your problems !</Text>
-                        <Pressable style={styles.StartButton}>
+                        <Pressable onPress={() => handleNavigation("SurveyScreen")} style={styles.StartButton}>
                             <Text>Start Now</Text>
                             <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
                         </Pressable>

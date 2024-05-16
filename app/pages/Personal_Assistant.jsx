@@ -1,19 +1,14 @@
 
 //BASIC IMPORTS
 import React, {useEffect, useState,useRef} from 'react';
-import { ScrollView,StyleSheet,Text,View,FlatList, Pressable,Image,TextInput,TouchableOpacity,Switch,ActivityIndicator } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-//FIREBASE CLASSES
-import moment, { max } from 'moment'
+import { ScrollView,StyleSheet,Text,View, Pressable,TextInput,TouchableOpacity,Switch,ActivityIndicator } from 'react-native';
+
 
 //COMPONENTS
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getFunctions, httpsCallable } from "firebase/functions";
 import {app} from "../firebase"
 import ChatMessage from "../components/Assistant/chatLog";
-//CONTEXT
-import { useAuth } from '../context/UserAuthContext';
-import Calendar from '../components/HomePage/HorizontalCallendar';
 
 import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
@@ -39,9 +34,6 @@ const [questionLoading,setQuestionLoading] = useState(false);
 const [isAddTriggered, setIsAddTriggered] = useState(false)
 
 const [isContextPanelOpen,setIsContextPanelOpen] = useState(false)
-
-const [isDiagnosisSurveyDone , setIsDiagnosisSurveyDone] = useState(false)
-const [diagnosisSurvey , setDiagnosisSurvey] = useState([])
 
 const [sympthomInput, setSympthomInput] = useState('')
 
@@ -79,16 +71,14 @@ const ContextOptions = [
 const bottomSheetRef = useRef(null);
 const chatSheetRef = useRef(null);
 const addingInput = useRef(null);
-const diagnoseSheetRef = useRef(null);
+
 const snapPoints = ['80%'];
 const chatSnapPoints = ["95%"];
-const diagnosisSnapPoints = ["80%"];
 
 const functions = getFunctions(app);
 
 const [ isDiagnosisLoading, setIsDiagnosisLoading] = useState(false)
-const [ isDiagnosisDone, setIsDiagnosDone] = useState(false)
-const [ fullDiagnosis, setFullDiagnosis] = useState({})
+
 
 //<********************FUNCTIONS************************>
 
@@ -189,91 +179,7 @@ const handleRemoveSymptom = (symptomToRemove) => {
 };
 
 
-//<=======> Feature Engineering <=======>
 
-const ProcessSingleDiagnosis = async () => {
-  const type = "diagnosis"
-  let symptonScript = addedSymptoms.join(", ");
-  const sympthomsPrompt = `Sympthoms: ${symptonScript}`;
-  const prompt = `${sympthomsPrompt}. Can you give me the most probable diagnosis from the following symphtoms. It is important that your answer must be one word and that word must be the diases name which you find most probable`;
-  const response = await generateDiagnosisFromPrompt(prompt)
-  setFullDiagnosis(prevState => ({
-    ...prevState,
-    [type]: response
-  }));
-  return response
-}
-
-const ProcessHelpForDiagnosis = async (diagnosis) => {
-  const type = "help"
-  const prompt = `I have ${diagnosis}. Can you offer me help advice for solution like: lifestyle choices, medication extc. Be straight forward and you must focus only stating your advice and solutions`;
-  const response = await generateDiagnosisFromPrompt(prompt)
-  const lines = response.split('\n');
-  const formating = lines.map(line => {
-    const [numbering, content] = line.match(/^(\d+)\.\s(.*)$/).slice(1);
-    return { numbering, content };
-  });
-  setFullDiagnosis(prevState => ({
-    ...prevState,
-    [type]: formating
-  }));
-}
-
-const ProcessDiagnosisDescription= async (diagnosis) => {
-  const type = "description"
-  const prompt = `Can you make a short description about ${diagnosis}. Try to explain it under 50 words and as efficently as possible.`;
-  const response = await generateDiagnosisFromPrompt(prompt)
-  setFullDiagnosis(prevState => ({
-    ...prevState,
-    [type]: response
-  }));
-}
-
-const ProcessDiagnosisSymphtoms = async (diagnosis) => {
-  const type = "symphtoms"
-  const prompt = `Can list out all common symphtoms of ${diagnosis}. Be straight forward and you must only state th symphtoms by ascending numbered order.`;
-  const response = await generateDiagnosisFromPrompt(prompt)
-  const lines = response.split('\n');
-  const formating = lines.map(line => {
-    const [numbering, content] = line.match(/^(\d+)\.\s(.*)$/).slice(1);
-    return { numbering, content };
-  });
-  setFullDiagnosis(prevState => ({
-    ...prevState,
-    [type]: formating
-  }));
-}
-
-const ProcessDiagnosisRecovery= async (diagnosis) => {
-  const type = "recovery"
-  const prompt = `You are a doctor. I am your patient and I have ${diagnosis}. List out all of the professional medication used in medicine for recovering from ${diagnosis}. Be straight forward and you must only state your solutions by ascending numbered order.`;
-  const response = await generateDiagnosisFromPrompt(prompt)
-  const lines = response.split('\n');
-  const formating = lines.map(line => {
-    const [numbering, content] = line.match(/^(\d+)\.\s(.*)$/).slice(1);
-    return { numbering, content };
-  });
-  setFullDiagnosis(prevState => ({
-    ...prevState,
-    [type]: formating
-  }));
-}
-
-const handleStartDiagnosis = async () => {
-  setIsDiagnosisLoading(true)
-  diagnoseSheetRef.current.present()
-  try{
-    const diagnosis = await ProcessSingleDiagnosis()
-    await ProcessHelpForDiagnosis(diagnosis)
-    await ProcessDiagnosisDescription(diagnosis)
-    await ProcessDiagnosisSymphtoms(diagnosis)
-    await ProcessDiagnosisRecovery(diagnosis)
-  }
-  catch (error) {
-    alert(`Something went wrong ${error}`)
-  }
-  setIsDiagnosDone(true)
-}
 
 const ProcessAllPossibleOutcomes = async () => {
   const type = "causes"
@@ -293,13 +199,11 @@ const ProcessCreateSurvey= async (causes) => {
   binary,Have you ...? \n
   feedback,Please describe ... \n `;
   const response = await generateDiagnosisFromPrompt(prompt)
-  console.log(response)
+
   const formattedData = response.split('\n').map(line => {
     const [type, question] = line.split(',');
     return { type, q: question };
   });
-  console.log(formattedData)
-  setDiagnosisSurvey(formattedData) 
 
   return formattedData
 }
@@ -310,17 +214,12 @@ const handleStartSurvey = async () => {
   if (possibleOutcomes != "qid:too_broad"){
     const survey = await ProcessCreateSurvey(possibleOutcomes)
     if (survey) {
-      navigation.navigate("SurveyScreen", {data: survey})
+      navigation.navigate("SurveyScreen", {data: survey, outcomes: possibleOutcomes})
     }
   } else if (possibleOutcomes == "qid:too_broad"){
     alert("too broad")
   }
 }
-
-const handleAccurateDiagnosis = () => {
-
-}
-
 
 //<******************** CHild Components ************************>
 
@@ -521,80 +420,7 @@ const handleAccurateDiagnosis = () => {
     )
   }
 
-  const DiagnosisSheet = ({isDiagnosisDone,fullDiagnosis}) => {
-    return(
-      <>
-      {!isDiagnosisDone ?
-      <View style={styles.loadingModal}>
-        <Text style={{fontSize:20,marginBottom:20,fontWeight:"800",color:"black"}}>Your diagnosis is in process ...</Text>
-        <ActivityIndicator size="large" color="black" />
-      </View>
-      :
-      fullDiagnosis.help &&
-      <ScrollView style={{width:"100%",height:"100%"}} showsVerticalScrollIndicator={false}>
-      <View style={Dstyles.diagnosisPage}>
 
-          <View style={{width:"100%",backgroundColor:"white",marginBottom:0,borderBottomWidth:5,padding:30,}}>
-            <Text style={{color:"back",fontSize:20,fontWeight:"800"}}>{fullDiagnosis.diagnosis}</Text>
-            <View style={{color:"back",fontSize:12,fontWeight:"500",textAlign:"justify",marginTop:10,borderLeftWidth:2,borderColor:"black"}}>
-              <Text style={{color:"back",fontSize:12,fontWeight:"500",textAlign:"justify",paddingLeft:10}}>{fullDiagnosis.description}</Text>
-            </View>
-          </View> 
-        
-          <View style={{width:"100%",marginTop:0,borderWidth:2,paddingBottom:30,alignItems:"center"}}>
-            <Text style={{color:"back",fontWeight:"800",marginBottom:10,fontSize:20,padding:20}}>Advice</Text>
-            <ScrollView horizontal style={{width:"100%"}} showsHorizontalScrollIndicator={false} >
-            {fullDiagnosis.help.map((data)=>(
-              <View style={{width:200,alignItems:"center",borderRightWidth:0,justifyContent:"center",marginLeft:20,marginTop:0}}>
-                  <Text style={{paddingVertical:10,borderWidth:1,paddingHorizontal:15,borderRadius:20,fontWeight:"800",borderColor:"magenta",opacity:0.5}}>{data.numbering}</Text>
-                  <Text style={{padding:0,fontWeight:600,marginTop:20,textAlign:"center"}}>{data.content}</Text>
-              </View>
-            ))}
-            </ScrollView>
-          </View>    
-
-          <View style={{width:"100%",marginTop:50,borderWidth:2,paddingBottom:30,alignItems:"center"}}>
-            <Text  style={{color:"back",fontWeight:"800",marginBottom:10,fontSize:15,padding:20}}>Common symphtoms of {fullDiagnosis.diagnosis}</Text>
-            <ScrollView horizontal style={{width:"100%"}} showsHorizontalScrollIndicator={false} >
-            {fullDiagnosis.symphtoms.map((data)=>(
-              <View style={{width:200,alignItems:"center",borderRightWidth:0,justifyContent:"center",marginLeft:20,marginTop:0}}>
-                <Text style={{paddingVertical:10,borderWidth:1,paddingHorizontal:15,borderRadius:20,fontWeight:"800",borderColor:"magenta",opacity:0.5}}>{data.numbering}</Text>
-                <Text style={{padding:0,fontWeight:600,marginTop:20,textAlign:"center"}}>{data.content}</Text>
-              </View>
-            ))}
-            </ScrollView>
-          </View>
-
-          <View style={{width:"100%",marginTop:50,borderWidth:2,paddingBottom:30,alignItems:"center"}}>
-            <Text  style={{color:"back",fontWeight:"800",marginBottom:10,fontSize:20,padding:20}}>Medication</Text>
-            <ScrollView horizontal style={{width:"100%"}} showsHorizontalScrollIndicator={false} >
-            {fullDiagnosis.recovery.map((data)=>(
-              <View style={{width:200,alignItems:"center",borderRightWidth:0,justifyContent:"center",marginLeft:20,marginTop:0}}>
-                <Text style={{paddingVertical:10,borderWidth:1,paddingHorizontal:15,borderRadius:20,fontWeight:"800",borderColor:"magenta",opacity:0.5}}>{data.numbering}</Text>
-                <Text style={{padding:0,fontWeight:600,marginTop:20,textAlign:"center"}}>{data.content}</Text>
-              </View>
-            ))}
-            </ScrollView>
-          </View>
-
-          <TouchableOpacity onPress={handleAccurateDiagnosis} style={{width:200,height:40,borderWidth:1,padding:10,marginLeft:"auto",marginRight:"auto",alignItems:"center",justifyContent:"center",borderRadius:10,backgroundColor:"black",marginTop:40}}>
-            <Text style={{fontSize:15,fontWeight:"500",color:"white"}}>It seems accurate</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={{width:200,height:40,borderWidth:1,padding:10,marginLeft:"auto",marginRight:"auto",alignItems:"center",justifyContent:"center",borderRadius:10,backgroundColor:"white",marginTop:20}}>
-            <Text style={{fontSize:15,fontWeight:"500",color:"black"}}>Rediagnose</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={{width:200,height:40,borderWidth:1,padding:10,marginLeft:"auto",marginRight:"auto",alignItems:"center",justifyContent:"center",borderRadius:10,backgroundColor:"red",marginTop:20}}>
-            <Text style={{fontSize:15,fontWeight:"500",color:"white"}}>Close</Text>
-          </TouchableOpacity>
-
-      </View>
-      </ScrollView>}
-
-      </>
-    )
-  }
 
   function AiDiagnosis({sympthomInput}){
     return(
@@ -785,16 +611,10 @@ return (
                       <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Type in your symphtoms</Text>
                     </View>
                     :
-                    !isDiagnosisDone ?
                       <View>
                         <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>Done in a moment !</Text>
                         <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Diagnosis in process ...</Text>
-                      </View>
-                      :
-                      <View>
-                        <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>{fullDiagnosis.diagnosis}</Text>
-                        <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Here is your diagnosis</Text>
-                      </View>
+                      </View>                                        
                     :
                     <View>
                       <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>Are you having suspicious sympthoms ?</Text>
@@ -834,32 +654,6 @@ return (
 
         >
           {ContextPanel()}
-        </BottomSheetModal>
-
-        <BottomSheetModal
-          ref={diagnoseSheetRef}
-          snapPoints={diagnosisSnapPoints}
-          enablePanDownToClose={true}
-          onDismiss={() => {setIsAddTriggered(false);setFullDiagnosis({});setIsDiagnosDone(!isDiagnosisDone);setAddedSymptoms([])}}
-          handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:30,color:"white"}}
-          handleIndicatorStyle={{backgroundColor:"white"}}
-          handleComponent={() => 
-            <View style={{width:"100%",height:50,backgroundColor:"black",justifyContent:"center",alignItems:"center",borderRadius:0}}>
-              <View style={{borderWidth:1,borderColor:"white",width:30}} />        
-              <MaterialCommunityIcons 
-                name='close'
-                color={"white"}
-                size={20}
-                style={{position:"absolute",right:10,padding:5,borderWidth:0.7,borderColor:"white",borderRadius:10,opacity:0.6}}
-                onPress={() => {setIsAddTriggered(false);setFullDiagnosis({});setIsDiagnosDone(!isDiagnosisDone);setAddedSymptoms([]);diagnoseSheetRef.current.close()}}
-              />
-            </View>
-          }
-
-        >
-          {DiagnosisSheet({
-            isDiagnosisDone,fullDiagnosis
-          })}
         </BottomSheetModal>
 
         <BottomSheetModal
