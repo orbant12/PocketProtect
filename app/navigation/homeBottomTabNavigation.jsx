@@ -127,7 +127,7 @@ return (
         name={'Profile'}
         component={Profile}
         options={{
-          headerShown:true,
+          headerShown:false,
           headerTransparent:false,
           header: () => (
             <View style={{width:"100%",backgroundColor:"white",paddingTop:40,paddingBottom:10}} >

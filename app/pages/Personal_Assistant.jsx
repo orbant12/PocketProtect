@@ -189,7 +189,7 @@ const ProcessAllPossibleOutcomes = async () => {
   const prompt = `${sympthomsPrompt}. Can you give me the most probable causes from the following symphtoms. It is important that your answer must only contain the name of the cause with a , seperating them. Cause can be a diagnosis , lifestyle choice, food / weather / allergy effect or any reasonable cause `;
   const response = await generateDiagnosisFromPrompt(prompt)
   console.log(response)
-  return response
+  return {possibleOutcomes:response, clientSymptoms:symptonScript}
 }
 
 const ProcessCreateSurvey= async (causes) => {
@@ -211,11 +211,11 @@ const ProcessCreateSurvey= async (causes) => {
 
 const handleStartSurvey = async () => {
   setIsDiagnosisLoading(true)
-  const possibleOutcomes = await ProcessAllPossibleOutcomes()
-  if (possibleOutcomes != "qid:too_broad"){
-    const survey = await ProcessCreateSurvey(possibleOutcomes)
+  const result = await ProcessAllPossibleOutcomes()
+  if (result.possibleOutcomes != "qid:too_broad"){
+    const survey = await ProcessCreateSurvey(result.possibleOutcomes)
     if (survey) {
-      navigation.navigate("SurveyScreen", {data: survey, outcomes: possibleOutcomes})
+      navigation.navigate("SurveyScreen", {data: survey, outcomes: result.possibleOutcomes, clientSymptoms: result.clientSymptoms,isDone: "Not yet"})
       setIsDiagnosisLoading(false)
     }
   } else if (possibleOutcomes == "qid:too_broad"){

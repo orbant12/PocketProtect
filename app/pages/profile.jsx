@@ -9,7 +9,7 @@ import { View,Text,StyleSheet,Image,TouchableOpacity } from "react-native"
 import React, { useEffect, useState } from 'react';
 
 //COMPONENTS
-import UserClipsPage from "../pages/Screens/profile/userClipsPage"
+import UserDiagnosis from "./Screens/profile/userDiagnosis"
 import UserSavedPage from "../pages/Screens/profile/userSavedPage"
 
 //ASSETS
@@ -19,9 +19,8 @@ import Entypo from 'react-native-vector-icons/Entypo';
 //CONTEXT
 import { useAuth } from "../context/UserAuthContext";
 
-//FIREBASE
-import { doc,getDoc } from "firebase/firestore";
-import { db } from '../firebase';
+import { fetchUserData } from "../server";
+import { Icon } from 'react-native-elements';
 
 
 const Profile = ({navigation,handleSettings}) => {
@@ -37,32 +36,25 @@ const {currentuser} = useAuth();
 //<********************FUNCTIONS************************>
 
 //FETCH CURRENT USER DATA
-const fetchUserData = async () => {
-    const userRef = doc(db, "users", currentuser.uid);
-    const userSnap = await getDoc(userRef);
-    if (userSnap.exists()) {
-        setUserData(userSnap.data());
-    } else {
-        // doc.data() will be undefined in this case
-        console.log("No such document!");
-    }
-}
-
-//HANDLE NAVIGATION
-const handleNavigation = (page) => {
-    if(page == "Account"){
-        navigation.navigate("GeneralSettings",{data:page})
-    }
-    else if(page == "Creator Panel"){
-        navigation.navigate("GeneralSettings",{data:page})
+const fetchAllUserData = async() => {
+    if(currentuser){
+        const response = await fetchUserData({
+            userId:currentuser.uid
+        })
+        setUserData(response.data()); 
     }
 }
 
 //ON PAGE LOAD
 useEffect(() => {
     //1.) Fetch the user data
-    fetchUserData();
+    fetchAllUserData();
 }, []);
+
+//SETTINGS NAVIGATION
+const handleSettingsNavigation = () => {
+    navigation.navigate("SettingsPage")
+  }
 
 
 //HEADER COMPONENT | NAVIGATOR
@@ -72,46 +64,28 @@ return(
     <Image 
         source={{ uri: userData.profilePictureURL }}
         style={{ 
-            width: 80,
-            height: 80,
+            width: 70,
+            height: 70,
             borderRadius: 50,
-            borderColor: "black",
+            borderColor: "magenta",
             borderWidth: 1}}
         />
     <Text style={styles.userNameStyle}>
         {userData.fullname}
     </Text>
+    {/* <TouchableOpacity style={{padding:5,borderWidth:1,paddingHorizontal:10,marginTop:0,borderRadius:10,backgroundColor:"white"}}>
+        <Text style={{fontWeight:"500",color:"black"}}>Settings</Text>
+    </TouchableOpacity> */}
 
-    <Text>{userData.user_name}</Text>
+    <TouchableOpacity style={{position:"absolute",right:20,top:30}} onPress={handleSettingsNavigation}>
+        <Icon
+            name='menu'
+            type='material'
+            color='black'
+            size={25}
+        />
+    </TouchableOpacity>
 
-
-    <View style={styles.userStatsRow}>
-        <View style={styles.centeredCol}>
-            <Text style={styles.numberHighlight}>{userData.followers}</Text>
-            <Text style={styles.titleNumberHighlight}>Storage</Text>
-        </View>
-
-        <View style={styles.centeredCol}>
-            <Text style={styles.numberHighlight}>{}</Text>
-            <Text style={styles.titleNumberHighlight}>Folders</Text>
-        </View>
-
-        <View style={styles.centeredCol}>
-            <Text style={styles.numberHighlight}>{userData.subscription}</Text>
-            <Text style={styles.titleNumberHighlight}>Subscription</Text>
-        </View>
-    </View>
-
-    <View style={{flexDirection:"row",width:"60%", marginLeft:"auto",marginRight:"auto",justifyContent:"space-evenly",marginTop:10}}>
-        <TouchableOpacity onPress={() => handleNavigation("Account")} style={styles.followBTN}>
-            <Text style={{color:"white",fontWeight:"600"}}>Account</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => handleNavigation("Creator Panel")} style={styles.followBTN}>
-            <Text style={{color:"white",fontWeight:"600"}}>Channel</Text>
-        </TouchableOpacity>
-    </View>
-    <Text>{userData.description}</Text>
 </View>
 )}
 
@@ -120,23 +94,25 @@ return (
 <View style={styles.container}>        
     <Tabs.Container
         renderHeader={Header}
-        style={{backgroundColor:"white"}}
+        style={{backgroundColor:"white",color:"magenta"}}
+        containerStyle={{color:"white",backgroundColor:"white"}}
+        headerContainerStyle={{backgroundColor:"black",height:260}}     
     >
 
         {/* CLIPS PAGE */}
         <Tabs.Tab 
-            name="C"
-            label={() => <Entypo name={'folder'} size={25} color={"black"} />}
+            name="C"            
+            label={() => <Entypo name={'folder'} size={25} color={"white"} />}
         >
             <Tabs.ScrollView>
-                <UserClipsPage navigation={navigation} />
+                <UserDiagnosis navigation={navigation} />
             </Tabs.ScrollView>
         </Tabs.Tab>
 
         {/* SAVED PAGE */}
         <Tabs.Tab 
             name="D"
-            label={() => <Entypo name={'book'} size={25} color={"black"} />}
+            label={() => <Entypo name={'book'} size={25} color={"white"} />}
         >
         
             <Tabs.ScrollView>
@@ -147,7 +123,7 @@ return (
         {/* COMMUNITY PAGE */}
         <Tabs.Tab 
             name="B"
-            label={() => <Entypo name={'bell'} size={25} color={"black"} />}
+            label={() => <Entypo name={'bell'} size={25} color={"white"} />}
             activeColor={"red"}
         >
             <Tabs.ScrollView>
@@ -167,20 +143,24 @@ const styles = StyleSheet.create({
     rowOne: {
         alignItems: 'center',
         backgroundColor: 'white',
-        borderBottomWidth:3,
-        height:280,
-        borderBottomColor:"black",
-        marginBottom:0,
+        borderBottomWidth:0.3,
+        height:200,
+        borderBottomColor:"white",
+        justifyContent:"center",
+        zIndex:10,
+        backgroundColor:"white",
+        paddingTop:30
     },
     userNameStyle: {
         fontSize: 20,
         fontWeight: 'bold',
-        color: '#000',
+        color: 'black',
         marginTop: 10,
+
     },
     userStatsRow: {
         flexDirection: 'row',
-        width: '80%',
+        width: '80%', 
         marginLeft:"auto",
         marginRight:"auto",
         marginTop: 10,

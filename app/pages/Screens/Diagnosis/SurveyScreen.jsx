@@ -6,29 +6,41 @@ import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getFunctions, httpsCallable } from "firebase/functions";
+import { useAuth } from "../../../context/UserAuthContext";
+import { saveDiagnosisProgress } from "../../../server"
 import {app} from "../../../firebase"
+
 
 const SurveyScreeen = ({route,navigation}) => {
 
     const functions = getFunctions(app);
+    const {currentuser} = useAuth()
 
     const [progress , setProgress] =useState(0)
-    const [dataFixed , setDataFixed] = useState(route.params.data)
-    const numberOfQuestions = dataFixed.length
+    const [dataFixed , setDataFixed] = useState(route.params.data != undefined ? route.params.data : [{q:"",type:"binary"}] )
+
     const possibleOutcomes = route.params.outcomes
+    const clientSymphtoms = route.params.clientSymptoms
     const [ answerInput, setAnswerInput ] = useState("")
     const diagnosisSnapPoints = ["100%"];
     const diagnoseSheetRef = useRef(null);
     const answerEditSheetRef = useRef(null);
 
-    const [ fullDiagnosis, setFullDiagnosis] = useState({})
+    const [ fullDiagnosis, setFullDiagnosis] = useState({diagnosis:"Not yet"})
     const [ isDiagnosisDone, setIsDiagnosDone] = useState(false)
 
     const [ indexToEdit, setIndexToEdit] = useState(0)
     // KEEP TRACK OF EDIT MADE TO THE SURVEY --> Less API call to OpenAi
-    const [ editedtTracker , setEditedTracker] = useState(false)
+    const [ editedtTracker , setEditedTracker] = useState(true)
 
     const [ isSaveModalActive, setIsSaveModalActive] = useState(false)
+    const [ saveCardModalActive, setSaveCardModalActive] = useState(false)
+
+    const sessionId = generateHexUID(8)
+    const [ session , setSession ] = useState({
+        title:`session#${sessionId}`,
+        id:`session#${sessionId}`
+    })
 
 
     const generateDiagnosisFromPrompt = async (request) => {
@@ -42,13 +54,6 @@ const SurveyScreeen = ({route,navigation}) => {
             return error
         }
     };
-
-    useEffect(() =>{
-        setDataFixed(prevData => prevData.filter(item => item.q !== undefined));
-        // First Load it must call Openai
-        setEditedTracker(true)
-    },[])
-
 
     //<=======> Feature Engineering <=======>
 
@@ -123,16 +128,24 @@ const SurveyScreeen = ({route,navigation}) => {
         }));
     }
 
-    const handleStartDiagnosis = async () => {
+    const handleStartDiagnosis = async (potentialDiagnosis) => {
         diagnoseSheetRef.current.present()
         setIsDiagnosDone(false)
         if (editedtTracker == true){
             try{
-                const diagnosis = await ProcessSingleDiagnosis()
-                await ProcessHelpForDiagnosis(diagnosis)
-                await ProcessDiagnosisDescription(diagnosis)
-                await ProcessDiagnosisSymphtoms(diagnosis)
-                await ProcessDiagnosisRecovery(diagnosis)
+                if(potentialDiagnosis != "Not yet"){                  
+                    const diagnosis = potentialDiagnosis
+                    await ProcessHelpForDiagnosis(diagnosis)
+                    await ProcessDiagnosisDescription(diagnosis)
+                    await ProcessDiagnosisSymphtoms(diagnosis)
+                    await ProcessDiagnosisRecovery(diagnosis)
+                } else {
+                    const diagnosis = await ProcessSingleDiagnosis()
+                    await ProcessHelpForDiagnosis(diagnosis)
+                    await ProcessDiagnosisDescription(diagnosis)
+                    await ProcessDiagnosisSymphtoms(diagnosis)
+                    await ProcessDiagnosisRecovery(diagnosis)
+                }
                 // If data is not edited it stays only --> openEditSheet() can change it
                 setEditedTracker(false)
                 }
@@ -263,6 +276,99 @@ const SurveyScreeen = ({route,navigation}) => {
         }
     }
 
+    const handleSaveProgress = async (clientSymphtoms,possibleOutcomes) => {
+        const currentDate = new Date();
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        const formattedDate = `${year}.${month}.${day}`;
+
+        const data = {
+            id: session.id,
+            title: session.title,
+            diagnosis: fullDiagnosis.diagnosis,
+            clientSymphtoms: clientSymphtoms,
+            possibleOutcomes: possibleOutcomes,
+            surveyProgress: dataFixed,
+            created_at: formattedDate,
+        }
+        const result = await saveDiagnosisProgress({userId:currentuser.uid,data})
+        if (result == true){
+            alert("Your progress saved sucessfully !")
+            navigation.goBack()
+        }
+    }
+
+    function generateHexUID(length) {
+        let result = '';
+        for (let i = 0; i < length; i++) {
+            result += Math.floor(Math.random() * 16).toString(16);
+        }
+        return result;
+    }
+
+    useEffect(() =>{
+        setDataFixed(prevData => prevData.filter(item => item.q !== undefined));
+        // First Load it must call Openai
+        setEditedTracker(true)
+        if(route.params.isDone != "Not yet"){
+            setProgress(dataFixed.length)
+            setFullDiagnosis({
+                ...fullDiagnosis,
+                diagnosis: route.params.isDone
+            })
+            handleStartDiagnosis(route.params.isDone)
+        }
+    },[])
+    
+
+    const SaveModal = ({dataFixed,session,saveCardModalActive}) => {
+        return(
+            <>
+            {saveCardModalActive &&
+                <View style={styles.modal}>
+                    <View style={styles.modalSaveCard}>
+                        <Text style={{fontWeight:"600",fontSize:13,position:"absolute",right:10,borderWidth:0,paddingTop:30,bottom:90,opacity:0.3}}>{session.id}</Text>
+                        <View style={{width:"100%",alignItems:"center"}}>
+                            <Text style={{fontWeight:"700",fontSize:20,marginBottom:10}}>Your Report</Text>
+                            {/* <TextInput
+                                style={{width:"80%",borderWidth:0.3,padding:10,alignItems:"center",textAlign:"center",borderRadius:30}}
+                                onChangeText={(e) => setSession({
+                                    ...session,
+                                    title: e
+                                })}
+                                value={session.title}
+                            />      */}
+                        </View> 
+                        <ScrollView style={{width:"100%"}}>                                       
+                                <Text style={{fontWeight:"600",marginTop:20}}>Diagnosis: <Text style={{opacity:0.6}}>{fullDiagnosis.diagnosis}</Text></Text>
+                                <Text style={{fontWeight:"600",marginTop:20}}>Potential causes: <Text style={{opacity:0.6}}>{possibleOutcomes}</Text></Text>
+                                <Text style={{fontWeight:"600",marginTop:20}}>Client Report: <Text style={{opacity:0.6}}>{clientSymphtoms}</Text></Text>
+                                <View style={{width:"100%",alignItems:"center",borderTopWidth:5,marginTop:20}}>
+                                    <Text style={{fontWeight:"700",fontSize:18,marginTop:15}}>Progress</Text>
+                                {dataFixed.map((data)=>(
+                                    <View style={{width:"90%",borderWidth:1,marginTop:15,padding:20,height:150,justifyContent:"center",borderRadius:10}}>        
+                                        <Text style={{fontWeight:"700"}}>Question: <Text style={{fontWeight:"700",opacity:0.6}}>{data.q}</Text></Text>                        
+                                        <Text style={{fontWeight:"700",marginTop:20}}>Your Answer: <Text style={{fontWeight:"700",opacity:0.6}}>{data.a == undefined ? "None" : data.a}</Text></Text>
+                                    </View>
+                                ))}
+                                </View>                                                
+                        </ScrollView>
+                        <View style={{width:"100%",justifyContent:"space-between",flexDirection:"row",borderTopWidth:0.3,padding:5,paddingTop:20}}>
+                            <TouchableOpacity style={{backgroundColor:"black",padding:10,borderRadius:10,alignItems:"center"}} onPress={() => {setSaveCardModalActive(!saveCardModalActive)}}>
+                                <Text style={{color:"white",fontWeight:"500"}}>Back to diagnos</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{backgroundColor:"white",padding:10,borderRadius:10,borderWidth:1,alignItems:"center",marginLeft:20}} onPress={() =>  handleSaveProgress(clientSymphtoms,possibleOutcomes)}>
+                                <Text style={{color:"black",fontWeight:"500"}}>Save</Text>
+                            </TouchableOpacity>                                    
+                        </View> 
+                    </View>
+                </View>
+            }
+            </>
+        )
+    }
+
 
     const ExitModal = ({isSaveModalActive}) => {
         return(
@@ -275,7 +381,7 @@ const SurveyScreeen = ({route,navigation}) => {
                             <TouchableOpacity style={{backgroundColor:"black",padding:10,borderRadius:10,alignItems:"center"}} onPress={() => setIsSaveModalActive(!isSaveModalActive)}>
                                 <Text style={{color:"white",fontWeight:"500"}}>Back to diagnosis</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={{backgroundColor:"white",padding:10,borderRadius:10,borderWidth:1,alignItems:"center",marginLeft:20}} onPress={() => setIsSaveModalActive(!isSaveModalActive)}>
+                            <TouchableOpacity style={{backgroundColor:"white",padding:10,borderRadius:10,borderWidth:1,alignItems:"center",marginLeft:20}} onPress={() => {setSaveCardModalActive(!saveCardModalActive);setIsSaveModalActive(!isSaveModalActive)}}>
                                 <Text style={{color:"black",fontWeight:"500"}}>Save</Text>
                             </TouchableOpacity>    
                             <TouchableOpacity style={{backgroundColor:"red",padding:10,borderRadius:10,alignItems:"center",}} onPress={() => handleBack(true)}>
@@ -294,7 +400,8 @@ const SurveyScreeen = ({route,navigation}) => {
             <GestureHandlerRootView>
                 <BottomSheetModalProvider>
                     {ExitModal({isSaveModalActive})}
-                    {progress != numberOfQuestions ?
+                    {SaveModal({saveCardModalActive,session,dataFixed})}
+                    {progress != dataFixed.length ?
                     <View style={styles.container}>
                         <View style={styles.ProgressBar}>
                             <TouchableOpacity onPress={handleBack} style={{backgroundColor:"white",borderRadius:30}}>
@@ -305,7 +412,7 @@ const SurveyScreeen = ({route,navigation}) => {
                                 />
                             </TouchableOpacity>
         
-                            <ProgressBar progress={progress / numberOfQuestions} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
+                            <ProgressBar progress={progress / dataFixed.length} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
                             <TouchableOpacity onPress={() => setIsSaveModalActive(!isSaveModalActive)} style={{backgroundColor:"white",borderRadius:30}}>
                                 <MaterialCommunityIcons 
                                     name="close"
@@ -314,7 +421,7 @@ const SurveyScreeen = ({route,navigation}) => {
                                 />
                             </TouchableOpacity>
                         </View>
-                            <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:10,position:"absolute",right:10,top:60}}>{progress + 1} / {numberOfQuestions}</Text>
+                            <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:10,position:"absolute",right:10,top:60}}>{progress + 1} / {dataFixed.length}</Text>
                             <View style={{width:"90%",alignItems:"center",backgroundColor:"white",justifyContent:"center",marginBottom:100,padding:20,borderRadius:20}}>
                                 <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress].q}</Text>
                             </View>                         
@@ -346,11 +453,26 @@ const SurveyScreeen = ({route,navigation}) => {
                     :
                     <ScrollView style={{width:"100%",height:"100%"}}>
                     <View style={styles.container}>                         
-                            <View style={styles.ProgressBar}>
-                            <ProgressBar progress={progress / numberOfQuestions} width={350} height={10} color={"magenta"}backgroundColor={"white"} />
+                    <View style={styles.ProgressBar}>
+                            <TouchableOpacity onPress={handleBack} style={{backgroundColor:"white",borderRadius:30}}>
+                                <MaterialCommunityIcons 
+                                    name="arrow-left"
+                                    size={20}
+                                    style={{padding:5}}
+                                />
+                            </TouchableOpacity>
+        
+                            <ProgressBar progress={progress / dataFixed.length} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
+                            <TouchableOpacity onPress={() => setIsSaveModalActive(!isSaveModalActive)} style={{backgroundColor:"white",borderRadius:30}}>
+                                <MaterialCommunityIcons 
+                                    name="close"
+                                    size={20}
+                                    style={{padding:5}}
+                                />
+                            </TouchableOpacity>
                         </View>
                         <Text style={{fontSize:20,fontWeight:"800",marginBottom:50,marginTop:80}}>Nice ! We are all done and ready to create your diagnosis ...</Text>
-                        <TouchableOpacity onPress={() => handleStartDiagnosis()} style={{borderRadius:10,borderWidth:1,padding:10,width:150,alignItems:"center",backgroundColor:"black"}}>
+                        <TouchableOpacity onPress={() => handleStartDiagnosis(route.params.isDone)} style={{borderRadius:10,borderWidth:1,padding:10,width:150,alignItems:"center",backgroundColor:"black"}}>
                             <Text style={{color:"white",fontWeight:"600"}}>Start Diagnosis</Text>
                         </TouchableOpacity>
                         <View style={{width:"100%",height:100,backgroundColor:"black",alignItems:"center",justifyContent:"center",marginTop:40}}>
@@ -429,13 +551,14 @@ const SurveyScreeen = ({route,navigation}) => {
                         handleIndicatorStyle={{backgroundColor:"white"}}
                         handleComponent={() => 
                         <View style={{width:"100%",height:50,backgroundColor:"black",justifyContent:"center",alignItems:"center",borderRadius:0}}>
-                            <View style={{borderWidth:1,borderColor:"white",width:30}} />        
+                            <View style={{borderWidth:1,borderColor:"white",width:30}} />   
+                            <Text style={{color:"white",opacity:0.5,fontWeight:"600",marginTop:8,fontSize:13}}>Swipe down to edit</Text>     
                             <MaterialCommunityIcons 
                             name='close'
                             color={"white"}
                             size={20}
                             style={{position:"absolute",right:10,padding:5,borderWidth:0.7,borderColor:"white",borderRadius:10,opacity:0.6}}
-                            onPress={() => {handleCloseDiagnosis}}
+                            onPress={() => {setIsSaveModalActive(!isSaveModalActive)}}
                             />
                         </View>
                     }
@@ -500,6 +623,16 @@ const styles = StyleSheet.create({
     modalCard:{
         width:330,
         height:200,
+        backgroundColor:"white",
+        marginBottom:50,
+        borderRadius:20,
+        justifyContent:"space-between",
+        alignItems:"center",
+        padding:15
+    },
+    modalSaveCard:{
+        width:330,
+        height:"80%",
         backgroundColor:"white",
         marginBottom:50,
         borderRadius:20,

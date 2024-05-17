@@ -146,4 +146,36 @@ export const changePersonalData = async ({
     }
 }
 
+// DIAGNOSIS
+
+export const fetchAllDiagnosis = async ({
+    userId
+}) => {
+    try{
+        const ref = collection(db, "users", userId , "Diagnosis")
+        const snapshot = await getDocs(ref);
+        let diagnosisData = [];
+        snapshot.forEach((doc) => {
+            diagnosisData.push(doc.data());
+        });
+        return diagnosisData;
+    } catch (e) {
+        return false
+    }
+}
+
+export const saveDiagnosisProgress = async ({
+    userId,
+    data
+}) => {
+    try{
+        const ref = doc(db, "users", userId, "Diagnosis", data.id);
+        await setDoc(ref,data);
+        return true           
+    } catch (error) {
+        console.log(error);
+        return false
+    }
+}
+
 
