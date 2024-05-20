@@ -421,17 +421,17 @@ const SurveyScreeen = ({route,navigation}) => {
                                 />
                             </TouchableOpacity>
                         </View>
-                            <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:10,position:"absolute",right:10,top:60}}>{progress + 1} / {dataFixed.length}</Text>
+                            <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:10,position:"absolute",right:10,bottom:20,opacity:0.3}}>{progress + 1} / {dataFixed.length}</Text>
                             <View style={{width:"90%",alignItems:"center",backgroundColor:"white",justifyContent:"center",marginBottom:100,padding:20,borderRadius:20}}>
                                 <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress].q}</Text>
                             </View>                         
                             {dataFixed[progress].type == "binary" ?
-                            <View style={{width:"75%",justifyContent:"space-between",flexDirection:"row"}}> 
+                            <View style={{width:"90%",justifyContent:"space-between",flexDirection:"row"}}> 
                                 <TouchableOpacity style={styles.btn}  onPress={() => {handleBinaryAnswer(progress,"yes");setProgress(progress + 1)}}>
-                                    <Text style={{color:"white",fontWeight:"600"}}>Yes</Text>
+                                    <Text style={{color:"white",fontWeight:"600",fontSize:17}}>Yes</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[styles.btn,{backgroundColor:"white"}]} onPress={() => {handleBinaryAnswer(progress,"no");setProgress(progress + 1)}}>
-                                    <Text style={{color:"black",fontWeight:"600"}}>No</Text>
+                                    <Text style={{color:"black",fontWeight:"600",fontSize:17}}>No</Text>
                                 </TouchableOpacity>
                             </View>
                             : 
@@ -598,8 +598,10 @@ const styles = StyleSheet.create({
         padding:10,
         borderWidth:1,
         backgroundColor:"black",
+        justifyContent:"center",
         borderRadius:10,
-        width:120,
+        width:150,
+        height:50,    
         alignItems:"center"
     },
     loadingModal:{

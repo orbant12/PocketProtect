@@ -666,7 +666,7 @@ return(
         {isSelected == "HealthScore" ? 
             <HealthScore />
         :isSelected == "Melanoma" ? 
-            (!isFirstMelanoma ?
+            (isFirstMelanoma ?
                 <MelanomaMonitoring />
                 :
                 <View style={Mstyles.container} >

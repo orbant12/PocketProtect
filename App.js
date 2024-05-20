@@ -27,6 +27,7 @@ import DailyReport from "./app/pages/DailyReportScreens/dailyReportOnboarding";
 import SurveyScreeen from "./app/pages/Screens/Diagnosis/SurveyScreen";
 
 import { View, Text } from "react-native"
+import BloodWorkPage from "./app/pages/PersonalData/bloodWork";
 
 
 //CREATING THE NAVIGATION STACK
@@ -63,8 +64,35 @@ return (
             <Stack.Screen name="SinglePartAnalasis" component={SinglePartAnalasis}   options={({ route }) => ({ title: route.params.data.melanomaId.charAt(0).toUpperCase() + route.params.data.melanomaId.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
             <Stack.Screen name="SlugAnalasis" component={SlugAnalasis}   options={({ route }) => ({ title: route.params.data.slug.charAt(0).toUpperCase() + route.params.data.slug.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
             <Stack.Screen name="FolderPage" component={FolderPage}   options={({ route }) => ({ title: route.params.data.title, headerStyle: { backgroundColor: "#18191a"},headerTintColor: "white"  })} />
-            <Stack.Screen name="FullMelanomaProcess" component={MelanomaFullProcess}   options={({ route }) => ({ title: "Body Select",headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
+            <Stack.Screen name="FullMelanomaProcess" component={MelanomaFullProcess}   options={({ route }) => ({ title: "Body Select",headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" , 
+                header : () => (
+                        <View style={{width:"100%",height:80,justifyContent:"center",backgroundColor:"black",padding:20,alignItems:"center"}}>
+                            <View style={{justifyContent:"center",borderWidth:0,borderColor:"white"}}>
+                                <Text style={{fontWeight:"600",color:"white",fontSize:15,opacity:0.6,marginBottom:5}}>
+                                    Setup
+                                </Text>
+
+                                <Text style={{fontWeight:"700",color:"white",fontSize:20}}>
+                                    Melanoma Monitor
+                                </Text>
+                            </View>                                            
+                        </View>
+            )})} />            
             <Stack.Screen name="MelanomaProcessSingleSlug" component={MelanomaSingleSlug}   options={({ route }) => ({ title: route.params.data.slug.charAt(0).toUpperCase() + route.params.data.slug.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
+            <Stack.Screen name="Add_BloodWork" component={BloodWorkPage}   options={({ route }) => ({ title: "Body Select",headerStyle: { backgroundColor: "white"},headerTintColor: "black" , 
+                header : () => (
+                        <View style={{width:"100%",height:80,justifyContent:"center",backgroundColor:"black",padding:20,alignItems:"center"}}>
+                            <View style={{justifyContent:"center",borderWidth:0,borderColor:"white"}}>
+                                <Text style={{fontWeight:"600",color:"white",fontSize:15,opacity:0.6,marginBottom:5}}>
+                                    Setup
+                                </Text>
+
+                                <Text style={{fontWeight:"700",color:"white",fontSize:20}}>
+                                    Melanoma Monitor
+                                </Text>
+                            </View>                                            
+                        </View>
+            )})} />
         </ Stack.Navigator>
     </UserAuthContext>
 </NavigationContainer>   

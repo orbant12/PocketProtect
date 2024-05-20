@@ -1,4 +1,4 @@
-import { View,Text,StyleSheet,Pressable,Animated,Image,ScrollView } from "react-native"
+import { View,Text,StyleSheet,Pressable,Animated,Image,ScrollView,TouchableOpacity } from "react-native"
 import React, {useState,useEffect,useRef} from "react";
 import ProgressBar from 'react-native-progress/Bar';
 import { useAuth } from "../../context/UserAuthContext.jsx";
@@ -121,6 +121,14 @@ const MelanomaFullProcess = ({navigation,route}) => {
                 ...melanomaMetaData,
                 detected_relative:data
             })
+        }
+    }
+
+    const handleBack = (permission) => {
+        if (progress == 0.1 || permission == true){
+            navigation.goBack()
+        } else {
+            setProgress(progress - 0.2)
         }
     }
 
@@ -584,7 +592,22 @@ const MelanomaFullProcess = ({navigation,route}) => {
         <View style={styles.container}>
 
             <View style={styles.ProgressBar}>
-                <ProgressBar progress={progress} width={350} height={10} color={"magenta"}backgroundColor={"white"} />
+                <TouchableOpacity onPress={handleBack} style={{backgroundColor:"#eee",borderRadius:30}}>
+                    <MaterialCommunityIcons 
+                        name="arrow-left"
+                        size={20}
+                        style={{padding:5}}
+                    />
+                </TouchableOpacity>
+
+                <ProgressBar progress={progress} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
+                <TouchableOpacity onPress={() => handleBack(true)} style={{backgroundColor:"#eee",borderRadius:30}}>
+                    <MaterialCommunityIcons 
+                        name="close"
+                        size={20}
+                        style={{padding:5}}
+                    />
+                </TouchableOpacity>
             </View>
             {progress === 0.1 ? FirstScreen():null}
             {progress === 0.2 ? SecoundScreen():null}
@@ -651,7 +674,9 @@ const styles = StyleSheet.create({
         padding:10,
         position:"absolute",
         top:0,
-        backgroundColor:"lightgray"
+        backgroundColor:"transparent",
+        flexDirection:"row",
+        justifyContent:"space-between"
     },
     saveButtonActive: {
         backgroundColor: 'blue',

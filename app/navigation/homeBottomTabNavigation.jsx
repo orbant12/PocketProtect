@@ -79,13 +79,9 @@ return (
     <Tab.Screen
       name={'add-detection'}
       component={AddDetection}
-      options={{
-        header: () => (
-          // Customized header component with a unique visual element
-          <>
-          </>
-        ),
+      options={{ 
         title: "", // Dynamic title
+        headerShown:false,
         headerTransparent: true,
         tabBarIcon: ({ color, focused }) => (
           // Enhanced tabBarIcon with a more visually appealing design

@@ -4,11 +4,12 @@ import { Text, View, StyleSheet,Pressable ,ScrollView,Image} from 'react-native'
 import Body from 'react-native-body-highlighter';
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
 import { melanomaSpotUpload,melanomaUploadToStorage  } from '../../../server.js';
+import { getFunctions, httpsCallable } from "firebase/functions";
 import { useAuth } from '../../../context/UserAuthContext.jsx';
 import * as ImagePicker from 'expo-image-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-
+import {app} from "../../../firebase"
 
 
 const MelanomaAdd = ({route,navigaton}) => {
@@ -25,7 +26,7 @@ const MelanomaAdd = ({route,navigaton}) => {
 
     const { currentuser } = useAuth()
     const scale = 1;
-
+    const functions = getFunctions(app);
 
     const handleSelectedPart = (even) => {
         console.log(even);
@@ -348,7 +349,60 @@ const MelanomaAdd = ({route,navigaton}) => {
             return response;
         }
 
+                // Helper function to convert Blob to base64
+        const blobToBase64 = (blob) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        };
+
+        // Helper function to convert any image blob to JPEG format
+        const convertToJPEG = async (blob) => {
+            return new Promise((resolve, reject) => {
+                const img = document.createElement('img');
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                img.onload = () => {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    canvas.toBlob((jpegBlob) => {
+                        resolve(jpegBlob);
+                    }, 'image/jpeg');
+                };
+
+                img.onerror = reject;
+                img.src = URL.createObjectURL(blob);
+            });
+        };
+
+        const evaluate = async(photo) => {
+            const generatePrediction = httpsCallable(functions, 'predict');           
+            try {
+             // Fetch the image from the URL
+                const response = await fetch(photo);
+                if (!response.ok) throw new Error('Failed to fetch image');
+
+                // Convert the response to a Blob
+                const blob = await response.blob();
+
+                const base64String = await blobToBase64(blob);
+
+                // Send the base64 encoded JPEG string to the Firebase function
+                const result = await generatePrediction({ input: base64String });
+                console.log(result.data)
+                return result.data;
+            } catch (error) {
+                console.error('Firebase function invocation failed:', error);
+            }
+        }
+
         const pictureUrl = await uploadToStorage(uploadedSpotPicture);
+        const rate = await evaluate(pictureUrl)
         const res = melanomaSpotUpload({
             userId: currentuser.uid,
             melanomaDocument: {"spot": selectedPart, "location": redDotLocation},

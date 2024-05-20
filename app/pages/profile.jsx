@@ -96,7 +96,7 @@ return (
         renderHeader={Header}
         style={{backgroundColor:"white",color:"magenta"}}
         containerStyle={{color:"white",backgroundColor:"white"}}
-        headerContainerStyle={{backgroundColor:"black",height:260}}     
+        headerContainerStyle={{backgroundColor:"black",}}     
     >
 
         {/* CLIPS PAGE */}
