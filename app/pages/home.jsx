@@ -1,6 +1,6 @@
 
 //BASIC IMPORTS
-import React, {useEffect, useState} from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView,StyleSheet,Text,View,FlatList, Pressable,Image,Dimensions    } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 //FIREBASE CLASSES
@@ -13,6 +13,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useAuth } from '../context/UserAuthContext';
 import Calendar from '../components/HomePage/HorizontalCallendar';
 
+import DateTimePicker from '@react-native-community/datetimepicker';
+import {useTimer}  from '../components/HomePage/timer';
+
 
 
 export default function TabOneScreen({navigation}) {
@@ -23,11 +26,17 @@ const format = moment(today).format('YYYY-MM-DD')
 
 const [selectedDate, setSelectedDate] = useState(format);
 
+const [ dateCountdown, setDateCountdown] = useState(10)
+
+
+
 //<********************FUNCTIONS************************>
 
 const handleNavigation  = (path) => {
     navigation.navigate(path,{data:[{q:"valami",type:"binary"}], outcomes:""})
 }
+
+
 
 const [currentPage, setCurrentPage] = useState(0);
 const { width } = Dimensions.get('window');
@@ -37,6 +46,32 @@ const handleScroll = (event) => {
     const pageIndex = Math.floor((offsetX + width / 2) / width);
     setCurrentPage(pageIndex);
 }
+
+const ThisDayCounter = () => {
+    function parseDateToMidnight(dateStr) {
+        const [year, month, day] = dateStr.split('-').map(Number);
+        return new Date(year, month - 1, day, 0, 0, 0); // Set to midnight
+    }   
+    const selectedDateStr = String(selectedDate)
+    // Convert the date strings to Date objects
+    const selectedDateF = parseDateToMidnight(selectedDateStr);
+
+    
+    const calc = Math.floor((selectedDateF - today) / 1000);
+
+    if (calc > 0) {
+        console.log(calc)
+        setDateCountdown(calc);
+    }   
+}
+
+const displayCounter = useTimer(dateCountdown);
+
+
+useEffect(() =>{
+    ThisDayCounter()
+},[selectedDate])
+
 
 const TaskBox = ({ title, icon1, icon2, icon3, icon4, buttonText,nav_page }) => (
     <View style={styles.DataBox}>
@@ -239,11 +274,11 @@ const TaskBox = ({ title, icon1, icon2, icon3, icon4, buttonText,nav_page }) => 
 
     function FutureScreen() {
         return(
-            <View>
-
-            </View>
+            <></>
         )
     }
+
+    
 
 
 return (
@@ -253,7 +288,11 @@ return (
     {format == selectedDate ? 
     TodayScreen()
     :
-    FutureScreen()
+    <View>
+        <Text>
+            {displayCounter}
+        </Text>
+    </View>
     }
 </ScrollView>
 

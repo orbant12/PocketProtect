@@ -179,3 +179,31 @@ export const saveDiagnosisProgress = async ({
 }
 
 
+// Medical Data
+
+export const saveBloodWork = async ({
+    userId,
+    data,
+}) => {
+    try{
+        const ref = doc(db, "users", userId, "Medical_Data", "blood_work");
+        await setDoc(ref,data);
+        return true    
+    } catch {
+        return false
+    }
+}
+
+export const fetchBloodWork = async ({
+    userId,
+}) => {
+    try{
+        const ref = doc(db, "users", userId, "Medical_Data", "blood_work");
+        const snapshot = await getDoc(ref);
+        console.log(snapshot.data())
+        return snapshot.data()
+    } catch {
+        return false
+    }
+}
+

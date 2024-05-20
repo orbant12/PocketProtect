@@ -39,7 +39,7 @@ const RegOnBoarding = ({navigation}) => {
     }
 
     const onDateChange = (event, selectedDate) => {
-        const currentDate = selectedDate;
+        const currentDate = selectedDate;        
         setBirthDate(currentDate);
       };
 

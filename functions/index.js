@@ -7,7 +7,7 @@ const tf = require('@tensorflow/tfjs');
 
 const openai = new OpenAI({
     organization: "org-1j559n72fko7IZSsTd5gtAAm",
-    apiKey: "sk-proj-djtnkXkm48OdcOAO0GahT3BlbkFJGlb5wajnoQW2adjfQa0Y",
+    apiKey: "sk-proj-f0JKWEzz3VTHLqxytFCLT3BlbkFJH01RqdeQYjOYQSDJAJYX",
   });
 
 exports.openAIHttpFunctionSec = functions.https.onCall(async (data, context) => {

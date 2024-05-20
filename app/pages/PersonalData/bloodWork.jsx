@@ -4,16 +4,35 @@ import React,{useEffect, useState,useRef} from "react"
 import ProgressBar from 'react-native-progress/Bar';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { useAuth } from "../../context/UserAuthContext";
+import { saveBloodWork,fetchBloodWork } from "../../server"
 
 const BloodWorkPage = ({navigation}) => {
 
-    const [progress , setProgress] = useState(0)
+    // Variable
 
-    const [createdAt, setCreatedAt] =  useState(new Date(1598051730000));
+    const { currentuser } = useAuth()
+
+    const [progress , setProgress] = useState(0)
 
     const [ methodSelect ,setMethodSelect] = useState(false)
 
+    const [ isSaveModalActive, setIsSaveModalActive] = useState(false)
+    const [ saveCardModalActive, setSaveCardModalActive] = useState(false)
+
+
+
+    const formattedDate = (date) => {
+        const lastEditedDate = new Date(date)
+        const year = lastEditedDate.getFullYear();
+        const month = String( lastEditedDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+        const day = String(lastEditedDate.getDate()).padStart(2, '0');
+        const formattedDate = `${year}.${month}.${day}`;
+        return formattedDate
+    }
+
     const [ bloodWorkData, setBloodWorkData] = useState({
+        Created_Date: "2001-08-25T23:15:00.000Z",
         basicHealthIndicators:{
             hemoglobin:0,
             hematocrit:0,
@@ -72,10 +91,68 @@ const BloodWorkPage = ({navigation}) => {
         }   
     })
 
-    const onDateChange = (event, selectedDate) => {
-        const currentDate = selectedDate;
-        setCreatedAt(currentDate);
-    };
+    const dataFixed = [
+        {
+            q:"When did you recive your blood work results",
+            component:DateInput()
+        },
+        {
+            q:"Why did you decided to make your blood work",
+            component:Why()
+        },
+        {
+            q:"Basic Health Indicators",
+            component:BloodWorkAddInput()
+        },
+        {
+            q:"Lipid Panel",
+            component:BloodWorkAddInput2()
+        },
+        {
+            q:"Metabolic Panel",
+            component:BloodWorkAddInput3()
+        },
+        {
+            q:"Liver Function Tests",
+            component:BloodWorkAddInput4()
+        },
+        {
+            q:"Thyroid Panel",
+            component:BloodWorkAddInput5()
+        },
+        {
+            q:"Iron Studies",
+            component:BloodWorkAddInput6()
+        },
+        {
+            q:"Vitamins and Minerals",
+            component:BloodWorkAddInput7({title:"Vitamins_and_Minerals"})
+        },
+        {
+            q:"Inflammatory Markers",
+            component:BloodWorkAddInput8({title:"Inflammatory_Markers"})
+        },
+        {
+            q:"Hormonal Panel",
+            component:BloodWorkAddInput9({title:"Hormonal_Panel"})
+        },
+        {
+            q:"We are all done !",
+            component:FinishPage()
+        }
+    ]
+
+
+    // Function
+
+
+    const onDateChange = (event, date) => {
+        console.log(date)
+          setBloodWorkData({
+            ...bloodWorkData,
+            Created_Date:(String(date))
+          })
+     };
 
     const handleDataChange = (title,type,e) => {
         if(title == "basicHealthIndicators"){
@@ -154,16 +231,60 @@ const BloodWorkPage = ({navigation}) => {
 
     }
 
-    function DateInput(){
+    const handleSaveProgress = async () => {
+        const response = await saveBloodWork({
+            userId: currentuser.uid,
+            data: bloodWorkData
+        })
+        if ( response == true){
+            navigation.goBack()
+        }
+    }
+
+    const handleBack = (permission) => {
+        if (progress == 0 || permission == true){
+            navigation.goBack()
+        } else {
+            setProgress(progress - 1)
+        }
+    }
+
+    const fetchBloodWorkData = async () => {
+        const response = await fetchBloodWork({userId:currentuser.uid})
+        if(response != false){
+            setBloodWorkData(response)
+        }
+
+    }
+
+    useEffect(()=> {     
+        if (currentuser){
+            fetchBloodWorkData()         
+        }
+    },[])
+
+
+    // Components
+
+    function DateInput(){ 
         return(
-            <DateTimePicker onChange={onDateChange} value={createdAt} mode="date" style={{marginTop:0}} />
+            <>          
+            <DateTimePicker onChange={(e,d) => onDateChange(e,d)} value={new Date(bloodWorkData.Created_Date)} mode="date" style={{marginTop:0}} />
+            {bloodWorkData.Created_Date == "2001-08-25T23:15:00.000Z" ?
+            <Text style={{fontWeight:"600"}}>Last Updated: <Text style={{opacity:0.4}}>First Time</Text></Text>
+            :
+            <Text style={{fontWeight:"600"}}>Last Updated:<Text style={{opacity:0.4}}> {formattedDate(bloodWorkData.Created_Date)}</Text></Text>
+            }
+            </>
         )
     }
+
     function Why(){
         return(
             <Text style={{color:"black"}}>Hi</Text>
         )
     }
+
     function BloodWorkAddInput(){
         return(
             <View style={{width:"100%",alignItems:"center",justifyContent:"space-between",height:"60%"}}>
@@ -213,7 +334,7 @@ const BloodWorkPage = ({navigation}) => {
                         keyboardType="numeric"
                         style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
                         value={`${bloodWorkData.basicHealthIndicators.hematocrit}`}
-                        onChangeText={(e) => handleDataChange("basicHealthIndicators","hematocrit",e)}
+                        onChangeText={(e) => handleDataChange("basicHealthIndicators","hematocrit", Number(e))}
                         textAlign="center"            
                     />                   
                 </View> 
@@ -756,69 +877,12 @@ const BloodWorkPage = ({navigation}) => {
 
     function FinishPage(){
         return(
-            <View>
-                
+            <View style={{width:"100%",alignItems:"center"}}>
+                <View style={{width:"100%",alignItems:"center",justifyContent:"center"}}>
+
+                </View>
             </View>
         )
-    }
-
-    const dataFixed = [
-        {
-            q:"When did you recive your blood work results",
-            component:DateInput()
-        },
-        {
-            q:"Why did you decided to make your blood work",
-            component:Why()
-        },
-        {
-            q:"Basic Health Indicators",
-            component:BloodWorkAddInput()
-        },
-        {
-            q:"Lipid Panel",
-            component:BloodWorkAddInput2()
-        },
-        {
-            q:"Metabolic Panel",
-            component:BloodWorkAddInput3()
-        },
-        {
-            q:"Liver Function Tests",
-            component:BloodWorkAddInput4()
-        },
-        {
-            q:"Thyroid Panel",
-            component:BloodWorkAddInput5()
-        },
-        {
-            q:"Iron Studies",
-            component:BloodWorkAddInput6()
-        },
-        {
-            q:"Vitamins and Minerals",
-            component:BloodWorkAddInput7({title:"Vitamins_and_Minerals"})
-        },
-        {
-            q:"Inflammatory Markers",
-            component:BloodWorkAddInput8({title:"Inflammatory_Markers"})
-        },
-        {
-            q:"Hormonal Panel",
-            component:BloodWorkAddInput9({title:"Hormonal_Panel"})
-        },
-        {
-            q:"We are all done !",
-            component:FinishPage()
-        }
-    ]
-
-    const handleBack = (permission) => {
-        if (progress == 0 || permission == true){
-            navigation.goBack()
-        } else {
-            setProgress(progress - 1)
-        }
     }
 
     function FirstScreen(){
@@ -872,43 +936,103 @@ const BloodWorkPage = ({navigation}) => {
     }
 
 
+    const SaveModal = ({saveCardModalActive}) => {
+        return(
+            <>
+            {saveCardModalActive &&
+                <View style={styles.modal}>
+                    <View style={styles.modalSaveCard}>      
+                        <View style={{width:"100%",alignItems:"center"}}>
+                            <Text style={{fontWeight:"700",fontSize:20,marginTop:20}}>Your Data is Saved Succesfully</Text>   
+                        </View> 
+            
+                        <View style={{width:"60%",justifyContent:"space-between",flexDirection:"row",borderTopWidth:0.3,padding:5,paddingTop:20}}>
+                            <TouchableOpacity style={{backgroundColor:"black",padding:10,borderRadius:10,alignItems:"center"}} onPress={() => {setSaveCardModalActive(!saveCardModalActive)}}>
+                                <Text style={{color:"white",fontWeight:"500"}}>Go Back</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{backgroundColor:"white",padding:10,borderRadius:10,borderWidth:1,alignItems:"center",marginLeft:20}} onPress={() =>  handleSaveProgress()}>
+                                <Text style={{color:"black",fontWeight:"500"}}>Leave</Text>
+                            </TouchableOpacity>                                    
+                        </View> 
+                    </View>
+                </View>
+            }
+            </>
+        )
+    }
+
+
+    const ExitModal = ({isSaveModalActive}) => {
+        return(
+            <>
+            {isSaveModalActive &&
+                <View style={styles.modal}>
+                    <View style={styles.modalCard}>
+                        <Text style={{fontWeight:"700",fontSize:17,borderWidth:0,paddingTop:30}}>Your provided data is going to be lost. Do you want to save it ?</Text>
+                        <View style={{width:"100%",justifyContent:"space-between",flexDirection:"row",borderTopWidth:0.3,padding:5,paddingTop:20}}>
+                            <TouchableOpacity style={{backgroundColor:"black",padding:10,borderRadius:10,alignItems:"center"}} onPress={() => setIsSaveModalActive(!isSaveModalActive)}>
+                                <Text style={{color:"white",fontWeight:"500"}}>Go Back</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={{backgroundColor:"white",padding:10,borderRadius:10,borderWidth:1,alignItems:"center",marginLeft:70}} onPress={() => {setSaveCardModalActive(!saveCardModalActive);setIsSaveModalActive(!isSaveModalActive)}}>
+                                <Text style={{color:"black",fontWeight:"500"}}>Save</Text>
+                            </TouchableOpacity>    
+                            <TouchableOpacity style={{backgroundColor:"red",padding:10,borderRadius:10,alignItems:"center",}} onPress={() => handleBack(true)}>
+                                <Text style={{color:"white",fontWeight:"600"}}>Exit</Text>
+                            </TouchableOpacity>                      
+                        </View> 
+                    </View>
+                </View>
+            }
+            </>
+        )
+    }
+
 
     return(
+        <>
+        {ExitModal({isSaveModalActive})}
+        {SaveModal({saveCardModalActive})}
         <View style={styles.container}>
-        <View style={styles.ProgressBar}>
-            <TouchableOpacity onPress={handleBack} style={{backgroundColor:"#eee",borderRadius:30}}>
-                <MaterialCommunityIcons 
-                    name="arrow-left"
-                    size={20}
-                    style={{padding:5}}
-                />
-            </TouchableOpacity>
+            <View style={styles.ProgressBar}>
+                <TouchableOpacity onPress={handleBack} style={{backgroundColor:"#eee",borderRadius:30}}>
+                    <MaterialCommunityIcons 
+                        name="arrow-left"
+                        size={20}
+                        style={{padding:5}}
+                    />
+                </TouchableOpacity>
 
-            <ProgressBar progress={progress / dataFixed.length} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
-            <TouchableOpacity  style={{backgroundColor:"#eee",borderRadius:30}}>
-                <MaterialCommunityIcons 
-                    name="close"
-                    size={20}
-                    style={{padding:5}}
-                />
-            </TouchableOpacity>
+                <ProgressBar progress={progress / dataFixed.length} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
+                <TouchableOpacity onPress={() => setIsSaveModalActive(!isSaveModalActive)} style={{backgroundColor:"#eee",borderRadius:30}}>
+                    <MaterialCommunityIcons 
+                        name="close"
+                        size={20}
+                        style={{padding:5}}
+                    />
+                </TouchableOpacity>
+            </View>
+            {progress == 0 ?
+            FirstScreen()                
+            :
+            <View style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
+                <View style={{width:"90%",alignItems:"center",backgroundColor:"#eee",justifyContent:"center",padding:20,borderRadius:20,marginTop:10}}>
+                    <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>            
+                </View> 
+                {dataFixed[progress-1].component}
+                    {progress == dataFixed.length ?
+                        <Pressable onPress={() => handleSaveProgress()} style={[styles.startButton,{marginBottom:10}]}>                        
+                            <Text style={{padding:14,fontWeight:"600",color:"white"}}>Finsih</Text>
+                        </Pressable>
+                        :
+                        <Pressable onPress={() => setProgress(progress + 1)} style={[styles.startButton,{marginBottom:10}]}>                        
+                            <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
+                        </Pressable>
+                    }          
+                <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:10,position:"absolute",right:10,bottom:20,opacity:0.3}}>{progress} / {dataFixed.length}</Text>
+            </View>
+            }                                  
         </View>
-        {progress == 0 ?
-        FirstScreen()                
-        :
-        <View style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
-            <View style={{width:"90%",alignItems:"center",backgroundColor:"#eee",justifyContent:"center",padding:20,borderRadius:20,marginTop:10}}>
-                <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>            
-            </View> 
-            {dataFixed[progress-1].component}
-            <Pressable onPress={() => setProgress(progress + 1)} style={[styles.startButton,{marginBottom:10}]}>
-                    <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
-                </Pressable>
-            <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:10,position:"absolute",right:10,bottom:20,opacity:0.3}}>{progress} / {dataFixed.length}</Text>
-        </View>
-    }                                  
-    </View>
-
+        </>
     )
 }
 
@@ -971,7 +1095,7 @@ const styles = StyleSheet.create({
     },
     modalSaveCard:{
         width:330,
-        height:"80%",
+        height:"30%",
         backgroundColor:"white",
         marginBottom:50,
         borderRadius:20,
