@@ -25,14 +25,10 @@ import { fetchAllMelanomaSpotData, fetchUserData } from '../server';
 
 const DetectionLibary = ({navigation}) => {
 
-    //<********************VARIABLES************************>
-    const today = new Date();
-    const format = moment(today).format('YYYY-MM-DD')
+    //<********************VARIABLES************************>        
     const { currentuser } = useAuth();
 
     const [isSelected, setIsSelected ] = useState("Melanoma")
-    const [selectedDate, setSelectedDate] = useState(format);
-    const [swipeActive, setSwipeActive] = useState("data");
     const [userData , setUserData] = useState([]);
     const [selectedSide, setSelectedSide] = useState("front");
     const [melanomaData, setMelanomaData] = useState([])
