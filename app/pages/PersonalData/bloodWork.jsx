@@ -1,5 +1,5 @@
 
-import { View,Text,TouchableOpacity,StyleSheet,Pressable,ScrollView,TextInput } from "react-native"
+import { View,Text,TouchableOpacity,StyleSheet,Pressable,ScrollView,TextInput,Keyboard } from "react-native"
 import React,{useEffect, useState,useRef} from "react"
 import ProgressBar from 'react-native-progress/Bar';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -234,10 +234,13 @@ const BloodWorkPage = ({navigation}) => {
     const handleSaveProgress = async () => {
         const response = await saveBloodWork({
             userId: currentuser.uid,
-            data: bloodWorkData
+            data: bloodWorkData,
+            higherRisk:false,
         })
         if ( response == true){
             navigation.goBack()
+        } else {
+            console.log(response)
         }
     }
 
@@ -1014,7 +1017,7 @@ const BloodWorkPage = ({navigation}) => {
             {progress == 0 ?
             FirstScreen()                
             :
-            <View style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
+            <Pressable onPress={() => Keyboard.dismiss()} style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
                 <View style={{width:"90%",alignItems:"center",backgroundColor:"#eee",justifyContent:"center",padding:20,borderRadius:20,marginTop:10}}>
                     <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>            
                 </View> 
@@ -1029,7 +1032,7 @@ const BloodWorkPage = ({navigation}) => {
                         </Pressable>
                     }          
                 <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:10,position:"absolute",right:10,bottom:20,opacity:0.3}}>{progress} / {dataFixed.length}</Text>
-            </View>
+            </Pressable>
             }                                  
         </View>
         </>

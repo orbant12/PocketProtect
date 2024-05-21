@@ -1,7 +1,7 @@
 
 //BASIC IMPORTS
 import React, {useEffect, useState,useRef} from 'react';
-import { ScrollView,StyleSheet,Text,View, Pressable,TextInput,TouchableOpacity,Switch,ActivityIndicator } from 'react-native';
+import { ScrollView,StyleSheet,Text,View, Pressable,TextInput,TouchableOpacity,Switch,ActivityIndicator,Keyboard } from 'react-native';
 
 
 //COMPONENTS
@@ -13,6 +13,7 @@ import ChatMessage from "../components/Assistant/chatLog";
 import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
 
 const AssistantPage = ({navigation}) => {
 
@@ -138,7 +139,11 @@ const handleOpenBottomSheet = (state) => {
   }
 }
 
+const handleKeyboardDismiss = () => {
+  setIsInputActive(false)
+  Keyboard.dismiss()
 
+}
 
 
 //<******************** CHild Components ************************>
@@ -146,9 +151,9 @@ const handleOpenBottomSheet = (state) => {
   const AiAssistant = ({setInputText,inputText}) => {
     return(
       <>
-          <View style={styles.container}>      
-              <ScrollView horizontal style={{width:"100%",borderWidth:3,paddingTop:30,paddingBottom:30}} >
-                  <View  style={styles.assistantQuestionsContainer}>
+          <Pressable style={styles.container}>    
+              <ScrollView horizontal style={!isInputActive? {width:"100%",borderWidth:3,paddingTop:60,paddingBottom:60,opacity:0.8} : {opacity:0.1,width:"100%",borderWidth:3,paddingTop:60,paddingBottom:60} } >
+                  <Pressable onPress={handleKeyboardDismiss}  style={styles.assistantQuestionsContainer}>
 
                     <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
                       <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
@@ -201,7 +206,7 @@ const handleOpenBottomSheet = (state) => {
                         </Pressable>
                     </View>
 
-                  </View> 
+                  </Pressable> 
 
                   <View  style={styles.assistantQuestionsContainer}>
 
@@ -317,24 +322,24 @@ const handleOpenBottomSheet = (state) => {
               <Pressable onPress={() => handleOpenBottomSheet("open")} style={styles.horizontalQuBox}>
                   <Text style={{padding:10,fontSize:12,fontWeight:"600",color:"white"}}>Open Context Panel</Text>
               </Pressable>  
-          </View>
+          </Pressable>
 
             <View style={[!isInputActive ? styles.inputContainerNotActive : styles.inputContainerActive,{zIndex:0}]}>
               <TextInput 
                 placeholder='Type here ...' 
                 style={styles.inputField} 
                 onChangeText={(e) => setInputText(e)} 
-                onFocus={() => setIsInputActive(true)} 
+                onFocus={() => setIsInputActive(!isInputActive)} 
                 onSubmitEditing={handlePromptTrigger} 
                 value={inputText}
               />
-              <Pressable onPress={handlePromptTrigger} style={{backgroundColor:"#CFFFFE",marginLeft:20,borderWidth:0.3,borderRadius:5,width:50,height:50,justifyContent:"center",alignItems:"center"}}>
+              <TouchableOpacity onPress={handlePromptTrigger} style={{backgroundColor:"magenta",marginLeft:20,borderWidth:0.3,borderRadius:10,width:45,height:45,justifyContent:"center",alignItems:"center",opacity:0.6}}>
                 <MaterialCommunityIcons 
                   name="send"
                   size={25}
-                  color="black"
+                  color="white"
                 />
-              </Pressable>
+              </TouchableOpacity>
             </View>
             </>
     )
@@ -388,31 +393,13 @@ return (
   <>
     <GestureHandlerRootView style={{ flex: 1,width:"100%" }}>
       <BottomSheetModalProvider>
-        <View style={[{width:"100%",backgroundColor:"rgba(0,0,0,1)",padding:10,textAlign:"center",position:"relative",height:120,justifyContent:"center",alignItems:"center",paddingTop:30},]}>
+        <Pressable onPress={() => {handleKeyboardDismiss()}} style={[{width:"100%",backgroundColor:"rgba(0,0,0,1)",padding:10,textAlign:"center",position:"relative",height:120,justifyContent:"center",alignItems:"center",paddingTop:30},]}>
               {!isContextPanelOpen ?
-                headerSelect ? (
+              
                       <View>
                         <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>Are you having suspicious sympthoms ?</Text>
                         <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Ask anything</Text>
                       </View>
-                ):(
-                isAddTriggered ?
-                  !isDiagnosisLoading ?
-                    <View>
-                      <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>One by one !</Text>
-                      <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Type in your symphtoms</Text>
-                    </View>
-                    :
-                      <View>
-                        <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>Done in a moment !</Text>
-                        <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Diagnosis in process ...</Text>
-                      </View>                                        
-                    :
-                    <View>
-                      <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>Are you having suspicious sympthoms ?</Text>
-                      <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Get a diagnosis</Text>
-                    </View>
-                )
                 :
                 <Text style={{fontWeight:"700",fontSize:20,width:"100%",color:"white",textAlign:"center",position:"relative"}}>
                   <Text style={{color:"gray",fontWeight:"800",}}> Pick the data </Text>
@@ -420,21 +407,9 @@ return (
                 </Text> 
                 
               }
-        </View> 
-
-        <View style={{flexDirection:"row",justifyContent:"space-evenly",alignItems:"center",width:"100%",zIndex:0, position:"relative",backgroundColor:"rgba(0,0,0,0.9)",height:50}}>
-          <TouchableOpacity onPress={() => setHeaderSelect(true)} style={headerSelect ? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
-            <Text style={headerSelect?{fontWeight:"600",color:"white"}:{opacity:0.4,fontWeight:600,color:"white"}}>AI Assistant</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setHeaderSelect(false)} style={!headerSelect ? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
-            <Text style={headerSelect?{opacity:0.4,fontWeight:600,color:"white"}:{fontWeight:"600",color:"white"}}>Diagnosis</Text>
-          </TouchableOpacity>
-        </View>        
-        {headerSelect ? 
-          AiAssistant({setInputText,inputText})
-          :
-          <></>
-        }
+        </Pressable> 
+          
+          {AiAssistant({setInputText,inputText})}         
 
         <BottomSheetModal
           ref={bottomSheetRef}
@@ -470,13 +445,13 @@ return (
           }
         >
 
-            <ScrollView style={{width:"100%",marginBottom:90,borderWidth:1}}>
+            <ScrollView onTouchStart={handleKeyboardDismiss} style={{width:"100%",marginBottom:90,borderWidth:1}}>
               {chatLog.map((message,index) => (
                   <ChatMessage message={message} key={index} />
               ))}
             </ScrollView>
     
-              <View style={[!isInputActive ? styles.inputContainerNotActive : styles.inputContainerActive]}>
+              <View style={[!isInputActive ? styles.inputContainerNotActive : [styles.inputContainerActive,{ height:"48%"}]]}>
                 <TextInput 
                   placeholder='Type here ...' 
                   style={styles.inputField} 
@@ -485,13 +460,13 @@ return (
                   onSubmitEditing={handlePromptTrigger}
                   value={inputText}
                 />
-                <Pressable onPress={handlePromptTrigger} style={{backgroundColor:"#CFFFFE",marginLeft:20,borderWidth:0.3,borderRadius:5,width:50,height:50,justifyContent:"center",alignItems:"center"}}>
+                <TouchableOpacity onPress={handlePromptTrigger} style={{backgroundColor:"magenta",marginLeft:20,borderWidth:0.3,borderRadius:10,width:45,height:45,justifyContent:"center",alignItems:"center",opacity:0.6}}>
                   <MaterialCommunityIcons 
                     name="send"
                     size={25}
-                    color="black"
+                    color="white"
                   />
-                </Pressable>
+                </TouchableOpacity>
               </View>
         </BottomSheetModal>
 
@@ -548,7 +523,9 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     position:'absolute',
     bottom:0,
+    height:110,
     zIndex:5,
+    backgroundColor:"white"
   },
   inputContainerActive:{
     width:'100%',
@@ -560,12 +537,12 @@ const styles = StyleSheet.create({
     bottom:0,
     backgroundColor:'white',
     flexDirection:'row',
-    height:"60%"
+    height:"41%"
   },
   inputField:{
     width:'80%',
-    height:50,
-    borderWidth:1,
+    height:45,
+    borderWidth:0.3,
     borderRadius:5,
     padding:10,
     zIndex:5,
@@ -573,7 +550,7 @@ const styles = StyleSheet.create({
   horizontalQuBox:{
     backgroundColor:'black',
     borderRadius:5,
-    height:60,
+    height:40,
     alignItems:'center',
     justifyContent:'center',
     flexDirection:'column',

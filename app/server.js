@@ -183,14 +183,37 @@ export const saveDiagnosisProgress = async ({
 
 export const saveBloodWork = async ({
     userId,
+    higherRisk,
     data,
 }) => {
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return {year,month,day};
+    };
     try{
         const ref = doc(db, "users", userId, "Medical_Data", "blood_work");
+        const ref2 = doc(db, "users", userId, "Reminders", "blood_work");
         await setDoc(ref,data);
+        const splited = formatDate(data.Created_Date)
+        if(higherRisk == true){
+            if(Number(splited.month) + 6 <= 12){
+                const reminderDate = {expires:`${splited.year}-${Number(splited.month) + 6}-${splited.day}`,id:"blood_work"}
+                await setDoc(ref2,reminderDate)
+            } else {
+                const leftOff = Number(splited.month) - 12
+                const reminderDate = {expires:`${Number(splited.year) + 1}-${Number(splited.month) + leftOff}-${splited.day}`,id:"blood_work"}
+                await setDoc(ref2,reminderDate)
+            }
+        } else {
+            const reminderDate = {expires:`${splited.year + 1}-${splited.month}-${splited.day}`,id:"blood_work"}
+            await setDoc(ref2,reminderDate)
+        }      
         return true    
-    } catch {
-        return false
+    } catch (err) {
+        return err
     }
 }
 
@@ -203,6 +226,66 @@ export const fetchBloodWork = async ({
         console.log(snapshot.data())
         return snapshot.data()
     } catch {
+        return false
+    }
+}
+
+// Medical Data
+
+export const fetchMonthTasks = async ({
+    month,
+    userId,
+    year
+}) => {
+    function splitDate(date){
+        const [year, month, day] = date.split('-').map(Number);
+        return {year,month,day}
+    }
+    try{
+        const ref = collection(db,"users",userId,"Task_Manager");
+        const snapshot = await getDocs(ref);
+        let taskData = [];
+        snapshot.forEach((doc) => {
+            const date = splitDate(doc.data().id)
+            if(date.month == month && date.year == year){
+                taskData.push(doc.data());
+            };
+        })
+        return taskData;
+        
+    } catch {   
+        return false
+    }
+}
+
+export const saveTask = async ({
+    userId,
+    date,
+    data
+}) => {
+    try{
+        const ref = doc(db, "users", userId, "Task_Manager", String(date));
+        await setDoc(ref,data);
+        return true           
+    } catch (error) {
+        console.log(error);
+        return false
+    }
+}
+
+export const fetchReminders = async ({
+    userId
+}) => {
+    try{
+        const ref = collection(db,"users",userId,"Reminders");
+        const snapshot = await getDocs(ref);
+        let taskData = [];
+        snapshot.forEach((doc) => {
+                taskData.push(doc.data());
+        })
+        return taskData;
+        
+    } catch {   
         return false
     }
 }

@@ -44,15 +44,15 @@ export const useTimer = (
     
     if (hours > 0) {
       setDisplayCounter(
-        `${hours} hour${hours !== 1 ? 's' : ''} ${minutes} minute${minutes !== 1 ? 's' : ''} ${seconds} second${seconds !== 1 ? 's' : ''}`
+        `${hours} h •${hours !== 1 ? '' : 's'} ${minutes} m •${minutes !== 1 ? '' : 's'} ${seconds} s${seconds !== 1 ? '' : 's'}`
       );
     } else if (minutes > 0) {
       setDisplayCounter(
-        `${minutes} minute${minutes !== 1 ? 's' : ''} ${seconds} second${seconds !== 1 ? 's' : ''}`
+        `${minutes} m${minutes !== 1 ? '' : 's'} ${seconds} s${seconds !== 1 ? '' : 's'}`
       );
     } else {
       setDisplayCounter(
-        `${seconds} second${seconds !== 1 ? 's' : ''}`
+        `${seconds} s${seconds !== 1 ? '' : 's'}`
       );
     }
   }, [counter]);

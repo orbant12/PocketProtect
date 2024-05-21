@@ -4,7 +4,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { FontAwesome6 } from '@expo/vector-icons';
 
 import React, {useEffect, useState,useRef} from 'react';
-import { ScrollView,StyleSheet,Text,View, Pressable,TextInput,TouchableOpacity,Switch,ActivityIndicator } from 'react-native';
+import { ScrollView,StyleSheet,Text,View, Pressable,TextInput,TouchableOpacity,Switch,ActivityIndicator,Keyboard,Dimensions } from 'react-native';
 
 
 //COMPONENTS
@@ -69,6 +69,9 @@ const snapPoints = ['80%'];
 const functions = getFunctions(app);
 
 const [ isDiagnosisLoading, setIsDiagnosisLoading] = useState(false)
+
+const { width } = Dimensions.get('window');
+const [currentPage, setCurrentPage] = useState(0);
 
 const CancerDetectionData = [
     {   
@@ -218,6 +221,12 @@ const OverallHealthData = [
         }
     }
 
+    const handleScrollReminder = (event) => {
+        const offsetX = event.nativeEvent.contentOffset.x;
+        const pageIndex = Math.floor((offsetX + width / 2) / width);
+        setCurrentPage(pageIndex);
+    }
+
     //<==========> Components <===============>
 
     function CancerSection(){
@@ -268,7 +277,7 @@ const OverallHealthData = [
 
     function header(){
         return(
-            <View style={{alignItems:"center"}}>
+            <Pressable style={{alignItems:"center",borderWidth:0}} onPress={() => Keyboard.dismiss()}>
             <View style={styles.searchInputContainer}>
             <MaterialCommunityIcons 
             name='memory'
@@ -278,10 +287,11 @@ const OverallHealthData = [
             />
             <TextInput
             ref={addingInput}
-            placeholder="Type in your symphtom"
+            placeholder="Add one concern"
             style={styles.searchInput}
             onChangeText={(e) => setSympthomInput(e)}
             value={sympthomInput}
+            onBlur={() => addingInput.current.blur()}
             />
             <TouchableOpacity onPress={handleAddSympthoms} style={[{borderRadius:8,borderWidth:1,backgroundColor:"black",position:"absolute",right:0,top:0,borderTopLeftRadius:0,borderBottomLeftRadius:0},sympthomInput == "" && {backgroundColor:"white"}]}>
             <MaterialCommunityIcons 
@@ -314,7 +324,7 @@ const OverallHealthData = [
             style={{opacity:1,padding:5}}
             />
         </TouchableOpacity>
-        </View>
+        </Pressable>
         )
     }
 
@@ -374,29 +384,43 @@ const OverallHealthData = [
                     </View>
                     : (
                     <View style={{width:"100%",height:"100%",alignItems:"center"}}>   
-                        <View style={{width:"100%",borderWidth:1,paddingBottom:0}}>
-                        <Text style={{fontWeight:"700",fontSize:20,margin:20}}>How it works ?</Text>
-                        <View style={{flexDirection:"row",maxWidth:"100%",width:"100%",flexWrap:'wrap',justifyContent:"space-around"}}>
-                            <View style={{height:100,width:130,margin:5,justifyContent:"center",alignItems:"center"}}>
-                            <Text style={{position:"absolute",left:0,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>1</Text>
-                            <Text>Type in what you are feeling</Text>
+                        <View style={{width:"100%",borderTopWidth:0,paddingBottom:0,}}>                 
+                            <ScrollView
+                                horizontal
+                                pagingEnabled
+                                showsHorizontalScrollIndicator={false}
+                                onMomentumScrollEnd={handleScrollReminder}               
+                                contentContainerStyle={{width:"400%",marginTop:20}}
+                                scrollEventThrottle={16}  
+                            > 
+                            <View style={{width:width,flexDirection:"row"}}>
+                            <View style={{height:200,width:"100%",justifyContent:"center",alignItems:"center",borderWidth:0}}>
+                            <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>1</Text>                      
                             </View>
 
-                            <View style={{height:100,width:130,margin:5}}>
-                            <Text style={{position:"absolute",left:0,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>2</Text>
+                            <View style={{height:200,width:"100%",borderWidth:0,justifyContent:"center",alignItems:"center"}}>
+                            <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>2</Text>
                             </View>
 
-                            <View style={{borderWidth:0,height:100,width:130,margin:5}}>
-                            <Text style={{position:"absolute",left:0,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>3</Text>
+                            <View style={{borderWidth:0,height:200,width:"100%",justifyContent:"center",alignItems:"center"}}>
+                            <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>3</Text>
                             </View>
 
-                            <View style={{borderWidth:0,height:100,width:130,margin:5}}>
-                            <Text style={{position:"absolute",left:0,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>4</Text>
+                            <View style={{borderWidth:0,height:200,width:"100%",justifyContent:"center",alignItems:"center"}}>
+                            <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>4</Text>
                             </View>
-                        </View>
-            
-
-                        </View>               
+                            </View>
+                        </ScrollView>
+                            <View style={styles.IndicatorContainer}>               
+                                <View style={[styles.Indicator, { opacity: currentPage === 0 ? 1 : 0.3 }]} />                     
+                                <View style={[styles.Indicator, { opacity: currentPage === 1 ? 1 : 0.3 }]} />
+                                <View style={[styles.Indicator, { opacity: currentPage === 2 ? 1 : 0.3 }]} />
+                                <View style={[styles.Indicator, { opacity: currentPage === 3 ? 1 : 0.3 }]} />                                
+                            </View>                           
+                        </View>     
+                        <View style={{borderWidth:1,width:"95%",borderRadius:20,alignItems:"center",height:"100%",backgroundColor:"black"}}>
+                            <View style={{width:50, borderWidth:1.5,borderColor:"white", opacity:0.7,marginTop:10}} />
+                            <Text style={{color:"white",fontWeight:"700",fontSize:15,marginTop:10}}>Get Started</Text>
                         <TouchableOpacity onPress={() => handleAddingSwitch()} style={styles.addInputContainer}>
                         <MaterialCommunityIcons 
                             name='plus'
@@ -416,6 +440,7 @@ const OverallHealthData = [
                         />
                         <Text style={{color:"black",fontWeight:"400",marginLeft:20,fontWeight:"600"}}>Mental Diagnosis</Text>
                         </TouchableOpacity >
+                        </View> 
                     </View> 
                     )
                 }
@@ -708,18 +733,19 @@ const styles = StyleSheet.create({
       flexDirection:"row",
       alignItems:"center",
       borderWidth:1,
-      width:"60%",
+      width:"80%",
       marginTop:20,
       borderRadius:50,
       padding:12,
       backgroundColor:"black",
-      justifyContent:"center"
+      justifyContent:"center",
+      borderColor:"white"
     },
     addInputContainerMental:{
         flexDirection:"row",
         alignItems:"center",
         borderWidth:1,
-        width:"60%",
+        width:"80%",
         marginTop:20,
         borderRadius:50,
         padding:12,
@@ -734,6 +760,19 @@ const styles = StyleSheet.create({
       height:"100%",
       backgroundColor: "rgba(0, 0, 0, 0)",
       paddingBottom:200
+  },
+  IndicatorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  Indicator: {
+    width: 6,
+    height: 6,
+    backgroundColor: 'black',
+    borderRadius: 3,
+    marginHorizontal: 5,
   },
 });
 
@@ -754,20 +793,20 @@ const Dstyles = StyleSheet.create({
     height:"100%",
     paddingBottom:40,
   }
-  });
+});
 
-  const Cstyles = StyleSheet.create({
+const Cstyles = StyleSheet.create({
 
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        flexDirection: 'column',
-        paddingTop:0,
-        width:'100%',
-        alignItems:'center',
-        position:"relative",
-        height:"100%"
-    },
-  });
+container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    flexDirection: 'column',
+    paddingTop:0,
+    width:'100%',
+    alignItems:'center',
+    position:"relative",
+    height:"100%"
+},
+});
 
 export default AddDetection;
