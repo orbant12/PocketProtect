@@ -12,6 +12,7 @@ export const melanomaSpotUpload = async ({
     birthmarkId,
     melanomaPictureUrl,
     storageLocation,
+    risk
 }) => {
     try{
         const ref = doc(db, "users", userId, "Melanoma", birthmarkId);
@@ -21,7 +22,7 @@ export const melanomaSpotUpload = async ({
             gender: gender,
             melanomaPictureUrl: melanomaPictureUrl,
             storage_location: storageLocation,
-            risk: 0.0,
+            risk: risk,
         });
         return true;
     } catch (error) {

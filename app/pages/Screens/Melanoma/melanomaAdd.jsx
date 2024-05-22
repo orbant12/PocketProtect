@@ -348,68 +348,49 @@ const MelanomaAdd = ({route,navigaton}) => {
             })
             return response;
         }
-
-                // Helper function to convert Blob to base64
+                
         const blobToBase64 = (blob) => {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
+                reader.onloadend = () => resolve(reader.result.split(',')[1]); // Get only the base64 part
                 reader.onerror = reject;
                 reader.readAsDataURL(blob);
             });
         };
-
-        // Helper function to convert any image blob to JPEG format
-        const convertToJPEG = async (blob) => {
-            return new Promise((resolve, reject) => {
-                const img = document.createElement('img');
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                
-                img.onload = () => {
-                    canvas.width = img.width;
-                    canvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
-                    canvas.toBlob((jpegBlob) => {
-                        resolve(jpegBlob);
-                    }, 'image/jpeg');
-                };
-
-                img.onerror = reject;
-                img.src = URL.createObjectURL(blob);
-            });
-        };
-
-        const evaluate = async(photo) => {
-            const generatePrediction = httpsCallable(functions, 'predict');           
+                                
+        const evaluate = async (photo) => {
+            const generatePrediction = httpsCallable(functions, 'predict');
             try {
-             // Fetch the image from the URL
+                // Fetch the image from the URL
                 const response = await fetch(photo);
                 if (!response.ok) throw new Error('Failed to fetch image');
-
+        
                 // Convert the response to a Blob
                 const blob = await response.blob();
-
+        
+                // Convert blob to base64
                 const base64String = await blobToBase64(blob);
-
+        
                 // Send the base64 encoded JPEG string to the Firebase function
                 const result = await generatePrediction({ input: base64String });
-                console.log(result.data)
-                return result.data;
+                
+                console.log('Prediction result:', result.data);
+                return result.data
             } catch (error) {
-                console.error('Firebase function invocation failed:', error);
+                console.error('Error:', error);
             }
-        }
+        };
 
         const pictureUrl = await uploadToStorage(uploadedSpotPicture);
         const rate = await evaluate(pictureUrl)
-        const res = melanomaSpotUpload({
+        const res = await melanomaSpotUpload({
             userId: currentuser.uid,
             melanomaDocument: {"spot": selectedPart, "location": redDotLocation},
             gender: userData.gender,
             melanomaPictureUrl: pictureUrl,
             birthmarkId: birthmarkId,
             storageLocation: storageLocation,
+            risk:rate
         })
         if (res == true) {
             //NAVIGATE BACK
@@ -418,6 +399,7 @@ const MelanomaAdd = ({route,navigaton}) => {
             setRedDotLocation({ x: -100, y: 10 });
             setUploadedSpotPicture(null);
             setBirthmarkId(`Birthmark#${Math.floor(Math.random() * 100)}`);
+            navigaton.goBack()
         }
     }
 

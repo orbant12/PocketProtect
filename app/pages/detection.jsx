@@ -655,22 +655,147 @@ function Navbar(){
     )
 }
 
+function DetectionMenu(){
+    return(
+        <ScrollView>
+            <View style={styles.container}>
+                <View style={{width:"100%"}}>
+                    <Text style={{fontWeight:"800",fontSize:24,margin:15}}>AI vision</Text>
+                    <View style={styles.selectBox}>
+                        <View style={styles.boxTop}>
+                            <View style={{flexDirection:"row"}}>
+                                <MaterialCommunityIcons 
+                                    name='doctor'
+                                    size={30}
+                                />
+                                <View style={{marginLeft:20}}>
+                                    <Text style={{fontWeight:"800",fontSize:16}}>Skin Cancer</Text>
+                                    <Text style={{fontWeight:"400",fontSize:12}}>Desc 2003.11.17 </Text>
+                                </View>
+                            </View>    
+                            <MaterialCommunityIcons 
+                                name='menu'
+                                size={20}
+                            />
+                        </View>
+                        <View style={styles.boxBottom}>
+                            <View style={{padding:10,backgroundColor:"black",width:"55%",marginRight:10,opacity:0.2}}>
+
+                            </View>
+                            <TouchableOpacity style={{width:"45%",backgroundColor:"black",padding:10,alignItems:"center",justifyContent:"center",borderRadius:20,flexDirection:"row"}}>
+                                <Text style={{fontWeight:"600",color:"white",marginRight:15}}>Open</Text>
+                                <MaterialCommunityIcons 
+                                    name='arrow-right'
+                                    size={15}
+                                    color={"magenta"}                                                                        
+                                />
+                            </TouchableOpacity>                            
+                        </View>      
+                    </View>
+                    <View style={styles.selectBox}>
+                        <View style={styles.boxTop}>
+                            <View style={{flexDirection:"row"}}>
+                                <MaterialCommunityIcons 
+                                    name='doctor'
+                                    size={30}
+                                />
+                                <View style={{marginLeft:20}}>
+                                    <Text style={{fontWeight:"800",fontSize:16}}>Skin Cancer</Text>
+                                    <Text style={{fontWeight:"400",fontSize:12}}>Desc 2003.11.17 </Text>
+                                </View>
+                            </View>    
+                            <MaterialCommunityIcons 
+                                name='menu'
+                                size={20}
+                            />
+                        </View>
+                        <View style={styles.boxBottom}>
+                            <View style={{padding:10,backgroundColor:"black",width:"55%",marginRight:10,opacity:0.2}}>
+
+                            </View>
+                            <TouchableOpacity style={{width:"45%",backgroundColor:"black",padding:10,alignItems:"center",justifyContent:"center",borderRadius:20,flexDirection:"row"}}>
+                                <Text style={{fontWeight:"600",color:"white",marginRight:15}}>Open</Text>
+                                <MaterialCommunityIcons 
+                                    name='arrow-right'
+                                    size={15}
+                                    color={"magenta"}                                                                        
+                                />
+                            </TouchableOpacity>                            
+                        </View>      
+                    </View>
+                </View>
+                <View style={{width:"100%"}}>
+                    <Text style={{fontWeight:"800",fontSize:24,margin:15}}>AI vision</Text>
+                    <View style={styles.selectBox}>
+                        <View style={styles.boxTop}>
+                            <View style={{flexDirection:"row"}}>
+                                <MaterialCommunityIcons 
+                                    name='doctor'
+                                    size={30}
+                                />
+                                <View style={{marginLeft:20}}>
+                                    <Text style={{fontWeight:"800",fontSize:16}}>Skin Cancer</Text>
+                                    <Text style={{fontWeight:"400",fontSize:12}}>Desc 2003.11.17 </Text>
+                                </View>
+                            </View>    
+                            <MaterialCommunityIcons 
+                                name='menu'
+                                size={20}
+                            />
+                        </View>
+                        <View style={styles.boxBottom}>       
+                            <TouchableOpacity style={{width:"100%",backgroundColor:"black",padding:10,alignItems:"center",justifyContent:"center",borderRadius:20,flexDirection:"row"}}>
+                                <Text style={{fontWeight:"600",color:"white",marginRight:15}}>Open</Text>
+                                <MaterialCommunityIcons 
+                                    name='arrow-right'
+                                    size={15}
+                                    color={"magenta"}                                                                        
+                                />
+                            </TouchableOpacity>                            
+                        </View>      
+                    </View>
+                    <View style={styles.selectBox}>
+                        <View style={styles.boxTop}>
+                            <View style={{flexDirection:"row"}}>
+                                <MaterialCommunityIcons 
+                                    name='doctor'
+                                    size={30}
+                                />
+                                <View style={{marginLeft:20}}>
+                                    <Text style={{fontWeight:"800",fontSize:16}}>Skin Cancer</Text>
+                                    <Text style={{fontWeight:"400",fontSize:12}}>Desc 2003.11.17 </Text>
+                                </View>
+                            </View>    
+                            <MaterialCommunityIcons 
+                                name='menu'
+                                size={20}
+                            />
+                        </View>
+                        <View style={styles.boxBottom}>
+                            <View style={{padding:10,backgroundColor:"black",width:"55%",marginRight:10,opacity:0.2}}>
+
+                            </View>
+                            <TouchableOpacity style={{width:"45%",backgroundColor:"black",padding:10,alignItems:"center",justifyContent:"center",borderRadius:20,flexDirection:"row"}}>
+                                <Text style={{fontWeight:"600",color:"white",marginRight:15}}>Open</Text>
+                                <MaterialCommunityIcons 
+                                    name='arrow-right'
+                                    size={15}
+                                    color={"magenta"}                                                                        
+                                />
+                            </TouchableOpacity>                            
+                        </View>      
+                    </View>
+                </View>
+            </View>
+        </ScrollView>
+    )
+}
+
 
 return(
     <>
         <Navbar />
-        {isSelected == "HealthScore" ? 
-            <HealthScore />
-        :isSelected == "Melanoma" ? 
-            (isFirstMelanoma ?
-                <MelanomaMonitoring />
-                :
-                <View style={Mstyles.container} >
-                    <Text>DSDS</Text>
-                </View>
-            )
-        :null
-        }
+        {MelanomaMonitoring()}       
     </>
 )}
 
@@ -779,6 +904,30 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginRight: 20,
     },
+    selectBox:{
+        width:"90%",
+        borderWidth:0.3,
+        alignItems:"center",
+        marginRight:"auto",
+        marginLeft:"auto",
+        padding:20,
+        borderRadius:20,
+        marginBottom:20,
+        marginTop:10
+    },
+    boxTop:{
+        flexDirection:"row",
+        justifyContent:"space-between",
+        width:"100%",        
+    },
+    boxBottom:{
+        flexDirection:"row",
+        justifyContent:"space-between",
+        width:"100%",
+        padding:5,
+        alignItems:"center",        
+        marginTop:20
+    }
 
 });
 
@@ -951,7 +1100,7 @@ const Mstyles = StyleSheet.create({
     educationSection:{
         width:"100%",
         alignItems:"center"
-    }
+    },
 
 })
 
