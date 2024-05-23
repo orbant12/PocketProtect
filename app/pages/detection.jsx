@@ -1,5 +1,5 @@
 
-import { View, Text, Pressable, ScrollView,StyleSheet,TouchableOpacity } from 'react-native';
+import { View, Text, Pressable, ScrollView,StyleSheet,TouchableOpacity,Dimensions } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ProgressBar from 'react-native-progress/Bar';
 //BASICS
@@ -257,7 +257,44 @@ const handleScroll = (event) => {
     setIsSelected('soon');
   }
 };
+
+const { width } = Dimensions.get('window');
+const [currentPage, setCurrentPage] = useState(0);
+
+const handleScrollReminder = (event) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const pageIndex = Math.floor((offsetX + width / 2) / width);
+    setCurrentPage(pageIndex);
+}
+
+
 function DetectionMenu(){
+
+    function SingleBloodBox(isLatest){
+        return(
+            <View style={{flexDirection:"column",alignItems:"center",justifyContent:"center",width:300}}>
+            <View style={{marginTop:20,width:"90%",borderLeftWidth:0.3,borderColor:"magenta",paddingLeft:10,opacity:0.6}}>
+               { isLatest ? <Text style={{fontSize:12,fontWeight:"700",marginTop:5,opacity:0.5,color:"magenta"}}>Most up to date</Text>:<Text style={{fontSize:12,fontWeight:"700",marginTop:5,opacity:0.5,color:"red"}}>Outdated, but valuable for AI to make comparisons between blood works</Text>      }                                       
+                <Text style={{fontSize:12,fontWeight:"700",marginTop:5}}>Date: <Text style={{fontWeight:"300"}}>3 days - 2003.11.17</Text></Text>                                 
+                <Text style={{fontSize:14,fontWeight:"700",marginTop:20}}>Your Added Data</Text>
+                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>1. Basic Health Indicators: <Text style={{fontWeight:"800"}}>0/5</Text>  <Text style={{color:"lightgreen"}}>(✓)</Text> </Text>
+                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>2. Lipid Panel: <Text style={{fontWeight:"800"}}>0/4</Text></Text>
+                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>3. Iron Studies: <Text style={{fontWeight:"800"}}>0/4</Text></Text>
+                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>4. Liver Function Tests: <Text style={{fontWeight:"800"}}>0/6</Text></Text>
+                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>5. Metabolic Panel: <Text style={{fontWeight:"800"}}>0/8</Text></Text>
+                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>6. Thyroid Panel: <Text style={{fontWeight:"800"}}>0/3</Text></Text>
+                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>7. Inflammatory Markers: <Text style={{fontWeight:"800"}}>0/2</Text></Text>
+                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>8. Hormonal Panel : <Text style={{fontWeight:"800"}}>0/3</Text></Text>
+                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>9. Vitamins & Minerals: <Text style={{fontWeight:"800"}}>0/3</Text></Text>
+            </View>
+            <View style={{marginTop:20}}>                            
+                <ProgressBar progress={0.2} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
+            </View>  
+            </View>    
+        )
+    }
+
+
     return(
         <ScrollView ref={scrollViewRef} onScroll={handleScroll} scrollEventThrottle={16}>
             <View style={styles.container}>
@@ -311,7 +348,7 @@ function DetectionMenu(){
                                     />
                                     <View style={{marginLeft:20}}>
                                         <Text style={{fontWeight:"800",fontSize:16}}>Blood Work Center</Text>
-                                        <Text style={{fontWeight:"400",fontSize:10,marginTop:3,maxWidth:"85%",opacity:0.4}}>More blood work you provide the better insight we get !</Text>
+                                        <Text style={{fontWeight:"400",fontSize:10,marginTop:3,maxWidth:"85%",opacity:0.4}}>Number of blood works: 2</Text>
                                     </View>
                                 </View>    
                                 <MaterialCommunityIcons 
@@ -321,22 +358,21 @@ function DetectionMenu(){
                                     opacity={0.4}
                                 />
                             </View>
-                            <View style={{marginTop:20,width:"90%",borderLeftWidth:0.3,borderColor:"magenta",paddingLeft:10,opacity:0.6}}>                                                  
-                                <Text style={{fontSize:12,fontWeight:"700",marginTop:5}}>Latest Upload: <Text style={{fontWeight:"300"}}>2003.11.17</Text></Text>
-                                <Text style={{fontSize:12,fontWeight:"700",marginTop:5}}>Number of blood works: <Text style={{fontWeight:"300"}}>1</Text></Text>
-                                <Text style={{fontSize:14,fontWeight:"700",marginTop:20}}>Your Added Data</Text>
-                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>1. Basic Health Indicators: <Text style={{fontWeight:"800"}}>0/5</Text>  <Text style={{color:"lightgreen"}}>(✓)</Text> </Text>
-                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>2. Lipid Panel: <Text style={{fontWeight:"800"}}>0/4</Text></Text>
-                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>3. Iron Studies: <Text style={{fontWeight:"800"}}>0/4</Text></Text>
-                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>4. Liver Function Tests: <Text style={{fontWeight:"800"}}>0/6</Text></Text>
-                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>5. Metabolic Panel: <Text style={{fontWeight:"800"}}>0/8</Text></Text>
-                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>6. Thyroid Panel: <Text style={{fontWeight:"800"}}>0/3</Text></Text>
-                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>7. Inflammatory Markers: <Text style={{fontWeight:"800"}}>0/2</Text></Text>
-                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>8. Hormonal Panel : <Text style={{fontWeight:"800"}}>0/3</Text></Text>
-                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>9. Vitamins & Minerals: <Text style={{fontWeight:"800"}}>0/3</Text></Text>
-                            </View>
-                            <View style={{marginTop:20}}>                            
-                                <ProgressBar progress={0.2} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
+                          
+                            <ScrollView
+                                horizontal
+                                pagingEnabled
+                                showsHorizontalScrollIndicator={false}
+                                onMomentumScrollEnd={handleScrollReminder}               
+                                contentContainerStyle={{width:"400%",marginTop:0}}
+                                scrollEventThrottle={16}  
+                            > 
+                            {SingleBloodBox(isLatest=true) }
+                            {SingleBloodBox(isLatest=false) }  
+                            </ScrollView>
+                            <View style={styles.IndicatorContainer}>               
+                                <View style={[styles.Indicator, { opacity: currentPage === 0 ? 1 : 0.3 }]} />   
+                                <View style={[styles.Indicator, { opacity: currentPage === 1 ? 1 : 0.3 }]} />                                                                              
                             </View>                     
                             <View style={[styles.boxBottom,{marginTop:5}]}>                                
                                 <TouchableOpacity style={{width:"100%",backgroundColor:"black",padding:10,paddingVertical:12,alignItems:"center",justifyContent:"center",borderRadius:20,flexDirection:"row"}}>
@@ -667,7 +703,21 @@ const styles = StyleSheet.create({
         padding:5,
         alignItems:"center",        
         marginTop:20
-    }
+    },
+    IndicatorContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 15,
+        marginBottom:10
+      },
+      Indicator: {
+        width: 6,
+        height: 6,
+        backgroundColor: 'black',
+        borderRadius: 3,
+        marginHorizontal: 5,
+      },
 
 });
 
