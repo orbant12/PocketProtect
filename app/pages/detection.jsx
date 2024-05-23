@@ -1,232 +1,43 @@
 
 import { View, Text, Pressable, ScrollView,StyleSheet,TouchableOpacity } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import ProgressBar from 'react-native-progress/Bar';
 //BASICS
 
-import React, {useEffect, useState} from 'react';
-
-//SVG
-import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
-
-//Time
-import moment from 'moment'
+import React, {useEffect, useState, useRef} from 'react';
 
 //CONTEXT
 import { useAuth } from '../context/UserAuthContext';
-import Body from "../components/BodyParts/index";
 
-import {bodyFemaleFront} from "../components/BodyParts/bodyFemaleFront.ts"
-import {bodyFemaleBack} from "../components/BodyParts/bodyFemaleBack.ts"
-import {bodyFront} from "../components/BodyParts/bodyFront.ts"
-import {bodyBack} from "../components/BodyParts//bodyBack.ts"
-
-import { fetchAllMelanomaSpotData, fetchUserData } from '../server';
+import { fetchAllDiagnosis } from '../server';
 
 const DetectionLibary = ({navigation}) => {
 
     //<********************VARIABLES************************>        
     const { currentuser } = useAuth();
 
-    const [isSelected, setIsSelected ] = useState("Melanoma")
-    const [userData , setUserData] = useState([]);
-    const [selectedSide, setSelectedSide] = useState("front");
-    const [melanomaData, setMelanomaData] = useState([])
-    const [bodySlugs, setBodySlugs] = useState(null)
-    const [ affectedSlugs,setAffectedSlugs ] = useState([])
-    const [ isFirstMelanoma, setIsFirstMelanoma ] = useState(true)
+    const [isSelected, setIsSelected ] = useState("Melanoma")    
+    const [ diagnosisData, setDiagnosisData] = useState([])
 
 //<********************FUNCTIONS************************>
 
-const fetchAllMelanomaData = async (gender) => {
-    if(currentuser){
-        const response = await fetchAllMelanomaSpotData({
-            userId: currentuser.uid,
-            gender
-        });
-        const melanomaData = response;
-        if(melanomaData != false){
-            setMelanomaData(melanomaData);
-        } else {
-            setIsFirstMelanoma(false)
-        }
+const fetchDiagnosis = async () => {
+    const response = await fetchAllDiagnosis({
+        userId: currentuser.uid,
+    })
+    if(response != false){
+        setDiagnosisData(response)
+    } else if (response == false){
+        alert("Something went wrong !")
     }
 }
 
-const fetchAllUserData = async () => {
-    if(currentuser){
-        const response = await fetchUserData({
-            userId: currentuser.uid,
-        });
-        const docSnapshot = response;
-        const elementData = docSnapshot.data();
-        setUserData(elementData);
-        fetchAllMelanomaData(elementData.gender)
-    }
-}
-
-const BodySvgSelector = () => {
-    if(userData.gender == "male" && selectedSide == 'front'){
-        setBodySlugs(bodyFront);
-    } else if ( userData.gender == "female" && selectedSide == 'front' ){
-        setBodySlugs(bodyFemaleFront);
-    } else if ( userData.gender == "male" && selectedSide == 'back' ){
-        setBodySlugs(bodyBack);
-    } else if ( userData.gender == "female" && selectedSide == 'back' ){
-        setBodySlugs(bodyFemaleBack);
-    }
-}
-
-const AffectedSlugMap = () => {
-    if(melanomaData != null){
-        const affectedSlug = melanomaData.map((data, index) => {
-            const spotSlug = data.melanomaDoc.spot[0]?.slug;
-            const intensity = data.risk >= 0.3 ? (data.risk >= 0.8 ? 1 : 3) : 2;
-            return { slug: spotSlug, intensity, key: index }; // Adding a unique key
-        });
-        setAffectedSlugs(affectedSlug);
-    }
-}
-
-const handleAddMelanoma = () => {
-    navigation.navigate("MelanomaAdd", { data: userData });
-}
-
-useEffect(() => {
-    fetchAllUserData();
-    BodySvgSelector()
-    AffectedSlugMap()
+useEffect(() => {      
+    fetchDiagnosis()
 }, []);
-
-useEffect(() => {
-    BodySvgSelector()
-    AffectedSlugMap()
-}, [userData, selectedSide,melanomaData]);
 
 
 //<=====> COMPONENTS <==========>
-
-
-function MelanomaMonitoring(){
-
-    function MelanomaAdd(){
-        return(
-            <Pressable onPress={handleAddMelanoma} style={Mstyles.AddMelanomaBtn}>
-                <Text>
-                    + Add Melanoma
-                </Text>
-            </Pressable>
-        )
-    }
-
-    return(
-        <ScrollView>
-            <View style={Mstyles.container}>
-                <View style={Mstyles.MelanomaMonitorSection}>
-                    <View style={Mstyles.melanomaTitle}>
-                        <View style={Mstyles.melanomaTitleLeft}>
-                            <Text style={Mstyles.melanomaTag}>Computer Vision</Text>
-                            <Text style={{fontSize:20,fontWeight:'bold'}}>Melanoma Monitoring</Text>
-                            <Text style={{fontSize:15}}>Click on the body part for part analasis</Text>   
-                        </View>
-                        <MaterialCommunityIcons
-                            name="information-outline"
-                            size={30}
-                            color="black"
-                            style={{marginLeft:10}}
-                        />
-                    </View>
-                    <Body
-                        data={affectedSlugs}
-                        gender={userData.gender}
-                        side={selectedSide}
-                        scale={1.1}
-                        //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
-                        colors={['#FF0000', '#A6FF9B','#FFA8A8']}
-                        onBodyPartPress={(slug) => navigation.navigate("SlugAnalasis", { data: slug,gender:userData.gender })}
-                        zoomOnPress={true}
-                    />
-        
-                    <View style={Mstyles.colorExplain}>
-                        <View style={Mstyles.colorExplainRow} >
-                            <View style={Mstyles.redDot} />
-                            <Text style={{position:"relative",marginLeft:10,fontWeight:500,opacity:0.8}}>Higher risk</Text>
-                        </View>
-        
-                        <View style={Mstyles.colorExplainRow}>
-                            <View style={Mstyles.greenDot} />
-                            <Text style={{position:"relative",marginLeft:10,fontWeight:500,opacity:0.8}}>No risk</Text>
-                        </View>
-                    </View>
-        
-                    <View style={Mstyles.positionSwitch}>
-                        <Pressable onPress={() => setSelectedSide("front")}>
-                            <Text style={selectedSide == "front" ? {fontWeight:600}:{opacity:0.5}}>Front</Text>
-                        </Pressable>
-                        <Text>|</Text>
-                        <Pressable onPress={() => setSelectedSide("back")}>
-                            <Text style={selectedSide == "back" ? {fontWeight:600}:{opacity:0.5}}>Back</Text>
-                        </Pressable>
-                    </View>
-        
-                    <MelanomaAdd />
-        
-                    <View style={Mstyles.analasisSection}>
-                        <View style={Mstyles.melanomaTitle}>
-                            <View style={Mstyles.melanomaTitleLeft}>
-                                <Text style={Mstyles.titleTag}>Artifical Inteligence</Text>
-                                <Text style={{fontSize:20,fontWeight:'bold'}}>Analasis</Text>
-                                <Text style={{fontSize:15}}>Your personal score is 0.0</Text>   
-                            </View>
-                            <MaterialCommunityIcons
-                                name="information-outline"
-                                size={30}
-                                color="black"
-                                style={{marginLeft:10}}
-                            />
-                        </View>
-                        <ScrollView horizontal >
-        
-        
-                            {bodySlugs != null ? (
-                                bodySlugs.map((bodyPart,index) => (
-                                    <View style={Mstyles.melanomaBox} key={`box_${bodyPart.slug}_${index}`}>
-                                        <Text style={{fontSize:20,fontWeight:700}}>{bodyPart.slug}</Text>
-                                        <Text style={{fontSize:15,fontWeight:500,opacity:0.7}}>Birthmarks: 21</Text>
-                                        
-                                        <View>
-                                            {dotSelectOnPart(bodyPart)}
-                                        </View>
-                                        <Pressable style={Mstyles.showMoreBtn} onPress={() => navigation.navigate("SlugAnalasis",{ data: bodyPart,gender: userData.gender})}>
-                                            <Text style={{fontSize:15,fontWeight:500,opacity:0.7}}>Show Analasis</Text>
-                                        </Pressable>
-                                        <View style={Mstyles.redDotLabel} />
-        
-                                    </View>
-                                ))
-                            ):null}
-                        
-                        </ScrollView>
-                    </View>
-
-                    <View style={Mstyles.educationSection}>
-                        <View style={{width:"90%",height:100,borderWidth:1,alignItems:"center",justifyContent:"center",borderRadius:10,marginBottom:20}}>
-                            <Text style={{fontSize:15,fontWeight:"600"}}>How do we detect moles ?</Text>
-                        </View>
-
-                        <View style={{width:"90%",height:100,borderWidth:1,alignItems:"center",justifyContent:"center",borderRadius:10,marginBottom:20}}>
-                            <Text style={{fontSize:15,fontWeight:"600"}}>How can you detect moles ?</Text>
-                        </View>
-
-                        <View style={{width:"90%",height:100,borderWidth:1,alignItems:"center",justifyContent:"center",borderRadius:10,marginBottom:20}}>
-                            <Text style={{fontSize:15,fontWeight:"600"}}>How to protect yourself ?</Text>
-                        </View>
-                    </View>
-                </View>
-            </View>
-        </ScrollView>
-    )
-}
 
 function HealthScore(){
     return(
@@ -372,294 +183,86 @@ function HealthScore(){
     )
 }
 
-const dotSelectOnPart = (bodyPart) => {
-    return (
-        <Svg preserveAspectRatio="xMidYMid meet" height={200} width={350} > 
-            {bodyPart != null ? (
-                bodyPart.pathArray.map((path, index) => (
-                        <Path
-                            key={`${bodyPart.slug}_${index}`} 
-                            d={path}
-                            fill="blue" 
-                            stroke={bodyPart.color} 
-                            strokeWidth="2"
-                            rotation={
-                                bodyPart.slug == "right-arm" ? "-20"
-                                :
-                                bodyPart.slug == "left-arm" ? "20"
-                                :
-                                bodyPart.slug == "right-arm(back)" ? "-20"
-                                :
-                                bodyPart.slug == "left-arm(back)" ? "20"
-                                :
-                                null
-                            }
-                            transform={
-                                userData.gender == "male" ? (
-                                    bodyPart.slug == "chest" ? `translate(-180 -270)` 
-                                    :
-                                    bodyPart.slug == "head" ? `translate(-140 -70)`
-                                    :
-                                    bodyPart.slug == "legs" ? `translate(-140 -100)`
-                                    :
-                                    bodyPart.slug == "torso" ? `translate(-140 -100)`
-                                    :
-                                    bodyPart.slug == "feet" ? `translate(-140 -100)`
-                                    :
-                                    bodyPart.slug == "abs" ? `translate(-60 -390)`
-                                    :
-                                    bodyPart.slug == "left-hand" ? `translate(40 -670)`
-                                    :
-                                    bodyPart.slug == "right-hand" ? `translate(-480 -670)`
-                                    :
-                                    bodyPart.slug == "left-arm" ? `translate(120 -420)`
-                                    :
-                                    bodyPart.slug == "right-arm" ? `translate(-300 -230)`
-                                    :
-                                    bodyPart.slug == "upper-leg-left" ? `translate(0 -650)`
-                                    :
-                                    bodyPart.slug == "upper-leg-right" ? `translate(-170 -650)`
-                                    :
-                                    bodyPart.slug == "lower-leg-left" ? `translate(-20 -950)`
-                                    :
-                                    bodyPart.slug == "lower-leg-right" ? `translate(-170 -950)`
-                                    :
-                                    bodyPart.slug == "left-feet" ? `translate(-130 -1200)`
-                                    :
-                                    bodyPart.slug == "right-feet" ? `translate(-290 -1200)`
-                                    :
-                                    //BACK
-                                    bodyPart.slug == "head(back)" ? `translate(-860 -80)`
-                                    :
-                                    bodyPart.slug == "back" ? `translate(-800 -290)`
-                                    :
-                                    bodyPart.slug == "left-arm(back)" ? `translate(-600 -430)`
-                                    :
-                                    bodyPart.slug == "right-arm(back)" ? `translate(-1000 -230)`
-                                    :
-                                    bodyPart.slug == "gluteal" ? `translate(-900 -590)`
-                                    :
-                                    bodyPart.slug == "right-palm" ? `translate(-1190 -675)`
-                                    :
-                                    bodyPart.slug == "left-palm" ? `translate(-680 -670)`
-                                    :
-                                    bodyPart.slug == "left-leg(back)" ? `translate(-550 -750)`
-                                    :
-                                    bodyPart.slug == "right-leg(back)" ? `translate(-700 -750)`
-                                    :
-                                    bodyPart.slug == "left-feet(back)" ? `translate(-840 -1230)`
-                                    :
-                                    bodyPart.slug == "right-feet(back)" ? `translate(-1000 -1230)`
-                                    :
-                                    null
-                                    ):(
-                                    bodyPart.slug == "chest" ? `translate(-145 -270)` 
-                                    :
-                                    bodyPart.slug == "head" ? `translate(-50 -10)`
-                                    :
-                                    bodyPart.slug == "legs" ? `translate(-140 -100)`
-                                    :
-                                    bodyPart.slug == "torso" ? `translate(-140 -100)`
-                                    :
-                                    bodyPart.slug == "feet" ? `translate(-140 -100)`
-                                    :
-                                    bodyPart.slug == "abs" ? `translate(-20 -380)`
-                                    :
-                                    bodyPart.slug == "left-hand" ? `translate(100 -630)`
-                                    :
-                                    bodyPart.slug == "right-hand" ? `translate(-460 -640)`
-                                    :
-                                    bodyPart.slug == "left-arm" ? `translate(180 -420)`
-                                    :
-                                    bodyPart.slug == "right-arm" ? `translate(-300 -230)`
-                                    :
-                                    bodyPart.slug == "upper-leg-left" ? `translate(0 -650)`
-                                    :
-                                    bodyPart.slug == "upper-leg-right" ? `translate(-110 -650)`
-                                    :
-                                    bodyPart.slug == "lower-leg-left" ? `translate(-20 -950)`
-                                    :
-                                    bodyPart.slug == "lower-leg-right" ? `translate(-120 -950)`
-                                    :
-                                    bodyPart.slug == "left-feet" ? `translate(-130 -1280)`
-                                    :
-                                    bodyPart.slug == "right-feet" ? `translate(-220 -1280)`
-                                    :
-                                    //BACK
-                                    bodyPart.slug == "head(back)" ? `translate(-900 -30)`
-                                    :
-                                    bodyPart.slug == "back" ? `translate(-850 -280)`
-                                    :
-                                    bodyPart.slug == "left-arm(back)" ? `translate(-650 -450)`
-                                    :
-                                    bodyPart.slug == "right-arm(back)" ? `translate(-1100 -230)`
-                                    :
-                                    bodyPart.slug == "gluteal" ? `translate(-960 -590)`
-                                    :
-                                    bodyPart.slug == "right-palm" ? `translate(-1270 -620)`
-                                    :
-                                    bodyPart.slug == "left-palm" ? `translate(-730 -630)`
-                                    :
-                                    bodyPart.slug == "left-leg(back)" ? `translate(-600 -750)`
-                                    :
-                                    bodyPart.slug == "right-leg(back)" ? `translate(-700 -750)`
-                                    :
-                                    bodyPart.slug == "left-feet(back)" ? `translate(-940 -1330)`
-                                    :
-                                    bodyPart.slug == "right-feet(back)" ? `translate(-1050 -1330)`
-                                    
-                                    :null
-                                    )
-                            }
-                            scale={
-                                userData.gender == "male" ? (
-                                    bodyPart.slug == "left-hand" ? "1.3" 
-                                    : 
-                                    bodyPart.slug == "right-hand" ? "1.3"
-                                    :
-                                    bodyPart.slug == "chest" ? "1" 
-                                    :
-                                    bodyPart.slug == "head" ? "0.8"
-                                    :
-                                    bodyPart.slug == "legs" ? "0.8"
-                                    :
-                                    bodyPart.slug == "torso" ? "0.8"
-                                    :
-                                    bodyPart.slug == "feet" ? "0.8"
-                                    :
-                                    bodyPart.slug == "abs" ? "0.6"
-                                    :
-                                    bodyPart.slug == "left-arm" ? "0.6"
-                                    :
-                                    bodyPart.slug == "right-arm" ? "0.6"
-                                    :
-                                    bodyPart.slug == "upper-leg-left" ? "0.65"
-                                    :
-                                    bodyPart.slug == "upper-leg-right" ? "0.65"
-                                    :
-                                    bodyPart.slug == "lower-leg-left" ? "0.7"
-                                    :
-                                    bodyPart.slug == "lower-leg-right" ? "0.7"
-                                    :
-                                    bodyPart.slug == "left-feet" ? "1.2"
-                                    :
-                                    bodyPart.slug == "right-feet" ? "1.2 "
-                                    :
-                                    //BACK
-                                    bodyPart.slug == "head(back)" ? "0.8"
-                                    :
-                                    bodyPart.slug == "back" ? "0.6"
-                                    :
-                                    bodyPart.slug == "left-arm(back)" ? "0.6"
-                                    :
-                                    bodyPart.slug == "right-arm(back)" ? "0.6"
-                                    :
-                                    bodyPart.slug == "gluteal" ? "1"
-                                    :
-                                    bodyPart.slug == "right-palm" ? "1.3"
-                                    :
-                                    bodyPart.slug == "left-palm" ? "1.3"
-                                    :
-                                    bodyPart.slug == "left-leg(back)" ? "0.37"
-                                    :
-                                    bodyPart.slug == "right-leg(back)" ? "0.37"
-                                    :
-                                    bodyPart.slug == "left-feet(back)" ? "1.2"
-                                    :
-                                    bodyPart.slug == "right-feet(back)" ? "1.2"
-                                    :
-                                    null):(
-                                    bodyPart.slug == "left-hand" ? "1.3" 
-                                    : 
-                                    bodyPart.slug == "right-hand" ? "1.3"
-                                    :
-                                    bodyPart.slug == "chest" ? "1" 
-                                    :
-                                    bodyPart.slug == "head" ? "0.65"
-                                    :
-                                    bodyPart.slug == "legs" ? "0.8"
-                                    :
-                                    bodyPart.slug == "torso" ? "0.8"
-                                    :
-                                    bodyPart.slug == "feet" ? "0.8"
-                                    :
-                                    bodyPart.slug == "abs" ? "0.6"
-                                    :
-                                    bodyPart.slug == "left-arm" ? "0.6"
-                                    :
-                                    bodyPart.slug == "right-arm" ? "0.6"
-                                    :
-                                    bodyPart.slug == "upper-leg-left" ? "0.65"
-                                    :
-                                    bodyPart.slug == "upper-leg-right" ? "0.65"
-                                    :
-                                    bodyPart.slug == "lower-leg-left" ? "0.7"
-                                    :
-                                    bodyPart.slug == "lower-leg-right" ? "0.7"
-                                    :
-                                    bodyPart.slug == "left-feet" ? "1.2"
-                                    :
-                                    bodyPart.slug == "right-feet" ? "1.2 "
-                                    :
-                                    //BACK
-                                    bodyPart.slug == "head(back)" ? "0.8"
-                                    :
-                                    bodyPart.slug == "back" ? "0.6"
-                                    :
-                                    bodyPart.slug == "left-arm(back)" ? "0.6"
-                                    :
-                                    bodyPart.slug == "right-arm(back)" ? "0.6"
-                                    :
-                                    bodyPart.slug == "gluteal" ? "1"
-                                    :
-                                    bodyPart.slug == "right-palm" ? "1.3"
-                                    :
-                                    bodyPart.slug == "left-palm" ? "1.3"
-                                    :
-                                    bodyPart.slug == "left-leg(back)" ? "0.37"
-                                    :
-                                    bodyPart.slug == "right-leg(back)" ? "0.37"
-                                    :
-                                    bodyPart.slug == "left-feet(back)" ? "1.2"
-                                    :
-                                    bodyPart.slug == "right-feet(back)" ? "1.2"
-                                    :
-                                    null)
-                            }
-                        />
-                ))
-            ):null}
-            {melanomaData.map((data,index) => (
-                    data.melanomaDoc.spot[0].slug == bodyPart.slug && data.gender == userData.gender  ? (
-                        <>
-                            <Circle cx={data.melanomaDoc.location.x} cy={data.melanomaDoc.location.y} r="5" fill="red" key={`${"circle"}_${index}`} />
-                        </>
-                    ):null
-                ))
-            }
-        </Svg>
 
-    )
+const handleNavigation = (path) => {
+    const data = {
+        title: path
+    }
+    navigation.navigate("FeaturePage",{data:data})
 }
 
 function Navbar(){
     return(
-        <ScrollView horizontal style={{position:"absolute",marginTop:60,paddingLeft:80,marginRight:"auto",flexDirection:"row",width:"100%",zIndex:5}}>
-            <TouchableOpacity onPress={() => setIsSelected("HealthScore")} style={isSelected == "HealthScore" ? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
-                <Text style={isSelected == "HealthScore"?{fontWeight:"800",color:"black"}:{opacity:0.4,fontWeight:800,color:"black"}}>Health Score</Text>
+        <ScrollView horizontal style={{position:"absolute",paddingTop:60,paddingLeft:40,marginRight:"auto",flexDirection:"row",zIndex:5,backgroundColor:"white",paddingBottom:15 ,borderWidth:0.3}} showsHorizontalScrollIndicator="false">
+            <TouchableOpacity onPress={() => setIsSelected("ai_vision")} style={isSelected == "ai_vision" ? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
+                <Text style={isSelected == "ai_vision"?{fontWeight:"800",color:"black"}:{opacity:0.4,fontWeight:800,color:"black"}}>AI Vision</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setIsSelected("Melanoma")} style={isSelected == "Melanoma" ? {borderBottomColor:"magenta",borderBottomWidth:2,marginLeft:30} : {marginLeft:30}}>
-                <Text style={isSelected == "Melanoma" ? {fontWeight:"800",color:"black"} : {opacity:0.4,fontWeight:800,color:"black"}}>Melanoma</Text>
+            <TouchableOpacity onPress={() => setIsSelected("blood_work")} style={isSelected == "blood_work" ? {borderBottomColor:"magenta",borderBottomWidth:2,marginLeft:30} : {marginLeft:30}}>
+                <Text style={isSelected == "blood_work" ? {fontWeight:"800",color:"black"} : {opacity:0.4,fontWeight:800,color:"black"}}>Blood Work</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setIsSelected("diagnosis")} style={isSelected == "diagnosis" ? {borderBottomColor:"magenta",borderBottomWidth:2,marginLeft:30,} : {marginLeft:30}}>
+                <Text style={isSelected == "diagnosis" ? {fontWeight:"800",color:"black"} : {opacity:0.4,fontWeight:800,color:"black"}}>Custom Diagnosis</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setIsSelected("soon")} style={isSelected == "soon" ? {borderBottomColor:"magenta",borderBottomWidth:2,marginLeft:30,marginRight:70} : {marginLeft:30,marginRight:70}}>
+                <Text style={isSelected == "soon" ? {fontWeight:"800",color:"black"} : {opacity:0.4,fontWeight:800,color:"black"}}>Coming Soon</Text>
             </TouchableOpacity>
         </ScrollView>
     )
 }
 
+const scrollViewRef = useRef(null);
+const skinCancerRef = useRef(null);
+const bloodAnalysisRef = useRef(null);
+const diagnosisRef = useRef(null);
+const soonRef = useRef(null);
+
+const positions = useRef({
+  skinCancer: 0,
+  bloodAnalysis: 0,
+  diagnosis: 0,
+  soon: 0
+});
+
+useEffect(() => {
+  // Calculate positions after the initial render
+  setTimeout(() => {
+    skinCancerRef.current.measure((x, y, width, height, pageX, pageY) => {
+      positions.current.skinCancer = pageY;
+    });
+
+    bloodAnalysisRef.current.measure((x, y, width, height, pageX, pageY) => {
+      positions.current.bloodAnalysis = pageY+15;
+    });
+
+    diagnosisRef.current.measure((x, y, width, height, pageX, pageY) => {
+      positions.current.diagnosis = pageY;
+    });
+
+    soonRef.current.measure((x, y, width, height, pageX, pageY) => {
+      positions.current.soon = pageY;
+    });
+  }, 0);
+}, []);
+
+const handleScroll = (event) => {
+  const scrollY = event.nativeEvent.contentOffset.y;
+
+  if (scrollY >= positions.current.skinCancer && scrollY < positions.current.bloodAnalysis) {
+    setIsSelected('ai_vision');
+  } else if (scrollY >= positions.current.bloodAnalysis && scrollY < positions.current.diagnosis) {
+    setIsSelected('blood_work');
+  } else if (scrollY >= positions.current.diagnosis && scrollY < positions.current.soon) {
+    setIsSelected('diagnosis');
+  } else if (scrollY >= positions.current.soon) {
+    setIsSelected('soon');
+  }
+};
 function DetectionMenu(){
     return(
-        <ScrollView>
+        <ScrollView ref={scrollViewRef} onScroll={handleScroll} scrollEventThrottle={16}>
             <View style={styles.container}>
-                <View style={{width:"100%"}}>
+                {/*SKIN CANCER*/}
+                <View ref={skinCancerRef} style={{width:"100%"}}>
                     <Text style={{fontWeight:"800",fontSize:24,margin:15}}>AI vision</Text>
                     <View style={styles.selectBox}>
                         <View style={styles.boxTop}>
@@ -674,16 +277,18 @@ function DetectionMenu(){
                                 </View>
                             </View>    
                             <MaterialCommunityIcons 
-                                name='menu'
+                                name='bell'
                                 size={20}
                             />
                         </View>
                         <View style={styles.boxBottom}>
-                            <View style={{padding:10,backgroundColor:"black",width:"55%",marginRight:10,opacity:0.2}}>
-
+                            <View style={{padding:1,width:"55%",marginRight:10,opacity:0.6, borderLeftWidth:0.3,paddingLeft:10,borderColor:"magenta"}}>
+                                <Text style={{color:"black",marginBottom:8,fontSize:12,fontWeight:"300"}}>Monitored Moles: {"12"}</Text>
+                                <Text style={{color:"black",marginBottom:8,fontSize:12,fontWeight:"300"}}>Higher Risk Moles: {"2"}</Text>
+                                <Text style={{color:"black",fontSize:12,fontWeight:"300"}}>Outdated Moles: {"0"}</Text>
                             </View>
-                            <TouchableOpacity style={{width:"45%",backgroundColor:"black",padding:10,alignItems:"center",justifyContent:"center",borderRadius:20,flexDirection:"row"}}>
-                                <Text style={{fontWeight:"600",color:"white",marginRight:15}}>Open</Text>
+                            <TouchableOpacity onPress={() => handleNavigation("Skin Cancer")} style={{width:"45%",backgroundColor:"black",padding:10,paddingVertical:18,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
+                                <Text style={{fontWeight:"600",color:"white",marginRight:15,fontSize:15}}>Open</Text>
                                 <MaterialCommunityIcons 
                                     name='arrow-right'
                                     size={15}
@@ -692,40 +297,58 @@ function DetectionMenu(){
                             </TouchableOpacity>                            
                         </View>      
                     </View>
-                    <View style={styles.selectBox}>
-                        <View style={styles.boxTop}>
-                            <View style={{flexDirection:"row"}}>
-                                <MaterialCommunityIcons 
-                                    name='doctor'
-                                    size={30}
-                                />
-                                <View style={{marginLeft:20}}>
-                                    <Text style={{fontWeight:"800",fontSize:16}}>Skin Cancer</Text>
-                                    <Text style={{fontWeight:"400",fontSize:12}}>Desc 2003.11.17 </Text>
-                                </View>
-                            </View>    
-                            <MaterialCommunityIcons 
-                                name='menu'
-                                size={20}
-                            />
-                        </View>
-                        <View style={styles.boxBottom}>
-                            <View style={{padding:10,backgroundColor:"black",width:"55%",marginRight:10,opacity:0.2}}>
-
-                            </View>
-                            <TouchableOpacity style={{width:"45%",backgroundColor:"black",padding:10,alignItems:"center",justifyContent:"center",borderRadius:20,flexDirection:"row"}}>
-                                <Text style={{fontWeight:"600",color:"white",marginRight:15}}>Open</Text>
-                                <MaterialCommunityIcons 
-                                    name='arrow-right'
-                                    size={15}
-                                    color={"magenta"}                                                                        
-                                />
-                            </TouchableOpacity>                            
-                        </View>      
-                    </View>
+                    <Text style={{marginRight:"auto",marginLeft:"auto",fontSize:20,fontWeight:"600",opacity:0.3,marginBottom:20,marginTop:10}}>More fetures coming soon ...</Text>
                 </View>
-                <View style={{width:"100%"}}>
-                    <Text style={{fontWeight:"800",fontSize:24,margin:15}}>AI vision</Text>
+                {/*Blood Analasis*/}
+                <View ref={bloodAnalysisRef} style={{width:"100%"}}>
+                    <Text style={{fontWeight:"800",fontSize:24,margin:15,marginTop:40}}>Blood Analasis</Text>
+                    <View style={styles.selectBox}>
+                            <View style={styles.boxTop}>
+                                <View style={{flexDirection:"row"}}>
+                                    <MaterialCommunityIcons 
+                                        name='folder'
+                                        size={30}
+                                    />
+                                    <View style={{marginLeft:20}}>
+                                        <Text style={{fontWeight:"800",fontSize:16}}>Blood Work Center</Text>
+                                        <Text style={{fontWeight:"400",fontSize:10,marginTop:3,maxWidth:"85%",opacity:0.4}}>More blood work you provide the better insight we get !</Text>
+                                    </View>
+                                </View>    
+                                <MaterialCommunityIcons 
+                                    name='bell'
+                                    size={20}
+                                    color={"black"}
+                                    opacity={0.4}
+                                />
+                            </View>
+                            <View style={{marginTop:20,width:"90%",borderLeftWidth:0.3,borderColor:"magenta",paddingLeft:10,opacity:0.6}}>                                                  
+                                <Text style={{fontSize:12,fontWeight:"700",marginTop:5}}>Latest Upload: <Text style={{fontWeight:"300"}}>2003.11.17</Text></Text>
+                                <Text style={{fontSize:12,fontWeight:"700",marginTop:5}}>Number of blood works: <Text style={{fontWeight:"300"}}>1</Text></Text>
+                                <Text style={{fontSize:14,fontWeight:"700",marginTop:20}}>Your Added Data</Text>
+                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>1. Basic Health Indicators: <Text style={{fontWeight:"800"}}>0/5</Text>  <Text style={{color:"lightgreen"}}>(✓)</Text> </Text>
+                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>2. Lipid Panel: <Text style={{fontWeight:"800"}}>0/4</Text></Text>
+                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>3. Iron Studies: <Text style={{fontWeight:"800"}}>0/4</Text></Text>
+                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>4. Liver Function Tests: <Text style={{fontWeight:"800"}}>0/6</Text></Text>
+                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>5. Metabolic Panel: <Text style={{fontWeight:"800"}}>0/8</Text></Text>
+                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>6. Thyroid Panel: <Text style={{fontWeight:"800"}}>0/3</Text></Text>
+                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>7. Inflammatory Markers: <Text style={{fontWeight:"800"}}>0/2</Text></Text>
+                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>8. Hormonal Panel : <Text style={{fontWeight:"800"}}>0/3</Text></Text>
+                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>9. Vitamins & Minerals: <Text style={{fontWeight:"800"}}>0/3</Text></Text>
+                            </View>
+                            <View style={{marginTop:20}}>                            
+                                <ProgressBar progress={0.2} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
+                            </View>                     
+                            <View style={[styles.boxBottom,{marginTop:5}]}>                                
+                                <TouchableOpacity style={{width:"100%",backgroundColor:"black",padding:10,paddingVertical:12,alignItems:"center",justifyContent:"center",borderRadius:20,flexDirection:"row"}}>
+                                    <Text style={{fontWeight:"600",color:"white",marginRight:15}}>Open</Text>
+                                    <MaterialCommunityIcons 
+                                        name='arrow-right'
+                                        size={15}
+                                        color={"magenta"}                                                                        
+                                    />
+                                </TouchableOpacity>                            
+                            </View>      
+                    </View>
                     <View style={styles.selectBox}>
                         <View style={styles.boxTop}>
                             <View style={{flexDirection:"row"}}>
@@ -734,8 +357,125 @@ function DetectionMenu(){
                                     size={30}
                                 />
                                 <View style={{marginLeft:20}}>
-                                    <Text style={{fontWeight:"800",fontSize:16}}>Skin Cancer</Text>
-                                    <Text style={{fontWeight:"400",fontSize:12}}>Desc 2003.11.17 </Text>
+                                    <Text style={{fontWeight:"800",fontSize:16}}>Blood Work Analasis</Text>
+                                    <Text style={{fontWeight:"400",fontSize:10,maxWidth:"85%",opacity:0.5}}>Detailed Analasis with advice and hands on practices </Text>
+                                </View>
+                            </View>    
+                            <MaterialCommunityIcons 
+                                name='bell'
+                                size={20}
+                            />
+                        </View>
+                        <View style={styles.boxBottom}>
+                            <View style={{padding:1,width:"55%",marginRight:10,opacity:0.6, borderLeftWidth:0.3,paddingLeft:10,borderColor:"magenta"}}>
+                                <Text style={{color:"black",marginBottom:8,fontSize:12,fontWeight:"300"}}>Eliminating deficiencies</Text>
+                                <Text style={{color:"black",marginBottom:8,fontSize:12,fontWeight:"300"}}>Outline </Text>
+                                <Text style={{color:"black",fontSize:12,fontWeight:"300"}}>Outdated Moles: {"0"}</Text>
+                            </View>
+                            <TouchableOpacity style={{width:"45%",backgroundColor:"black",padding:10,paddingVertical:18,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
+                                <Text style={{fontWeight:"600",color:"white",marginRight:15,fontSize:15}}>Open</Text>
+                                <MaterialCommunityIcons 
+                                    name='arrow-right'
+                                    size={15}
+                                    color={"magenta"}                                                                        
+                                />
+                            </TouchableOpacity>                            
+                        </View>      
+                    </View>
+                    <View style={styles.selectBox}>
+                        <View style={styles.boxTop}>
+                            <View style={{flexDirection:"row"}}>
+                                <MaterialCommunityIcons 
+                                    name='doctor'
+                                    size={30}
+                                />
+                                <View style={{marginLeft:20}}>
+                                    <Text style={{fontWeight:"800",fontSize:16}}>Figure out the root cause</Text>
+                                    <Text style={{fontWeight:"400",fontSize:10,maxWidth:"85%",opacity:0.5}}>Detailed Analasis with advice and hands on practices </Text>
+                                </View>
+                            </View>    
+                            <MaterialCommunityIcons 
+                                name='bell'
+                                size={20}
+                            />
+                        </View>
+                        <View style={styles.boxBottom}>
+                            <View style={{padding:1,width:"55%",marginRight:10,opacity:0.6, borderLeftWidth:0.3,paddingLeft:10,borderColor:"magenta"}}>
+                                <Text style={{color:"black",marginBottom:8,fontSize:12,fontWeight:"300"}}>Eliminating deficiencies</Text>
+                                <Text style={{color:"black",marginBottom:8,fontSize:12,fontWeight:"300"}}>Outline </Text>
+                                <Text style={{color:"black",fontSize:12,fontWeight:"300"}}>Outdated Moles: {"0"}</Text>
+                            </View>
+                            <TouchableOpacity style={{width:"45%",backgroundColor:"black",padding:10,paddingVertical:18,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
+                                <Text style={{fontWeight:"600",color:"white",marginRight:15,fontSize:15}}>Open</Text>
+                                <MaterialCommunityIcons 
+                                    name='arrow-right'
+                                    size={15}
+                                    color={"magenta"}                                                                        
+                                />
+                            </TouchableOpacity>                            
+                        </View>      
+                    </View> 
+                </View>
+                <View ref={diagnosisRef}  style={{width:"100%"}}>
+                    <Text style={{fontWeight:"800",fontSize:24,margin:15,marginTop:40}}>Custom Diagnosis</Text>
+                    {diagnosisData.map((data) => (
+                        <View style={styles.selectBox}>
+                            <View style={styles.boxTop}>
+                                <View style={{flexDirection:"row"}}>
+                                    <MaterialCommunityIcons 
+                                        name='magnify'
+                                        size={30}
+                                    />
+                                    <View style={{marginLeft:20}}>
+                                        <Text style={{fontWeight:"800",fontSize:16}}>{data.title}</Text>
+                                        <Text style={{fontWeight:"400",fontSize:14,marginTop:3}}>Diagnosis: <Text style={{fontWeight:"600",opacity:0.5}}>{data.diagnosis}</Text></Text>
+                                    </View>
+                                </View>    
+                                <MaterialCommunityIcons 
+                                    name='delete'
+                                    size={20}
+                                    color={"red"}
+                                    opacity={0.4}
+                                />
+                            </View>
+                            <View style={{marginTop:20,width:"90%",borderLeftWidth:0.3,borderColor:"magenta",paddingLeft:10,opacity:0.6}}>                                                  
+                                <Text style={{fontSize:12,fontWeight:"700",marginTop:5}}>Reported symphtoms: <Text style={{fontWeight:"300"}}>{data.clientSymphtoms}</Text></Text>
+                                <Text style={{fontSize:12,fontWeight:"700",marginTop:5}}>Report Date: <Text style={{fontWeight:"300"}}>3 days ago • {data.created_at}</Text></Text>
+                                <Text style={{fontSize:14,fontWeight:"700",marginTop:10}}>Stages</Text>
+                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>1. Diagnosis: DONE  <Text style={{color:"lightgreen"}}>(✓)</Text> </Text>
+                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>2. Sevirity Evalutaion: DONE</Text>
+                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>3. Iterative Elimination: DONE</Text>
+                                <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>4. Appointment: NOT STARTED</Text>
+                            </View>
+                            <View style={{marginTop:30}}>
+                            <Text style={{fontSize:12,fontWeight:"400",marginBottom:7,opacity:1}}>Diagnosis Stage:  <Text style={{fontWeight:"600",marginBottom:7,opacity:0.4}}>1/4 • Curation</Text></Text>
+                                <ProgressBar progress={0.2} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
+                            </View>                     
+                            <View style={[styles.boxBottom,{marginTop:5}]}>                                
+                                <TouchableOpacity style={{width:"100%",backgroundColor:"black",padding:10,paddingVertical:12,alignItems:"center",justifyContent:"center",borderRadius:20,flexDirection:"row"}}>
+                                    <Text style={{fontWeight:"600",color:"white",marginRight:15}}>Open</Text>
+                                    <MaterialCommunityIcons 
+                                        name='arrow-right'
+                                        size={15}
+                                        color={"magenta"}                                                                        
+                                    />
+                                </TouchableOpacity>                            
+                            </View>      
+                        </View>   
+                    ))}                             
+                </View>
+                <View ref={soonRef}  style={{width:"100%"}}>
+                    <Text style={{fontWeight:"800",fontSize:24,margin:15,marginTop:40}}>Coming Soon ...</Text>
+                    <View style={styles.selectBox}>
+                        <View style={styles.boxTop}>
+                            <View style={{flexDirection:"row"}}>
+                                <MaterialCommunityIcons 
+                                    name='magnify'
+                                    size={30}
+                                />
+                                <View style={{marginLeft:20}}>
+                                    <Text style={{fontWeight:"800",fontSize:16}}>Session</Text>
+                                    <Text style={{fontWeight:"400",fontSize:12}}>Diagnosis: <Text style={{fontWeight:"600",opacity:0.6}}>Valami</Text></Text>
                                 </View>
                             </View>    
                             <MaterialCommunityIcons 
@@ -795,7 +535,7 @@ function DetectionMenu(){
 return(
     <>
         <Navbar />
-        {MelanomaMonitoring()}       
+        {DetectionMenu()}       
     </>
 )}
 

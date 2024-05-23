@@ -28,6 +28,7 @@ import SurveyScreeen from "./app/pages/Screens/Diagnosis/SurveyScreen";
 
 import { View, Text } from "react-native"
 import BloodWorkPage from "./app/pages/PersonalData/bloodWork";
+import SingleFeature from "./app/pages/Screens/DetectionMenu/singleFeature";
 
 
 //CREATING THE NAVIGATION STACK
@@ -60,10 +61,11 @@ return (
             <Stack.Screen name="Main" component={HomeBottomTabNavigator} options={{ headerShown:false}} />
             <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown:true,title:"Settings"}} />
             <Stack.Screen name="GeneralSettings" component={GeneralSettings}   options={({ route }) => ({ title: route.params.data,headerStyle: { backgroundColor: "#18191a"},headerTintColor: "white" })} />
-            <Stack.Screen name="MelanomaAdd" component={MelanomaAdd}   options={({ route }) => ({ title:"Add Birthmark", headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
+            <Stack.Screen name="MelanomaAdd" component={MelanomaAdd}   options={({ route }) => ({ title:"+ Mole", headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
             <Stack.Screen name="SinglePartAnalasis" component={SinglePartAnalasis}   options={({ route }) => ({ title: route.params.data.melanomaId.charAt(0).toUpperCase() + route.params.data.melanomaId.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
             <Stack.Screen name="SlugAnalasis" component={SlugAnalasis}   options={({ route }) => ({ title: route.params.data.slug.charAt(0).toUpperCase() + route.params.data.slug.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
             <Stack.Screen name="FolderPage" component={FolderPage}   options={({ route }) => ({ title: route.params.data.title, headerStyle: { backgroundColor: "#18191a"},headerTintColor: "white"  })} />
+            <Stack.Screen name="FeaturePage" component={SingleFeature}   options={({ route }) => ({ title: route.params.data.title, headerStyle: { backgroundColor: "white"},headerTintColor: "black"  })} />
             <Stack.Screen name="FullMelanomaProcess" component={MelanomaFullProcess}   options={({ route }) => ({ title: "Body Select",headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" , 
                 header : () => (
                         <View style={{width:"100%",height:80,justifyContent:"center",backgroundColor:"black",padding:20,alignItems:"center"}}>
