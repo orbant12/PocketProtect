@@ -26,7 +26,7 @@ import RegOnBoarding from "./app/pages/Screens/Login/regOnBoarding";
 import DailyReport from "./app/pages/DailyReportScreens/dailyReportOnboarding";
 import SurveyScreeen from "./app/pages/Screens/Diagnosis/SurveyScreen";
 
-import { View, Text } from "react-native"
+import { View, Text,SafeAreaView, Dimensions,StyleSheet} from "react-native"
 import BloodWorkPage from "./app/pages/PersonalData/bloodWork";
 import SingleFeature from "./app/pages/Screens/DetectionMenu/singleFeature";
 import AllMelanomaAdd from "./app/pages/Screens/Melanoma/allMelanomaAdd";
@@ -34,6 +34,11 @@ import AllMelanomaAdd from "./app/pages/Screens/Melanoma/allMelanomaAdd";
 
 //CREATING THE NAVIGATION STACK
 const Stack = createNativeStackNavigator();
+
+const { height: screenHeight } = Dimensions.get('window');
+
+// Define a responsive height based on screen height
+const responsiveHeight = screenHeight * 0.10;
 
 export default function App() {
 return (
@@ -45,7 +50,7 @@ return (
             <Stack.Screen name="Login" component={LoginPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
             <Stack.Screen name="SurveyScreen" component={SurveyScreeen} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerLeftShown:false,
                 header : () => (
-                    <View style={{width:"100%",height:100,justifyContent:"center",backgroundColor:"black",padding:20,alignItems:"center"}}>
+                    <SafeAreaView style={{width:"100%",height:100,justifyContent:"center",backgroundColor:"black",padding:20,alignItems:"center"}}>
                         <View style={{justifyContent:"center",borderWidth:0,borderColor:"white"}}>
                             <Text style={{fontWeight:"600",color:"white",fontSize:15,opacity:0.6,marginBottom:5}}>
                                 For a more accurate diagnosis !
@@ -55,7 +60,7 @@ return (
                                 Please answer these questions
                             </Text>
                         </View>                                            
-                    </View>
+                    </SafeAreaView>
             ),} } />
             <Stack.Screen name="DailyReport" component={DailyReport} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerTitle:"Daily Report" }} />
             <Stack.Screen name="Register" component={RegisterPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
@@ -70,17 +75,14 @@ return (
             <Stack.Screen name="FeaturePage" component={SingleFeature}   options={({ route }) => ({ title: route.params.data.title, headerStyle: { backgroundColor: "white"},headerTintColor: "black"  })} />
             <Stack.Screen name="FullMelanomaProcess" component={MelanomaFullProcess}   options={({ route }) => ({ title: "Body Select",headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" , 
                 header : () => (
-                        <View style={{width:"100%",height:80,justifyContent:"center",backgroundColor:"black",padding:20,alignItems:"center"}}>
-                            <View style={{justifyContent:"center",borderWidth:0,borderColor:"white"}}>
-                                <Text style={{fontWeight:"600",color:"white",fontSize:15,opacity:0.6,marginBottom:5}}>
-                                    Setup
-                                </Text>
-
-                                <Text style={{fontWeight:"700",color:"white",fontSize:20}}>
-                                    Melanoma Monitor
-                                </Text>
-                            </View>                                            
+                    <SafeAreaView style={styles.safeArea}>
+                    <View style={[styles.headerContainer, { height: responsiveHeight }]}>
+                        <View style={styles.textContainer}>
+                            <Text style={styles.subTitle}>Setup</Text>
+                            <Text style={styles.title}>Melanoma Monitor</Text>
                         </View>
+                    </View>
+                </SafeAreaView>                
             )})} />            
             <Stack.Screen name="MelanomaProcessSingleSlug" component={MelanomaSingleSlug}   options={({ route }) => ({ title: route.params.data.slug.charAt(0).toUpperCase() + route.params.data.slug.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
             <Stack.Screen name="Add_BloodWork" component={BloodWorkPage}   options={({ route }) => ({ title: "Body Select",headerStyle: { backgroundColor: "white"},headerTintColor: "black" , 
@@ -102,3 +104,35 @@ return (
 </NavigationContainer>   
 )
 }
+
+const styles = StyleSheet.create({
+    safeArea: {
+        flex: 0,
+        backgroundColor: 'black',
+    },
+    headerContainer: {
+        width: "100%",
+        justifyContent: "center",
+        backgroundColor: "black",
+        padding: 10,
+        alignItems: "center",
+        borderWidth: 10,
+        borderColor: "white", // Ensure border is visible
+    },
+    textContainer: {
+        justifyContent: "center",
+        borderWidth: 0,
+    },
+    subTitle: {
+        fontWeight: "600",
+        color: "white",
+        fontSize: 15,
+        opacity: 0.6,
+        marginBottom: 5,
+    },
+    title: {
+        fontWeight: "700",
+        color: "white",
+        fontSize: 20,
+    },
+});

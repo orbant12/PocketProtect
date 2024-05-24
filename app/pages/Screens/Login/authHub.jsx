@@ -50,28 +50,30 @@ const navigation = useNavigation();
             <View style={styles.TopAnimationSection}>
                 <Text>Let's get protected</Text>
             </View>
-            <View style={styles.BottomFormSection}>
-                <Pressable style={[styles.Button,{backgroundColor:"white"}]}>
-                    <MaterialCommunityIcons 
-                        name="apple"
-                        size={20}
-                    />
-                    <Text style={{fontWeight:600,fontSize:15,marginLeft:10}}>Continue with Apple</Text>
-                </Pressable>
-                <Pressable onPress={() => promptAsync()} style={[styles.Button,{ backgroundColor:"magenta" }]}>
-                    <MaterialCommunityIcons 
-                        name="google"
-                        size={20}
-                    />
-                    <Text style={{fontWeight:700,fontSize:15,color:"white",marginLeft:10}}>Continue with Google</Text>
-                </Pressable>
-                <Pressable onPress={() => handleNavigation("Login")} style={[styles.Button,{backgroundColor:"black",borderWidth:1,borderColor:"white"}]}>
-                    <Text style={{fontWeight:600,fontSize:15,color:"white"}}>Log in</Text>
-                </Pressable>
-                <Pressable onPress={() => handleNavigation("Register")} style={[styles.Button,{backgroundColor:"black",borderWidth:1,borderColor:"white"}]}>
-                    <Text style={{fontWeight:600,fontSize:15,color:"white"}}>Register</Text>
-                </Pressable>
-            </View>
+            <View style={{height:"47%", backgroundColor:"black",width:"100%",borderTopLeftRadius:20,borderTopRightRadius:20,}}>
+                <View style={styles.BottomFormSection}>
+                    <Pressable style={[styles.Button,{backgroundColor:"white"}]}>
+                        <MaterialCommunityIcons 
+                            name="apple"
+                            size={20}
+                        />
+                        <Text style={{fontWeight:600,fontSize:15,marginLeft:10}}>Continue with Apple</Text>
+                    </Pressable>
+                    <Pressable onPress={() => promptAsync()} style={[styles.Button,{ backgroundColor:"magenta" }]}>
+                        <MaterialCommunityIcons 
+                            name="google"
+                            size={20}
+                        />
+                        <Text style={{fontWeight:700,fontSize:15,color:"white",marginLeft:10}}>Continue with Google</Text>
+                    </Pressable>
+                    <Pressable onPress={() => handleNavigation("Login")} style={[styles.Button,{backgroundColor:"black",borderWidth:1,borderColor:"white"}]}>
+                        <Text style={{fontWeight:600,fontSize:15,color:"white"}}>Log in</Text>
+                    </Pressable>
+                    <Pressable onPress={() => handleNavigation("Register")} style={[styles.Button,{backgroundColor:"black",borderWidth:1,borderColor:"white"}]}>
+                        <Text style={{fontWeight:600,fontSize:15,color:"white"}}>Register</Text>
+                    </Pressable>
+                </View>
+            </View>            
         </View>
     )
 }
@@ -93,14 +95,14 @@ const styles = StyleSheet.create({
         backgroundColor:"#CCC"
     },
     BottomFormSection:{
-        height:"42%",
+        height:300,
         width:"100%",
         alignItems:"center",
         justifyContent:"space-between",
         padding:30,
         borderTopLeftRadius:20,
         borderTopRightRadius:20,
-        backgroundColor:"black"
+        backgroundColor:"black",        
     },
     Button:{
         width:300,

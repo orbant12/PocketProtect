@@ -426,6 +426,7 @@ const SingleFeature = ({route,navigation}) => {
     
         return(
             <ScrollView 
+            style={{backgroundColor:"white"}}
             refreshControl={
                 <RefreshControl
                     refreshing={refreshing}

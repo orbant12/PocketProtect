@@ -36,16 +36,16 @@ const AllMelanomaAdd = ({route,navigation}) => {
         console.log(sessionMemory)   
     }, [sessionMemory,]); 
 
-    return(
+    return(        
         <View style={styles.startScreen}>
-        <View style={{marginTop:30,alignItems:"center"}}>  
-            <Text style={{marginBottom:30,fontWeight:"700",fontSize:20}}>Press the body part to monitor:</Text>         
+        <View style={{marginTop:20,alignItems:"center"}}>  
+            <Text style={{marginBottom:20,fontWeight:"800",fontSize:20}}>Press the body part to monitor:</Text>         
             <ProgressBar progress={bodyProgress} width={150} height={10} color={"lightgreen"}backgroundColor={"white"} />
                 <Body
                     data={completedAreaMarker}
                     gender={gender}
                     side={selectedSide}
-                    scale={1}
+                    scale={1.2}
                     //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
                     colors={['#A6FF9B']}
                     onBodyPartPress={(slug) => navigation.navigate("MelanomaProcessSingleSlug", { data: slug, gender:gender, userId: currentuser.uid, sessionMemory:sessionMemory, progress:null,skinColor: skin_type })}
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         position: 'relative',
-        marginTop: 20,
+        marginTop: 0,
         width:"45%",
         borderWidth: 1,
         padding: 10,
@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
         alignItems: 'left',
         position: 'absolute',
         marginTop: 10,
-        top: 100,
+        top: 200,
         left: 0,
     },
     colorExplainRow: {
