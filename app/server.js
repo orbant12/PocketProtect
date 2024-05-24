@@ -1,6 +1,6 @@
-import { setDoc , doc , collection,getDoc,getDocs,updateDoc} from "firebase/firestore"
+import { setDoc , doc , collection,getDoc,getDocs,updateDoc,addDocs,deleteDoc} from "firebase/firestore"
 import { db,storage } from './firebase.js';
-import { ref,  getDownloadURL, uploadBytes } from "firebase/storage";
+import { ref,  getDownloadURL, uploadBytes,deleteObject} from "firebase/storage";
 
 
 //<===> Melanoma <====>
@@ -30,6 +30,19 @@ export const melanomaSpotUpload = async ({
     }
 }
 
+export const melanomaMetaDataUpload = async ({
+    userId,
+    metaData
+}) => {
+    try{
+        const ref = doc(db, "users", userId, "Medical_Data", "skin_data");
+        await setDoc(ref,metaData);
+        return true
+    } catch {
+        return false
+    }
+}
+
 export const melanomaUploadToStorage = async ({
     melanomaPicFile,
     storageLocation,
@@ -45,14 +58,12 @@ export const melanomaUploadToStorage = async ({
     }
 }
 
-
-
 export const fetchMelanomaSpotData = async ({
     userId,
     melanomaId,
 }) => {
     try{
-        const ref = doc(db, "users", userId, "Melanoma", melanomaId);
+        const ref = doc(db, "users", userId, "Medical_Data", melanomaId);
         const docSnap = await getDoc(ref);
         if (docSnap.exists()) {
             console.log("Melanoma data:", docSnap.data());
@@ -108,6 +119,46 @@ export const fetchSlugMelanomaData = async ({
     }
 }
 
+export const deleteSpot = async ({
+    userId,
+    spotId
+}) => {
+    const deleteFromFirestore = async () => {
+        try {
+            const ref = doc(db, "users", userId, "Melanoma", spotId);            
+            await deleteDoc(ref);
+            return { success: true, message: "Deleted from Firestore" };
+        } catch (error) {
+            console.error("Error deleting from Firestore:", error);
+            return { success: false, message: "Failed to delete from Firestore" };
+        }
+    };
+
+    const deleteFromStorage = async () => {
+        try {
+            const path = `users/${userId}/melanomaImages/${spotId}`;
+            const storageRef = ref(storage, path);
+            await deleteObject(storageRef);
+            return { success: true, message: "Deleted from Storage" };
+        } catch (error) {
+            console.error("Error deleting from Storage:", error);
+            return { success: false, message: "Failed to delete from Storage" };
+        }
+    };
+
+    try {
+        const firestoreRes = await deleteFromFirestore();
+        const storageRes = await deleteFromStorage();
+        return { firestore: firestoreRes, storage: storageRes };
+    } catch (error) {
+        console.error("Error deleting spot:", error);
+        return { firestore: { success: false, message: "Firestore deletion failed" }, storage: { success: false, message: "Storage deletion failed" } };
+    }
+};
+
+
+//<===> USER <====>
+
 export const fetchUserData = async ({
     userId,
 }) => {
@@ -147,7 +198,7 @@ export const changePersonalData = async ({
     }
 }
 
-// DIAGNOSIS
+//<===> DIAGNOSIS <====>
 
 export const fetchAllDiagnosis = async ({
     userId

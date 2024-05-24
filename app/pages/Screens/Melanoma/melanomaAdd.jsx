@@ -1,7 +1,7 @@
 
 import React, {useState} from 'react';
-import { Text, View, StyleSheet,Pressable ,ScrollView,Image} from 'react-native';
-import Body from 'react-native-body-highlighter';
+import { Text, View, StyleSheet,Pressable ,ScrollView,Image,TouchableOpacity} from 'react-native';
+import Body from "../../../components/BodyParts/index";
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
 import { melanomaSpotUpload,melanomaUploadToStorage  } from '../../../server.js';
 import { getFunctions, httpsCallable } from "firebase/functions";
@@ -12,38 +12,31 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import {app} from "../../../firebase"
 
 
-const MelanomaAdd = ({route,navigaton}) => {
-    const [selectedSide, setSelectedSide] = useState("front");
+
+const MelanomaAdd = ({route,navigation}) => {    
     const userData = route.params.data;
+    const skin_type = route.params.skin_type;
     const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
-    const [selectedPart, setSelectedPart] = useState([]);
-    const [selectedPartOwnSlug, setSelectedPartOwnSlug] = useState([]);
-    const [firstSelectedPart, setFirstSelectedPart] = useState("");
-    const [selectedExportedSvg, setSelectedExportedSvg] = useState(null);
-    const [selectedSlugType, setSelectedSlugType] = useState("ownSlug");
+    const bodyPart = route.params.bodyPart
+    const firstSelectedPart = bodyPart.slug         
     const [uploadedSpotPicture, setUploadedSpotPicture] = useState(null);
     const [birthmarkId, setBirthmarkId] = useState(`Birthmark#${Math.floor(Math.random() * 100)}`);
+    const [isScreenLoading,setIsScreenLoading ]  = useState(false)
 
-    const { currentuser } = useAuth()
-    const scale = 1;
+    const { currentuser } = useAuth()    
     const functions = getFunctions(app);
 
-    const handleSelectedPart = (even) => {
-        console.log(even);
-        setSelectedPart([even]);
-        setFirstSelectedPart(even.slug);
-    }
 
     const dotSelectOnPart = () => {
         return (
             <Svg preserveAspectRatio="xMidYMid meet" height={200} width={350} > 
         
-                {selectedPart.map(bodyPart => (
+                {
                     bodyPart.pathArray.map((path, index) => (
                             <Path
                                 key={`${bodyPart.slug}_${index}`} 
                                 d={path}
-                                fill="blue" 
+                                fill={skin_type == 0 ? "#fde3ce" : skin_type == 1 ? "#fbc79d" : skin_type == 2 ? "#934506" : skin_type == 3 ? "#311702":null}
                                 stroke={bodyPart.color} 
                                 strokeWidth="2"
                                 rotation={
@@ -292,7 +285,7 @@ const MelanomaAdd = ({route,navigaton}) => {
                                 
                             />
                     ))
-                ))}
+                }
         
                     <Circle cx={redDotLocation.x} cy={redDotLocation.y} r="5" fill="red" />
             </Svg>
@@ -301,20 +294,12 @@ const MelanomaAdd = ({route,navigaton}) => {
 
     const ownSelectedPart = () => {
         return (
-            <View>
-            {selectedPartOwnSlug.length > 0 ? (
-                <View>
-                    <Text>sdsds</Text>
-                </View>
-            ) : (
                 <View style={{alignItems:"center",flexDirection:"column",justifyContent:"center",padding:20}}>
-                    <Text style={{maxWidth:250,textAlign:"center"}}>You haven't uploaded your own <Text style={{fontWeight:600,fontSize:15}}>{firstSelectedPart}</Text> yet</Text>
+                    <Text style={{maxWidth:250,textAlign:"center",fontWeight:"600",opacity:0.6}}>You haven't selected a body part yet</Text>
                     <Pressable style={{marginTop:25,borderRadius:10,backgroundColor:"lightgray",width:150,alignItems:"center"}}>
-                        <Text style={{color:"black",padding:15,fontWeight:500,opacity:0.6}}>Make a scan</Text>
+                        <Text style={{color:"black",padding:15,fontWeight:500,opacity:0.6}}>Select a slug first</Text>
                     </Pressable>
                 </View>
-            )}
-        </View>
         )
     }
 
@@ -394,8 +379,7 @@ const MelanomaAdd = ({route,navigaton}) => {
         })
         if (res == true) {
             //NAVIGATE BACK
-            alert("Melanoma spot saved successfully");
-            setFirstSelectedPart("");
+            alert("Melanoma spot saved successfully");            
             setRedDotLocation({ x: -100, y: 10 });
             setUploadedSpotPicture(null);
             setBirthmarkId(`Birthmark#${Math.floor(Math.random() * 100)}`);
@@ -415,48 +399,80 @@ const MelanomaAdd = ({route,navigaton}) => {
         if (!result.canceled) {
             setUploadedSpotPicture(result.assets[0].uri);
         }
-    };           
+    };
 
+    const handleMoreBirthmark = async () => {
+        const BirthmarkIdGenerator = () => {
+            return `Birthmark#${generateNumericalUID(4)}`
+        }
+        const ID =  BirthmarkIdGenerator()
+        const storageLocation = `users/${userData.id}/melanomaImages/${ID}`;
+        setIsScreenLoading(true)
+        try{
+            const uploadToStorage = async(uri) => {
+                const blob = await new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.onload = function () {
+                        resolve(xhr.response);
+                    };
+                    xhr.onerror = function (e) {
+                        console.log(e);
+                        reject(new TypeError("Network request failed"));
+                    };
+                    xhr.responseType = "blob";
+                    xhr.open("GET", uri, true);
+                    xhr.send(null);
+                });
+                const response = await melanomaUploadToStorage({
+                    melanomaPicFile: blob,                           
+                    storageLocation: storageLocation,
+                })
+                return response;
+            }
 
-    //const routeData = route.params.data;
+            const pictureUrl = await uploadToStorage(uploadedSpotPicture);
+
+            const res = await melanomaSpotUpload({
+                userId: userData.id,
+                melanomaDocument: {"spot": [bodyPart], "location": redDotLocation},
+                gender: userData.gender,        
+                birthmarkId: ID,
+                melanomaPictureUrl: pictureUrl,
+                storageLocation: storageLocation,
+                risk:0
+            })
+            if (res == true) {
+                setIsScreenLoading(false)
+                setRedDotLocation({ x: -100, y: 10 });                             
+                setUploadedSpotPicture(null)     
+                navigation.goBack()           
+            }
+        } catch (err) {
+            alert(err)
+            console.log(err)
+        }
+    }
+    
+    function generateNumericalUID(length) {
+        if (length <= 0) {
+            throw new Error("Length must be a positive integer.");
+        }
+    
+        let uid = '';
+        for (let i = 0; i < length; i++) {
+            uid += Math.floor(Math.random() * 10).toString();
+        }
+        return uid;
+    }
+
+    
     return (
         <View style={styles.container}>
         <ScrollView style={{width:"100%",height:"100%"}}>
             <View style={styles.OwnSlugAddBtn}>
                 <Text style={{fontWeight:600,opacity:0.6}}>+ Use your own Body Parts</Text>
             </View>
-            <View style={{width:"100%",alignItems:"center",marginBottom:30}}>
-                <View style={{flexDirection:"column",width:"90%",marginTop:10}}>
-                    <Text>First Step <Text style={firstSelectedPart == "" ? {opacity:0.3}:{color:"green",fontWeight:600}}>1/3</Text></Text>
-                    <Text style={{fontSize:20,fontWeight:600}}>Select a body part</Text>
-                </View>
-                <Body
-                    data={[
-                        { slug: `${firstSelectedPart}`, intensity: 1 },
-                        ]}
-                    scale={scale}
-                    gender={userData.gender}
-                    side={selectedSide}
-                    onBodyPartPress={(e) => handleSelectedPart(e)}
-                />
-                    <Text>
-                        <Text style={{fontWeight:600}}>Selected Part:</Text> 
-                        {`${firstSelectedPart}`}
-                    </Text>
-
-                    <View style={styles.positionSwitch}>
-                        <Pressable onPress={() => setSelectedSide("front")}>
-                            <Text style={selectedSide == "front" ? {fontWeight:600}:{opacity:0.5}}>Front</Text>
-                        </Pressable>
-                        <Text>|</Text>
-                        <Pressable onPress={() => setSelectedSide("back")}>
-                            <Text style={selectedSide == "back" ? {fontWeight:600}:{opacity:0.5}}>Back</Text>
-                        </Pressable>
-                    </View>
-            </View>
-
-            <View style={{width:"100%",borderWidth:1}} />
-
+            
             <View style={{width:"100%",alignItems:"center",marginBottom:30}}>
                 <View style={{flexDirection:"column",width:"90%",marginTop:30}}>
                     <Text>Secound Step <Text style={redDotLocation.x == -100 ? {opacity:0.3}:{color:"green",fontWeight:600}}>2/3</Text></Text>
@@ -465,18 +481,8 @@ const MelanomaAdd = ({route,navigaton}) => {
               
                     <Pressable style={{position:"relative",alignItems:"center",justifyContent:"center",width:"500px",height:"500px",marginTop:20}} onPress={(e) => handlePartClick(e)}>
                         
-                            {selectedSlugType == "defaultSlug" ? dotSelectOnPart() : ownSelectedPart()}
-                    </Pressable>
-
-                    <View style={styles.positionSwitch}>
-                        <Pressable onPress={() => setSelectedSlugType("ownSlug")}>
-                            <Text style={selectedSlugType == "ownSlug" ? {fontWeight:600}:{opacity:0.5}}>Own</Text>
-                        </Pressable>
-                        <Text>|</Text>
-                        <Pressable onPress={() => setSelectedSlugType("defaultSlug")}>
-                            <Text style={selectedSlugType == "defaultSlug" ? {fontWeight:600}:{opacity:0.5}}>Default</Text>
-                        </Pressable>
-                    </View>
+                            {firstSelectedPart != "" ? dotSelectOnPart() : ownSelectedPart()}
+                    </Pressable>        
             </View>
 
             <View style={{width:"100%",borderWidth:1}} />
@@ -500,9 +506,9 @@ const MelanomaAdd = ({route,navigaton}) => {
                                 <Text style={{fontWeight:400,fontSize:10}}>• Birthmark is on the spotlight with the same ration as in this image</Text>
                             </View>
                             </View>
-                            <Pressable style={styles.uploadButton} onPress={handlePictureUpload}>
+                            <TouchableOpacity style={styles.uploadButton} onPress={handlePictureUpload}>
                                 <Text style={{color:"white"}}>Upload</Text>
-                            </Pressable>
+                            </TouchableOpacity>
                         </>
                         ):(
                             <View style={{flexDirection:"column",width:"100%",alignItems:"center",justifyContent:"space-between",height:220}}>
@@ -530,14 +536,14 @@ const MelanomaAdd = ({route,navigaton}) => {
             <View style={{width:"100%",borderWidth:1}} />
 
             <View style={{width:"100%",alignItems:"center",marginBottom:20,marginTop:10}}>
-                <Pressable 
+                <TouchableOpacity
                     style={
                         firstSelectedPart != "" && redDotLocation.x != -100 && uploadedSpotPicture != null ?
                         styles.saveButtonActive : styles.saveButtonInActive
-                    } onPress={handleSaveSvg}>
+                    } onPress={handleMoreBirthmark}>
 
                     <Text style={{color:"white"}}>Save</Text>
-                </Pressable>
+                </TouchableOpacity>
                 {firstSelectedPart != "" && redDotLocation.x != -100 && uploadedSpotPicture != null ? (
                     <Text style={{color:"green",fontWeight:300,fontSize:10}}>3/3 - All Steps Completed</Text> 
                 ):(
@@ -561,7 +567,7 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     saveButtonActive: {
-        backgroundColor: 'blue',
+        backgroundColor: 'black',
         padding: 15,
         borderRadius: 5,
         width: 200,
@@ -582,7 +588,7 @@ const styles = StyleSheet.create({
         opacity:0.5
     },
     uploadButton: {
-        backgroundColor: 'blue',
+        backgroundColor: 'black',
         padding: 15,
         borderRadius: 5,
         width: "100%",
@@ -590,6 +596,8 @@ const styles = StyleSheet.create({
         justifyContent:"center",
         marginTop: 30,
         marginBottom:30,
+        borderColor:"#FF99FF",
+        borderWidth:2
     },
     positionSwitch: {
         flexDirection: 'row',
@@ -613,7 +621,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         borderRadius: 10,
         marginTop: 20,
-        marginBottom: 20,
+        marginBottom: 0,
         marginLeft:"auto",
         marginRight:"auto",
     },

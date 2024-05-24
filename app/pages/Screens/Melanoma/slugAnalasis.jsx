@@ -1,9 +1,9 @@
-import { useEffect,useState } from "react";
-import { View, StyleSheet,ScrollView,Text, Pressable } from "react-native";
+import { useEffect,useState,useCallback } from "react";
+import { View, StyleSheet,ScrollView,Text, Pressable,TouchableOpacity,RefreshControl } from "react-native";
 import { useAuth } from "../../../context/UserAuthContext";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-
-import { fetchAllMelanomaSpotData } from "../../../server";
+import {fetchSlugMelanomaData } from "../../../server";
 
 import { dotsSelectOnPart } from "./components/selectedSlugDots";
 
@@ -13,26 +13,30 @@ const SlugAnalasis = ({ route,navigation }) => {
 
     const [melanomaData, setMelanomaData] = useState([]);
     const [highlighted, setHighlighted] = useState(null);
-    const { currentuser } = useAuth();
-    const gender = route.params.gender
+    const { currentuser } = useAuth();   
     const bodyPart = route.params.data;
+    const skin_type = route.params.skin_type;
+    const userData = route.params.userData;
+    const gender = userData.gender
 
 //<***************************  Functions ******************************************>
 
     const fetchAllMelanomaData = async () => {
         if(currentuser){
-            const response = await fetchAllMelanomaSpotData({
+            const response = await fetchSlugMelanomaData({
                 userId: currentuser.uid,
-                gender
+                gender,
+                slug: bodyPart.slug
             });
             const melanomaData = response;
             setMelanomaData(melanomaData);
             setHighlighted(melanomaData[0].melanomaId);
+            console.log(melanomaData)            
         }
     }
 
     useEffect(() => {
-        fetchAllMelanomaData();
+        fetchAllMelanomaData();       
     },[])
 
     const handleSpotOpen = (data) => {
@@ -42,6 +46,21 @@ const SlugAnalasis = ({ route,navigation }) => {
     const showSpot = (melanomaId) => {
         setHighlighted(melanomaId);
     }
+
+    const handleAddMelanoma = () => {
+        navigation.navigate("MelanomaAdd", { data: userData, skin_type: skin_type, bodyPart:bodyPart, userData: userData});
+    }
+
+
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        fetchAllMelanomaData();
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 2000); // Example: setTimeout for simulating a delay
+    }, []);
+
 
 //<***************************  Components ******************************************>
 
@@ -54,11 +73,21 @@ return(
                 bodyPart: bodyPart,
                 melanomaData: melanomaData,
                 gender,
-                highlighted
+                highlighted,
+                skin_type
             }):null}
         </View>
         <View style={styles.BirthmarkContainer}>
-            <ScrollView style={{width:"100%"}} >
+            <ScrollView
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    colors={['magenta']} 
+                    tintColor={'magenta'}       
+                />
+            }
+            style={{width:"100%"}} >
                 {melanomaData.map((data,index) => (
                     data.melanomaDoc.spot[0].slug == bodyPart.slug  ? (
                     <View key={index} style={styles.melanomaBox}>
@@ -75,7 +104,18 @@ return(
                     </View>
                     ):null
                 ))}
-                {melanomaData.length == 0 ? <Text>No Melanoma Data</Text>:null}
+                {melanomaData.length == 0 && 
+                <View style={{width:"100%",opacity:0.5,alignItems:"center",marginTop:30}}>
+                    <MaterialCommunityIcons 
+                        name="camera-document-off"
+                        size={30}
+                    />
+                    <Text style={{fontWeight:"800",fontSize:20,textAlign:"center",marginTop:10}}>No Mole registered on this body part ...</Text>
+                    <TouchableOpacity onPress={() => handleAddMelanoma()} style={{padding:30,marginTop:30,borderWidth:1,borderRadius:10,width:"80%",alignItems:"center",borderStyle:"dashed"}}>
+                        <Text style={{fontWeight:"600",fontSize:15}}>+ Register new moles</Text>
+                    </TouchableOpacity>
+                </View>                
+                }
             </ScrollView>
         </View>
     </View>

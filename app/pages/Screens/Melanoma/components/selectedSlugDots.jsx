@@ -6,7 +6,8 @@ export const dotsSelectOnPart = ({
     bodyPart,
     melanomaData,
     gender,
-    highlighted
+    highlighted,
+    skin_type
 }) => {
     return (
         <Svg preserveAspectRatio="xMidYMid meet" height={200} width={350} > 
@@ -15,7 +16,7 @@ export const dotsSelectOnPart = ({
                         <Path
                             key={`${bodyPart.slug}_${index}`} 
                             d={path}
-                            fill="blue" 
+                            fill={skin_type == 0 ? "#fde3ce" : skin_type == 1 ? "#fbc79d" : skin_type == 2 ? "#934506" : skin_type == 3 ? "#311702":null}
                             stroke={bodyPart.color} 
                             strokeWidth="2"
                             rotation={

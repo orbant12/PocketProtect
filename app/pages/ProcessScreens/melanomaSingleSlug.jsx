@@ -1,10 +1,13 @@
-import { View,Text,StyleSheet,Pressable,Animated,Image,ScrollView,ActivityIndicator } from "react-native"
+import { View,Text,StyleSheet,Pressable,Animated,Image,ScrollView,ActivityIndicator,TouchableOpacity } from "react-native"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import React, {useState,useEffect,useRef} from "react";
 import * as ImagePicker from 'expo-image-picker';
 import ProgressBar from 'react-native-progress/Bar';
 import { dotSelectOnPart } from './melanomaDotSelect.jsx'
-import { fetchSlugMelanomaData ,melanomaSpotUpload,melanomaUploadToStorage } from '../../server';
+import { fetchSlugMelanomaData ,melanomaSpotUpload,melanomaUploadToStorage ,deleteSpot} from '../../server';
+import SampleImage from "../../assets/IMG_0626.jpg"
+
+
 
 const MelanomaSingleSlug = ({route,navigation}) => {
 
@@ -16,15 +19,18 @@ const MelanomaSingleSlug = ({route,navigation}) => {
     const gender = route.params.gender
     const sessionMemory = route.params.sessionMemory
     const currentuserUID = route.params.userId
+    const skinColor = route.params.skinColor
     //Add Melanoma Data
     const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
     const [uploadedSpotPicture, setUploadedSpotPicture] = useState(null);
     //Slug Birthmark Data
     const [currentSlugMemory, setCurrentSlugMemory ] = useState([])
-    const [highlighted, setHighlighted] = useState()
+    const [highlighted, setHighlighted] = useState("")
     //Toggles
     const [markedAsComplete ,setMarkedAsComplete] = useState(false)
     const [isScreenLoading,setIsScreenLoading ]  = useState(false)
+    const [isModalUp, setIsModalUp] = useState(false)
+    const [moleToDeleteId,setMoleToDeleteId] = useState("")
     //Ref for Top Animation
     const scrollViewRef = useRef(null);
 
@@ -52,7 +58,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
 
     const handleMoreBirthmark = async () => {
         const BirthmarkIdGenerator = () => {
-            return `Birthmark#${Math.floor(Math.random() * 100)}`
+            return `Birthmark#${generateNumericalUID(4)}`
         }
         const ID =  BirthmarkIdGenerator()
         const storageLocation = `users/${currentuserUID}/melanomaImages/${ID}`;
@@ -90,12 +96,12 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                 melanomaPictureUrl: pictureUrl,
                 birthmarkId: ID,
                 storageLocation: storageLocation,
+                risk:0
             })
             if (res == true) {
                 setIsScreenLoading(false)
                 setRedDotLocation({ x: -100, y: 10 });
-                scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });
-                setHighlighted(ID);
+                scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });                
                 setUploadedSpotPicture(null)
                 setCurrentSlugMemory([...currentSlugMemory,
                     {
@@ -121,8 +127,11 @@ const MelanomaSingleSlug = ({route,navigation}) => {
             } else if (action === "remove") {
                 updatedSessionMemory = updatedSessionMemory.filter(item => item.slug !== bodyPart.slug);
             }
-
-            navigation.navigate("FullMelanomaProcess", { sessionMemory: updatedSessionMemory });
+            if(progress != null){
+                navigation.navigate("FullMelanomaProcess", { sessionMemory: updatedSessionMemory });
+            } else {
+                navigation.navigate("MelanomaAllAdd", { sessionMemory: updatedSessionMemory,gender:gender,skin_type:skinColor  });
+            }
         }
     }
 
@@ -149,6 +158,37 @@ const MelanomaSingleSlug = ({route,navigation}) => {
         setMarkedAsComplete(!isCompleted);
     }
 
+    function generateNumericalUID(length) {
+        if (length <= 0) {
+            throw new Error("Length must be a positive integer.");
+        }
+    
+        let uid = '';
+        for (let i = 0; i < length; i++) {
+            uid += Math.floor(Math.random() * 10).toString();
+        }
+        return uid;
+    }
+
+    const handleSpotDelete = async (id) => {
+        const response = await deleteSpot({
+            userId:currentuserUID,
+            spotId: id
+        })
+
+        if( response.firestore.success == true && response.storage.success == true){
+            alert("Mole Deleted Sucessfully !")
+            fetchSlugSpots()
+            setHighlighted("")
+            setMoleToDeleteId("")
+            setIsModalUp(!isModalUp)
+        } else if ( response.firestore.success != true || response.storage.success != true) {
+            alert("Deletion failed ...")
+        }
+
+    }
+    
+
     useEffect(() => {
         fetchSlugSpots()
         isThisPartCompleted(sessionMemory)
@@ -161,7 +201,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
         return(
             <>
                 <View style={styles.startScreen}>
-                    <ScrollView ref={scrollViewRef} style={{marginTop:30}} showsVerticalScrollIndicator={false}>  
+                    <ScrollView ref={scrollViewRef} style={progress != null && {marginTop:30}} showsVerticalScrollIndicator={false}>  
                         <View 
                             style={{
                                 width:"100%",
@@ -191,11 +231,12 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                                         redDotLocation,
                                         currentSlugMemory,
                                         gender: gender,
-                                        highlighted
+                                        highlighted,
+                                        skinColor
                                     })}
                             </Pressable>
 
-                            <View style={{width:"100%",alignItems:"center",marginBottom:10,marginTop:0}}>
+                            <View style={[{width:"100%",alignItems:"center",marginBottom:10,marginTop:0},highlighted != "" && {paddingTop:100}]}>
                                 <View style={{flexDirection:"column",width:"90%",marginTop:30}}>
                                     <Text>Final Step <Text style={uploadedSpotPicture == null ? {opacity:0.3}:{color:"green",fontWeight:600}}>2/2</Text></Text>
                                     <Text style={{fontSize:20,fontWeight:600}}>Take a picture of your spot</Text>
@@ -203,20 +244,20 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                                         <>
                                             <View style={{flexDirection:"row",width:"100%",justifyContent:"space-between",maxWidth:"100%",alignItems:"center",marginTop:20}}>
                                             <Image
-                                                source={"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/melanoma/melanoma-skin-cancer-what-is-melanoma.jpg"}
-                                                style={{width:150,height:150,borderWidth:1,borderRadius:10}}
+                                                source={SampleImage}
+                                                style={{width:140,height:140,borderWidth:0.3,borderRadius:10}}
                                             />
 
-                                            <View style={{width:"50%",height:120,justifyContent:"space-between"}}>
-                                                <Text style={{fontWeight:600,fontSize:13}}>Make sure your Image ...</Text>
-                                                <Text style={{fontWeight:400,fontSize:10}}>• As clean as possible - remove all noise</Text>
-                                                <Text style={{fontWeight:400,fontSize:10}} >• Lighting is simular to this image</Text>
-                                                <Text style={{fontWeight:400,fontSize:10}}>• Birthmark is on the spotlight with the same ration as in this image</Text>
+                                            <View style={{width:"52%",height:120,justifyContent:"space-between",borderLeftWidth:0.3,paddingLeft:10}}>
+                                                <Text style={{fontWeight:600,fontSize:12}}>Make sure your Image ...</Text>
+                                                <Text style={{fontWeight:400,fontSize:10}}>As clean as possible - remove all noise</Text>
+                                                <Text style={{fontWeight:400,fontSize:10}} >Lighting is simular to this image</Text>
+                                                <Text style={{fontWeight:400,fontSize:10}}>Birthmark is on the spotlight with the same ration as in this image</Text>
                                             </View>
                                             </View>
-                                            <Pressable style={styles.uploadButton} onPress={handlePictureUpload}>
+                                            <TouchableOpacity style={styles.uploadButton} onPress={handlePictureUpload}>
                                                 <Text style={{color:"white"}}>Upload</Text>
-                                            </Pressable>
+                                            </TouchableOpacity>
 
                                         </>
                                         ):(
@@ -237,11 +278,11 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                                         )
                                     }
                                 </View>
-                                {currentSlugMemory.length != 0 ? <View style={{width:"100%",borderWidth:1,marginBottom:10}} />:null}
+                                {currentSlugMemory.length != 0 ? <View style={{width:"100%",borderWidth:0.4,marginBottom:10,opacity:0.2}} />:null}
                                 {currentSlugMemory.length != 0 ?
                                     currentSlugMemory.map((data) => (
                                         <>
-                                            <View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:300,borderWidth:0.8,borderColor:"lightgray",padding:10,marginTop:10,borderRadius:20}}>
+                                            <View style={[{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:300,borderWidth:0.8,borderColor:"lightgray",padding:10,marginTop:10,borderRadius:20},highlighted == data.id && {position:"absolute",top:0,backgroundColor:"white"}]}>
                                                 <Image
                                                     source={{uri: data.picture }}
                                                     style={{width:75,height:75,borderWidth:1,borderRadius:10,}}
@@ -253,14 +294,17 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                                                         size={25}
                                                         color={highlighted == data.id ? "red" : "black"}
                                                         style={{padding:2}}
-                                                        onPress={() => {setHighlighted(data.id); scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });}}
+                                                        onPress={() => {if (data.id == highlighted){setHighlighted("");}else{setHighlighted(data.id);} scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });}}
                                                     />
-                                                    <MaterialCommunityIcons
+                                                    <TouchableOpacity onPress={() => {setIsModalUp(!isModalUp);setMoleToDeleteId(data.id)}} >
+                                                        <MaterialCommunityIcons
                                                             name="delete"
                                                             size={30}
                                                             color="red"
                                                             style={{padding:2,marginLeft:10}}
+                                                            opacity="0.6"                                                         
                                                         />
+                                                    </TouchableOpacity>                                       
                                                 </View>
                                             </View>
                                         </>
@@ -273,7 +317,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
 
                             <View style={{width:"100%",alignItems:"center",marginBottom:10,marginTop:30}}>
 
-                                <Pressable onPress={handleMoreBirthmark} style={redDotLocation.x != -100 && uploadedSpotPicture != null ? styles.MoreSpotButton : {opacity:0.3,backgroundColor:"magenta",borderRadius:10,marginBottom:15,marginTop:20,width:150,alignItems:"center",borderWidth:1}}>
+                                <Pressable onPress={handleMoreBirthmark} style={redDotLocation.x != -100 && uploadedSpotPicture != null ? styles.MoreSpotButton : {opacity:0.3,backgroundColor:"black",borderRadius:10,marginBottom:15,marginTop:20,width:150,alignItems:"center",borderWidth:1,borderColor:"#FF99FF"}}>
                                     <Text style={{padding:15,color:"white",fontWeight:"700"}}>Add</Text>
                                 </Pressable>
                     
@@ -286,7 +330,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                                 <View style={{width:"100%",borderWidth:0.5,marginBottom:20}} />
                                 {markedAsComplete ?
                                     <Pressable onPress={() => handleMarkeAsComplete("add")} style={styles.AllSpotButton}>
-                                        <Text style={{padding:15,color:"white",fontWeight:"700"}}>Mark as complete</Text>
+                                        <Text style={{padding:15,color:"white",fontWeight:"700"}}>All moles uploaded on the slug</Text>
                                     </Pressable>
                                     :
                                     <Pressable onPress={() => handleMarkeAsComplete("remove")} style={styles.RallSpotButton}>
@@ -309,15 +353,41 @@ const MelanomaSingleSlug = ({route,navigation}) => {
         )
     }
 
+    function SureModal(){
+        return(
+            <View style={styles.modalOverlay}> 
+            <View style={styles.modalBox}>
+                <View style={{alignItems:"center",padding:20}}>
+                    <Text style={{fontWeight:"700",fontSize:18,marginTop:10,textAlign:"center"}}>Are you sure about deleting {moleToDeleteId}</Text>
+                    <Text style={{fontWeight:"400",fontSize:15,marginTop:10}}>It will be lost forever !</Text>
+                </View>
+                <View style={{flexDirection:"row-reverse",width:"100%",borderTopWidth:1,padding:10,paddingRight:20}}>
+
+                    <TouchableOpacity onPress={() => {moleToDeleteId != "" && handleSpotDelete(moleToDeleteId)}} style={styles.modalNoBtn}>
+                        <Text style={{fontWeight:"700",color:"white"}}>Yes</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.modalYesBtn} onPress={() => setIsModalUp(!isModalUp)}>
+                        <Text style={{fontWeight:"700",color:"black"}}>No</Text>
+                    </TouchableOpacity>
+
+                </View>
+            </View>
+        </View>
+        )
+    }
+
 
     //<==============> Main Component Return <=============> 
 
     return(
-        <View style={styles.container}>
+        <View style={[styles.container]}>
+            {progress != null &&
             <View style={styles.ProgressBar}>
-                <ProgressBar progress={progress} width={350} height={10} color={"magenta"}backgroundColor={"white"} />
-            </View>
-            {SecoundScreen()}       
+                <ProgressBar progress={progress} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
+            </View>}
+            {SecoundScreen()}
+            {isModalUp && SureModal()}      
         </View>
     )
 }
@@ -328,7 +398,8 @@ const styles = StyleSheet.create({
         alignItems:"center",
         width:"100%",
         height:"100%",
-        justifyContent:"center"
+        justifyContent:"center",
+        backgroundColor:"white"
     },
     startScreen:{
         borderWidth:0,
@@ -363,7 +434,9 @@ const styles = StyleSheet.create({
         padding:10,
         position:"absolute",
         top:0,
-        backgroundColor:"lightgray"
+        backgroundColor:"transparent",
+        borderBottomWidth:0.3,
+        borderColor:"lightgray"
     },
     saveButtonActive: {
         backgroundColor: 'blue',
@@ -387,7 +460,7 @@ const styles = StyleSheet.create({
         opacity:0.5
     },
     uploadButton: {
-        backgroundColor: 'blue',
+        backgroundColor: 'black',
         padding: 15,
         borderRadius: 5,
         width: "100%",
@@ -395,6 +468,8 @@ const styles = StyleSheet.create({
         justifyContent:"center",
         marginTop: 30,
         marginBottom:30,
+        borderColor:"#FF99FF",
+        borderWidth:2
     },
     positionSwitch: {
         flexDirection: 'row',
@@ -423,13 +498,14 @@ const styles = StyleSheet.create({
         marginRight:"auto",
     },
     MoreSpotButton:{
-        backgroundColor:"magenta",
+        backgroundColor:"black",
         borderRadius:10,
+        borderColor:"#FF99FF",
         marginBottom:15,
-        marginTop:20,
+        marginTop:10,
         width:150,
         alignItems:"center",
-        borderWidth:1
+        borderWidth:2
     },
     AllSpotButton:{
         backgroundColor:"green",
@@ -454,6 +530,51 @@ const styles = StyleSheet.create({
         width:"100%",
         height:"100%",
         backgroundColor: "rgba(0, 0, 0, 0.6)",
+    },
+    modalBox:{
+        position:"absolute",
+        flexDirection:"column",
+        justifyContent:"space-between",
+        backgroundColor:"white",
+        alignItems:"center",
+        width:300,
+        height:180,
+        borderWidth:0.3,
+        borderRadius:10,
+        padding:0,
+        shadowColor: '#171717',
+        shadowOffset: {width: 4, height: -1},
+        shadowOpacity: 0.6,
+        shadowRadius: 3,
+    },
+    modalYesBtn:{
+        padding:5,
+        backgroundColor:"white",
+        justifyContent:"center",
+        borderRadius:10,
+        width:60,
+        height:40,
+        alignItems:"center",
+        marginRight:30,
+        borderWidth:1,
+    },
+    modalNoBtn:{
+        padding:5,
+        backgroundColor:"black",
+        borderRadius:10,
+        alignItems:"center",
+        borderWidth:1,
+        width:60,
+        height:40,
+        justifyContent:"center",
+    },
+    modalOverlay:{
+        alignItems:"center",
+        justifyContent:"center",
+        position:"absolute",
+        width:"100%",
+        height:"100%",
+        backgroundColor: "rgba(0, 0, 0, 0.7)",
     },
 
 })

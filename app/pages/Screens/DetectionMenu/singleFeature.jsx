@@ -1,10 +1,10 @@
-import { View, Text, TouchableOpacity,Pressable,ScrollView,StyleSheet } from "react-native"
+import { View, Text, TouchableOpacity,Pressable,ScrollView,StyleSheet,RefreshControl } from "react-native"
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
 import Body from "../../../components/BodyParts/index";
 
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useState, useRef,useCallback} from 'react';
 
 import {bodyFemaleFront} from "../../../components/BodyParts/bodyFemaleFront.ts"
 import {bodyFemaleBack} from "../../../components/BodyParts/bodyFemaleBack.ts"
@@ -38,6 +38,16 @@ const SingleFeature = ({route,navigation}) => {
     const [ isFirstMelanoma, setIsFirstMelanoma ] = useState(true)
     const [selectedSide, setSelectedSide] = useState("front");
     const [melanomaData, setMelanomaData] = useState([])
+    const [ melanomaMetaData, setMelanomaMetaData] = useState({
+        sunburn:[{
+            stage:0,
+            slug:""
+        }],
+        skin_type: 0,
+        detected_relative:"none",
+
+    })
+    const [ skinModal,setSkinModal] = useState(false)
 
     const fetchAllMelanomaData = async (gender) => {
         if(currentuser){
@@ -74,12 +84,18 @@ const SingleFeature = ({route,navigation}) => {
                 return { slug: spotSlug, intensity, key: index }; // Adding a unique key
             });
             setAffectedSlugs(affectedSlug);
+            console.log(affectedSlug[0])
         }
     }
 
     const handleAddMelanoma = () => {
-        navigation.navigate("MelanomaAdd", { data: userData });
+        navigation.navigate("MelanomaAllAdd", { gender: userData.gender, skin_type: melanomaMetaData.skin_type,sessionMemory:[] });
     }
+
+    const PrevandleAddMelanoma = () => {
+        navigation.navigate("MelanomAdd", { data: userData, skin_type: melanomaMetaData.skin_type });
+    }
+
 
     useEffect(() => {        
         BodySvgSelector()
@@ -92,6 +108,18 @@ const SingleFeature = ({route,navigation}) => {
         AffectedSlugMap()
     }, [userData, selectedSide,melanomaData]);
 
+
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        BodySvgSelector()
+        AffectedSlugMap(); 
+        fetchAllUserData(); 
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 2000); // Example: setTimeout for simulating a delay
+    }, []);
+
     // <=====> COMPONENTS <=====> 
 
     const dotSelectOnPart = (bodyPart) => {
@@ -102,7 +130,7 @@ const SingleFeature = ({route,navigation}) => {
                             <Path
                                 key={`${bodyPart.slug}_${index}`} 
                                 d={path}
-                                fill="blue" 
+                                fill={"white"} 
                                 stroke={bodyPart.color} 
                                 strokeWidth="2"
                                 rotation={
@@ -364,20 +392,48 @@ const SingleFeature = ({route,navigation}) => {
         )
     }
 
+    const handleMelanomaDataChange = (type, data) => {
+        setMelanomaMetaData((prevState) => {
+          let newSunburn = [...prevState.sunburn]; // Create a shallow copy of the sunburn array              
+            if (newSunburn.length === 0) {
+                newSunburn.push({ stage: 0, slug: "" }); 
+            }                
+            if (type === "slug") {
+                newSunburn[0] = { ...newSunburn[0], slug: data };
+            } else if (type === "stage") {
+                newSunburn[0] = { ...newSunburn[0], stage: data };
+            }                
+            return {
+                ...prevState,
+                sunburn: newSunburn,
+                ...(type === "skin_type" && { skin_type: data }),
+                ...(type === "detected_relative" && { detected_relative: data })
+            };
+            });
+    };
+
     function MelanomaMonitoring(){
 
         function MelanomaAdd(){
             return(
                 <Pressable onPress={handleAddMelanoma} style={Mstyles.AddMelanomaBtn}>
-                    <Text>
-                        + Add Melanoma
+                    <Text style={{color:"white",fontWeight:"700",fontSize:17,opacity:0.8}}>
+                        +   Add New Mole
                     </Text>
                 </Pressable>
             )
         }
     
         return(
-            <ScrollView>
+            <ScrollView 
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    colors={['magenta']} 
+                    tintColor={'magenta'}       
+                />
+            }scrollEventThrottle={16}>
                 <View style={Mstyles.container}>
                     <TouchableOpacity onPress={() =>  navigation.navigate("FullMelanomaProcess",{sessionMemory:[]})} style={{width:"90%",height:100,borderWidth:2,alignItems:"center",justifyContent:"center",borderRadius:10,marginTop:15,marginBottom:10,flexDirection:"row",alignItems:"center",backgroundColor:"black",borderColor:"magenta"}}>
                         <Text style={{fontSize:15,fontWeight:"600",marginRight:20,color:"white"}}>Full Body Monitor Setup</Text>
@@ -410,7 +466,7 @@ const SingleFeature = ({route,navigation}) => {
                             scale={1.1}
                             //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
                             colors={['#FF0000', '#A6FF9B','#FFA8A8']}
-                            onBodyPartPress={(slug) => navigation.navigate("SlugAnalasis", { data: slug,gender:userData.gender })}
+                            onBodyPartPress={(slug) => navigation.navigate("SlugAnalasis", { data: slug,userData:userData, skin_type: melanomaMetaData.skin_type })}
                             zoomOnPress={true}
                         />
             
@@ -445,29 +501,24 @@ const SingleFeature = ({route,navigation}) => {
                                     <Text style={{fontSize:20,fontWeight:'bold'}}>Analasis</Text>
                                     <Text style={{fontSize:15}}>Your personal score is 0.0</Text>   
                                 </View>
-                                <MaterialCommunityIcons
-                                    name="information-outline"
-                                    size={30}
-                                    color="black"
-                                    style={{marginLeft:10}}
-                                />
+                                <TouchableOpacity onPress={() => setSkinModal(!skinModal)} style={{backgroundColor:melanomaMetaData.skin_type == 0 ? "#fde3ce" : melanomaMetaData.skin_type == 1 ? "#fbc79d" : melanomaMetaData.skin_type == 2 ? "#934506" : melanomaMetaData.skin_type == 3 ? "#311702":null,borderRadius:"100%",padding:15,borderWidth:2}} />
                             </View>
                             <ScrollView horizontal >
             
             
-                                {bodySlugs != null ? (
+                                {bodySlugs != null && affectedSlugs.length != 0 ? (
                                     bodySlugs.map((bodyPart,index) => (
-                                        <View style={Mstyles.melanomaBox} key={`box_${bodyPart.slug}_${index}`}>
-                                            <Text style={{fontSize:20,fontWeight:700}}>{bodyPart.slug}</Text>
-                                            <Text style={{fontSize:15,fontWeight:500,opacity:0.7}}>Birthmarks: 21</Text>
+                                        <View style={[Mstyles.melanomaBox,affectedSlugs[index]?.intensity == 1 ? {borderColor:"red"} : {borderColor:"lightgreen"}]} key={`box_${bodyPart.slug}_${index}`}>
+                                            <Text style={{fontSize:20,fontWeight:700,color:"white"}}>{bodyPart.slug}</Text>
+                                            <Text style={{fontSize:15,fontWeight:500,opacity:0.7,color:"white"}}>Birthmarks: 21</Text>
                                             
                                             <View>
                                                 {dotSelectOnPart(bodyPart)}
                                             </View>
-                                            <Pressable style={Mstyles.showMoreBtn} onPress={() => navigation.navigate("SlugAnalasis",{ data: bodyPart,gender: userData.gender})}>
-                                                <Text style={{fontSize:15,fontWeight:500,opacity:0.7}}>Show Analasis</Text>
+                                            <Pressable style={Mstyles.showMoreBtn} onPress={() => navigation.navigate("SlugAnalasis",{ data: bodyPart,userData: userData,skin_type:melanomaMetaData.skin_type})}>
+                                                <Text style={{fontSize:15,fontWeight:500,opacity:0.7,color:"white"}}>Show Analasis</Text>
                                             </Pressable>
-                                            <View style={Mstyles.redDotLabel} />
+                                            <View style={[Mstyles.redDotLabel,affectedSlugs[index]?.intensity == 1 ? {backgroundColor:"red"} : {backgroundColor:"lightgreen"}]} />
             
                                         </View>
                                     ))
@@ -495,9 +546,34 @@ const SingleFeature = ({route,navigation}) => {
         )
     }
 
+    function SkinSelectModal(){
+        return(
+        <View style={Mstyles.modalOverlay}> 
+        <View style={Mstyles.modalBox}>
+            <View style={{marginTop:50,alignItems:"center"}}>  
+                <Text style={{marginBottom:10,fontWeight:"700",fontSize:20,backgroundColor:"white"}}>What is your skin type ?</Text>        
+            </View>
+            <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:0}}>
+                <Pressable onPress={() => handleMelanomaDataChange("skin_type",0)} style={[{ backgroundColor:"#fde3ce"}, melanomaMetaData.skin_type == 0 ? Mstyles.skinTypeOptionButtonA : Mstyles.skinTypeOptionButton]} />                    
+                <Pressable onPress={() => handleMelanomaDataChange("skin_type",1)} style={[{ backgroundColor:"#fbc79d"},melanomaMetaData.skin_type  == 1 ? Mstyles.skinTypeOptionButtonA : Mstyles.skinTypeOptionButton]} />                                    
+            </View>
+
+            <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:50}}>
+                <Pressable onPress={() => handleMelanomaDataChange("skin_type",2)} style={[{ backgroundColor:"#934506"},melanomaMetaData.skin_type  == 2 ? Mstyles.skinTypeOptionButtonA: Mstyles.skinTypeOptionButton]} />                
+                <Pressable onPress={() => handleMelanomaDataChange("skin_type",3)} style={[{ backgroundColor:"#311702"},melanomaMetaData.skin_type == 3 ? Mstyles.skinTypeOptionButtonA : Mstyles.skinTypeOptionButton]} />                
+            </View>
+            <TouchableOpacity onPress={() => setSkinModal(!skinModal)} style={Mstyles.startButton}>
+                <Text style={{padding:15,fontWeight:"600",color:"white"}}>Done</Text>
+            </TouchableOpacity>
+        </View>
+    </View>
+    )
+    }
+
     return(
         <>
             {MelanomaMonitoring()}
+            {skinModal && SkinSelectModal()}
         </>
     )
 }
@@ -515,6 +591,7 @@ const Mstyles = StyleSheet.create({
     titleTag: {
         flexDirection: 'column',
         alignItems: 'center',
+        textAlign:"center",
         fontSize: 10,
         fontWeight: 500,
         color: 'black',
@@ -606,10 +683,12 @@ const Mstyles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'space-between',
-        borderWidth: 1,
+        borderWidth: 3,
         width: 250,
         height: 350,
-        borderRadius: 10,
+        borderRadius: 5,
+        backgroundColor:"rgba(0,0,0,0.92)",
+        borderColor:"lightgreen",
         marginRight: 10,
         marginLeft:20,
         padding: 20,
@@ -641,11 +720,10 @@ const Mstyles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 0,
-        borderTopRightRadius: 10,
-        borderBottomLeftRadius:20,
-        backgroundColor: 'red',
-        position: 'absolute',
-        borderWidth: 1,
+        borderTopRightRadius: 0,
+        borderBottomLeftRadius:10,
+        backgroundColor: 'lightgreen',
+        position: 'absolute',        
         borderColor: 'gray',
         top: 0,
         right: 0,
@@ -658,14 +736,17 @@ const Mstyles = StyleSheet.create({
         height: 30,
         borderRadius: 10,
         margin: 10,
+        borderColor:"white"
     },
     AddMelanomaBtn: {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        borderWidth: 1,
-        borderStyle: 'dashed',
-        width: "70%",
+        borderWidth:2,
+        borderColor:"magenta",
+        backgroundColor:"black",
+        borderStyle: 'solid',
+        width: "80%",
         height: 80,
         borderRadius: 10,
         margin: 10,
@@ -674,6 +755,79 @@ const Mstyles = StyleSheet.create({
     educationSection:{
         width:"100%",
         alignItems:"center"
+    },
+    modalBox:{
+        position:"absolute",
+        flexDirection:"column",
+        justifyContent:"space-between",
+        backgroundColor:"white",
+        alignItems:"center",
+        borderWidth:0.3,
+        borderRadius:10,
+        padding:0,
+        width:"90%",
+        height:"90%",
+        shadowColor: '#171717',
+        shadowOffset: {width: 4, height: -1},
+        shadowOpacity: 0.6,
+        shadowRadius: 3,
+    },
+    modalYesBtn:{
+        padding:5,
+        backgroundColor:"white",
+        justifyContent:"center",
+        borderRadius:10,
+        width:60,
+        height:40,
+        alignItems:"center",
+        marginRight:30,
+        borderWidth:1,
+    },
+    modalNoBtn:{
+        padding:5,
+        backgroundColor:"black",
+        borderRadius:10,
+        alignItems:"center",
+        borderWidth:1,
+        width:60,
+        height:40,
+        justifyContent:"center",
+    },
+    modalOverlay:{
+        alignItems:"center",
+        justifyContent:"center",
+        position:"absolute",
+        width:"100%",
+        height:"100%",
+        backgroundColor: "rgba(0, 0, 0, 0.7)",
+    },
+    skinTypeOptionButtonA:{
+        flexDirection:"column",
+        width:140,
+        alignItems:"center",
+        justifyContent:"center",
+        height:140,
+        borderWidth:5,
+        borderColor:"magenta",
+        borderRadius:15,
+        padding:20,
+    },
+    skinTypeOptionButton:{
+        flexDirection:"column",
+        width:140,
+        alignItems:"center",
+        justifyContent:"center",
+        height:140,
+        borderRadius:30,
+        padding:20,
+    },
+    startButton:{
+        borderWidth:1,
+        alignItems:"center",
+        width:"90%",
+        borderRadius:10,
+        marginBottom:30,
+        backgroundColor:"black"
     },
 
 })

@@ -5,7 +5,8 @@ export const dotSelectOnPart = ({
     redDotLocation,
     currentSlugMemory,
     gender,
-    highlighted
+    highlighted,
+    skinColor
 }) => {
     return (
         <Svg preserveAspectRatio="xMidYMid meet" height={200} width={350} > 
@@ -14,7 +15,7 @@ export const dotSelectOnPart = ({
                         <Path
                             key={`${bodyPart.slug}_${index}`} 
                             d={path}
-                            fill="blue" 
+                            fill={skinColor == 0 ? "#fde3ce" : skinColor == 1 ? "#fbc79d" : skinColor == 2 ? "#934506" : skinColor == 3 ? "#311702":null} 
                             stroke={bodyPart.color} 
                             strokeWidth="2"
                             rotation={
