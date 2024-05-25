@@ -1,10 +1,11 @@
-import { useEffect,useState } from "react";
-import { View, StyleSheet,Text } from "react-native";
+import { useEffect,useState,useRef } from "react";
+import { View, StyleSheet,Text,Image,TouchableOpacity,Pressable } from "react-native";
 import { useAuth } from "../../../context/UserAuthContext";
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
 import { Tabs} from 'react-native-collapsible-tab-view'
 import Entypo from 'react-native-vector-icons/Entypo';
-import { fetchMelanomaSpotData } from "../../../server";
+import { fetchSpotHistory } from "../../../server";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const SinglePartAnalasis = ({ route }) => {
 
@@ -15,8 +16,45 @@ const bodyPart = route.params.data;
 
 const gender = route.params.gender
 
+const skin_type = route.params.skin_type
+
+const moleDataRef = useRef(null)
+
+const {currentuser} = useAuth()
+
+const [melanomaHistory, setMelanomaHistory] = useState([])
+const [selectedMelanoma, setSelectedMelanoma] = useState(null)
+const [highlight, setHighlighted ]= useState("")
+
 //<***************************  Functions ******************************************>
 
+
+const fetchAllSpotHistory = async () => {
+    if(currentuser){
+        const res = await fetchSpotHistory({
+            userId: currentuser.uid,
+            spotId: bodyPart.melanomaId,            
+        })
+
+        if (res == "NoHistory"){
+            setMelanomaHistory([])
+            setHighlighted(bodyPart.created_at)
+            setSelectedMelanoma(bodyPart)
+        } else if (res == false){
+            alert("Something went wrong !")
+            setSelectedMelanoma(bodyPart)
+            setHighlighted(bodyPart.created_at)
+        } else {
+            setMelanomaHistory(res)
+            setHighlighted(bodyPart.created_at)
+            setSelectedMelanoma(bodyPart)
+        }
+    }
+}
+
+useEffect(() => {
+    fetchAllSpotHistory()
+},[])
 
 
 
@@ -30,7 +68,7 @@ const gender = route.params.gender
                             <Path
                                 key={`${bodyPart.melanomaDoc.spot[0].slug}_${index}`} 
                                 d={path}
-                                fill="blue" 
+                                fill={skin_type == 0 ? "#fde3ce" : skin_type == 1 ? "#fbc79d" : skin_type == 2 ? "#934506" : skin_type == 3 ? "#311702":null}
                                 stroke={bodyPart.melanomaDoc.spot[0].color} 
                                 strokeWidth="2"
                                 rotation={
@@ -298,22 +336,108 @@ return(
     
         <Tabs.Container
         renderHeader={Header}
-        style={{backgroundColor:"white"}}
+        headerContainerStyle={{backgroundColor:"black"}}
+        containerStyle={{backgroundColor:"rgba(0,0,0,0.86)"}}
     >
 
         {/* CLIPS PAGE */}
         <Tabs.Tab 
             name="A"
-            label={() => <Entypo name={'folder'} size={25} color={"black"} />}
+            label={() => <Entypo name={'folder'} size={25} color={"white"} />}
         >
-            <Tabs.ScrollView>
-                <Text>dsaads</Text>
+            <Tabs.ScrollView ref={moleDataRef}>
+                <View style={[styles.container]}>
+                    <View style={[{marginTop:20,alignItems:"center",width:"100%"}]}>
+                        <Text style={{width:"90%",textAlign:"center",fontSize:20,color:"white",fontWeight:"800",opacity:0.6}}>Our deep learning model analasis result:</Text>
+                        <Text style={{color:"lightgreen",fontWeight:"800",marginTop:20,fontSize:30}}>Bening</Text>
+                        <View style={styles.scoreCircle}>
+                            <Text style={[{fontSize:50,fontWeight:'bold'},{color:"lightgreen",opacity:0.5}]}>17%</Text>
+                            <Text style={[{fontSize:15,fontWeight:700},{color:"lightgreen",opacity:0.8}]}>Accuracy</Text>
+                        </View>
+                    </View>
+
+                    <View style={[styles.container,{marginTop:50}]} >
+                        <Text style={{width:"90%",textAlign:"center",fontSize:25,color:"white",fontWeight:"800",opacity:0.6}}>Mole Data</Text>
+                        {selectedMelanoma != null &&
+                            <View style={[styles.melanomaBox, highlight != selectedMelanoma.created_at && {borderColor:"white"}]}>
+                                
+                                <Image 
+                                    source={{ uri:selectedMelanoma.melanomaPictureUrl}}
+                                    style={{width:80,height:80,borderWidth:1,borderRadius:10}}
+                                />
+                                <View style={styles.melanomaBoxL}>                            
+                                    <Text style={{fontSize:16,fontWeight:600,color:"white"}}>{selectedMelanoma.created_at}</Text>
+                                    <Text style={{fontSize:13,fontWeight:500,color:"white",opacity:0.6}}>Risk: {selectedMelanoma.risk}</Text>
+                                </View>
+                                <TouchableOpacity style={{width:"30%",flexDirection:"row",alignItems:"center",borderWidth:1.5,borderColor:"red",padding:10,borderRadius:10,opacity:0.8}}>
+                                    <MaterialCommunityIcons 
+                                        name="delete"
+                                        size={20}
+                                        color={"red"}
+                                    />
+                                    <Text style={{color:"red",fontWeight:"700",marginLeft:5}}>Delete</Text>                         
+                                </TouchableOpacity>               
+                            </View>
+                        }
+                        <View>
+
+                    <View style={[styles.container,{marginTop:50}]}>
+                        <Text style={{width:"90%",textAlign:"center",fontSize:25,color:"white",fontWeight:"800",opacity:0.6}}>History</Text>                                      
+                            <TouchableOpacity onPress={() => {setHighlighted(bodyPart.created_at); setSelectedMelanoma(bodyPart); moleDataRef.current.scrollTo({ x: 0, y: 0, animated: true }); }}  style={[styles.melanomaBox, highlight != bodyPart.created_at && {borderColor:"white"}]}>
+                            <Text style={[{color:"magenta",opacity:0.6, fontWeight:"700",top:-22,position:"absolute",left:0},highlight != bodyPart.created_at && {color:"white"}]}>Latest</Text>
+                            <Image 
+                                source={{ uri:bodyPart.melanomaPictureUrl}}
+                                style={{width:80,height:80,borderWidth:1,borderRadius:10}}
+                            />
+                            <View style={styles.melanomaBoxL}>                            
+                                <Text style={{fontSize:16,fontWeight:600,color:"white"}}>{bodyPart.created_at}</Text>
+                                <Text style={{fontSize:13,fontWeight:500,color:"white",opacity:0.6}}>Risk: {bodyPart.risk}</Text>
+                            </View>              
+                            <View  style={styles.melanomaBoxR}>
+                                <Text style={{color:"white",marginRight:10,fontWeight:"700",opacity:0.8}}>Data</Text>
+                                <MaterialCommunityIcons 
+                                    name="arrow-right"
+                                    size={25}
+                                    color={"white"}
+                                    opacity={"0.8"}
+                                />
+                            </View>
+                            </TouchableOpacity>
+                            {melanomaHistory.length != 0 && 
+                                melanomaHistory.map((data,index) => (
+                                <TouchableOpacity key={index} onPress={() => {setHighlighted(data.created_at);setSelectedMelanoma(data);moleDataRef.current.scrollTo({ x: 0, y: 0, animated: true });}}  style={[styles.melanomaBox, highlight != data.created_at && {borderColor:"white"}]}>                                    
+                                    <Image 
+                                        source={{ uri:data.melanomaPictureUrl}}
+                                        style={{width:80,height:80,borderWidth:1,borderRadius:10}}
+                                    />
+                                    <View style={styles.melanomaBoxL}>                            
+                                        <Text style={{fontSize:16,fontWeight:600,color:"white"}}>{data.created_at}</Text>
+                                        <Text style={{fontSize:13,fontWeight:500,color:"white",opacity:0.6}}>Risk: {data.risk}</Text>
+                                    </View>              
+                                    <View  style={styles.melanomaBoxR}>
+                                        <Text style={{color:"white",marginRight:10,fontWeight:"700",opacity:0.8}}>Data</Text>
+                                    <MaterialCommunityIcons 
+                                            name="arrow-right"
+                                            size={25}
+                                            color={"white"}
+                                            opacity={"0.8"}
+                                        />
+                                    </View>
+                                    </TouchableOpacity>
+                                ))
+
+                            }                        
+                    </View>
+     
+                        </View>
+                    </View>
+                </View>
             </Tabs.ScrollView>
         </Tabs.Tab>
                 {/* CLIPS PAGE */}
                 <Tabs.Tab 
             name="B"
-            label={() => <Entypo name={'warning'} size={25} color={"black"} />}
+            label={() => <Entypo name={'warning'} size={25} color={"white"} />}
         >
             <Tabs.ScrollView>
                 <Text>dsaads</Text>
@@ -327,17 +451,66 @@ const styles = StyleSheet.create({
     container: {
         width: "100%",
         height: "100%",
-        flex:1,
         alignItems: "center",
         flexDirection: "column",
-        justifyContent: "space-between",
     },
     TopPart: {
         width: "100%",
-        borderWidth: 1,
+        borderWidth: 0.3,
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        padding:10,
+        backgroundColor:"white"
+    },
+    scoreCircle: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 2,
+        borderRadius: 100,
+        width: 170,
+        height: 170,
+        borderColor: 'lightgreen',
+        marginTop: 20,
+        borderStyle: 'dashed',
+    },
+    melanomaBox: {
+        maxWidth: "95%",
+        width: "95%",
+        height: 100,
+        padding: 20,
+        justifyContent: "center",
+        alignItems: "center",
+        borderWidth: 2,
+        borderColor:"magenta",
+        backgroundColor:"black",
+        flexDirection: "row",
+        borderRadius:10,
+        marginRight:"auto",
+        marginLeft:"auto",
+        marginTop:20
+    },
+    melanomaBoxL: {
+        width: "40%",
+        height: "100%",
+        justifyContent: "center",
+        marginLeft:10,
+        marginRight:10
+    },
+    melanomaBoxR: {
+
+        justifyContent: "center",
+        alignItems: "center",
+        borderWidth: 0,
+        borderRadius: 10,
+        marginLeft: 10,
+        paddingVertical:10,
+        paddingHorizontal:10,
+        borderColor:"white",
+        flexDirection:"row",
+        alignItems:"center",
+        borderWidth:1
     },
 })
 

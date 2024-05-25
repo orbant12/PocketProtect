@@ -4,8 +4,10 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { FontAwesome6 } from '@expo/vector-icons';
 
 import React, {useEffect, useState,useRef} from 'react';
-import { ScrollView,StyleSheet,Text,View, Pressable,TextInput,TouchableOpacity,Switch,ActivityIndicator,Keyboard,Dimensions } from 'react-native';
+import { ScrollView,StyleSheet,Text,View, Pressable,TextInput,TouchableOpacity,Switch,ActivityIndicator,Keyboard,Dimensions ,Image} from 'react-native';
 
+
+import tutorial1 from "../assets/diagnosis/first.png"
 
 //COMPONENTS
 import { getFunctions, httpsCallable } from "firebase/functions";
@@ -383,65 +385,74 @@ const OverallHealthData = [
                         <ActivityIndicator size="large" color="black" />
                     </View>
                     : (
-                    <View style={{width:"100%",height:"100%",alignItems:"center"}}>   
-                        <View style={{width:"100%",borderTopWidth:0,paddingBottom:0,}}>                 
-                            <ScrollView
-                                horizontal
-                                pagingEnabled
-                                showsHorizontalScrollIndicator={false}
-                                onMomentumScrollEnd={handleScrollReminder}               
-                                contentContainerStyle={{width:"400%",marginTop:20}}
-                                scrollEventThrottle={16}  
-                            > 
-                            <View style={{width:width,flexDirection:"row"}}>
-                            <View style={{height:200,width:"100%",justifyContent:"center",alignItems:"center",borderWidth:0}}>
-                            <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>1</Text>                      
-                            </View>
+                        <ScrollView style={{width:"100%",height:"100%"}}>
+                        <View style={{width:"100%",alignItems:"center"}}>   
+                            <View style={{width:"100%",borderTopWidth:0}}>                 
+                                <ScrollView
+                                    horizontal
+                                    pagingEnabled
+                                    showsHorizontalScrollIndicator={false}
+                                    onMomentumScrollEnd={handleScrollReminder}               
+                                    contentContainerStyle={{width:"400%",marginTop:20,paddingBottom:55}}
+                                    scrollEventThrottle={16}  
+                                > 
+                                <View style={{width:width,flexDirection:"row",borderWidth:0,height:"80%"}}>
+                                <View style={{height:250,width:"100%",justifyContent:"center",alignItems:"center",borderWidth:0}}>
+                                    <View style={{flexDirection:"row",alignItems:"center",marginBottom:10}}>
+                                        <Text style={{borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>1</Text> 
+                                        <Text style={{width:"80%",fontSize:15,fontWeight:"800",opacity:"0.7",marginBottom:0,marginLeft:20}}>Type in your concerns and describe how you feel in detail ...</Text>    
+                                    </View>         
+                                    <Image 
+                                        source={tutorial1}
+                                        style={{width:380,height:200}}
+                                    />             
+                                </View>
 
-                            <View style={{height:200,width:"100%",borderWidth:0,justifyContent:"center",alignItems:"center"}}>
-                            <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>2</Text>
-                            </View>
+                                <View style={{height:200,width:"100%",borderWidth:0,justifyContent:"center",alignItems:"center"}}>
+                                <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>2</Text>
+                                </View>
 
-                            <View style={{borderWidth:0,height:200,width:"100%",justifyContent:"center",alignItems:"center"}}>
-                            <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>3</Text>
-                            </View>
+                                <View style={{borderWidth:0,height:200,width:"100%",justifyContent:"center",alignItems:"center"}}>
+                                <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>3</Text>
+                                </View>
 
-                            <View style={{borderWidth:0,height:200,width:"100%",justifyContent:"center",alignItems:"center"}}>
-                            <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>4</Text>
+                                <View style={{borderWidth:0,height:200,width:"100%",justifyContent:"center",alignItems:"center"}}>
+                                <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>4</Text>
+                                </View>
+                                </View>
+                            </ScrollView>                                   
                             </View>
-                            </View>
-                        </ScrollView>
-                            <View style={styles.IndicatorContainer}>               
-                                <View style={[styles.Indicator, { opacity: currentPage === 0 ? 1 : 0.3 }]} />                     
-                                <View style={[styles.Indicator, { opacity: currentPage === 1 ? 1 : 0.3 }]} />
-                                <View style={[styles.Indicator, { opacity: currentPage === 2 ? 1 : 0.3 }]} />
-                                <View style={[styles.Indicator, { opacity: currentPage === 3 ? 1 : 0.3 }]} />                                
-                            </View>                           
-                        </View>     
-                        <View style={{borderWidth:1,width:"95%",borderRadius:20,alignItems:"center",height:"100%",backgroundColor:"black"}}>
-                            <View style={{width:50, borderWidth:1.5,borderColor:"white", opacity:0.7,marginTop:10}} />
-                            <Text style={{color:"white",fontWeight:"700",fontSize:15,marginTop:10}}>Get Started</Text>
-                        <TouchableOpacity onPress={() => handleAddingSwitch()} style={styles.addInputContainer}>
-                        <MaterialCommunityIcons 
-                            name='plus'
-                            color={"white"}
-                            size={20}
-                            style={{opacity:0.3}}
-                        />
-                        <Text style={{color:"white",fontWeight:"400",marginLeft:20}}>Physical Diagnosis</Text>
-                        </TouchableOpacity >
+                            <View style={[styles.IndicatorContainer]}>               
+                                    <View style={[styles.Indicator, { opacity: currentPage === 0 ? 1 : 0.3 }]} />                     
+                                    <View style={[styles.Indicator, { opacity: currentPage === 1 ? 1 : 0.3 }]} />
+                                    <View style={[styles.Indicator, { opacity: currentPage === 2 ? 1 : 0.3 }]} />
+                                    <View style={[styles.Indicator, { opacity: currentPage === 3 ? 1 : 0.3 }]} />                                
+                                </View>                            
+                            <View style={{borderWidth:1,width:"95%",borderRadius:20,alignItems:"center",height:"100%",backgroundColor:"black",marginBottom:230}}>                            
+                                <View style={{width:50, borderWidth:1.5,borderColor:"white", opacity:0.7,marginTop:10}} />
+                                <Text style={{color:"white",fontWeight:"700",fontSize:15,marginTop:10}}>Get Started</Text>
+                                <TouchableOpacity onPress={() => handleAddingSwitch()} style={styles.addInputContainer}>
+                                <MaterialCommunityIcons 
+                                    name='plus'
+                                    color={"white"}
+                                    size={20}
+                                    style={{opacity:0.3}}
+                                />
+                                <Text style={{color:"white",fontWeight:"400",marginLeft:20}}>Physical Diagnosis</Text>
+                                </TouchableOpacity >
 
-                        <TouchableOpacity onPress={() => handleAddingSwitch()} style={styles.addInputContainerMental}>
-                        <MaterialCommunityIcons 
-                            name='plus'
-                            color={"black"}
-                            size={20}
-                            style={{opacity:0.3}}
-                        />
-                        <Text style={{color:"black",fontWeight:"400",marginLeft:20,fontWeight:"600"}}>Mental Diagnosis</Text>
-                        </TouchableOpacity >
+                                <TouchableOpacity onPress={() => handleAddingSwitch()} style={styles.addInputContainerMental}>
+                                <MaterialCommunityIcons 
+                                    name='plus'
+                                    color={"black"}
+                                    size={20}
+                                    style={{opacity:0.3}}
+                                />
+                                <Text style={{color:"black",fontWeight:"400",marginLeft:20,fontWeight:"600"}}>Mental Diagnosis</Text>
+                                </TouchableOpacity >                            
+                            </View> 
                         </View> 
-                    </View> 
+                    </ScrollView>
                     )
                 }
             </View>
@@ -496,27 +507,27 @@ const OverallHealthData = [
     <View style={styles.container}>
         <GestureHandlerRootView style={{ flex: 1,width:"100%" }}>
             <BottomSheetModalProvider>
-                <View style={[{width:"100%",backgroundColor:"rgba(0,0,0,1)",padding:10,textAlign:"center",position:"relative",height:120,justifyContent:"center",alignItems:"center",paddingTop:30},]}>
+                <View style={[{width:"100%",backgroundColor:"rgba(0,0,0,1)",padding:10,textAlign:"center",position:"relative",height:"20%",justifyContent:"center",alignItems:"center",paddingTop:30},]}>
                     {!isContextPanelOpen ? 
                     headerSelect ? (
-                        <View>
+                        <View style={{paddingTop:30}}>
                             <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>Are you having suspicious sympthoms ?</Text>
                             <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Be protected !</Text>
                         </View>
                     ):(
                     isAddTriggered ?
                         !isDiagnosisLoading ?
-                        <View>
+                        <View style={{paddingTop:30}}>
                             <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>One by one !</Text>
-                            <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white",maxWidth:"80%"}}>Share your concerns and potential symphtoms</Text>
+                            <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white",maxWidth:"80%"}}>Share what concerns you</Text>
                         </View>
                         :
-                            <View>
+                        <View style={{paddingTop:30}}>
                             <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>Done in a moment !</Text>
                             <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Diagnosis in process ...</Text>
                             </View>                                        
                         :
-                        <View>
+                        <View style={{paddingTop:30}}>
                             <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>Are you having suspicious sympthoms ?</Text>
                             <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Get a diagnosis</Text>
                         </View>
@@ -530,7 +541,7 @@ const OverallHealthData = [
                     }
                 </View> 
 
-                <View style={{flexDirection:"row",justifyContent:"space-evenly",alignItems:"center",width:"100%",zIndex:0, position:"relative",backgroundColor:"white",height:50}}>
+                <View style={{flexDirection:"row",justifyContent:"space-evenly",alignItems:"center",width:"100%",zIndex:0, position:"relative",backgroundColor:"white",height:50,borderBottomWidth:0.3}}>
                     <TouchableOpacity onPress={() => setHeaderSelect(true)} style={headerSelect ? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
                         <Text style={headerSelect?{fontWeight:"600",color:"black"}:{opacity:0.4,fontWeight:600,color:"black"}}>Get Checked</Text>
                     </TouchableOpacity>
@@ -734,7 +745,7 @@ const styles = StyleSheet.create({
       alignItems:"center",
       borderWidth:1,
       width:"80%",
-      marginTop:20,
+      marginTop:30,
       borderRadius:50,
       padding:12,
       backgroundColor:"black",
@@ -765,12 +776,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 0,
+    backgroundColor:"rgba(0,0,0,1)",
+    padding:15,    
+    borderRadius:50,
+    marginBottom:30,
+    marginTop:0
   },
   Indicator: {
     width: 6,
     height: 6,
-    backgroundColor: 'black',
+    backgroundColor: 'white',
     borderRadius: 3,
     marginHorizontal: 5,
   },

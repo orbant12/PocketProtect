@@ -73,17 +73,7 @@ return (
             <Stack.Screen name="SlugAnalasis" component={SlugAnalasis}   options={({ route }) => ({ title: route.params.data.slug.charAt(0).toUpperCase() + route.params.data.slug.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
             <Stack.Screen name="FolderPage" component={FolderPage}   options={({ route }) => ({ title: route.params.data.title, headerStyle: { backgroundColor: "#18191a"},headerTintColor: "white"  })} />
             <Stack.Screen name="FeaturePage" component={SingleFeature}   options={({ route }) => ({ title: route.params.data.title, headerStyle: { backgroundColor: "white"},headerTintColor: "black"  })} />
-            <Stack.Screen name="FullMelanomaProcess" component={MelanomaFullProcess}   options={({ route }) => ({ title: "Body Select",headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" , 
-                header : () => (
-                    <SafeAreaView style={styles.safeArea}>
-                    <View style={[styles.headerContainer, { height: responsiveHeight }]}>
-                        <View style={styles.textContainer}>
-                            <Text style={styles.subTitle}>Setup</Text>
-                            <Text style={styles.title}>Melanoma Monitor</Text>
-                        </View>
-                    </View>
-                </SafeAreaView>                
-            )})} />            
+            <Stack.Screen name="FullMelanomaProcess" component={MelanomaFullProcess}   options={({ route }) => ({ title: "Melanoma Setup",headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerTitleStyle:{fontWeight:"700",fontSize:18}})} />          
             <Stack.Screen name="MelanomaProcessSingleSlug" component={MelanomaSingleSlug}   options={({ route }) => ({ title: route.params.data.slug.charAt(0).toUpperCase() + route.params.data.slug.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
             <Stack.Screen name="Add_BloodWork" component={BloodWorkPage}   options={({ route }) => ({ title: "Body Select",headerStyle: { backgroundColor: "white"},headerTintColor: "black" , 
                 header : () => (
@@ -106,14 +96,12 @@ return (
 }
 
 const styles = StyleSheet.create({
-    safeArea: {
-        flex: 0,
-        backgroundColor: 'black',
+    safeArea: {                
+        width:"100%"
     },
     headerContainer: {
         width: "100%",
-        justifyContent: "center",
-        backgroundColor: "black",
+        justifyContent: "center",        
         padding: 10,
         alignItems: "center",
         borderWidth: 10,

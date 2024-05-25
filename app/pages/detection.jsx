@@ -217,10 +217,10 @@ const diagnosisRef = useRef(null);
 const soonRef = useRef(null);
 
 const positions = useRef({
-  skinCancer: 0,
-  bloodAnalysis: 0,
-  diagnosis: 0,
-  soon: 0
+    skinCancer: 0,
+    bloodAnalysis: 0,
+    diagnosis: 0,
+    soon: 0
 });
 
 useEffect(() => {
@@ -245,17 +245,17 @@ useEffect(() => {
 }, []);
 
 const handleScroll = (event) => {
-  const scrollY = event.nativeEvent.contentOffset.y;
+    const scrollY = event.nativeEvent.contentOffset.y;
 
-  if (scrollY >= positions.current.skinCancer && scrollY < positions.current.bloodAnalysis) {
-    setIsSelected('ai_vision');
-  } else if (scrollY >= positions.current.bloodAnalysis && scrollY < positions.current.diagnosis) {
-    setIsSelected('blood_work');
-  } else if (scrollY >= positions.current.diagnosis && scrollY < positions.current.soon) {
-    setIsSelected('diagnosis');
-  } else if (scrollY >= positions.current.soon) {
-    setIsSelected('soon');
-  }
+    if (scrollY >= positions.current.skinCancer && scrollY < positions.current.bloodAnalysis) {
+        setIsSelected('ai_vision');
+    } else if (scrollY >= positions.current.bloodAnalysis && scrollY < positions.current.diagnosis) {
+        setIsSelected('blood_work');
+    } else if (scrollY >= positions.current.diagnosis && scrollY < positions.current.soon) {
+        setIsSelected('diagnosis');
+    } else if (scrollY >= positions.current.soon) {
+        setIsSelected('soon');
+    }
 };
 
 const { width } = Dimensions.get('window');
@@ -274,7 +274,7 @@ function DetectionMenu(){
         return(
             <View style={{flexDirection:"column",alignItems:"center",justifyContent:"center",width:300}}>
             <View style={{marginTop:20,width:"90%",borderLeftWidth:0.3,borderColor:"magenta",paddingLeft:10,opacity:0.6}}>
-               { isLatest ? <Text style={{fontSize:12,fontWeight:"700",marginTop:5,opacity:0.5,color:"magenta"}}>Most up to date</Text>:<Text style={{fontSize:12,fontWeight:"700",marginTop:5,opacity:0.5,color:"red"}}>Outdated, but valuable for AI to make comparisons between blood works</Text>      }                                       
+            { isLatest ? <Text style={{fontSize:12,fontWeight:"700",marginTop:5,opacity:0.5,color:"magenta"}}>Most up to date</Text>:<Text style={{fontSize:12,fontWeight:"700",marginTop:5,opacity:0.5,color:"red"}}>Outdated, but valuable for AI to make comparisons between blood works</Text>      }                                       
                 <Text style={{fontSize:12,fontWeight:"700",marginTop:5}}>Date: <Text style={{fontWeight:"300"}}>3 days - 2003.11.17</Text></Text>                                 
                 <Text style={{fontSize:14,fontWeight:"700",marginTop:20}}>Your Added Data</Text>
                 <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>1. Basic Health Indicators: <Text style={{fontWeight:"800"}}>0/5</Text>  <Text style={{color:"lightgreen"}}>(✓)</Text> </Text>
@@ -309,7 +309,7 @@ function DetectionMenu(){
                                     size={30}
                                 />
                                 <View style={{marginLeft:20}}>
-                                    <Text style={{fontWeight:"800",fontSize:16}}>Skin Cancer</Text>
+                                    <Text style={{fontWeight:"800",fontSize:16}}>Skin Cancer Monitor</Text>
                                     <Text style={{fontWeight:"400",fontSize:12}}>Desc 2003.11.17 </Text>
                                 </View>
                             </View>    

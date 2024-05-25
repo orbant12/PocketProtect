@@ -1,5 +1,5 @@
 import { useEffect,useState,useCallback } from "react";
-import { View, StyleSheet,ScrollView,Text, Pressable,TouchableOpacity,RefreshControl } from "react-native";
+import { View, StyleSheet,ScrollView,Text, Pressable,TouchableOpacity,RefreshControl,Image } from "react-native";
 import { useAuth } from "../../../context/UserAuthContext";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -40,11 +40,16 @@ const SlugAnalasis = ({ route,navigation }) => {
     },[])
 
     const handleSpotOpen = (data) => {
-        navigation.navigate("SinglePartAnalasis",{ "data": data,"gender":gender });
+        navigation.navigate("SinglePartAnalasis",{ "data": data,"gender":gender,skin_type:skin_type });
     }
 
     const showSpot = (melanomaId) => {
-        setHighlighted(melanomaId);
+        if(melanomaId == highlighted){
+            setHighlighted("")
+        } else {
+            setHighlighted(melanomaId);
+        }
+
     }
 
     const handleAddMelanoma = () => {
@@ -68,7 +73,7 @@ const SlugAnalasis = ({ route,navigation }) => {
 
 return(
     <View style={styles.container}>
-        <View style={styles.TopPart}>
+        <View style={styles.TopPart }>
             {melanomaData != null ? dotsSelectOnPart({
                 bodyPart: bodyPart,
                 melanomaData: melanomaData,
@@ -79,43 +84,46 @@ return(
         </View>
         <View style={styles.BirthmarkContainer}>
             <ScrollView
-            refreshControl={
-                <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
-                    colors={['magenta']} 
-                    tintColor={'magenta'}       
-                />
-            }
-            style={{width:"100%"}} >
-                {melanomaData.map((data,index) => (
-                    data.melanomaDoc.spot[0].slug == bodyPart.slug  ? (
-                    <View key={index} style={styles.melanomaBox}>
-                        <View style={styles.melanomaBoxL}>
-                            <Text style={{fontSize:16,fontWeight:600}}>{data.melanomaId}</Text>
-                            <Text style={{fontSize:13,fontWeight:500}}>Risk: {data.risk}</Text>
-                        </View>
-                        <Pressable onPress={() => showSpot(data.melanomaId)} style={highlighted != data.melanomaId ? styles.melanomaShowBoxI : styles.melanomaShowBoxA}>
-                            <Text style={{fontSize:13,fontWeight:500}}>Show</Text>
-                        </Pressable>
-                        <Pressable onPress={() => handleSpotOpen(data)} style={styles.melanomaBoxR}>
-                            <Text style={{fontSize:13,fontWeight:500}}>Open</Text>
-                        </Pressable>
-                    </View>
-                    ):null
-                ))}
-                {melanomaData.length == 0 && 
-                <View style={{width:"100%",opacity:0.5,alignItems:"center",marginTop:30}}>
-                    <MaterialCommunityIcons 
-                        name="camera-document-off"
-                        size={30}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        colors={['magenta']} 
+                        tintColor={'magenta'}       
                     />
-                    <Text style={{fontWeight:"800",fontSize:20,textAlign:"center",marginTop:10}}>No Mole registered on this body part ...</Text>
-                    <TouchableOpacity onPress={() => handleAddMelanoma()} style={{padding:30,marginTop:30,borderWidth:1,borderRadius:10,width:"80%",alignItems:"center",borderStyle:"dashed"}}>
-                        <Text style={{fontWeight:"600",fontSize:15}}>+ Register new moles</Text>
-                    </TouchableOpacity>
-                </View>                
                 }
+                style={{width:"100%",height:"100%"}} >
+                <View style={{width:"100%",alignItems:"center",paddingBottom:150}}>           
+                    <AddSection melanomaData={melanomaData} handleAddMelanoma={handleAddMelanoma} />
+                    {melanomaData.map((data,index) => (
+                        data.melanomaDoc.spot[0].slug == bodyPart.slug  ? (
+                        <TouchableOpacity onPress={() => handleSpotOpen(data)} key={index} style={styles.melanomaBox}>
+                            <Image 
+                                source={{ uri:data.melanomaPictureUrl}}
+                                style={{width:80,height:80,borderWidth:1,borderRadius:10}}
+                            />
+                            <View style={styles.melanomaBoxL}>                            
+                                <Text style={{fontSize:16,fontWeight:600,color:"white"}}>{data.melanomaId}</Text>
+                                <Text style={{fontSize:13,fontWeight:500,color:"white",opacity:0.6}}>Risk: {data.risk}</Text>
+                            </View>
+                            <Pressable onPress={() => showSpot(data.melanomaId)} style={highlighted != data.melanomaId ? styles.melanomaShowBoxI : styles.melanomaShowBoxA}>
+                                <MaterialCommunityIcons 
+                                    name="eye"
+                                    size={25}                       
+                                />
+                            </Pressable>
+                            <Pressable onPress={() => handleSpotOpen(data)} style={styles.melanomaBoxR}>
+                            <MaterialCommunityIcons 
+                                    name="arrow-right"
+                                    size={25}
+                                    color={"white"}
+                                />
+                            </Pressable>
+                        </TouchableOpacity>
+                        
+                        ):null
+                    ))}
+                </View>
             </ScrollView>
         </View>
     </View>
@@ -128,7 +136,7 @@ const styles = StyleSheet.create({
         height: "100%",
         alignItems: "center",
         justifyContent: "center",
-        paddingTop: 100,
+        paddingTop: 110,
     },
     TopPart: {
         width: "100%",
@@ -136,58 +144,95 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        backgroundColor:"white",
+        padding:10,
+        borderBottomWidth:10
     },
     BirthmarkContainer: {
-        width: "100%",
-        height: "100%",
+        width: "100%",        
         alignItems: "center",
         justifyContent: "center",
+        backgroundColor:"rgba(0,0,0,0.86)"
     },
     melanomaBox: {
         maxWidth: "100%",
-        width: "100%",
+        width: "95%",
         height: 100,
         padding: 20,
         justifyContent: "center",
         alignItems: "center",
-        borderWidth: 1,
+        borderWidth: 2,
+        borderColor:"magenta",
+        backgroundColor:"black",
         flexDirection: "row",
+        borderRadius:10,
+        marginRight:"auto",
+        marginLeft:"auto",
+        marginTop:20
     },
     melanomaBoxL: {
-        width: "50%",
+        width: "40%",
         height: "100%",
         justifyContent: "center",
+        marginLeft:10,
+        marginRight:10
     },
     melanomaBoxR: {
-        width: "20%",
-        height: "60%",
+
         justifyContent: "center",
         alignItems: "center",
-        borderWidth: 1,
+        borderWidth: 0,
         borderRadius: 10,
         marginLeft: 10,
+        paddingVertical:10,
+        paddingHorizontal:10,
+        borderColor:"white"
     },
     melanomaShowBoxI: {
-        width: "20%",
-        height: "60%",
         justifyContent: "center",
         alignItems: "center",
-        borderWidth: 1,
+        borderWidth: 0.3,
         borderRadius: 10,
         backgroundColor: "white",
         marginLeft: 10,
+        padding:10
     },
     melanomaShowBoxA: {
-        width: "20%",
-        height: "60%",
         justifyContent: "center",
         alignItems: "center",
-        borderWidth: 1,
+        borderWidth: 0.3,
         borderRadius: 10,
         backgroundColor: "red",
         marginLeft: 10,
+        padding:10,
     }
 
 })
 
 export default SlugAnalasis;
+
+
+
+const AddSection = ({melanomaData,handleAddMelanoma}) => {
+    return(
+        <>
+        {melanomaData.length == 0 ? 
+            <View style={{width:"100%",opacity:0.5,alignItems:"center",marginTop:30}}>
+                <MaterialCommunityIcons 
+                    name="camera-document-off"
+                    size={30}
+                    color={"white"}
+                />
+                <Text style={{fontWeight:"800",fontSize:20,textAlign:"center",marginTop:10,padding:10,color:"white"}}>No Mole registered on this body part ...</Text>
+                <TouchableOpacity onPress={() => handleAddMelanoma()} style={{padding:30,marginTop:30,borderWidth:1,borderRadius:10,width:"80%",alignItems:"center",borderColor:"white",backgroundColor:"rgba(0,0,0,0.6)"}}>
+                    <Text style={{fontWeight:"800",fontSize:15,color:"white"}}>+ Register new moles</Text>
+                </TouchableOpacity>
+            </View>   
+            :
+            <TouchableOpacity onPress={() => handleAddMelanoma()} style={{padding:30,marginTop:0,borderWidth:2,borderRadius:0,width:"100%",alignItems:"center",backgroundColor:"rgba(0,0,0,0.4)",marginRight:"auto",marginLeft:"auto"}}>
+                <Text style={{fontWeight:"800",fontSize:16,color:"white",opacity:0.6}}>+ Register new moles</Text>
+            </TouchableOpacity>             
+            }   
+        </>
+    )
+}

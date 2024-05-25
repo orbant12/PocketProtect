@@ -152,179 +152,181 @@ const handleKeyboardDismiss = () => {
     return(
       <>
           <Pressable style={styles.container}>    
-              <ScrollView horizontal style={!isInputActive? {width:"100%",borderWidth:3,paddingTop:60,paddingBottom:60,opacity:0.8} : {opacity:0.1,width:"100%",borderWidth:3,paddingTop:60,paddingBottom:60} } >
-                  <Pressable onPress={handleKeyboardDismiss}  style={styles.assistantQuestionsContainer}>
+              <ScrollView horizontal style={!isInputActive? {borderWidth:3,height:"50%",opacity:0.8,zIndex:3} : {opacity:0.1,borderWidth:3,height:"50%", zIndex:3}} >
+                  <Pressable onPress={handleKeyboardDismiss}  style={[styles.assistantQuestionsContainer,{marginLeft:30}]}>
+                    <View style={{width:"100%",flexDirection:"row",alignItems:"center"}}>
+                      <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
+                        <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                        <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                            <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                            <MaterialCommunityIcons 
+                              name='arrow-right'
+                              color={"magenta"}
+                              size={15}
+                            />
+                          </Pressable>
+                      </View>
 
-                    <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
-                      <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
-                      <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
-                          <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
-                          <MaterialCommunityIcons 
-                            name='arrow-right'
-                            color={"magenta"}
-                            size={15}
-                          />
-                        </Pressable>
-                    </View>
-          
-            
-                    <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:0,opacity:0.7}}>
-                      <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
-                      <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
-                          <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
-                          <MaterialCommunityIcons 
-                            name='arrow-right'
-                            color={"magenta"}
-                            size={15}
-                          />
-                        </Pressable>
-                    </View>
+                      <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:0,opacity:0.7}}>
+                        <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                        <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                            <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                            <MaterialCommunityIcons 
+                              name='arrow-right'
+                              color={"magenta"}
+                              size={15}
+                            />
+                          </Pressable>
+                      </View>
+                    </View>    
 
-              
-                    <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
-                      <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
-                      <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
-                          <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
-                          <MaterialCommunityIcons 
-                            name='arrow-right'
-                            color={"magenta"}
-                            size={15}
-                          />
-                        </Pressable>
-                    </View>
+                    <View style={{width:"100%",flexDirection:"row",alignItems:"center"}}>
+                      <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
+                          <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                          <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                              <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                              <MaterialCommunityIcons 
+                                name='arrow-right'
+                                color={"magenta"}
+                                size={15}
+                              />
+                            </Pressable>
+                        </View>
+                        
                     
-                
-                    <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:0,opacity:0.7}}>
-                      <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
-                      <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
-                          <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
-                          <MaterialCommunityIcons 
-                            name='arrow-right'
-                            color={"magenta"}
-                            size={15}
-                          />
-                        </Pressable>
-                    </View>
+                        <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:0,opacity:0.7}}>
+                          <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                          <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                              <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                              <MaterialCommunityIcons 
+                                name='arrow-right'
+                                color={"magenta"}
+                                size={15}
+                              />
+                            </Pressable>
+                        </View>
+                    </View> 
+                  </Pressable> 
+                  <Pressable onPress={handleKeyboardDismiss}  style={styles.assistantQuestionsContainer}>
+                    <View style={{width:"100%",flexDirection:"row",alignItems:"center"}}>
+                      <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
+                        <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                        <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                            <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                            <MaterialCommunityIcons 
+                              name='arrow-right'
+                              color={"magenta"}
+                              size={15}
+                            />
+                          </Pressable>
+                      </View>
 
+                      <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:0,opacity:0.7}}>
+                        <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                        <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                            <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                            <MaterialCommunityIcons 
+                              name='arrow-right'
+                              color={"magenta"}
+                              size={15}
+                            />
+                          </Pressable>
+                      </View>
+                    </View>    
+
+                    <View style={{width:"100%",flexDirection:"row",alignItems:"center"}}>
+                      <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
+                          <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                          <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                              <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                              <MaterialCommunityIcons 
+                                name='arrow-right'
+                                color={"magenta"}
+                                size={15}
+                              />
+                            </Pressable>
+                        </View>
+                        
+                    
+                        <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:0,opacity:0.7}}>
+                          <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                          <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                              <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                              <MaterialCommunityIcons 
+                                name='arrow-right'
+                                color={"magenta"}
+                                size={15}
+                              />
+                            </Pressable>
+                        </View>
+                    </View> 
                   </Pressable> 
 
-                  <View  style={styles.assistantQuestionsContainer}>
+                  <Pressable onPress={handleKeyboardDismiss}  style={styles.assistantQuestionsContainer}>
+                    <View style={{width:"100%",flexDirection:"row",alignItems:"center"}}>
+                      <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
+                        <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                        <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                            <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                            <MaterialCommunityIcons 
+                              name='arrow-right'
+                              color={"magenta"}
+                              size={15}
+                            />
+                          </Pressable>
+                      </View>
 
-                  <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
-                    <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
-                    <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
-                        <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
-                        <MaterialCommunityIcons 
-                          name='arrow-right'
-                          color={"magenta"}
-                          size={15}
-                        />
-                      </Pressable>
-                  </View>
+                      <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:0,opacity:0.7}}>
+                        <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                        <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                            <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                            <MaterialCommunityIcons 
+                              name='arrow-right'
+                              color={"magenta"}
+                              size={15}
+                            />
+                          </Pressable>
+                      </View>
+                    </View>    
 
-
-                  <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:0,opacity:0.7}}>
-                    <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
-                    <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
-                        <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
-                        <MaterialCommunityIcons 
-                          name='arrow-right'
-                          color={"magenta"}
-                          size={15}
-                        />
-                      </Pressable>
-                  </View>
-
-
-                  <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
-                    <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
-                    <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
-                        <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
-                        <MaterialCommunityIcons 
-                          name='arrow-right'
-                          color={"magenta"}
-                          size={15}
-                        />
-                      </Pressable>
-                  </View>
-
-
-                  <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:0,opacity:0.7}}>
-                    <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
-                    <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
-                        <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
-                        <MaterialCommunityIcons 
-                          name='arrow-right'
-                          color={"magenta"}
-                          size={15}
-                        />
-                      </Pressable>
-                  </View>
-
-                  </View> 
-
-                  <View  style={[styles.assistantQuestionsContainer,{marginRight:-280}]}>
-
-                  <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
-                    <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
-                    <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
-                        <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
-                        <MaterialCommunityIcons 
-                          name='arrow-right'
-                          color={"magenta"}
-                          size={15}
-                        />
-                      </Pressable>
-                  </View>
-
-
-                  <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:0,opacity:0.7}}>
-                    <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
-                    <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
-                        <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
-                        <MaterialCommunityIcons 
-                          name='arrow-right'
-                          color={"magenta"}
-                          size={15}
-                        />
-                      </Pressable>
-                  </View>
-
-
-                  <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
-                    <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
-                    <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
-                        <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
-                        <MaterialCommunityIcons 
-                          name='arrow-right'
-                          color={"magenta"}
-                          size={15}
-                        />
-                      </Pressable>
-                  </View>
-
-
-                  <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:0,opacity:0.7}}>
-                    <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
-                    <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
-                        <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
-                        <MaterialCommunityIcons 
-                          name='arrow-right'
-                          color={"magenta"}
-                          size={15}
-                        />
-                      </Pressable>
-                  </View>
-
-                  </View> 
+                    <View style={{width:"100%",flexDirection:"row",alignItems:"center"}}>
+                      <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
+                          <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                          <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                              <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                              <MaterialCommunityIcons 
+                                name='arrow-right'
+                                color={"magenta"}
+                                size={15}
+                              />
+                            </Pressable>
+                        </View>
+                        
+                    
+                        <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:0,opacity:0.7}}>
+                          <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
+                          <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+                              <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
+                              <MaterialCommunityIcons 
+                                name='arrow-right'
+                                color={"magenta"}
+                                size={15}
+                              />
+                            </Pressable>
+                        </View>
+                    </View> 
+                  </Pressable> 
 
               </ScrollView> 
-              <Pressable onPress={() => handleOpenBottomSheet("open")} style={styles.horizontalQuBox}>
+
+          </Pressable>
+            <View style={{width:"100%",alignItems:"center",backgroundColor:"transpaerent",paddingTop:0,zIndex:0,position:"absolute",bottom:90}}>
+            <Pressable onPress={() => handleOpenBottomSheet("open")} style={styles.horizontalQuBox}>
                   <Text style={{padding:10,fontSize:12,fontWeight:"600",color:"white"}}>Open Context Panel</Text>
               </Pressable>  
-          </Pressable>
-
-            <View style={[!isInputActive ? styles.inputContainerNotActive : styles.inputContainerActive,{zIndex:0}]}>
+            </View>
+            <View style={[!isInputActive ? styles.inputContainerNotActive : styles.inputContainerActive]}>
+              
               <TextInput 
                 placeholder='Type here ...' 
                 style={styles.inputField} 
@@ -347,7 +349,7 @@ const handleKeyboardDismiss = () => {
   function ContextPanel(){
     return(
       
-      <View style={Cstyles.container}>
+      <View style={[Cstyles.container,{zIndex:30}]}>
         <ScrollView style={{width:"100%",marginLeft:"auto",marginRight:"auto",backgroundColor:"white",height:"100%",paddingTop:0}} showsVerticalScrollIndicator={false}>
           <View style={{width:"100%",alignItems:"center"}}>
           {ContextOptions.map((data,index)=>(
@@ -391,20 +393,22 @@ const handleKeyboardDismiss = () => {
 
 return (
   <>
-    <GestureHandlerRootView style={{ flex: 1,width:"100%" }}>
+    <GestureHandlerRootView style={{ flex: 1,width:"100%",backgroundColor:"white" }}>
       <BottomSheetModalProvider>
-        <Pressable onPress={() => {handleKeyboardDismiss()}} style={[{width:"100%",backgroundColor:"rgba(0,0,0,1)",padding:10,textAlign:"center",position:"relative",height:120,justifyContent:"center",alignItems:"center",paddingTop:30},]}>
+        <Pressable onPress={() => {handleKeyboardDismiss()}} style={[{width:"100%",backgroundColor:"rgba(0,0,0,1)",padding:10,textAlign:"center",position:"relative",height:"20%",justifyContent:"center",alignItems:"center",paddingTop:30},]}>
               {!isContextPanelOpen ?
               
-                      <View>
+                      <View style={{paddingTop:30}}>
                         <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>Are you having suspicious sympthoms ?</Text>
                         <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Ask anything</Text>
                       </View>
                 :
+                <View style={{paddingTop:30, width:"100%"}}>
                 <Text style={{fontWeight:"700",fontSize:20,width:"100%",color:"white",textAlign:"center",position:"relative"}}>
                   <Text style={{color:"gray",fontWeight:"800",}}> Pick the data </Text>
                   you want <Text style={{color:"gray",fontWeight:"800"}}>Ai</Text> to see during your assistance
                 </Text> 
+                </View>
                 
               }
         </Pressable> 
@@ -416,7 +420,7 @@ return (
           snapPoints={snapPoints}
           onChange={() => setIsContextPanelOpen(!isContextPanelOpen)}
           enablePanDownToClose={true}
-          handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:30,color:"white"}}
+          handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:40,color:"white",zIndex:20}}
           handleIndicatorStyle={{backgroundColor:"white"}}
 
         >
@@ -431,7 +435,7 @@ return (
           handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:30,color:"white"}}
           handleIndicatorStyle={{backgroundColor:"white"}}
           handleComponent={() => 
-            <View style={{width:"100%",height:60,backgroundColor:"black",justifyContent:"center",alignItems:"center",borderRadius:0}}>
+            <View style={{width:"100%",height:60,backgroundColor:"black",justifyContent:"center",alignItems:"center",borderRadius:0,zIndex:50}}>
               <View style={{borderWidth:1,borderColor:"white",width:30}} />
               <Text style={{color:"white",marginTop:10,fontWeight:"700",fontSize:15}}>AI Chat Log</Text>
               <MaterialCommunityIcons 
@@ -484,6 +488,8 @@ const styles = StyleSheet.create({
       width:'100%',
       alignItems:'center',
       position:"relative",
+      zIndex:0,
+      backgroundColor:"white"
   },
   assistantTitle:{
     flexDirection:'column',
@@ -493,9 +499,9 @@ const styles = StyleSheet.create({
     borderWidth:0,
   },
   assistantQuestionsContainer:{
-    flexDirection:'row',
-    flexWrap:'wrap',
-    width:'100%',
+    flexDirection:'column',    
+    width:'200%',
+    height:"100%",
     maxWidth:'100%',
     marginTop:0,
     justifyContent:'center',
@@ -524,8 +530,8 @@ const styles = StyleSheet.create({
     position:'absolute',
     bottom:0,
     height:110,
-    zIndex:5,
-    backgroundColor:"white"
+    zIndex:0,
+    backgroundColor:"transparent"
   },
   inputContainerActive:{
     width:'100%',
@@ -537,7 +543,8 @@ const styles = StyleSheet.create({
     bottom:0,
     backgroundColor:'white',
     flexDirection:'row',
-    height:"41%"
+    height:"41%",
+    zIndex:20
   },
   inputField:{
     width:'80%',
@@ -637,8 +644,9 @@ const Cstyles = StyleSheet.create({
       width:'100%',
       alignItems:'center',
       position:"relative",
-      height:"100%"
-  },
+      height:"100%",
+      zIndex:10
+  },        
 });
 
 const Dstyles = StyleSheet.create({

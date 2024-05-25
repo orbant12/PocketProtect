@@ -606,7 +606,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
                 <ScrollView style={{width:"100%",zIndex:-5,height:"100%",backgroundColor:"white"}}>
                     <View style={[styles.startScreen]}>
                         <View style={{marginTop:50,alignItems:"center"}}>  
-                            <Text style={{marginBottom:10,fontWeight:"700",fontSize:20}}>Press the body part to monitor:</Text>
+                            <Text style={{marginBottom:30,fontWeight:"700",fontSize:20}}>Press the body part to monitor:</Text>
                             <ProgressBar progress={bodyProgress} width={150} height={10} color={"lightgreen"}backgroundColor={"white"} />
                                 <Body
                                     data={completedAreaMarker}

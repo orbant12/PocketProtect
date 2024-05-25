@@ -119,6 +119,26 @@ export const fetchSlugMelanomaData = async ({
     }
 }
 
+export const fetchSpotHistory = async ({ userId, spotId }) => {
+    try {
+        const ref = collection(db, "users", userId, "Melanoma", spotId, "History");
+        const snapshot = await getDocs(ref);
+        
+        if (!snapshot.empty) {
+            let melanomaData = [];
+            snapshot.forEach((doc) => {
+                melanomaData.push(doc.data());
+            });
+            return melanomaData;
+        } else {
+            return "NoHistory"; 
+        }
+    } catch (error) {
+        console.error("Error fetching spot history: ", error);
+        return false; 
+    }
+};
+
 export const deleteSpot = async ({
     userId,
     spotId
