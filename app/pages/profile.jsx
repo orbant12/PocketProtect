@@ -77,7 +77,7 @@ return(
         <Text style={{fontWeight:"500",color:"black"}}>Settings</Text>
     </TouchableOpacity> */}
 
-    <TouchableOpacity style={{position:"absolute",right:20,top:30}} onPress={handleSettingsNavigation}>
+    <TouchableOpacity style={{position:"absolute",right:20,top:50}} onPress={handleSettingsNavigation}>
         <Icon
             name='menu'
             type='material'

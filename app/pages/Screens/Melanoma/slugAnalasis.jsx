@@ -40,7 +40,7 @@ const SlugAnalasis = ({ route,navigation }) => {
     },[])
 
     const handleSpotOpen = (data) => {
-        navigation.navigate("SinglePartAnalasis",{ "data": data,"gender":gender,skin_type:skin_type });
+        navigation.navigate("SinglePartAnalasis",{ "data": data,"gender":gender,skin_type:skin_type, userData });
     }
 
     const showSpot = (melanomaId) => {
@@ -53,7 +53,7 @@ const SlugAnalasis = ({ route,navigation }) => {
     }
 
     const handleAddMelanoma = () => {
-        navigation.navigate("MelanomaAdd", { data: userData, skin_type: skin_type, bodyPart:bodyPart, userData: userData});
+        navigation.navigate("MelanomaAdd", { data: userData, skin_type: skin_type, bodyPart:bodyPart,type:"new"});
     }
 
 

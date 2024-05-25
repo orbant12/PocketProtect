@@ -4,10 +4,12 @@ import { useAuth } from "../../../context/UserAuthContext";
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
 import { Tabs} from 'react-native-collapsible-tab-view'
 import Entypo from 'react-native-vector-icons/Entypo';
-import { fetchSpotHistory } from "../../../server";
+import { fetchSpotHistory, deleteSpotWithHistoryReset } from "../../../server";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const SinglePartAnalasis = ({ route }) => {
+import moment from 'moment'
+
+const SinglePartAnalasis = ({ route,navigation }) => {
 
 //<***************************  Variables ******************************************>
 
@@ -18,6 +20,12 @@ const gender = route.params.gender
 
 const skin_type = route.params.skin_type
 
+const userData = route.params.userData
+
+const today = new Date();
+
+const format = moment(today).format('YYYY-MM-DD')
+
 const moleDataRef = useRef(null)
 
 const {currentuser} = useAuth()
@@ -25,6 +33,8 @@ const {currentuser} = useAuth()
 const [melanomaHistory, setMelanomaHistory] = useState([])
 const [selectedMelanoma, setSelectedMelanoma] = useState(null)
 const [highlight, setHighlighted ]= useState("")
+const [deleteModal,setDeleteModal] = useState(false)
+const [moleToDelete,setMoleToDelete] = useState("")
 
 //<***************************  Functions ******************************************>
 
@@ -38,23 +48,94 @@ const fetchAllSpotHistory = async () => {
 
         if (res == "NoHistory"){
             setMelanomaHistory([])
-            setHighlighted(bodyPart.created_at)
+            setHighlighted(formatDate(bodyPart.created_at))
             setSelectedMelanoma(bodyPart)
         } else if (res == false){
             alert("Something went wrong !")
             setSelectedMelanoma(bodyPart)
-            setHighlighted(bodyPart.created_at)
+            setHighlighted(formatDate(bodyPart.created_at))
         } else {
             setMelanomaHistory(res)
-            setHighlighted(bodyPart.created_at)
+            setHighlighted(formatDate(bodyPart.created_at))
             setSelectedMelanoma(bodyPart)
         }
     }
 }
 
+function formatDate(timestamp) {
+    // Convert the timestamp to milliseconds
+    const milliseconds = (timestamp.seconds * 1000) + (timestamp.nanoseconds / 1000000);
+
+    // Create a Date object
+    const date = new Date(milliseconds);
+
+    // Extract the year, month, and day
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are 0-based
+    const day = String(date.getUTCDate()).padStart(2, '0');
+
+    // Format the date as YYYY-MM-DD
+    const formattedDate = `${year}-${month}-${day}`;
+    console.log(formattedDate)
+    return formattedDate;
+}
+
+function formatDateToday(date) {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = ('0' + (d.getMonth() + 1)).slice(-2); // Months are zero-based
+    const day = ('0' + d.getDate()).slice(-2);
+    return `${year}-${month}-${day}`;
+}
+
+function dateDistance(date1, date2) {
+    const d1 = new Date(formatDate(date1))
+    const d2 = new Date(formatDateToday(date2));
+    const diffTime = d1 - d2;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays + 186;
+}
+
+const handleUpdateMole = async () => {
+    navigation.navigate("MelanomaAdd", { data:userData, skin_type: skin_type, bodyPart:bodyPart.melanomaDoc.spot[0],type:{id:bodyPart.melanomaId,locationX:bodyPart.melanomaDoc.location.x,locationY:bodyPart.melanomaDoc.location.y}});
+}
+
 useEffect(() => {
     fetchAllSpotHistory()
 },[])
+
+const handleSpotDelete = async (data) => {
+    if(data.storage_name == bodyPart.storage_name){
+        const response = await deleteSpotWithHistoryReset({
+            userId:currentuser.uid,
+            spotId: data.melanomaId,
+            type:"change",
+            storage_name:data.storage_name
+        })
+        if( response.firestore.success == true && response.storage.success == true){
+            alert("Mole Deleted Sucessfully !")
+            navigation.goBack()
+        } else if ( response.firestore.success != true || response.storage.success != true) {
+            alert("Deletion failed ...")
+        }
+    } else {
+        const response = await deleteSpotWithHistoryReset({
+            userId:currentuser.uid,
+            spotId: data.melanomaId,
+            type:"history",
+            storage_name:data.storage_name
+        })
+        if( response.firestore.success == true && response.storage.success == true){
+            alert("Mole Deleted Sucessfully !")
+            navigation.goBack()
+        } else if ( response.firestore.success != true || response.storage.success != true) {
+            alert("Deletion failed ...")
+        }
+    }
+
+
+
+}
 
 
 
@@ -323,6 +404,30 @@ useEffect(() => {
         )
     }
 
+    function SureModal(){
+        return(
+            <View style={styles.modalOverlay}> 
+            <View style={styles.modalBox}>
+                <View style={{alignItems:"center",padding:20}}>
+                    <Text style={{fontWeight:"700",fontSize:18,marginTop:10,textAlign:"center"}}>Are you sure about deleting {moleToDelete.storage_name}</Text>
+                    <Text style={{fontWeight:"400",fontSize:15,marginTop:10}}>It will be lost forever !</Text>
+                </View>
+                <View style={{flexDirection:"row-reverse",width:"100%",borderTopWidth:1,padding:10,paddingRight:20}}>
+
+                    <TouchableOpacity onPress={() => {moleToDelete != "" && handleSpotDelete(moleToDelete)}} style={styles.modalNoBtn}>
+                        <Text style={{fontWeight:"700",color:"white"}}>Yes</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.modalYesBtn} onPress={() => setDeleteModal(!deleteModal)}>
+                        <Text style={{fontWeight:"700",color:"black"}}>No</Text>
+                    </TouchableOpacity>
+
+                </View>
+            </View>
+        </View>
+        )
+    }
+
     const Header = () => {
         return(
             <View style={styles.TopPart}>
@@ -356,20 +461,21 @@ return(
                         </View>
                     </View>
 
-                    <View style={[styles.container,{marginTop:50}]} >
+                    <View style={[{marginTop:50,alignItems:"center",width:"100%"}]} >
                         <Text style={{width:"90%",textAlign:"center",fontSize:25,color:"white",fontWeight:"800",opacity:0.6}}>Mole Data</Text>
                         {selectedMelanoma != null &&
-                            <View style={[styles.melanomaBox, highlight != selectedMelanoma.created_at && {borderColor:"white"}]}>
+                        <>
+                            <View style={[styles.melanomaBox, highlight != formatDate(selectedMelanoma.created_at) && {borderColor:"white"}]}>
                                 
                                 <Image 
                                     source={{ uri:selectedMelanoma.melanomaPictureUrl}}
                                     style={{width:80,height:80,borderWidth:1,borderRadius:10}}
                                 />
                                 <View style={styles.melanomaBoxL}>                            
-                                    <Text style={{fontSize:16,fontWeight:600,color:"white"}}>{selectedMelanoma.created_at}</Text>
-                                    <Text style={{fontSize:13,fontWeight:500,color:"white",opacity:0.6}}>Risk: {selectedMelanoma.risk}</Text>
+                                    <Text style={{fontSize:16,fontWeight:600,color:"white"}}>{selectedMelanoma.melanomaId}</Text>
+                                    <Text style={{fontSize:13,fontWeight:500,color:"white",opacity:0.6}}>{formatDate(selectedMelanoma.created_at)}</Text>
                                 </View>
-                                <TouchableOpacity style={{width:"30%",flexDirection:"row",alignItems:"center",borderWidth:1.5,borderColor:"red",padding:10,borderRadius:10,opacity:0.8}}>
+                                <TouchableOpacity onPress={() => {setDeleteModal(!deleteModal);setMoleToDelete(selectedMelanoma)}} style={{width:"30%",flexDirection:"row",alignItems:"center",borderWidth:1.5,borderColor:"red",padding:10,borderRadius:10,opacity:0.8}}>
                                     <MaterialCommunityIcons 
                                         name="delete"
                                         size={20}
@@ -378,58 +484,93 @@ return(
                                     <Text style={{color:"red",fontWeight:"700",marginLeft:5}}>Delete</Text>                         
                                 </TouchableOpacity>               
                             </View>
-                        }
-                        <View>
-
-                    <View style={[styles.container,{marginTop:50}]}>
-                        <Text style={{width:"90%",textAlign:"center",fontSize:25,color:"white",fontWeight:"800",opacity:0.6}}>History</Text>                                      
-                            <TouchableOpacity onPress={() => {setHighlighted(bodyPart.created_at); setSelectedMelanoma(bodyPart); moleDataRef.current.scrollTo({ x: 0, y: 0, animated: true }); }}  style={[styles.melanomaBox, highlight != bodyPart.created_at && {borderColor:"white"}]}>
-                            <Text style={[{color:"magenta",opacity:0.6, fontWeight:"700",top:-22,position:"absolute",left:0},highlight != bodyPart.created_at && {color:"white"}]}>Latest</Text>
-                            <Image 
-                                source={{ uri:bodyPart.melanomaPictureUrl}}
-                                style={{width:80,height:80,borderWidth:1,borderRadius:10}}
-                            />
-                            <View style={styles.melanomaBoxL}>                            
-                                <Text style={{fontSize:16,fontWeight:600,color:"white"}}>{bodyPart.created_at}</Text>
-                                <Text style={{fontSize:13,fontWeight:500,color:"white",opacity:0.6}}>Risk: {bodyPart.risk}</Text>
-                            </View>              
-                            <View  style={styles.melanomaBoxR}>
-                                <Text style={{color:"white",marginRight:10,fontWeight:"700",opacity:0.8}}>Data</Text>
-                                <MaterialCommunityIcons 
-                                    name="arrow-right"
-                                    size={25}
-                                    color={"white"}
-                                    opacity={"0.8"}
-                                />
+                            <View style={{backgroundColor:"black",padding:20,alignItems:"center",borderBottomLeftRadius:30,borderBottomRightRadius:30}}>
+                            <View style={{width:"80%",justifyContent:"space-between",flexDirection:"row",alignItems:"center",marginTop:30}}>
+                                <Text style={{fontWeight:"700",fontSize:20,color:"white"}}>State:</Text>
+                                {dateDistance(selectedMelanoma.created_at,format) != 0 ? 
+                                    dateDistance(selectedMelanoma.created_at,format) > 0 ?                           
+                                    <Text style={{fontSize:15,fontWeight:"500",maxWidth:"70%",color:"white",opacity:0.5}}>Your mole is up to date for <Text style={{color:"lightgreen",fontWeight:"800",opacity:0.5}}>{dateDistance(selectedMelanoma.created_at,format)} days</Text></Text>                  
+                                :                         
+                                    <Text style={{fontSize:15,maxWidth:"70%",fontWeight:"600",color:"white",opacity:0.5}}>This mole has been outdated for <Text style={{color:"red",fontWeight:"800",opacity:0.5}}>{dateDistance(selectedMelanoma.created_at,format) * -1} days</Text></Text>    
+                                :
+                                    <Text style={{fontSize:15,maxWidth:"70%",fontWeight:"600",color:"white",opacity:0.5}}>This mole is getting outdated <Text style={{color:"lightgreen",fontWeight:"800",opacity:0.5}}>Today</Text></Text>                         
+                                }
                             </View>
-                            </TouchableOpacity>
-                            {melanomaHistory.length != 0 && 
-                                melanomaHistory.map((data,index) => (
-                                <TouchableOpacity key={index} onPress={() => {setHighlighted(data.created_at);setSelectedMelanoma(data);moleDataRef.current.scrollTo({ x: 0, y: 0, animated: true });}}  style={[styles.melanomaBox, highlight != data.created_at && {borderColor:"white"}]}>                                    
-                                    <Image 
-                                        source={{ uri:data.melanomaPictureUrl}}
-                                        style={{width:80,height:80,borderWidth:1,borderRadius:10}}
-                                    />
-                                    <View style={styles.melanomaBoxL}>                            
-                                        <Text style={{fontSize:16,fontWeight:600,color:"white"}}>{data.created_at}</Text>
-                                        <Text style={{fontSize:13,fontWeight:500,color:"white",opacity:0.6}}>Risk: {data.risk}</Text>
-                                    </View>              
-                                    <View  style={styles.melanomaBoxR}>
-                                        <Text style={{color:"white",marginRight:10,fontWeight:"700",opacity:0.8}}>Data</Text>
+                            <View style={{width:"80%",justifyContent:"space-between",flexDirection:"row",alignItems:"center",marginTop:30}}>
+                                <Text style={{fontWeight:"600",fontSize:20,color:"white"}}>Prediction:</Text>
+                                <Text style={{fontWeight:"600",fontSize:16,color:"white",opacity:0.5}}>
+                                    {selectedMelanoma.risk < 0.5 ? "bening" : "malignant"}
+                                </Text>
+                                
+                            </View>   
+                            <View style={{width:"80%",justifyContent:"space-between",flexDirection:"row",alignItems:"center",marginTop:30}}>
+                                <Text style={{fontWeight:"700",fontSize:20,color:"white"}}>Body Part:</Text>
+                                <Text style={{fontWeight:"600",fontSize:16,color:"white",opacity:0.5}}>{selectedMelanoma.melanomaDoc.spot[0].slug}</Text>
+                            </View>   
+                            <View style={{width:"100%",justifyContent:"center",alignItems:"center",marginTop:40}}>                               
+                                <Image 
+                                    source={{uri:selectedMelanoma.melanomaPictureUrl}}
+                                    style={{width:300,height:300,borderRadius:20}}
+                                />
+                            </View>   
+                            </View> 
+                        </>         
+                        }                                                                                     
+                        <View style={[styles.container,{marginTop:50}]}>
+                            <Text style={{width:"90%",textAlign:"center",fontSize:25,color:"white",fontWeight:"800",opacity:0.6}}>History</Text>    
+                            <Text style={{color:"white",opacity:0.2,fontWeight:"600",marginTop:5}}>Latest to oldest</Text>                                  
+                                <TouchableOpacity onPress={() => {setHighlighted(formatDate(bodyPart.created_at)); setSelectedMelanoma(bodyPart); moleDataRef.current.scrollTo({ x: 0, y: 0, animated: true }); }}  style={[styles.melanomaBox, highlight != formatDate(bodyPart.created_at) && {borderColor:"white"}]}>
+                                <Text style={[{color:"magenta",opacity:0.6, fontWeight:"700",top:-22,position:"absolute",left:0},highlight != formatDate(bodyPart.created_at) && {color:"white"}]}>Latest</Text>
+                                <Image 
+                                    source={{ uri:bodyPart.melanomaPictureUrl}}
+                                    style={{width:80,height:80,borderWidth:1,borderRadius:10}}
+                                />
+                                <View style={styles.melanomaBoxL}>                            
+                                    <Text style={{fontSize:16,fontWeight:600,color:"white"}}>{formatDate(bodyPart.created_at)}</Text>
+                                    <Text style={{fontSize:13,fontWeight:500,color:"white",opacity:0.6}}>Risk: {bodyPart.risk}</Text>
+                                </View>              
+                                <View  style={styles.melanomaBoxR}>
+                                    <Text style={{color:"white",marginRight:10,fontWeight:"700",opacity:0.8}}>Data</Text>
                                     <MaterialCommunityIcons 
-                                            name="arrow-right"
-                                            size={25}
-                                            color={"white"}
-                                            opacity={"0.8"}
+                                        name="arrow-right"
+                                        size={25}
+                                        color={"white"}
+                                        opacity={"0.8"}
+                                    />
+                                </View>
+                                </TouchableOpacity>
+                                {melanomaHistory.length != 0 && 
+                                    melanomaHistory.map((data,index) => (
+                                    <TouchableOpacity key={index} onPress={() => {setHighlighted(formatDate(data.created_at));setSelectedMelanoma(data);moleDataRef.current.scrollTo({ x: 0, y: 0, animated: true });}}  style={[styles.melanomaBox, highlight != formatDate(data.created_at) && {borderColor:"white"}]}>                                    
+                                        <Image 
+                                            source={{ uri:data.melanomaPictureUrl}}
+                                            style={{width:80,height:80,borderWidth:1,borderRadius:10}}
                                         />
-                                    </View>
-                                    </TouchableOpacity>
-                                ))
+                                        <View style={styles.melanomaBoxL}>                            
+                                            <Text style={{fontSize:16,fontWeight:600,color:"white"}}>{formatDate(data.created_at)}</Text>
+                                            <Text style={{fontSize:13,fontWeight:500,color:"white",opacity:0.6}}>Risk: {data.risk}</Text>
+                                        </View>              
+                                        <View  style={styles.melanomaBoxR}>
+                                            <Text style={{color:"white",marginRight:10,fontWeight:"700",opacity:0.8}}>Data</Text>
+                                        <MaterialCommunityIcons 
+                                                name="arrow-right"
+                                                size={25}
+                                                color={"white"}
+                                                opacity={"0.8"}
+                                            />
+                                        </View>
+                                        </TouchableOpacity>
+                                    ))
 
-                            }                        
+                                }                        
+                        </View>                             
+         
                     </View>
-     
-                        </View>
+
+                    <View style={[{marginTop:50,width:"100%",alignItems:"center",zIndex:20,marginBottom:50,borderTopWidth:1,paddingTop:30}]}>
+                        <TouchableOpacity onPress={() => handleUpdateMole(bodyPart.melanomaId)} style={{width:"80%",backgroundColor:"black",borderColor:"magenta",borderWidth:2,padding:20,marginTop:0,alignItems:"center",borderRadius:100}}>
+                            <Text style={{color:"white",fontWeight:"800"}}>Update this mole</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </Tabs.ScrollView>
@@ -443,15 +584,18 @@ return(
                 <Text>dsaads</Text>
             </Tabs.ScrollView>
         </Tabs.Tab>
-    </Tabs.Container>   
+    </Tabs.Container> 
+
+    {deleteModal && SureModal()}      
     </View>
 )}
 
 const styles = StyleSheet.create({
     container: {
-        width: "100%",
-        height: "100%",
+        flex:1,
+        width: "100%",        
         alignItems: "center",
+        height:"100%",
         flexDirection: "column",
     },
     TopPart: {
@@ -511,6 +655,51 @@ const styles = StyleSheet.create({
         flexDirection:"row",
         alignItems:"center",
         borderWidth:1
+    },
+    modalBox:{
+        position:"absolute",
+        flexDirection:"column",
+        justifyContent:"space-between",
+        backgroundColor:"white",
+        alignItems:"center",
+        width:300,
+        height:180,
+        borderWidth:0.3,
+        borderRadius:10,
+        padding:0,
+        shadowColor: '#171717',
+        shadowOffset: {width: 4, height: -1},
+        shadowOpacity: 0.6,
+        shadowRadius: 3,
+    },
+    modalYesBtn:{
+        padding:5,
+        backgroundColor:"white",
+        justifyContent:"center",
+        borderRadius:10,
+        width:60,
+        height:40,
+        alignItems:"center",
+        marginRight:30,
+        borderWidth:1,
+    },
+    modalNoBtn:{
+        padding:5,
+        backgroundColor:"black",
+        borderRadius:10,
+        alignItems:"center",
+        borderWidth:1,
+        width:60,
+        height:40,
+        justifyContent:"center",
+    },
+    modalOverlay:{
+        alignItems:"center",
+        justifyContent:"center",
+        position:"absolute",
+        width:"100%",
+        height:"100%",
+        backgroundColor: "rgba(0, 0, 0, 0.7)",
     },
 })
 

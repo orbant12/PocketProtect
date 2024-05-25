@@ -1,4 +1,4 @@
-import { setDoc , doc , collection,getDoc,getDocs,updateDoc,addDocs,deleteDoc} from "firebase/firestore"
+import { setDoc , doc , collection,getDoc,getDocs,updateDoc,addDoc,deleteDoc} from "firebase/firestore"
 import { db,storage } from './firebase.js';
 import { ref,  getDownloadURL, uploadBytes,deleteObject} from "firebase/storage";
 
@@ -12,7 +12,9 @@ export const melanomaSpotUpload = async ({
     birthmarkId,
     melanomaPictureUrl,
     storageLocation,
-    risk
+    risk,
+    storage_name,
+    created_at
 }) => {
     try{
         const ref = doc(db, "users", userId, "Melanoma", birthmarkId);
@@ -23,6 +25,8 @@ export const melanomaSpotUpload = async ({
             melanomaPictureUrl: melanomaPictureUrl,
             storage_location: storageLocation,
             risk: risk,
+            storage_name,
+            created_at
         });
         return true;
     } catch (error) {
@@ -129,12 +133,44 @@ export const fetchSpotHistory = async ({ userId, spotId }) => {
             snapshot.forEach((doc) => {
                 melanomaData.push(doc.data());
             });
+            
+            melanomaData.sort((a, b) => {
+                return b.created_at.seconds - a.created_at.seconds;  // Sort by timestamp seconds
+            });
+            
             return melanomaData;
         } else {
             return "NoHistory"; 
         }
     } catch (error) {
         console.error("Error fetching spot history: ", error);
+        return false; 
+    }
+};
+
+export const updateSpot = async ({
+    userId,
+    spotId,
+    data,    
+}) => {
+    const saveCurrentToHistory = async () => {
+        const ref = doc(db, "users", userId, "Melanoma", spotId);
+        const docSnap = await getDoc(ref);
+        const refSave = doc(db, "users", userId, "Melanoma", spotId, "History",docSnap.data().storage_name);
+        await setDoc(refSave, docSnap.data()); 
+    };
+
+    const saveNew = async () => {
+        const ref = doc(db, "users", userId, "Melanoma", spotId);
+        await setDoc(ref, data);
+    };
+
+    try {
+        await saveCurrentToHistory();
+        await saveNew();
+        return true; // Assuming success if no errors occur
+    } catch (error) {
+        console.error("Error updating spot and saving history: ", error);
         return false; 
     }
 };
@@ -176,6 +212,71 @@ export const deleteSpot = async ({
     }
 };
 
+export const deleteSpotWithHistoryReset = async ({
+    userId,
+    spotId,
+    type,
+    storage_name
+}) => {
+    const deleteFromFirestore = async () => {
+        try {
+            if(type == "history"){
+                const ref = doc(db, "users", userId, "Melanoma", spotId, "History",storage_name);            
+                await deleteDoc(ref);
+                return { success: true, message: "Deleted from Firestore" };
+            } else {
+                const ref = doc(db, "users", userId, "Melanoma", spotId);                                    
+                const closest = collection(db, "users", userId, "Melanoma", spotId, "History");
+                const snapshot = await getDocs(closest)
+                if (!snapshot.empty) {
+                    let historyData = [];
+                    snapshot.forEach((doc) => {
+                        historyData.push(doc.data());
+                    });
+                    historyData.sort((a, b) => {
+                        return b.created_at.seconds - a.created_at.seconds;  // Compare Firestore timestamp seconds
+                    });
+                    const elementWithHighestDate = historyData[0];
+                                        
+                    //DELETE
+                    const closestDelete = doc(db, "users", userId, "Melanoma", spotId, "History",elementWithHighestDate.storage_name);
+                    await deleteDoc(closestDelete)
+                    //SET NEW
+                    await setDoc(ref,elementWithHighestDate)
+                    return { success: true, message: "Deleted from Firestore" };                      
+                } else {
+                    await deleteDoc(ref)
+                    return { success: true, message: "Deleted from Firestore" };   
+                }                                               
+            }
+         
+        } catch (error) {
+            console.error("Error deleting from Firestore:", error);
+            return { success: false, message: "Failed to delete from Firestore" };
+        }
+    };
+
+    const deleteFromStorage = async () => {
+        try {
+            const path = `users/${userId}/melanomaImages/${storage_name}`;
+            const storageRef = ref(storage, path);
+            await deleteObject(storageRef);
+            return { success: true, message: "Deleted from Storage" };
+        } catch (error) {
+            console.error("Error deleting from Storage:", error);
+            return { success: false, message: "Failed to delete from Storage" };
+        }
+    };
+
+    try {
+        const firestoreRes = await deleteFromFirestore();
+        const storageRes = await deleteFromStorage();
+        return { firestore: firestoreRes, storage: storageRes };
+    } catch (error) {
+        console.error("Error deleting spot:", error);
+        return { firestore: { success: false, message: "Firestore deletion failed" }, storage: { success: false, message: "Storage deletion failed" } };
+    }
+};
 
 //<===> USER <====>
 

@@ -1,9 +1,9 @@
 
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { Text, View, StyleSheet,Pressable ,ScrollView,Image,TouchableOpacity} from 'react-native';
 import Body from "../../../components/BodyParts/index";
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
-import { melanomaSpotUpload,melanomaUploadToStorage  } from '../../../server.js';
+import { melanomaSpotUpload,melanomaUploadToStorage,updateSpot  } from '../../../server.js';
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { useAuth } from '../../../context/UserAuthContext.jsx';
 import * as ImagePicker from 'expo-image-picker';
@@ -13,9 +13,11 @@ import {app} from "../../../firebase"
 
 
 
-const MelanomaAdd = ({route,navigation}) => {    
-    const userData = route.params.data;
+const MelanomaAdd = ({route,navigation}) => {     
+ 
     const skin_type = route.params.skin_type;
+    const addType = route.params.type;
+    const userData = route.params.data
     const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
     const bodyPart = route.params.bodyPart
     const firstSelectedPart = bodyPart.slug         
@@ -292,6 +294,7 @@ const MelanomaAdd = ({route,navigation}) => {
         )
     }
 
+
     const ownSelectedPart = () => {
         return (
                 <View style={{alignItems:"center",flexDirection:"column",justifyContent:"center",padding:20}}>
@@ -401,14 +404,71 @@ const MelanomaAdd = ({route,navigation}) => {
         }
     };
 
+    function formatDate(date) {
+        const year = date.getFullYear();
+        const month = ('0' + (date.getMonth() + 1)).slice(-2); // Months are zero-based
+        const day = ('0' + date.getDate()).slice(-2);
+        return `${year}-${month}-${day}`;
+    }
+
     const handleMoreBirthmark = async () => {
-        const BirthmarkIdGenerator = () => {
-            return `Birthmark#${generateNumericalUID(4)}`
-        }
-        const ID =  BirthmarkIdGenerator()
-        const storageLocation = `users/${userData.id}/melanomaImages/${ID}`;
-        setIsScreenLoading(true)
-        try{
+        const today = new Date();
+        if(addType == "new"){
+            const BirthmarkIdGenerator = () => {
+                return `Birthmark#${generateNumericalUID(4)}`
+            }
+            const ID =  BirthmarkIdGenerator()
+            const storageLocation = `users/${userData.id}/melanomaImages/${ID}`;
+            setIsScreenLoading(true)
+            try{
+                const uploadToStorage = async(uri) => {
+                    const blob = await new Promise((resolve, reject) => {
+                        const xhr = new XMLHttpRequest();
+                        xhr.onload = function () {
+                            resolve(xhr.response);
+                        };
+                        xhr.onerror = function (e) {
+                            console.log(e);
+                            reject(new TypeError("Network request failed"));
+                        };
+                        xhr.responseType = "blob";
+                        xhr.open("GET", uri, true);
+                        xhr.send(null);
+                    });
+                    const response = await melanomaUploadToStorage({
+                        melanomaPicFile: blob,                           
+                        storageLocation: storageLocation,
+                    })
+                    return response;
+                }
+    
+                const pictureUrl = await uploadToStorage(uploadedSpotPicture);
+    
+                const res = await melanomaSpotUpload({
+                    userId: userData.id,
+                    melanomaDocument: {"spot": [bodyPart], "location": redDotLocation},
+                    gender: userData.gender,        
+                    birthmarkId: ID,
+                    melanomaPictureUrl: pictureUrl,
+                    storageLocation: storageLocation,
+                    risk:0,
+                    storage_name: ID,
+                    created_at:new Date(),
+                })
+                if (res == true) {
+                    setIsScreenLoading(false)
+                    setRedDotLocation({ x: -100, y: 10 });                             
+                    setUploadedSpotPicture(null)     
+                    navigation.goBack()           
+                }
+            } catch (err) {
+                alert(err)
+                console.log(err)
+            }
+        } else {
+            setIsScreenLoading(true)
+            const ID = generateNumericalUID(4)
+            const storageLocation = `users/${userData.id}/melanomaImages/${addType.id}_updated#${ID}`;
             const uploadToStorage = async(uri) => {
                 const blob = await new Promise((resolve, reject) => {
                     const xhr = new XMLHttpRequest();
@@ -431,26 +491,31 @@ const MelanomaAdd = ({route,navigation}) => {
             }
 
             const pictureUrl = await uploadToStorage(uploadedSpotPicture);
-
-            const res = await melanomaSpotUpload({
-                userId: userData.id,
-                melanomaDocument: {"spot": [bodyPart], "location": redDotLocation},
+            const data = {
+                melanomaDoc: {"spot": [bodyPart], "location": redDotLocation},
                 gender: userData.gender,        
-                birthmarkId: ID,
+                melanomaId: addType.id,
                 melanomaPictureUrl: pictureUrl,
-                storageLocation: storageLocation,
-                risk:0
+                storage_location: storageLocation,
+                risk:0,
+                storage_name:`${addType.id}_updated#${ID}`,
+                created_at: new Date()
+            }
+            const res = await updateSpot({
+                userId: currentuser.uid,
+                spotId: addType.id,
+                data: data,                
             })
-            if (res == true) {
+            if (res == true){
                 setIsScreenLoading(false)
                 setRedDotLocation({ x: -100, y: 10 });                             
                 setUploadedSpotPicture(null)     
-                navigation.goBack()           
+                navigation.goBack()   
+            } else {
+
             }
-        } catch (err) {
-            alert(err)
-            console.log(err)
         }
+
     }
     
     function generateNumericalUID(length) {
@@ -465,6 +530,13 @@ const MelanomaAdd = ({route,navigation}) => {
         return uid;
     }
 
+    useEffect(() => {
+        if(addType != "new"){
+            setRedDotLocation({x:addType.locationX, y:addType.locationY})
+        }
+    },[])
+
+
     
     return (
         <View style={styles.container}>
@@ -475,14 +547,18 @@ const MelanomaAdd = ({route,navigation}) => {
             
             <View style={{width:"100%",alignItems:"center",marginBottom:30}}>
                 <View style={{flexDirection:"column",width:"90%",marginTop:30}}>
-                    <Text>Secound Step <Text style={redDotLocation.x == -100 ? {opacity:0.3}:{color:"green",fontWeight:600}}>2/3</Text></Text>
-                    <Text style={{fontSize:20,fontWeight:600}}>Where is your spot ?</Text>
+                    <Text>First Step <Text style={redDotLocation.x == -100 ? {opacity:0.3}:{color:"green",fontWeight:600}}>1/2</Text></Text>
+                    {addType == "new" ? <Text style={{fontSize:20,fontWeight:600}}>Where is your spot ?</Text> : <Text style={{fontSize:20,fontWeight:600}}>{addType.id}</Text> }
                 </View>
-              
-                    <Pressable style={{position:"relative",alignItems:"center",justifyContent:"center",width:"500px",height:"500px",marginTop:20}} onPress={(e) => handlePartClick(e)}>
-                        
-                            {firstSelectedPart != "" ? dotSelectOnPart() : ownSelectedPart()}
-                    </Pressable>        
+                {addType == "new" ?
+                    <Pressable style={{position:"relative",alignItems:"center",justifyContent:"center",width:"500px",height:"500px",marginTop:20}} onPress={(e) => handlePartClick(e)}>                        
+                        {dotSelectOnPart() }
+                    </Pressable> 
+                    :
+                    <View style={{position:"relative",alignItems:"center",justifyContent:"center",width:"500px",height:"500px",marginTop:20}}>
+                        {dotSelectOnPart() }
+                    </View>
+                }
             </View>
 
             <View style={{width:"100%",borderWidth:1}} />
