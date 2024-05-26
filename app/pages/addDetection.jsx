@@ -1,43 +1,37 @@
+//<********************************************>
+//TYPE: Bottom Navigation - Tab +
+//DESCRIPTION: Home page where the user can see : All medical features
+//<********************************************>
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { FontAwesome6 } from '@expo/vector-icons';
-
 import React, {useEffect, useState,useRef} from 'react';
 import { ScrollView,StyleSheet,Text,View, Pressable,TextInput,TouchableOpacity,Switch,ActivityIndicator,Keyboard,Dimensions ,Image} from 'react-native';
-
-
 import tutorial1 from "../assets/diagnosis/first.png"
-
-//COMPONENTS
 import { getFunctions, httpsCallable } from "firebase/functions";
 import {app} from "../firebase"
 import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-
-//ASSETS
 import { Tabs} from 'react-native-collapsible-tab-view'
 import Entypo from 'react-native-vector-icons/Entypo';
 
-
 const AddDetection = ({navigation}) => {
 
-    const [headerSelect, setHeaderSelect] = useState(false)
-    
-    const [isAddTriggered, setIsAddTriggered] = useState(false)
+//<==================<[ Variable ]>====================>  
 
-const [isContextPanelOpen,setIsContextPanelOpen] = useState(false)
-
+//NAV
+const [headerSelect, setHeaderSelect] = useState(false)
+//DIAGNOSIS
 const [sympthomInput, setSympthomInput] = useState('')
-
+const [addedSymptoms, setAddedSymptoms] = useState([])
+const [ isDiagnosisLoading, setIsDiagnosisLoading] = useState(false)
+const [isAddTriggered, setIsAddTriggered] = useState(false)
+//CONTEXT
 const [ contextToggles , setContextToggles ] = useState({
     useBloodWork:false,
     useWeatherEffect:false,
-    })
-
-const [addedSymptoms, setAddedSymptoms] = useState([])
-
+})
 const ContextOptions = [
   {
     title:"Blood Work",
@@ -60,21 +54,17 @@ const ContextOptions = [
     stateID:"useWeatherEffect"
   },
 ]
-
-//Bottom Sheet
+const [isContextPanelOpen,setIsContextPanelOpen] = useState(false)
+//BOTTOM SHEET
 const bottomSheetRef = useRef(null);
-
 const addingInput = useRef(null);
-
 const snapPoints = ['80%'];
-
+//GOOGLE FIREBASE FUNCTIONS
 const functions = getFunctions(app);
-
-const [ isDiagnosisLoading, setIsDiagnosisLoading] = useState(false)
-
+//H-SWIPE
 const { width } = Dimensions.get('window');
 const [currentPage, setCurrentPage] = useState(0);
-
+//DETECTION
 const CancerDetectionData = [
     {   
         id: "melanoma",
@@ -92,7 +82,6 @@ const CancerDetectionData = [
     },
 
 ]
-
 const OverallHealthData = [
     {
         id: "health_assesment",
@@ -111,99 +100,47 @@ const OverallHealthData = [
 ]
 
 
-  //<==========> Functions <===============>
+//<==================<[ Functions ]>====================>  
 
-    const generateDiagnosisFromPrompt = async (request) => {
-        const generateTextFunction = httpsCallable(functions, 'openAIHttpFunctionSec');
-        try {
-            const result = await generateTextFunction({name: request});
-            //SETT LOADING FALSE      
-            return `${result.data.data.choices[0].message.content}`
-        } catch (error) {
-            console.error('Firebase function invocation failed:', error);
-            return error
-        }
-    };
+const generateDiagnosisFromPrompt = async (request) => {
+    const generateTextFunction = httpsCallable(functions, 'openAIHttpFunctionSec');
+    try {
+        const result = await generateTextFunction({name: request});    
+        return `${result.data.data.choices[0].message.content}`
+    } catch (error) {
+        console.error('Firebase function invocation failed:', error);
+        return error
+    }
+};
 
-    const handleAddingSwitch = async () => {
-        setIsAddTriggered(!isAddTriggered)
-    }
+const handleAddingSwitch = async () => {
+    setIsAddTriggered(!isAddTriggered)
+}
 
-    const handleAddSympthoms = () => {
-        setAddedSymptoms([
-        ...addedSymptoms,
-        sympthomInput
-        ])
-        setSympthomInput('')
-        addingInput.current.blur()
-    }
+const handleAddSympthoms = () => {
+    setAddedSymptoms([
+    ...addedSymptoms,
+    sympthomInput
+    ])
+    setSympthomInput('')
+    addingInput.current.blur()
+}
 
-    const handleRemoveSymptom = (symptomToRemove) => {
-        // Filter out the symptom to remove
-        const updatedSymptoms = addedSymptoms.filter(symptom => symptom !== symptomToRemove);
-        
-        // Update the state with the filtered array
-        setAddedSymptoms(updatedSymptoms);
-    };
+const handleRemoveSymptom = (symptomToRemove) => {
+    const updatedSymptoms = addedSymptoms.filter(symptom => symptom !== symptomToRemove);        
+    setAddedSymptoms(updatedSymptoms);
+};
 
-    useEffect(()=>{
-        if(isAddTriggered == true && addingInput.current != null){
-        addingInput.current.focus()
-        } else if(isAddTriggered == false){
-        }
-    },[isAddTriggered])
+const handleOpenBottomSheet = (state) => {
+    if(state == "open"){
+        bottomSheetRef.current.present();      
+    } else if (state == "hide"){
+        bottomSheetRef.current.close();
+        setProgress(progress + 0.1)
+    }
+}
 
-    //Survey Creation
-    const ProcessAllPossibleOutcomes = async () => {
-        const type = "causes"
-        let symptonScript = addedSymptoms.join(", ");
-        const sympthomsPrompt = `Sympthoms: ${symptonScript}`;
-        const prompt = `${sympthomsPrompt}. Can you give me the most probable causes from the following symphtoms. It is important that your answer must only contain the name of the cause with a , seperating them. Cause can be a diagnosis , lifestyle choice, food / weather / allergy effect or any reasonable cause `;
-        const response = await generateDiagnosisFromPrompt(prompt)
-        console.log(response)
-        return {possibleOutcomes:response, clientSymptoms:symptonScript}
-    }
-    const ProcessCreateSurvey= async (causes) => {
-    let symptonScript = addedSymptoms.join(", ");
-    const sympthomsPrompt = `Client reported sympthoms: ${symptonScript}`;
-    const causesPrompt = `Possible causes: ${causes}`
-    const prompt = `${causesPrompt}.${sympthomsPrompt}. You are a doctor trying to diagnose your patient, simulate your question stlyes like you are having a conversation with your patient. Create a servey from which you will be able to determine which causes is the most likely one. Servey must only contain forms of these: yes or no (qid:binary), client feedback required (qid:feedback). Your answer must be only contain the survey and each question asked like this:
-    binary,Have you ...? \n
-    feedback,Please describe ... \n `;
-    const response = await generateDiagnosisFromPrompt(prompt)
-    
-    const formattedData = response.split('\n').map(line => {
-        const [type, question] = line.split(',');
-        return { type, q: question };
-    });
-    
-    return formattedData
-    }
-    const handleStartSurvey = async () => {
-    setIsDiagnosisLoading(true)
-    const result = await ProcessAllPossibleOutcomes()
-    if (result.possibleOutcomes != "qid:too_broad"){
-        const survey = await ProcessCreateSurvey(result.possibleOutcomes)
-        if (survey) {
-        navigation.navigate("SurveyScreen", {data: survey, outcomes: result.possibleOutcomes, clientSymptoms: result.clientSymptoms,isDone: "Not yet"})
-        setIsDiagnosisLoading(false)
-        }
-    } else if (possibleOutcomes == "qid:too_broad"){
-        alert("too broad")
-    }
-    }
-
-    //CONTEXT BOTTOM SHEET
-    const handleOpenBottomSheet = (state) => {
-        if(state == "open"){
-            bottomSheetRef.current.present();
-          
-        } else if (state == "hide"){
-            bottomSheetRef.current.close();
-            setProgress(progress + 0.1)
-        }
-    }
-    const handleSwitch = (name,e) => {
+const handleSwitch = (name,e) => {
     if ( name == "useBloodWork"){
         setContextToggles({
         ...contextToggles,
@@ -215,21 +152,79 @@ const OverallHealthData = [
         [name]:e
         })
     }
+}
+
+function handleNavigation(id){
+    if (id == "melanoma"){
+        navigation.navigate("FullMelanomaProcess",{sessionMemory:[]})
+    }
+}
+
+const handleScrollReminder = (event) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const pageIndex = Math.floor((offsetX + width / 2) / width);
+    setCurrentPage(pageIndex);
+}
+
+useEffect(()=>{
+    if(isAddTriggered == true && addingInput.current != null){
+    addingInput.current.focus()
+    } else if(isAddTriggered == false){
+    }
+},[isAddTriggered])
+
+
+//——————— FEATURE ENGINEERING - SURVEY ---------
+
+const ProcessAllPossibleOutcomes = async () => {
+    const type = "causes"
+    let symptonScript = addedSymptoms.join(", ");
+    const sympthomsPrompt = `Sympthoms: ${symptonScript}`;
+    const prompt = `${sympthomsPrompt}. Can you give me the most probable causes from the following symphtoms. It is important that your answer must only contain the name of the cause with a , seperating them. Cause can be a diagnosis , lifestyle choice, food / weather / allergy effect or any reasonable cause `;
+    const response = await generateDiagnosisFromPrompt(prompt)
+    console.log(response)
+    return {possibleOutcomes:response, clientSymptoms:symptonScript}
+}
+const ProcessCreateSurvey= async (causes) => {
+let symptonScript = addedSymptoms.join(", ");
+const sympthomsPrompt = `Client reported sympthoms: ${symptonScript}`;
+const causesPrompt = `Possible causes: ${causes}`
+const prompt = `${causesPrompt}.${sympthomsPrompt}. You are a doctor trying to diagnose your patient, simulate your question stlyes like you are having a conversation with your patient. Create a servey from which you will be able to determine which causes is the most likely one. Servey must only contain forms of these: yes or no (qid:binary), client feedback required (qid:feedback). Your answer must be only contain the survey and each question asked like this:
+binary,Have you ...? \n
+feedback,Please describe ... \n `;
+const response = await generateDiagnosisFromPrompt(prompt)
+
+const formattedData = response.split('\n').map(line => {
+    const [type, question] = line.split(',');
+    return { type, q: question };
+});
+
+return formattedData
+}
+const handleStartSurvey = async () => {
+setIsDiagnosisLoading(true)
+const result = await ProcessAllPossibleOutcomes()
+if (result.possibleOutcomes != "qid:too_broad"){
+    const survey = await ProcessCreateSurvey(result.possibleOutcomes)
+    if (survey) {
+    navigation.navigate("SurveyScreen", {data: survey, outcomes: result.possibleOutcomes, clientSymptoms: result.clientSymptoms,isDone: "Not yet"})
+    setIsDiagnosisLoading(false)
+    }
+} else if (possibleOutcomes == "qid:too_broad"){
+    alert("too broad")
+}
+}
+
+
+//<==================<[ Child Components ]>====================> 
+
+    function tabBar(){
+        return(
+        <View style={{backgroundColor:"white",height:50, zIndex:-1  }}></View> 
+        )
     }
 
-    function handleNavigation(id){
-        if (id == "melanoma"){
-            navigation.navigate("FullMelanomaProcess",{sessionMemory:[]})
-        }
-    }
-
-    const handleScrollReminder = (event) => {
-        const offsetX = event.nativeEvent.contentOffset.x;
-        const pageIndex = Math.floor((offsetX + width / 2) / width);
-        setCurrentPage(pageIndex);
-    }
-
-    //<==========> Components <===============>
+    //——————— DETECTION PROCESSES ---------
 
     function CancerSection(){
         return(
@@ -276,6 +271,8 @@ const OverallHealthData = [
             </Pressable> 
         )
     }
+
+    //——————— DIAGNOSIS ---------
 
     function header(){
         return(
@@ -330,11 +327,8 @@ const OverallHealthData = [
         )
     }
 
-    function tabBar(){
-        return(
-        <View style={{backgroundColor:"white",height:50, zIndex:-1  }}></View> 
-        )
-    }
+
+//<==================<[ Parent Components ]>====================> 
 
     function AiDiagnosis({sympthomInput}){
         return(
@@ -503,6 +497,9 @@ const OverallHealthData = [
     )
     }
 
+
+//<==================<[ Main Return ]>====================> 
+
     return(
     <View style={styles.container}>
         <GestureHandlerRootView style={{ flex: 1,width:"100%" }}>
@@ -574,8 +571,10 @@ const OverallHealthData = [
             </BottomSheetModalProvider>
         </GestureHandlerRootView >
     </View>
-    )
-}
+    )}
+
+
+//<==================<[  Styles ]>====================> 
 
 const styles = StyleSheet.create({
     container:{
@@ -640,117 +639,117 @@ const styles = StyleSheet.create({
         borderWidth:0,
     },
     assistantQuestionBox:{
-      width:150,
-      height:0,
-      borderWidth:1,
-      margin:10,
-      borderRadius:1,
-      flexDirection:'column',
-      justifyContent:'space-between',
-      alignItems:'center',
-      padding:10,
-      opacity:0.6,
+        width:150,
+        height:0,
+        borderWidth:1,
+        margin:10,
+        borderRadius:1,
+        flexDirection:'column',
+        justifyContent:'space-between',
+        alignItems:'center',
+        padding:10,
+        opacity:0.6,
     },
     inputContainerNotActive:{
-      width:'100%',
-      flexDirection:'row',
-      padding:20,
-      borderWidth:0,
-      alignItems:'center',
-      justifyContent:'center',
-      position:'absolute',
-      bottom:0,
-      zIndex:5,
+        width:'100%',
+        flexDirection:'row',
+        padding:20,
+        borderWidth:0,
+        alignItems:'center',
+        justifyContent:'center',
+        position:'absolute',
+        bottom:0,
+        zIndex:5,
     },
     inputContainerActive:{
-      width:'100%',
-      padding:20,
-      borderWidth:1,
-      alignItems:'flex-start',
-      justifyContent:'center',
-      position:'absolute',
-      bottom:0,
-      backgroundColor:'white',
-      flexDirection:'row',
-      height:"60%"
+        width:'100%',
+        padding:20,
+        borderWidth:1,
+        alignItems:'flex-start',
+        justifyContent:'center',
+        position:'absolute',
+        bottom:0,
+        backgroundColor:'white',
+        flexDirection:'row',
+        height:"60%"
     },
     inputField:{
-      width:'80%',
-      height:50,
-      borderWidth:1,
-      borderRadius:5,
-      padding:10,
-      zIndex:5,
+        width:'80%',
+        height:50,
+        borderWidth:1,
+        borderRadius:5,
+        padding:10,
+        zIndex:5,
     },
     horizontalQuBox:{
-      backgroundColor:'black',
-      borderRadius:5,
-      height:60,
-      alignItems:'center',
-      justifyContent:'center',
-      flexDirection:'column',
-      marginTop:30,
-      marginBottom:10,
-      opacity:1,
-      width:"80%"
+        backgroundColor:'black',
+        borderRadius:5,
+        height:60,
+        alignItems:'center',
+        justifyContent:'center',
+        flexDirection:'column',
+        marginTop:30,
+        marginBottom:10,
+        opacity:1,
+        width:"80%"
     },
     contextBox:{
-      height:160,
-      width:"90%",
-      marginTop:40,
-      borderRadius:20,
-      flexDirection:"row",
-      alignItems:"flex-end",
-      justifyContent:"center"
+        height:160,
+        width:"90%",
+        marginTop:40,
+        borderRadius:20,
+        flexDirection:"row",
+        alignItems:"flex-end",
+        justifyContent:"center"
     },
     cardRight:{
-      width:"72%",
-      height:"90%",
-      borderRightWidth:10,
-      backgroundColor:"black",
-      borderRadius:10,
-      borderTopRightRadius:0,
-      borderTopLeftRadius:0,
-      borderBottomRightRadius:0,
-      padding:20,
-      justifyContent:"space-between"
+        width:"72%",
+        height:"90%",
+        borderRightWidth:10,
+        backgroundColor:"black",
+        borderRadius:10,
+        borderTopRightRadius:0,
+        borderTopLeftRadius:0,
+        borderBottomRightRadius:0,
+        padding:20,
+        justifyContent:"space-between"
     },
     cardLeft:{
-      padding:8,
-      alignItems:"center",
-      width:"28%",
-      height:"100%",
-      borderTopLeftRadius:20,
-      borderTopRightRadius:15,
-      borderBottomRightRadius:10,
-      backgroundColor:"black"
+        padding:8,
+        alignItems:"center",
+        width:"28%",
+        height:"100%",
+        borderTopLeftRadius:20,
+        borderTopRightRadius:15,
+        borderBottomRightRadius:10,
+        backgroundColor:"black"
     },
     searchInputContainer:{
-      flexDirection:"row",
-      alignItems:"center",
-      borderWidth:2,
-      width:"80%",
-      marginTop:70,
-      borderRadius:10,
-      padding:10,
-      justifyContent:"center",
+        flexDirection:"row",
+        alignItems:"center",
+        borderWidth:2,
+        width:"80%",
+        marginTop:70,
+        borderRadius:10,
+        padding:10,
+        justifyContent:"center",
     },
     searchInput:{
-      borderWidth:0,
-      width:"70%",
-      marginLeft:20,
+        borderWidth:0,
+        width:"70%",
+        marginLeft:20,
     },
     addInputContainer:{
-      flexDirection:"row",
-      alignItems:"center",
-      borderWidth:1,
-      width:"80%",
-      marginTop:30,
-      borderRadius:50,
-      padding:12,
-      backgroundColor:"black",
-      justifyContent:"center",
-      borderColor:"white"
+        flexDirection:"row",
+        alignItems:"center",
+        borderWidth:1,
+        width:"80%",
+        marginTop:30,
+        borderRadius:50,
+        padding:12,
+        backgroundColor:"black",
+        justifyContent:"center",
+        borderColor:"white"
     },
     addInputContainerMental:{
         flexDirection:"row",
@@ -761,35 +760,35 @@ const styles = StyleSheet.create({
         borderRadius:50,
         padding:12,
         backgroundColor:"white",
-        justifyContent:"center"
-      },
+        justifyContent:"center"        
+    },
     loadingModal:{
-      alignItems:"center",
-      justifyContent:"center",
-      position:"absolute",
-      width:"100%",
-      height:"100%",
-      backgroundColor: "rgba(0, 0, 0, 0)",
-      paddingBottom:200
-  },
-  IndicatorContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 0,
-    backgroundColor:"rgba(0,0,0,1)",
-    padding:15,    
-    borderRadius:50,
-    marginBottom:30,
-    marginTop:0
-  },
-  Indicator: {
-    width: 6,
-    height: 6,
-    backgroundColor: 'white',
-    borderRadius: 3,
-    marginHorizontal: 5,
-  },
+        alignItems:"center",
+        justifyContent:"center",
+        position:"absolute",
+        width:"100%",
+        height:"100%",
+        backgroundColor: "rgba(0, 0, 0, 0)",
+        paddingBottom:200
+    },
+    IndicatorContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 0,
+        backgroundColor:"rgba(0,0,0,1)",
+        padding:15,    
+        borderRadius:50,
+        marginBottom:30,
+        marginTop:0
+    },
+    Indicator: {
+        width: 6,
+        height: 6,
+        backgroundColor: 'white',
+        borderRadius: 3,
+        marginHorizontal: 5,
+    },
 });
 
 const Dstyles = StyleSheet.create({

@@ -1,61 +1,54 @@
+//<********************************************>
+//TYPE: Bottom Navigation - Tab 1
+//DESCRIPTION: Home page where the user can see : changes, reminders, future actions, complete daily actions, news, complete tasks for detections
+//<********************************************>
 
-//BASIC IMPORTS
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { ScrollView,StyleSheet,Text,View,FlatList, Pressable,Image,Dimensions,RefreshControl } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { ScrollView,StyleSheet,Text,View, Pressable,Dimensions,RefreshControl } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-//FIREBASE CLASSES
 import moment from 'moment'
-
-//COMPONENTS
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
-//CONTEXT
 import { useAuth } from '../context/UserAuthContext';
 import Calendar from '../components/HomePage/HorizontalCallendar';
-
 import {useTimer}  from '../components/HomePage/timer';
-
 import { fetchMonthTasks, fetchReminders } from '../server';
-
 
 
 export default function TabOneScreen({navigation}) {
 
-//<********************VARIABLE************************>
+//<==================<[ Variables ]>====================>
 
 const { currentuser } = useAuth()
-
+//DATE
 const today = new Date();
-
 const format = moment(today).format('YYYY-MM-DD')
-
 const [selectedDate, setSelectedDate] = useState(format);
-
+//COUNTDOWN
 const [ dateCountdown, setDateCountdown] = useState(10)
 const [historyShown, setHistoryShown ] = useState(true)
-
+const displayCounter = useTimer(dateCountdown);
+//DATA
 const [thisMonthTasks, setThisMonthTasks] = useState([])
 const [allReminders, setAllReminders] = useState([])
+//H-SCROLL
+const [currentPage, setCurrentPage] = useState(0);
+const [currentPageReminder, setCurrentPageReminder] = useState(0);
+const { width } = Dimensions.get('window');
+//REFRESH
+const [refreshing, setRefreshing] = useState(false);
 
 
-
-//<********************FUNCTIONS************************>
+//<==================<[ Functions ]>====================>
 
 const handleNavigation  = (path) => {
     navigation.navigate(path,{data:[{q:"valami",type:"binary"}], outcomes:""})
 }
-
-const [currentPage, setCurrentPage] = useState(0);
-
-const { width } = Dimensions.get('window');
 
 const handleScroll = (event) => {
     const offsetX = event.nativeEvent.contentOffset.x;
     const pageIndex = Math.floor((offsetX + width / 2) / width);
     setCurrentPage(pageIndex);
 }
-
-const [currentPageReminder, setCurrentPageReminder] = useState(0);
 
 const handleScrollReminder = (event) => {
     const offsetX = event.nativeEvent.contentOffset.x;
@@ -65,7 +58,7 @@ const handleScrollReminder = (event) => {
 
 function parseDateToMidnight(dateStr) {
     const [year, month, day] = dateStr.split('-').map(Number);
-    return new Date(year, month - 1, day, 0, 0, 0); // Set to midnight
+    return new Date(year, month - 1, day, 0, 0, 0); 
 }  
 
 function splitDate(date){
@@ -75,11 +68,8 @@ function splitDate(date){
 
 const ThisDayCounter = () => { 
     const selectedDateStr = String(selectedDate)
-    // Convert the date strings to Date objects
-    const selectedDateF = parseDateToMidnight(selectedDateStr);
-    
+    const selectedDateF = parseDateToMidnight(selectedDateStr);    
     const calc = Math.floor((selectedDateF - today) / 1000);
-
     if (calc > 0) { 
         setDateCountdown(calc);
         setHistoryShown(false)
@@ -88,14 +78,10 @@ const ThisDayCounter = () => {
     }
 }
 
-const displayCounter = useTimer(dateCountdown);
-
 useEffect(() =>{
     ThisDayCounter()
 },[selectedDate])
 
-// Inside your TabOneScreen component
-const [refreshing, setRefreshing] = useState(false);
 const onRefresh = useCallback(() => {
     setRefreshing(true);
     fetchThisMonthTasks()
@@ -104,7 +90,6 @@ const onRefresh = useCallback(() => {
         setRefreshing(false);
     }, 2000); // Example: setTimeout for simulating a delay
 }, []);
-
 
 const fetchThisMonthTasks = async () => {
     if(currentuser){
@@ -130,14 +115,13 @@ const fetchAllReminders = async () => {
     }
 }
 
-
 useEffect(() => {
     fetchThisMonthTasks()
     fetchAllReminders()
 },[])
 
 
-//<********************COMPONETNS************************>
+//<==================<[ Child Components ]>====================>
 
     const TaskBox = ({ title, icon1, icon2, icon3, icon4, buttonText,nav_page }) => (
         <View style={styles.DataBox}>
@@ -236,6 +220,9 @@ useEffect(() => {
         )
     }
 
+
+//<==================<[ Parent Components ]>====================>
+
     function TodayScreen() {
         return(
             <>
@@ -265,15 +252,13 @@ useEffect(() => {
                     {data.id == "blood_work" && 
                         ReminderBox({data}) 
                     }                              
-                    </ScrollView>
-          
-                    <View style={styles.IndicatorContainer}>               
-                        <View style={[styles.Indicator, { opacity: currentPageReminder === 0 ? 1 : 0.3 }]} />                     
-                        <View style={[styles.Indicator, { opacity: currentPageReminder === 1 ? 1 : 0.3 }]} />
-                        <View style={[styles.Indicator, { opacity: currentPageReminder === 2 ? 1 : 0.3 }]} />
-                        <View style={[styles.Indicator, { opacity: currentPageReminder === 3 ? 1 : 0.3 }]} />
-                                
-                    </View>
+                    </ScrollView>          
+                        <View style={styles.IndicatorContainer}>               
+                            <View style={[styles.Indicator, { opacity: currentPageReminder === 0 ? 1 : 0.3 }]} />                     
+                            <View style={[styles.Indicator, { opacity: currentPageReminder === 1 ? 1 : 0.3 }]} />
+                            <View style={[styles.Indicator, { opacity: currentPageReminder === 2 ? 1 : 0.3 }]} />
+                            <View style={[styles.Indicator, { opacity: currentPageReminder === 3 ? 1 : 0.3 }]} />                                    
+                        </View>
                 </View>
             ))}            
 
@@ -516,30 +501,37 @@ useEffect(() => {
         )
     }
 
-    return (
-    <ScrollView style={styles.container}
-    refreshControl={
-        <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-          colors={['magenta']} // Color for the refresh indicator
-          tintColor={'magenta'} // Color for the refresh indicator          
-        />
-    }>
-        <Calendar onSelectDate={setSelectedDate} selected={selectedDate} today={format} todayDate={today} />
-        <StatusBar style="auto" />
-        {format == selectedDate ? 
-        TodayScreen()
-        :
-        !historyShown?
-            FutureScreen()
-            :
-            PastScreen()
-        }
-    </ScrollView>
 
+//<==================<[ Main Return ]>====================> 
+
+    return (
+        <ScrollView 
+            style={styles.container}
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    colors={['magenta']}
+                    tintColor={'magenta'}
+                />
+            }
+        >
+            <Calendar onSelectDate={setSelectedDate} selected={selectedDate} today={format} todayDate={today} />
+            <StatusBar style="auto" />
+            {format == selectedDate ? 
+            TodayScreen()
+            :
+            !historyShown?
+                FutureScreen()
+                :
+                PastScreen()
+            }
+        </ScrollView>
     );
 }
+
+
+//<==================<[ Styles ]>====================> 
 
 const styles = StyleSheet.create({
     container: {
@@ -628,7 +620,7 @@ const styles = StyleSheet.create({
         width:301,
         padding: 13,
         backgroundColor: '#1a1a1a', 
-        margin: 17,
+        margin: 27,
         borderRadius: 10,  
       },
       IndicatorContainer: {

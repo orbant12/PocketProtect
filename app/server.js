@@ -1,4 +1,12 @@
-import { setDoc , doc , collection,getDoc,getDocs,updateDoc,addDoc,deleteDoc} from "firebase/firestore"
+import { 
+    setDoc,
+    doc,
+    collection,
+    getDoc,
+    getDocs,
+    updateDoc,
+    deleteDoc
+} from "firebase/firestore"
 import { db,storage } from './firebase.js';
 import { ref,  getDownloadURL, uploadBytes,deleteObject} from "firebase/storage";
 
@@ -278,6 +286,70 @@ export const deleteSpotWithHistoryReset = async ({
     }
 };
 
+export const fetchNumberOfMoles = async ({
+    userId,
+    gender
+})=>{
+    const distanceFromToday = (timestamp) => {
+        const today = new Date();
+        const givenDate = new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1e6);                
+        const timeDifference = today.getTime() - givenDate.getTime();                
+        const dayDifference = timeDifference / (1000 * 3600 * 24);        
+        return Math.round(dayDifference);
+    };
+    try{
+        const ref = collection(db, "users", userId, "Melanoma");
+        const completedRef = doc(db, "users", userId, "Medical_Data","skin_data");
+        const docSnap = await getDoc(completedRef);
+        const snapshot = await getDocs(ref);        
+        let melanomaDataCount = 0;
+        let beningDataCount = 0;
+        let malignantDataCount = 0;
+        let outdatedDataCount = 0;
+        const completedArray = docSnap.data().completedArray;
+        let completedParts = completedArray.length;       
+        snapshot.forEach((doc) => {
+            const data = doc.data();                        
+            if (data.gender === gender) {
+                melanomaDataCount++;
+            }            
+            if (data.risk < 0.5) {
+                beningDataCount++;
+            } else if (data.risk > 0.5) {
+                malignantDataCount++;
+            }        
+            if (distanceFromToday(data.created_at) > 186) {
+                outdatedDataCount++;
+            }
+        });
+        
+        return {
+            all: melanomaDataCount,
+            bening: beningDataCount,
+            malignant: malignantDataCount,
+            outdated: outdatedDataCount,
+            completed:completedParts 
+        };
+    } catch (error) {
+        return false
+    }
+}
+
+export const updateCompletedParts = async ({
+    userId,
+    completedArray
+}) => {
+    try{
+        const ref = doc(db, "users", userId, "Medical_Data", "skin_data")    
+        await setDoc(ref,{completedArray})
+        return true
+    } catch(err) {
+        console.log(err)
+        return false
+    }
+}
+
+
 //<===> USER <====>
 
 export const fetchUserData = async ({
@@ -319,6 +391,7 @@ export const changePersonalData = async ({
     }
 }
 
+
 //<===> DIAGNOSIS <====>
 
 export const fetchAllDiagnosis = async ({
@@ -327,11 +400,15 @@ export const fetchAllDiagnosis = async ({
     try{
         const ref = collection(db, "users", userId , "Diagnosis")
         const snapshot = await getDocs(ref);
-        let diagnosisData = [];
-        snapshot.forEach((doc) => {
-            diagnosisData.push(doc.data());
-        });
-        return diagnosisData;
+        if(!snapshot.empty){
+            let diagnosisData = [];
+            snapshot.forEach((doc) => {
+                diagnosisData.push(doc.data());
+            });
+            return diagnosisData;
+        } else {
+            return "NoDiagnosis"
+        }        
     } catch (e) {
         return false
     }
@@ -352,7 +429,7 @@ export const saveDiagnosisProgress = async ({
 }
 
 
-// Medical Data
+//<===>  Blood Work <====>
 
 export const saveBloodWork = async ({
     userId,
@@ -403,7 +480,8 @@ export const fetchBloodWork = async ({
     }
 }
 
-// Medical Data
+
+//<===>  Task_Manager <====>
 
 export const fetchMonthTasks = async ({
     month,
@@ -445,6 +523,9 @@ export const saveTask = async ({
         return false
     }
 }
+
+
+//<===>  Reminder <====>
 
 export const fetchReminders = async ({
     userId

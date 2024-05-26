@@ -4,6 +4,7 @@ import React, {useState,useEffect,useRef} from "react";
 import { useAuth } from "../../../context/UserAuthContext.jsx";
 import Body from "../../../components/BodyParts/index.tsx";
 import ProgressBar from 'react-native-progress/Bar';
+import {updateCompletedParts} from "../../../server.js"
 
 const AllMelanomaAdd = ({route,navigation}) => {
 
@@ -30,10 +31,23 @@ const AllMelanomaAdd = ({route,navigation}) => {
         setCompletedAreaMarker(response)        
         setBodyProgress(response.length / 24)        
     }
+
+    const updateCompletedSlug = async (completedArray) => {
+        if(currentuser){
+            const response = await updateCompletedParts({
+                userId:currentuser.uid,
+                completedArray
+            })
+            if (response != true){
+                alert("something went wrong")
+            }
+        }
+    }
     
     useEffect(() => {
         completedArea(sessionMemory);     
-        console.log(sessionMemory)   
+        console.log(sessionMemory)
+        updateCompletedSlug(sessionMemory)
     }, [sessionMemory,]); 
 
     return(        
