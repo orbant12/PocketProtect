@@ -12,6 +12,7 @@ import { useAuth } from '../context/UserAuthContext';
 import Calendar from '../components/HomePage/HorizontalCallendar';
 import {useTimer}  from '../components/HomePage/timer';
 import { fetchMonthTasks, fetchReminders } from '../server';
+import PagerView from 'react-native-pager-view';
 
 
 export default function TabOneScreen({navigation}) {
@@ -44,16 +45,14 @@ const handleNavigation  = (path) => {
     navigation.navigate(path,{data:[{q:"valami",type:"binary"}], outcomes:""})
 }
 
-const handleScroll = (event) => {
-    const offsetX = event.nativeEvent.contentOffset.x;
-    const pageIndex = Math.floor((offsetX + width / 2) / width);
-    setCurrentPage(pageIndex);
+const handleScroll = (e) => {
+    const page = Math.round(e.nativeEvent.position);
+    setCurrentPageReminder(page);
 }
 
-const handleScrollReminder = (event) => {
-    const offsetX = event.nativeEvent.contentOffset.x;
-    const pageIndex = Math.floor((offsetX + width / 2) / width);
-    setCurrentPageReminder(pageIndex);
+const handleScrollReminder = (e) => {
+    const page = Math.round(e.nativeEvent.position);
+    setCurrentPage(page);
 }
 
 function parseDateToMidnight(dateStr) {
@@ -123,8 +122,8 @@ useEffect(() => {
 
 //<==================<[ Child Components ]>====================>
 
-    const TaskBox = ({ title, icon1, icon2, icon3, icon4, buttonText,nav_page }) => (
-        <View style={styles.DataBox}>
+    const TaskBox = ({ title, icon1, icon2, icon3, icon4, buttonText,nav_page,key }) => (
+        <View key={key} style={styles.DataBox}>
         <Text style={styles.TaskTitle}>{title}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <MaterialCommunityIcons
@@ -170,7 +169,7 @@ useEffect(() => {
             We schedule reminders for outdated blood work and recommended update.
             </Text>
         </View>
-        <Pressable onPress={() => navigation.navigate(nav_page)} style={styles.StartButton}>
+        <Pressable onPress={() => navigation.navigate(nav_page, {type:"first"})} style={styles.StartButton}>
             <Text>{buttonText}</Text>
             <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{ marginLeft: 10 }} />
         </Pressable>
@@ -231,28 +230,22 @@ useEffect(() => {
                     <View style={styles.titleRow}>
                         <Text style={styles.title}>Reminders</Text>
                         <Text style={styles.titleLeft}>{allReminders.length}</Text>
-                    </View>
-                    <ScrollView
-                        horizontal
-                        pagingEnabled
-                        showsHorizontalScrollIndicator={false}
-                        onMomentumScrollEnd={handleScrollReminder}               
-                        contentContainerStyle={{justifyContent:"center",width:"400%"}}
-                        scrollEventThrottle={16}  
-                    >         
+                    </View>    
+                    <PagerView style={{marginTop:10,height:220 }} onPageScroll={(e) => handleScroll(e)} initialPage={0}>    
                     {data.id == "blood_work" && 
-                        ReminderBox({data}) 
+                        ReminderBox({data,key:1}) 
                     }
                     {data.id == "blood_work" && 
-                        ReminderBox({data}) 
+                        ReminderBox({data,key:2}) 
                     }               
                     {data.id == "blood_work" && 
-                        ReminderBox({data}) 
+                        ReminderBox({data,key:3}) 
                     }               
                     {data.id == "blood_work" && 
-                        ReminderBox({data}) 
-                    }                              
-                    </ScrollView>          
+                        ReminderBox({data,key:4}) 
+                    }   
+                    </PagerView>                            
+                      
                         <View style={styles.IndicatorContainer}>               
                             <View style={[styles.Indicator, { opacity: currentPageReminder === 0 ? 1 : 0.3 }]} />                     
                             <View style={[styles.Indicator, { opacity: currentPageReminder === 1 ? 1 : 0.3 }]} />
@@ -301,15 +294,8 @@ useEffect(() => {
                         <Text style={{color:"white",opacity:0.3,fontWeight:"400",fontSize:11,paddingHorizontal:10,marginBottom:-10,paddingVertical:5}}>More data, better prediction</Text>
                         <Text style={styles.title}>Haven't added yet ...</Text>                     
                     </View>
-
-                    <ScrollView
-                        horizontal
-                        pagingEnabled
-                        showsHorizontalScrollIndicator={false}
-                        onMomentumScrollEnd={handleScroll}               
-                        contentContainerStyle={{justifyContent:"center",width:"400%"}}
-                        scrollEventThrottle={16}  
-                    >         
+    
+                    <PagerView style={{marginTop:10,height:365 }} onPageScroll={(e) => handleScrollReminder(e)}   initialPage={0}>
                         <TaskBox 
                         title="Blood Work" 
                         icon1="robot" 
@@ -318,6 +304,7 @@ useEffect(() => {
                         icon4="calendar" 
                         buttonText="Add Now"
                         nav_page="Add_BloodWork"
+                        key={1}                        
                         />
                         <TaskBox 
                         title="Allergies" 
@@ -326,6 +313,7 @@ useEffect(() => {
                         icon3="doctor" 
                         icon4="calendar" 
                         buttonText="Add Now" 
+                        key={2}   
                         />
                         <TaskBox 
                         title="BMI" 
@@ -334,6 +322,7 @@ useEffect(() => {
                         icon3="doctor" 
                         icon4="calendar" 
                         buttonText="Add Now" 
+                        key={3}   
                         />
                         <TaskBox 
                         title="Lifestyle" 
@@ -342,8 +331,9 @@ useEffect(() => {
                         icon3="doctor" 
                         icon4="calendar" 
                         buttonText="Add Now" 
-                        />                 
-                    </ScrollView>
+                        key={4}   
+                        />    
+                    </PagerView>                                 
 
                     <View style={styles.IndicatorContainer}>
                         <View style={[styles.Indicator, { opacity: currentPage === 0 ? 1 : 0.3 }]} />
@@ -617,11 +607,12 @@ const styles = StyleSheet.create({
         borderRadius: 10,  
       },
       DataBox: {
-        width:301,
+        width:300,
         padding: 13,
-        backgroundColor: '#1a1a1a', 
-        margin: 27,
+        backgroundColor: '#1a1a1a',         
         borderRadius: 10,  
+        marginRight:"auto",
+        marginLeft:"auto"
       },
       IndicatorContainer: {
         flexDirection: 'row',

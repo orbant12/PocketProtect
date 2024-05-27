@@ -5,12 +5,12 @@ import ProgressBar from 'react-native-progress/Bar';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuth } from "../../context/UserAuthContext";
-import { saveBloodWork,fetchBloodWork } from "../../server"
+import { saveBloodWork,fetchBloodWork, updateBloodWork } from "../../server"
 
-const BloodWorkPage = ({navigation}) => {
+const BloodWorkPage = ({navigation,route}) => {
 
     // Variable
-
+    const type = route.params.type
     const { currentuser } = useAuth()
 
     const [progress , setProgress] = useState(0)
@@ -19,6 +19,8 @@ const BloodWorkPage = ({navigation}) => {
 
     const [ isSaveModalActive, setIsSaveModalActive] = useState(false)
     const [ saveCardModalActive, setSaveCardModalActive] = useState(false)
+    const [ focused,setFocused] = useState(false)
+    const [ creationDate, setCreationDate] = useState("2001-08-25T23:15:00.000Z",)
 
 
 
@@ -31,65 +33,91 @@ const BloodWorkPage = ({navigation}) => {
         return formattedDate
     }
 
-    const [ bloodWorkData, setBloodWorkData] = useState({
-        Created_Date: "2001-08-25T23:15:00.000Z",
-        basicHealthIndicators:{
-            hemoglobin:0,
-            hematocrit:0,
-            red_blood_cell_count:0,
-            white_blood_cell_count:0,
-            platelet_count:0,
+    const [ bloodWorkData2, setBloodWorkData2] = useState([
+        {
+            title:"Basic Health Indicators",
+            data:[
+                {type:"Hemoglobin (Hgb)",number:0},
+                {type:"Hematocrit (Hct)",number:0},
+                {type:"Red Blood Cell Count (RBC)",number:0},     
+                {type:"White Blood Cell Count (WBC)",number:0},   
+                {type:"Platelet Count",number:0},               
+            ]
         },
-        Lipid_Panel:{
-            total_cholesterol:0,
-            high_density_lipoprotein:0,
-            low_density_lipoprotein:0,
-            triglycerides:0
+        {
+            title:"Lipid Panel",
+            data:[
+                {type:"Total Cholesterol",number:0},
+                {type:"High Density Lipoprotein",number:0},
+                {type:"Low Density Lipoprotein",number:0},     
+                {type:"Triglycerides",number:0},                               
+            ]
         },
-        Metabolic_Panel:{
-            glucose:0,
-            blood_urea_nitrogen:0,
-            creatinine:0,
-            sodium:0,
-            potassium:0,
-            chloride:0,
-            carbon_dioxide:0,
-            calcium:0,
+        {
+            title:"Metabolic Panel",
+            data:[
+                {type:"Glucose",number:0},
+                {type:"Blood Urea Nitrogen",number:0},
+                {type:"Creatinine",number:0},     
+                {type:"Sodium",number:0},
+                {type:"Potassium",number:0},  
+                {type:"Chloride",number:0},  
+                {type:"Carbon Dioxide",number:0},
+                {type:"Calcium",number:0}, 
+            ]
         },
-        Liver_Function_Tests:{
-            Alanine_Aminotransferase:0,
-            Aspartate_Aminotransferase:0,
-            Alkaline_Phosphatase:0,
-            Bilirubin:0,
-            Albumin:0,
-            Total_Protein:0
+        {
+            title:"Liver Function Tests:",
+            data:[
+                {type:"Alanine Aminotransferase",number:0},
+                {type:"Aspartate Aminotransferase",number:0},
+                {type:"Alkaline Phosphatase",number:0},     
+                {type:"Bilirubin",number:0},
+                {type:"Albumin",number:0},  
+                {type:"Total Protein",number:0},    
+            ]
         },
-        Thyroid_Panel:{
-            Thyroid_Stimulating_Hormone:0,
-            Free_Thyroxine:0,
-            Free_Triiodothyronine:0,
+        {
+            title:"Thyroid Panel:",
+            data:[
+                {type:"Thyroid Stimulating Hormone",number:0},
+                {type:"Free Thyroxine",number:0},
+                {type:"Free Triiodothyronine",number:0},     
+            ]
         },
-        Iron_Studies:{
-            Serum_Iron:0,
-            Ferritin:0,
-            Total_Iron_Binding_Capacity:0,
-            Transferrin_Saturation:0,
+        {
+            title:"Iron Studies:",
+            data:[
+                {type:"Serum Iron",number:0},
+                {type:"Ferritin",number:0},
+                {type:"Total Iron Binding Capacity",number:0},     
+                {type:"Transferrin Saturation",number:0}, 
+            ]
+        }, 
+        {
+            title:"Vitamins and Minerals:",
+            data:[
+                {type:"Vitamin D",number:0},
+                {type:"Vitamin B12",number:0},
+                {type:"Folate",number:0},                     
+            ]
+        }, 
+        {
+            title:"Inflammatory Markers:",
+            data:[
+                {type:"C Reactive Protein",number:0},
+                {type:"Erythrocyte Sedimentation Rate",number:0},                                    
+            ]
+        },  
+        {
+            title:"Hormonal Panel:",
+            data:[
+                {type:"Testosterone",number:0},
+                {type:"Estrogen",number:0},    
+                {type:"Progesterone",number:0},                                  
+            ]
         },
-        Vitamins_and_Minerals:{
-            Vitamin_D:0,
-            Vitamin_B12:0,
-            Folate:0
-        },
-        Inflammatory_Markers:{
-            C_Reactive_Protein:0,
-            Erythrocyte_Sedimentation_Rate:0,
-        },
-        Hormonal_Panel:{
-            Testosterone:0,
-            Estrogen:0,
-            Progesterone:0
-        }   
-    })
+    ])
 
     const dataFixed = [
         {
@@ -102,146 +130,107 @@ const BloodWorkPage = ({navigation}) => {
         },
         {
             q:"Basic Health Indicators",
-            component:BloodWorkAddInput()
+            component:BloodWorkComponent(0)
         },
         {
             q:"Lipid Panel",
-            component:BloodWorkAddInput2()
+            component:BloodWorkComponent(1)
         },
         {
             q:"Metabolic Panel",
-            component:BloodWorkAddInput3()
+            component:BloodWorkComponent(2)
         },
         {
             q:"Liver Function Tests",
-            component:BloodWorkAddInput4()
+            component:BloodWorkComponent(3)
         },
         {
             q:"Thyroid Panel",
-            component:BloodWorkAddInput5()
+            component:BloodWorkComponent(4)
         },
         {
             q:"Iron Studies",
-            component:BloodWorkAddInput6()
+            component:BloodWorkComponent(5)
         },
         {
             q:"Vitamins and Minerals",
-            component:BloodWorkAddInput7({title:"Vitamins_and_Minerals"})
+            component:BloodWorkComponent(6)
         },
         {
             q:"Inflammatory Markers",
-            component:BloodWorkAddInput8({title:"Inflammatory_Markers"})
+            component:BloodWorkComponent(7)
         },
         {
             q:"Hormonal Panel",
-            component:BloodWorkAddInput9({title:"Hormonal_Panel"})
+            component:BloodWorkComponent(8)
         },
         {
             q:"We are all done !",
             component:FinishPage()
         }
     ]
-
-
-    // Function
-
-
+    
     const onDateChange = (event, date) => {
         console.log(date)
-          setBloodWorkData({
-            ...bloodWorkData,
-            Created_Date:(String(date))
-          })
-     };
+        setCreationDate(String(date))
+    };
 
-    const handleDataChange = (title,type,e) => {
-        if(title == "basicHealthIndicators"){
-            setBloodWorkData(
-                {  ...bloodWorkData,
-                [title]:{
-                    ...bloodWorkData.basicHealthIndicators,
-                    [type]:e
-                }}
+    const handleDataChange2 = (title,type,e) => {
+       
+        setBloodWorkData2((prevData) => 
+            prevData.map((section) => 
+                section.title === title 
+                    ? {
+                        ...section,
+                        data: section.data.map((item) => 
+                            item.type === type
+                                ? { ...item, number: e }
+                                : item
+                        ),
+                    }
+                    : section
             )
-        } else if (title == "Lipid_Panel"){
-            setBloodWorkData(
-            {  ...bloodWorkData,
-                [title]:{
-                    ...bloodWorkData.Lipid_Panel,
-                    [type]:e
-                }}
-            )
-        } else if (title == "Metabolic_Panel"){
-            setBloodWorkData(
-                {  ...bloodWorkData,
-                    [title]:{
-                        ...bloodWorkData.Metabolic_Panel,
-                        [type]:e
-                    }}
-                )
-        } else if (title == "Liver_Function_Tests"){
-            setBloodWorkData(
-                {  ...bloodWorkData,
-                    [title]:{
-                        ...bloodWorkData.Liver_Function_Tests,
-                        [type]:e
-                    }}
-                )
-        } else if (title == "Thyroid_Panel"){
-            setBloodWorkData(
-                {  ...bloodWorkData,
-                    [title]:{
-                        ...bloodWorkData.Thyroid_Panel,
-                        [type]:e
-                    }}
-                )
-        } else if (title == "Iron_Studies"){
-            setBloodWorkData(
-                {  ...bloodWorkData,
-                    [title]:{
-                        ...bloodWorkData.Iron_Studies,
-                        [type]:e
-                    }}
-                )
-        } else if (title == "Vitamins_and_Minerals"){
-            setBloodWorkData(
-                {  ...bloodWorkData,
-                    [title]:{
-                        ...bloodWorkData.Vitamins_and_Minerals,
-                        [type]:e
-                    }}
-                )
-        } else if (title == "Inflammatory_Markers"){
-            setBloodWorkData(
-                {  ...bloodWorkData,
-                    [title]:{
-                        ...bloodWorkData.Inflammatory_Markers,
-                        [type]:e
-                    }}
-                )
-        } else if (title == "Hormonal_Panel"){
-            setBloodWorkData(
-                {  ...bloodWorkData,
-                    [title]:{
-                        ...bloodWorkData.Hormonal_Panel,
-                        [type]:e
-                    }}
-                )
-        }
-
+        );  
     }
 
-    const handleSaveProgress = async () => {
-        const response = await saveBloodWork({
-            userId: currentuser.uid,
-            data: bloodWorkData,
-            higherRisk:false,
-        })
-        if ( response == true){
-            navigation.goBack()
-        } else {
-            console.log(response)
+    function generateUID(length) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let uid = '';
+        for (let i = 0; i < length; i++) {
+          uid += chars.charAt(Math.floor(Math.random() * chars.length));
         }
+        return uid;
+    }
+
+    const handleSaveProgress = async (type) => {
+        const UID = generateUID(16)
+        if(type == "first"){
+            const response = await saveBloodWork({
+                userId: currentuser.uid,
+                data: bloodWorkData2,
+                Create_Date: creationDate,        
+                id: `Blood_${UID}`,
+                higherRisk: false
+            })
+            if ( response == true){
+                navigation.goBack()
+            } else {
+                console.log(response)
+            }
+        } else if (type == "update"){
+            const response = await updateBloodWork({
+                userId: currentuser.uid,
+                data: bloodWorkData2,
+                Create_Date: creationDate,        
+                id: `Blood_${UID}`,
+                higherRisk: false
+            })
+            if ( response == true){
+                navigation.goBack()
+            } else {
+                console.log(response)
+            }
+        }    
     }
 
     const handleBack = (permission) => {
@@ -254,10 +243,13 @@ const BloodWorkPage = ({navigation}) => {
 
     const fetchBloodWorkData = async () => {
         const response = await fetchBloodWork({userId:currentuser.uid})
-        if(response != false){
-            setBloodWorkData(response)
+        if(response != false && response != "NoBloodWork"){
+            setBloodWorkData2(response.data)
+            setCreationDate(response.created_at)
+        } else if ( response == false){
+            alert("Something went wrong")
+        } else if ( response == "NoBloodWork"){            
         }
-
     }
 
     useEffect(()=> {     
@@ -272,11 +264,11 @@ const BloodWorkPage = ({navigation}) => {
     function DateInput(){ 
         return(
             <>          
-            <DateTimePicker onChange={(e,d) => onDateChange(e,d)} value={new Date(bloodWorkData.Created_Date)} mode="date" style={{marginTop:0}} />
-            {bloodWorkData.Created_Date == "2001-08-25T23:15:00.000Z" ?
+            <DateTimePicker onChange={(e,d) => onDateChange(e,d)} value={new Date(creationDate)} mode="date" style={{marginTop:0}} />
+            {creationDate == "2001-08-25T23:15:00.000Z" ?
             <Text style={{fontWeight:"600"}}>Last Updated: <Text style={{opacity:0.4}}>First Time</Text></Text>
             :
-            <Text style={{fontWeight:"600"}}>Last Updated:<Text style={{opacity:0.4}}> {formattedDate(bloodWorkData.Created_Date)}</Text></Text>
+            <Text style={{fontWeight:"600"}}>Last Updated:<Text style={{opacity:0.4}}> {formattedDate(creationDate)}</Text></Text>
             }
             </>
         )
@@ -288,591 +280,27 @@ const BloodWorkPage = ({navigation}) => {
         )
     }
 
-    function BloodWorkAddInput(){
+    function BloodWorkComponent(index){
         return(
-            <View style={{width:"100%",alignItems:"center",justifyContent:"space-between",height:"60%"}}>
-
-            {/* <View style={{flexDirection:"row",justifyContent:"space-evenly",alignItems:"center",width:"60%",zIndex:0, position:"relative",backgroundColor:"white",height:50,borderWidth:1,borderRadius:25,marginTop:20}}>
-                <TouchableOpacity onPress={() => setMethodSelect(true)} style={methodSelect ? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
-                    <Text style={methodSelect?{fontWeight:"600",color:"black"}:{opacity:0.4,fontWeight:600,color:"black"}}>Scan</Text>
-                </TouchableOpacity>
-                <TouchableOpacity onPress={() => setMethodSelect(false)} style={!methodSelect ? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
-                    <Text style={methodSelect?{opacity:0.4,fontWeight:600,color:"black"}:{fontWeight:"600",color:"black"}}>Manual</Text>
-                </TouchableOpacity>
-            </View>
-            {methodSelect == true ? (
-                <View style={{width:"100%",alignItems:"center",borderWidth:0,marginTop:50}}>
-                    <TouchableOpacity style={{width:200,height:150,padding:0,backgroundColor:"white",alignItems:"center",justifyContent:"center",borderRadius:10,borderWidth:1,borderStyle:"dashed",opacity:0.6}}>
-                        <MaterialCommunityIcons
-                            name='camera'
-                            color={"black"}
-                            size={30}
-                        />
-                        <Text style={{color:"black",fontSize:15,fontWeight:"600",marginTop:20}}>Click to upload</Text>
-                    </TouchableOpacity>
-                </View>            
-            ):(
-                <ScrollView>
-                    
-                </ScrollView>
-            )
-            } */}
-            <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:0}}>
-                <Text>Hemoglobin (Hgb)</Text>
-                <View>        
-                    <TextInput 
-                        keyboardType="numeric"
-                        style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                        value={`${bloodWorkData.basicHealthIndicators.hemoglobin}`}
-                        onChangeText={(e) => handleDataChange("basicHealthIndicators","hemoglobin",e)}
-                        textAlign="center"            
-                    />                   
-                </View> 
-            </View>
-
-            <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:20}}>
-                <Text>Hematocrit (Hct)</Text>
-                <View>        
-                    <TextInput 
-                        keyboardType="numeric"
-                        style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                        value={`${bloodWorkData.basicHealthIndicators.hematocrit}`}
-                        onChangeText={(e) => handleDataChange("basicHealthIndicators","hematocrit", Number(e))}
-                        textAlign="center"            
-                    />                   
-                </View> 
-            </View>
-
-            <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:20}}>
-                <Text>Red Blood Cell Count (RBC)</Text>
-                <View>        
-                    <TextInput 
-                        keyboardType="numeric"
-                        style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                        value={`${bloodWorkData.basicHealthIndicators.red_blood_cell_count}`}
-                        onChangeText={(e) => handleDataChange("basicHealthIndicators","red_blood_cell_count",e)}
-                        textAlign="center"            
-                    />                   
-                </View> 
-            </View>
-
-            <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:20}}>
-                <Text>White Blood Cell Count (WBC)</Text>
-                <View>        
-                    <TextInput 
-                        keyboardType="numeric"
-                        style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                        value={`${bloodWorkData.basicHealthIndicators.white_blood_cell_count}`}
-                        onChangeText={(e) => handleDataChange("basicHealthIndicators","white_blood_cell_count",e)}
-                        textAlign="center"            
-                    />                   
-                </View> 
-            </View>
-
-            <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:20}}>
-                <Text>Platelet Count (PLT)</Text>
-                <View>        
-                    <TextInput 
-                        keyboardType="numeric"
-                        style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                        value={`${bloodWorkData.basicHealthIndicators.platelet_count}`}
-                        onChangeText={(e) => handleDataChange("basicHealthIndicators","platelet_count",e)}
-                        textAlign="center"            
-                    />                   
-                </View> 
-            </View>
-        </View>
-        )
-    }
-
-    function BloodWorkAddInput2(){
-        return(
-            <View style={{width:"100%",alignItems:"center",justifyContent:"space-between",height:"50%"}}>        
-            <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:0}}>
-                <Text>Total Cholesterol</Text>
-                <View>        
-                    <TextInput 
-                        keyboardType="numeric"
-                        style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                        value={`${bloodWorkData.Lipid_Panel.total_cholesterol}`}
-                        onChangeText={(e) => handleDataChange("Lipid_Panel","total_cholesterol",e)}
-                        textAlign="center"            
-                    />                   
-                </View> 
-            </View>
-
-            <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:20}}>
-                <Text>High-Density Lipoprotein (HDL)</Text>
-                <View>        
-                    <TextInput 
-                        keyboardType="numeric"
-                        style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                        value={`${bloodWorkData.Lipid_Panel.high_density_lipoprotein}`}
-                        onChangeText={(e) => handleDataChange("Lipid_Panel","high_density_lipoprotein",e)}
-                        textAlign="center"            
-                    />                   
-                </View> 
-            </View>
-
-            <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:20}}>
-                <Text>Low-Density Lipoprotein (LDL)</Text>
-                <View>        
-                    <TextInput 
-                        keyboardType="numeric"
-                        style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                        value={`${bloodWorkData.Lipid_Panel.low_density_lipoprotein}`}
-                        onChangeText={(e) => handleDataChange("Lipid_Panel","low_density_lipoprotein",e)}
-                        textAlign="center"            
-                    />                   
-                </View> 
-            </View>
-
-            <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:20}}>
-                <Text>Triglycerides</Text>
-                <View>        
-                    <TextInput 
-                        keyboardType="numeric"
-                        style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                        value={`${bloodWorkData.basicHealthIndicators.triglycerides}`}
-                        onChangeText={(e) => handleDataChange("basicHealthIndicators","triglycerides",e)}
-                        textAlign="center"            
-                    />                   
-                </View> 
-            </View>
-        </View>
-        )
-    }
-
-    function BloodWorkAddInput3(){
-        return(
-            <ScrollView style={{width:"100%",marginTop:20,height:"100%"}}>
-                <View style={{width:"100%",alignItems:"center",justifyContent:"space-between",height:"70%",marginBottom:30}}>        
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:10}}>
-                    <Text>Glucose</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Metabolic_Panel.glucose}`}
-                            onChangeText={(e) => handleDataChange("Metabolic_Panel","glucose",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Blood Urea Nitrogen (BUN)</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Metabolic_Panel.blood_urea_nitrogen}`}
-                            onChangeText={(e) => handleDataChange("Metabolic_Panel","blood_urea_nitrogen",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Creatinine</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Metabolic_Panel.creatinine}`}
-                            onChangeText={(e) => handleDataChange("Metabolic_Panel","creatinine",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Sodium</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Metabolic_Panel.sodium}`}
-                            onChangeText={(e) => handleDataChange("Metabolic_Panel","sodium",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Potassium</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Metabolic_Panel.potassium}`}
-                            onChangeText={(e) => handleDataChange("Metabolic_Panel","potassium",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Chloride</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Metabolic_Panel.chloride}`}
-                            onChangeText={(e) => handleDataChange("Metabolic_Panel","chloride",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Carbon Dioxide (CO2)</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Metabolic_Panel.carbon_dioxide}`}
-                            onChangeText={(e) => handleDataChange("Metabolic_Panel","carbon_dioxide",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Calcium</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Metabolic_Panel.calcium}`}
-                            onChangeText={(e) => handleDataChange("Metabolic_Panel","calcium",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-                </View>
-            </ScrollView>
-        )
-    }
-
-    function BloodWorkAddInput4(){
-        return(
-            <ScrollView style={{width:"100%",marginTop:20,height:"100%"}}>
-                <View style={{width:"100%",alignItems:"center",justifyContent:"space-between",height:"70%",marginBottom:30}}>        
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:10}}>
-                    <Text>Alanine Aminotransferase (ALT)</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Liver_Function_Tests.Alanine_Aminotransferase}`}
-                            onChangeText={(e) => handleDataChange("Liver_Function_Tests","Alanine_Aminotransferase",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Aspartate Aminotransferase (AST)</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Liver_Function_Tests.Aspartate_Aminotransferase}`}
-                            onChangeText={(e) => handleDataChange("Liver_Function_Tests","Aspartate_Aminotransferase",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Alkaline Phosphatase (ALP)</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Liver_Function_Tests.Alkaline_Phosphatase}`}
-                            onChangeText={(e) => handleDataChange("Liver_Function_Tests","Alkaline_Phosphatase",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Bilirubin (Total and Direct)</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Liver_Function_Tests.Bilirubin}`}
-                            onChangeText={(e) => handleDataChange("Liver_Function_Tests","Bilirubin",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Albumin</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Liver_Function_Tests.Albumin}`}
-                            onChangeText={(e) => handleDataChange("Liver_Function_Tests","Albumin",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Total Protein</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Liver_Function_Tests.Total_Protein}`}
-                            onChangeText={(e) => handleDataChange("Liver_Function_Tests","Total_Protein",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-    
-                </View>
-            </ScrollView>
-        )
-    }
-
-    function BloodWorkAddInput5(){
-        return(
-            <ScrollView style={{width:"100%",marginTop:20,height:"100%"}}>
-                <View style={{width:"100%",alignItems:"center",justifyContent:"space-between",height:"70%",marginBottom:30}}>        
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:10}}>
-                    <Text>Thyroid Stimulating Hormone (TSH)</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Thyroid_Panel.Thyroid_Stimulating_Hormone}`}
-                            onChangeText={(e) => handleDataChange("Thyroid_Panel","Thyroid_Stimulating_Hormone",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Free Thyroxine (Free T4))</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Thyroid_Panel.Free_Thyroxine}`}
-                            onChangeText={(e) => handleDataChange("Thyroid_Panel","Free_Thyroxine",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Free Triiodothyronine (Free T3)</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Thyroid_Panel.Free_Triiodothyronine}`}
-                            onChangeText={(e) => handleDataChange("Thyroid_Panel","Free_Triiodothyronine",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-                </View>
-            </ScrollView>
-        )
-    }
-
-    function BloodWorkAddInput6(){
-        return(
-            <ScrollView style={{width:"100%",marginTop:20,height:"100%"}}>
-                <View style={{width:"100%",alignItems:"center",justifyContent:"space-between",height:"70%",marginBottom:30}}>        
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:10}}>
-                    <Text>Serum Iron</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Iron_Studies.Serum_Iron}`}
-                            onChangeText={(e) => handleDataChange("Iron_Studies","Serum_Iron",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Ferritin</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Iron_Studies.Ferritin}`}
-                            onChangeText={(e) => handleDataChange("Iron_Studies","Ferritin",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Total Iron-Binding Capacity (TIBC)</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Iron_Studies.Total_Iron_Binding_Capacity}`}
-                            onChangeText={(e) => handleDataChange("Iron_Studies","Total_Iron_Binding_Capacity",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Transferrin Saturation</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData.Iron_Studies.Transferrin_Saturation}`}
-                            onChangeText={(e) => handleDataChange("Iron_Studies","Transferrin_Saturation",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-                </View>
-            </ScrollView>
-        )
-    }
-
-    function BloodWorkAddInput7({title}){
-        return(
-            <ScrollView style={{width:"100%",marginTop:20,height:"100%"}}>
-                <View style={{width:"100%",alignItems:"center",justifyContent:"space-between",height:"70%",marginBottom:30}}>        
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:10}}>
-                    <Text>Vitamin D (25-Hydroxy Vitamin D)</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData?.[title].Vitamin_D}`}
-                            onChangeText={(e) => handleDataChange(`${title}`,"Vitamin_D",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Vitamin B12</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData?.[title].Vitamin_B12}`}
-                            onChangeText={(e) => handleDataChange(`${title}`,"Vitamin_B12",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Folate</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData?.[title].Folate}`}
-                            onChangeText={(e) => handleDataChange(`${title}`,"Folate",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-                </View>
-            </ScrollView>
-        )
-    }
-
-    function BloodWorkAddInput8({title}){
-        return(
-            <ScrollView style={{width:"100%",marginTop:20,height:"100%"}}>
-                <View style={{width:"100%",alignItems:"center",justifyContent:"space-between",height:"70%",marginBottom:30}}>        
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:10}}>
-                    <Text>C-Reactive Protein (CRP)</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData?.[title].C_Reactive_Protein}`}
-                            onChangeText={(e) => handleDataChange(`${title}`,"C_Reactive_Protein",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Erythrocyte Sedimentation Rate (ESR)</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData?.[title].Erythrocyte_Sedimentation_Rate}`}
-                            onChangeText={(e) => handleDataChange(`${title}`,"Erythrocyte_Sedimentation_Rate",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>      
-                </View>
-            </ScrollView>
-        )
-    }
-
-    function BloodWorkAddInput9({title}){
-        return(
-            <ScrollView style={{width:"100%",marginTop:20,height:"100%"}}>
-                <View style={{width:"100%",alignItems:"center",justifyContent:"space-between",height:"70%",marginBottom:30}}>        
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:10}}>
-                    <Text>Testosterone (Total and Free)</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData?.[title].Testosterone}`}
-                            onChangeText={(e) => handleDataChange(`${title}`,"Testosterone",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Estrogen (Estradiol)</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData?.[title].Estrogen}`}
-                            onChangeText={(e) => handleDataChange(`${title}`,"Estrogen",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>
-
-                <View style={{flexDirection:"row",width:"80%",justifyContent:"space-between",alignItems:"center",marginTop:30}}>
-                    <Text>Progesterone</Text>
-                    <View>        
-                        <TextInput 
-                            keyboardType="numeric"
-                            style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10}}                   
-                            value={`${bloodWorkData?.[title].Progesterone}`}
-                            onChangeText={(e) => handleDataChange(`${title}`,"Progesterone",e)}
-                            textAlign="center"            
-                        />                   
-                    </View> 
-                </View>     
+            <ScrollView style={{width:"100%",paddingTop:10}}>
+                <View style={{width:"100%",alignItems:"center",marginBottom:30}}>
+                    {bloodWorkData2[index].data.map((dataFrom) =>(
+                        <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginTop:20,borderWidth:2,padding:20,borderRadius:20}}>
+                            <Text style={{fontWeight:"600",width:"70%"}}>{dataFrom.type}</Text>
+                            <View style={{borderLeftWidth:2}}>        
+                                <TextInput 
+                                    keyboardType="numeric"
+                                    style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10,marginLeft:20}}                   
+                                    value={`${dataFrom.number}`}
+                                    onChangeText={(e) => handleDataChange2(bloodWorkData2[index].title,dataFrom.type,e)}
+                                    textAlign="center"      
+                                    onFocus={() => setFocused(true)}      
+                                />                   
+                            </View> 
+                        </View>
+                    ))
+                        
+                    }       
                 </View>
             </ScrollView>
         )
@@ -953,7 +381,7 @@ const BloodWorkPage = ({navigation}) => {
                             <TouchableOpacity style={{backgroundColor:"black",padding:10,borderRadius:10,alignItems:"center"}} onPress={() => {setSaveCardModalActive(!saveCardModalActive)}}>
                                 <Text style={{color:"white",fontWeight:"500"}}>Go Back</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={{backgroundColor:"white",padding:10,borderRadius:10,borderWidth:1,alignItems:"center",marginLeft:20}} onPress={() =>  handleSaveProgress()}>
+                            <TouchableOpacity style={{backgroundColor:"white",padding:10,borderRadius:10,borderWidth:1,alignItems:"center",marginLeft:20}} onPress={() =>  handleSaveProgress(type)}>
                                 <Text style={{color:"black",fontWeight:"500"}}>Leave</Text>
                             </TouchableOpacity>                                    
                         </View> 
@@ -976,11 +404,11 @@ const BloodWorkPage = ({navigation}) => {
                             <TouchableOpacity style={{backgroundColor:"black",padding:10,borderRadius:10,alignItems:"center"}} onPress={() => setIsSaveModalActive(!isSaveModalActive)}>
                                 <Text style={{color:"white",fontWeight:"500"}}>Go Back</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={{backgroundColor:"white",padding:10,borderRadius:10,borderWidth:1,alignItems:"center",marginLeft:70}} onPress={() => {setSaveCardModalActive(!saveCardModalActive);setIsSaveModalActive(!isSaveModalActive)}}>
-                                <Text style={{color:"black",fontWeight:"500"}}>Save</Text>
+                            <TouchableOpacity style={{backgroundColor:"white",padding:10,borderRadius:10,borderWidth:1,alignItems:"center",marginLeft:100}} onPress={() => {setSaveCardModalActive(!saveCardModalActive);setIsSaveModalActive(!isSaveModalActive)}}>
+                                <Text style={{color:"black",fontWeight:"500"}}>Yes</Text>
                             </TouchableOpacity>    
                             <TouchableOpacity style={{backgroundColor:"red",padding:10,borderRadius:10,alignItems:"center",}} onPress={() => handleBack(true)}>
-                                <Text style={{color:"white",fontWeight:"600"}}>Exit</Text>
+                                <Text style={{color:"white",fontWeight:"600"}}>No</Text>
                             </TouchableOpacity>                      
                         </View> 
                     </View>
@@ -1017,7 +445,8 @@ const BloodWorkPage = ({navigation}) => {
             {progress == 0 ?
             FirstScreen()                
             :
-            <Pressable onPress={() => Keyboard.dismiss()} style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
+            focused ?
+            <Pressable onPress={() => {Keyboard.dismiss();setFocused(false)}} style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
                 <View style={{width:"90%",alignItems:"center",backgroundColor:"#eee",justifyContent:"center",padding:20,borderRadius:20,marginTop:10}}>
                     <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>            
                 </View> 
@@ -1033,6 +462,23 @@ const BloodWorkPage = ({navigation}) => {
                     }          
                 <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:10,position:"absolute",right:10,bottom:20,opacity:0.3}}>{progress} / {dataFixed.length}</Text>
             </Pressable>
+            :
+            <View style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
+            <View style={{width:"90%",alignItems:"center",backgroundColor:"#eee",justifyContent:"center",padding:20,borderRadius:20,marginTop:10}}>
+                <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>            
+            </View> 
+            {dataFixed[progress-1].component}
+                {progress == dataFixed.length ?
+                    <Pressable onPress={() => handleSaveProgress()} style={[styles.startButton,{marginBottom:10}]}>                        
+                        <Text style={{padding:14,fontWeight:"600",color:"white"}}>Finsih</Text>
+                    </Pressable>
+                    :
+                    <Pressable onPress={() => setProgress(progress + 1)} style={[styles.startButton,{marginBottom:10}]}>                        
+                        <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
+                    </Pressable>
+                }          
+            <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:10,position:"absolute",right:10,bottom:20,opacity:0.3}}>{progress} / {dataFixed.length}</Text>
+            </View>
             }                                  
         </View>
         </>

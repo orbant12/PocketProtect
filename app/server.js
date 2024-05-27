@@ -286,7 +286,7 @@ export const deleteSpotWithHistoryReset = async ({
     }
 };
 
-export const fetchNumberOfMoles = async ({
+export const  fetchNumberOfMoles = async ({
     userId,
     gender
 })=>{
@@ -306,8 +306,6 @@ export const fetchNumberOfMoles = async ({
         let beningDataCount = 0;
         let malignantDataCount = 0;
         let outdatedDataCount = 0;
-        const completedArray = docSnap.data().completedArray;
-        let completedParts = completedArray.length;       
         snapshot.forEach((doc) => {
             const data = doc.data();                        
             if (data.gender === gender) {
@@ -322,15 +320,28 @@ export const fetchNumberOfMoles = async ({
                 outdatedDataCount++;
             }
         });
-        
-        return {
-            all: melanomaDataCount,
-            bening: beningDataCount,
-            malignant: malignantDataCount,
-            outdated: outdatedDataCount,
-            completed:completedParts 
-        };
+        if(docSnap.exists() &&  docSnap.data().completedArray != undefined){
+            const completedArray = docSnap.data().completedArray;
+            let completedParts = completedArray.length;       
+            return {
+                all: melanomaDataCount,
+                bening: beningDataCount,
+                malignant: malignantDataCount,
+                outdated: outdatedDataCount,
+                completed: completedParts,
+            };
+        } else {
+            return {
+                all: melanomaDataCount,
+                bening: beningDataCount,
+                malignant: malignantDataCount,
+                outdated: outdatedDataCount,
+                completed: 0,
+            };
+        }
+
     } catch (error) {
+        console.log(error)
         return false
     }
 }
@@ -435,6 +446,8 @@ export const saveBloodWork = async ({
     userId,
     higherRisk,
     data,
+    Create_Date,
+    id
 }) => {
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -445,8 +458,13 @@ export const saveBloodWork = async ({
     };
     try{
         const ref = doc(db, "users", userId, "Medical_Data", "blood_work");
-        const ref2 = doc(db, "users", userId, "Reminders", "blood_work");
-        await setDoc(ref,data);
+        const ref2 = doc(db, "users", userId, "Reminders", "blood_work");        
+        await setDoc(ref,{
+            data: data,
+            created_at: Create_Date,
+            id: id,
+            risk: higherRisk
+        });        
         const splited = formatDate(data.Created_Date)
         if(higherRisk == true){
             if(Number(splited.month) + 6 <= 12){
@@ -467,14 +485,71 @@ export const saveBloodWork = async ({
     }
 }
 
+export const updateBloodWork = async ({
+    userId,    
+    data,
+    Create_Date,
+    id,
+    higherRisk  
+}) => {
+    const saveCurrentToHistory = async () => {
+        const ref = doc(db, "users", userId, "Medical_Data", "blood_work");
+        const docSnap = await getDoc(ref);   
+        const refSave = doc(db, "users", userId, "Medical_Data", "blood_work", "History", docSnap.data().id);
+        await setDoc(refSave, docSnap.data()); 
+    };
+
+    const saveNew = async () => {
+        const ref = doc(db, "users", userId, "Medical_Data", "blood_work");
+        await setDoc(ref, {
+            data: data,
+            created_at: Create_Date,
+            id: id,
+            risk: higherRisk
+        });
+    };
+
+    try {
+        await saveCurrentToHistory();
+        await saveNew();
+        return true; // Assuming success if no errors occur
+    } catch (error) {
+        console.error("Error updating spot and saving history: ", error);
+        return false; 
+    }
+};
+
 export const fetchBloodWork = async ({
     userId,
 }) => {
     try{
         const ref = doc(db, "users", userId, "Medical_Data", "blood_work");
         const snapshot = await getDoc(ref);
-        console.log(snapshot.data())
-        return snapshot.data()
+        if(snapshot.exists()){
+            return snapshot.data()
+        } else {
+            return "NoBloodWork"
+        }
+    } catch {
+        return false
+    }
+}
+
+export const fetchBloodWorkHistory = async ({
+    userId,
+}) => {
+    try{
+        const ref = collection(db, "users", userId, "Medical_Data", "blood_work","History");
+        const snapshot = await getDocs(ref)
+        if (!snapshot.empty) {
+            let historyData = [];
+            snapshot.forEach((doc) => {
+                historyData.push(doc.data());
+            });
+            return historyData
+        } else {
+            return "NoHistory"
+        }
     } catch {
         return false
     }

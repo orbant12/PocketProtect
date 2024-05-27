@@ -15,6 +15,7 @@ import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Tabs} from 'react-native-collapsible-tab-view'
 import Entypo from 'react-native-vector-icons/Entypo';
+import PagerView from 'react-native-pager-view';
 
 const AddDetection = ({navigation}) => {
 
@@ -160,10 +161,9 @@ function handleNavigation(id){
     }
 }
 
-const handleScrollReminder = (event) => {
-    const offsetX = event.nativeEvent.contentOffset.x;
-    const pageIndex = Math.floor((offsetX + width / 2) / width);
-    setCurrentPage(pageIndex);
+const handleScrollReminder = (e) => {
+    const page = Math.round(e.nativeEvent.position);
+    setCurrentPage(page);
 }
 
 useEffect(()=>{
@@ -381,17 +381,9 @@ if (result.possibleOutcomes != "qid:too_broad"){
                     : (
                         <ScrollView style={{width:"100%",height:"100%"}}>
                         <View style={{width:"100%",alignItems:"center"}}>   
-                            <View style={{width:"100%",borderTopWidth:0}}>                 
-                                <ScrollView
-                                    horizontal
-                                    pagingEnabled
-                                    showsHorizontalScrollIndicator={false}
-                                    onMomentumScrollEnd={handleScrollReminder}               
-                                    contentContainerStyle={{width:"400%",marginTop:20,paddingBottom:55}}
-                                    scrollEventThrottle={16}  
-                                > 
-                                <View style={{width:width,flexDirection:"row",borderWidth:0,height:"80%"}}>
-                                <View style={{height:250,width:"100%",justifyContent:"center",alignItems:"center",borderWidth:0}}>
+                            <View style={{width:"100%",borderTopWidth:1}}>                       
+                            <PagerView style={{marginTop:0,height:430,width:"100%",borderWidth:1}} onPageScroll={(e) => handleScrollReminder(e)} initialPage={0}>                                  
+                                <View key={1} style={{width:"100%",justifyContent:"center",alignItems:"center",borderWidth:1,height:"100%"}}>
                                     <View style={{flexDirection:"row",alignItems:"center",marginBottom:10}}>
                                         <Text style={{borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>1</Text> 
                                         <Text style={{width:"80%",fontSize:15,fontWeight:"800",opacity:"0.7",marginBottom:0,marginLeft:20}}>Type in your concerns and describe how you feel in detail ...</Text>    
@@ -402,19 +394,18 @@ if (result.possibleOutcomes != "qid:too_broad"){
                                     />             
                                 </View>
 
-                                <View style={{height:200,width:"100%",borderWidth:0,justifyContent:"center",alignItems:"center"}}>
+                                <View key={2} style={{width:"100%",justifyContent:"center",alignItems:"center",borderWidth:1,height:"100%"}}>
                                 <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>2</Text>
                                 </View>
 
-                                <View style={{borderWidth:0,height:200,width:"100%",justifyContent:"center",alignItems:"center"}}>
+                                <View key={3} style={{width:"100%",justifyContent:"center",alignItems:"center",borderWidth:1,height:"100%"}}>
                                 <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>3</Text>
                                 </View>
 
-                                <View style={{borderWidth:0,height:200,width:"100%",justifyContent:"center",alignItems:"center"}}>
+                                <View key={4}  style={{width:"100%",justifyContent:"center",alignItems:"center",borderWidth:1,height:"100%"}}>
                                 <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>4</Text>
-                                </View>
-                                </View>
-                            </ScrollView>                                   
+                                </View>                                
+                            </PagerView>                                                              
                             </View>
                             <View style={[styles.IndicatorContainer]}>               
                                     <View style={[styles.Indicator, { opacity: currentPage === 0 ? 1 : 0.3 }]} />                     
@@ -778,9 +769,9 @@ const styles = StyleSheet.create({
         marginBottom: 0,
         backgroundColor:"rgba(0,0,0,1)",
         padding:15,    
-        borderRadius:50,
-        marginBottom:30,
-        marginTop:0
+        borderRadius:50,        
+        marginTop:0,
+        marginBottom:30
     },
     Indicator: {
         width: 6,

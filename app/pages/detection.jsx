@@ -4,7 +4,7 @@
 //<********************************************>
 
 
-import { View, Text, Pressable, ScrollView,StyleSheet,TouchableOpacity,Dimensions,RefreshControl } from 'react-native';
+import { View, Text, Pressable, ScrollView,StyleSheet,TouchableOpacity,Dimensions,RefreshControl,Animated } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ProgressBar from 'react-native-progress/Bar';
 import React, {useEffect, useState, useRef,useCallback} from 'react';
@@ -44,7 +44,8 @@ const [ skinCancerData, setSkinCancerData] = useState({
     malignant:0,
     bening:0,
     outdated:0,
-    all:0
+    all:0,
+    completed:0,
 })
 
 
@@ -70,8 +71,10 @@ const fetchMoles = async (gender) => {
             userId:currentuser.uid,
             gender: gender
         })
-        setSkinCancerData(response)
-        setSkinCancerProgress(response.outdated / 24)
+        if(response != false){
+            setSkinCancerData(response)
+            setSkinCancerProgress(response.outdated / 24)
+        }
     }
 
 }
@@ -81,10 +84,8 @@ const fetchAllUserData = async () => {
         const response = await fetchUserData({
             userId:currentuser.uid,
         })
-        if (response.exists()){
-            setUserData(response)
-            fetchMoles(response.data().gender)
-        }
+        setUserData(response)
+        fetchMoles(response.data().gender)        
     }
 }
 
@@ -126,8 +127,7 @@ const onRefresh = useCallback(() => {
 }, []);
 
 useEffect(() => {      
-    fetchDiagnosis()
-    fetchMoles()
+    fetchDiagnosis()    
     fetchAllUserData()
 
     setTimeout(() => {
@@ -367,7 +367,7 @@ function DetectionMenu(){
                                 <View style={[styles.Indicator, { opacity: currentPage === 1 ? 1 : 0.3 }]} />                                                                              
                             </View>                     
                             <View style={[styles.boxBottom,{marginTop:5}]}>                                
-                                <TouchableOpacity style={{width:"100%",backgroundColor:"black",padding:10,paddingVertical:15,alignItems:"center",justifyContent:"center",borderRadius:50,flexDirection:"row"}}>
+                                <TouchableOpacity onPress={() => navigation.navigate("BloodCenter")} style={{width:"100%",backgroundColor:"black",padding:10,paddingVertical:15,alignItems:"center",justifyContent:"center",borderRadius:50,flexDirection:"row"}}>
                                     <Text style={{fontWeight:"600",color:"white",marginRight:15}}>Open</Text>
                                     <MaterialCommunityIcons 
                                         name='arrow-right'
@@ -449,7 +449,40 @@ function DetectionMenu(){
                     <Text style={{fontWeight:"800",fontSize:24,margin:15,marginTop:40}}>Custom Diagnosis</Text>
                     {diagnosisData.map((data) => (
                         SingleDiagnosisBox({data})
-                    ))}                             
+                    ))}
+                    <View style={styles.selectBox}>
+                        <View style={styles.boxTop}>
+                            <View style={{flexDirection:"row"}}>
+                                <MaterialCommunityIcons 
+                                    name='doctor'
+                                    size={30}
+                                />
+                                <View style={{marginLeft:20}}>
+                                    <Text style={{fontWeight:"800",fontSize:16}}>Start a diagnosis process</Text>
+                                    <Text style={{fontWeight:"400",fontSize:10,maxWidth:"85%",opacity:0.5}}>Detailed Analasis with advice and hands on practices </Text>
+                                </View>
+                            </View>    
+                            <MaterialCommunityIcons 
+                                name='bell'
+                                size={20}
+                            />
+                        </View>
+                        <View style={styles.boxBottom}>
+                            <View style={{padding:1,width:"55%",marginRight:10,opacity:0.6, borderLeftWidth:0.3,paddingLeft:10,borderColor:"magenta"}}>
+                                <Text style={{color:"black",marginBottom:8,fontSize:12,fontWeight:"300"}}>Eliminating deficiencies</Text>
+                                <Text style={{color:"black",marginBottom:8,fontSize:12,fontWeight:"300"}}>Outline </Text>
+                                <Text style={{color:"black",fontSize:12,fontWeight:"300"}}>Outdated Moles: {"0"}</Text>
+                            </View>
+                            <TouchableOpacity onPress={() => navigation.navigate("add-detection")} style={{width:"45%",backgroundColor:"black",padding:10,paddingVertical:18,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
+                                <Text style={{fontWeight:"600",color:"white",marginRight:15,fontSize:15}}>Open</Text>
+                                <MaterialCommunityIcons 
+                                    name='arrow-right'
+                                    size={15}
+                                    color={"magenta"}                                                                        
+                                />
+                            </TouchableOpacity>                            
+                        </View>      
+                    </View>                        
                 </View>
                 {/*SOON NEWS*/}
                 <View ref={soonRef}  style={{width:"100%"}}>

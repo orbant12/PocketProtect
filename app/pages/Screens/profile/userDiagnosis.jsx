@@ -16,10 +16,12 @@ const UserDiagnosis = ({navigation}) => {
         const response = await fetchAllDiagnosis({
             userId: currentuser.uid,
         })
-        if(response != false){
+        if(response != false && response != "NoDiagnosis"){
             setDiagnosisData(response)
         } else if (response == false){
             alert("Something went wrong !")
+        } else if ( response == "NoDiagnosis") {
+            setDiagnosisData([])
         }
     }
 

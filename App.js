@@ -30,6 +30,7 @@ import { View, Text,SafeAreaView, Dimensions,StyleSheet} from "react-native"
 import BloodWorkPage from "./app/pages/PersonalData/bloodWork";
 import SingleFeature from "./app/pages/Screens/DetectionMenu/singleFeature";
 import AllMelanomaAdd from "./app/pages/Screens/Melanoma/allMelanomaAdd";
+import BloodCenter from "./app/pages/Screens/BloodCenter/bloodCenter";
 
 
 //CREATING THE NAVIGATION STACK
@@ -73,6 +74,7 @@ return (
             <Stack.Screen name="SlugAnalasis" component={SlugAnalasis}   options={({ route }) => ({ title: route.params.data.slug.charAt(0).toUpperCase() + route.params.data.slug.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
             <Stack.Screen name="FolderPage" component={FolderPage}   options={({ route }) => ({ title: route.params.data.title, headerStyle: { backgroundColor: "#18191a"},headerTintColor: "white"  })} />
             <Stack.Screen name="FeaturePage" component={SingleFeature}   options={({ route }) => ({ title: route.params.data.title, headerStyle: { backgroundColor: "white"},headerTintColor: "black"  })} />
+            <Stack.Screen name="BloodCenter" component={BloodCenter}   options={({ route }) => ({ title: "", headerStyle: { backgroundColor: "white"},headerTintColor: "black", headerShown:false  })} />
             <Stack.Screen name="FullMelanomaProcess" component={MelanomaFullProcess}   options={({ route }) => ({ title: "Melanoma Setup",headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerTitleStyle:{fontWeight:"700",fontSize:18}})} />          
             <Stack.Screen name="MelanomaProcessSingleSlug" component={MelanomaSingleSlug}   options={({ route }) => ({ title: route.params.data.slug.charAt(0).toUpperCase() + route.params.data.slug.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
             <Stack.Screen name="Add_BloodWork" component={BloodWorkPage}   options={({ route }) => ({ title: "Body Select",headerStyle: { backgroundColor: "white"},headerTintColor: "black" , 
