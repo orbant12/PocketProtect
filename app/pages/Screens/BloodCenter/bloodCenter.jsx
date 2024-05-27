@@ -15,12 +15,14 @@ const BloodCenter = ({navigation}) => {
     //<==================<[ Variables ]>====================>
 
     const sheetRef = useRef(null)
+    const scrollRef = useRef(null)
 
     const snapPoints = ["100%"]
 
     const { currentuser } = useAuth()
 
     const [refreshing, setRefreshing] = useState(false);
+    const [ currentPageFeature, setCurrentPageFeature] = useState(0)
 
     //SHEET SHOW
     const [bloodSelected, setBloodSelected] = useState(
@@ -43,6 +45,7 @@ const BloodCenter = ({navigation}) => {
     const handleOpenSheet = (action) => {
         if(action == "open"){
             sheetRef.current.present()
+            console.log("hey")
         } else if ( action == "close"){
             sheetRef.current.close()
             setBloodSelected({data:[],created_at:""})
@@ -56,6 +59,7 @@ const BloodCenter = ({navigation}) => {
 
         if (response != false && response != "NoBloodWork"){
             setLatestBloodWork(response)
+            setBloodSelected(response)
         } else if ( response == false) {
             alert("Something went wrong ....")
         } else if (response == "NoBloodWork"){
@@ -95,6 +99,13 @@ const BloodCenter = ({navigation}) => {
             return format;
         }    
     }
+
+    const handleScroll = (e) => {
+        const offsetX = e.nativeEvent.contentOffset.x;
+        const pageWidth = width; // Assuming each page has the same width as the screen
+        const currentPage = Math.floor((offsetX + pageWidth / 2) / pageWidth);
+        setCurrentPageFeature(currentPage);
+    };
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);  
@@ -175,7 +186,7 @@ const BloodCenter = ({navigation}) => {
     }
     
     return(
-        <GestureHandlerRootView>
+        <GestureHandlerRootView style={{flex:1}}>
         <BottomSheetModalProvider>
         <ScrollView 
         refreshControl={
@@ -186,21 +197,29 @@ const BloodCenter = ({navigation}) => {
                 tintColor={'magenta'}
             />
         }
-        style={{width:"100%",height:"100%",backgroundColor:"white"}}>
+        ref={scrollRef}
+        style={{width:"100%",height:"100%",backgroundColor:"white",flex:1}}>
         <View style={styles.container}>            
             <View style={styles.ProgressBar}>
                 <TouchableOpacity onPress={handleBack} style={{backgroundColor:"white",borderRadius:30}}>
                     <MaterialCommunityIcons 
                         name="arrow-left"
-                        size={20}
+                        size={25}
                         style={{padding:5}}
                     />
                 </TouchableOpacity>
-                <Text style={{fontWeight:"700"}}>Latest: <Text style={{fontWeight:"400",opacity:0.8}}>{dateFormat(latestBloodWork.created_at)}</Text></Text>
-                <TouchableOpacity onPress={() => setIsSaveModalActive(!isSaveModalActive)} style={{backgroundColor:"white",borderRadius:30}}>
+                <Text style={{fontWeight:"700"}}>Latest: <Text style={{fontWeight:"400",opacity:0.8}}>{dateFormat(bloodSelected.created_at)}</Text></Text>
+                <TouchableOpacity onPress={() => {handleOpenSheet("open");setBloodSelected(latestBloodWork)}} style={{backgroundColor:"white",borderRadius:30}}>
                     <MaterialCommunityIcons 
-                        name="close"
-                        size={20}
+                        name="water"
+                        size={30}
+                        style={{padding:5}}
+                    />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => {scrollRef.current.scrollTo({x:0, y:600, animated:true})}} style={{backgroundColor:"white",borderRadius:30,position:"absolute",right:10,bottom:-50}}>
+                    <MaterialCommunityIcons 
+                        name="folder"
+                        size={30}
                         style={{padding:5}}
                     />
                 </TouchableOpacity>
@@ -225,27 +244,113 @@ const BloodCenter = ({navigation}) => {
                     </View>
                 </View>    
             </LinearGradient>            
-            <View style={{width:"100%",paddingTop:100,backgroundColor:"white"}}>
-                <View style={{width:"100%",flexDirection:"row",justifyContent:"space-evenly",position:"absolute",top:-80}}>
-                    <View style={styles.dataBox}>
+            <View style={{width:"100%",paddingTop:100,backgroundColor:"white"}}> 
 
-                    </View>
+                <ScrollView style={{marginTop:10,height:220,top:-80,position:"absolute",zIndex:-10,width:"100%"}} onScroll={(e) =>  handleScroll(e)} horizontal showsHorizontalScrollIndicator={false}>    
+                    <View key={1} style={{width:width,flexDirection:"row",justifyContent:"space-evenly"}}>
+                        <View style={styles.dataBox}>
+                            <Text style={{fontWeight:"400",opacity:0.4,marginBottom:5,fontSize:10}}>See your data stored</Text>
+                            <Text style={{fontWeight:"700",opacity:0.7,marginBottom:10}}>Open Blood Work</Text>       
+                            <View style={{width:"80%",alignItems:"center",flexDirection:"row",justifyContent:"space-between",marginBottom:10}}>
+                                <MaterialCommunityIcons 
+                                    name="pencil"
+                                    size={20}
+                                    opacity={"0.3"}
+                                />
+                                <MaterialCommunityIcons 
+                                    name="delete"
+                                    size={20}
+                                    opacity={"0.3"}
+                                />  
+                                <MaterialCommunityIcons 
+                                    name="eye"
+                                    size={20}
+                                    opacity={"0.3"}
+                                />  
+                            </View>                     
+                            <TouchableOpacity onPress={() => {handleOpenSheet("open");setBloodSelected(latestBloodWork)}} style={{borderWidth:0.3,width:"100%",backgroundColor:"white",padding:10,paddingVertical:10,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
+                                <Text style={{fontWeight:"600",color:"black",marginRight:15,fontSize:13}}>Open</Text>
+                                <MaterialCommunityIcons 
+                                    name='arrow-right'
+                                    size={15}
+                                    color={"magenta"}                                                                        
+                                />
+                            </TouchableOpacity>     
+                        </View>
 
-                    <View style={styles.dataBox}>
-
-                    </View>
-                </View>
+                        <View style={styles.dataBox}>
+                            <Text style={{fontWeight:"400",opacity:0.4,marginBottom:5,fontSize:10}}>Based on your results</Text>
+                            <Text style={{fontWeight:"700",opacity:0.7,marginBottom:10}}>How to improove ?</Text>       
+                            <View style={{width:"50%",alignItems:"center",flexDirection:"row",justifyContent:"space-between",marginBottom:10}}>
+                                <MaterialCommunityIcons 
+                                    name="folder-eye-outline"
+                                    size={20}
+                                    opacity={"0.3"}
+                                />
+                                <MaterialCommunityIcons 
+                                    name="google-analytics"
+                                    size={20}
+                                    opacity={"0.3"}
+                                />                       
+                            </View>                     
+                            <TouchableOpacity onPress={() => {handleOpenSheet("open");setBloodSelected(latestBloodWork)}} style={{borderWidth:0.3,width:"100%",backgroundColor:"white",padding:10,paddingVertical:10,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
+                                <Text style={{fontWeight:"600",color:"black",marginRight:15,fontSize:13}}>Open</Text>
+                                <MaterialCommunityIcons 
+                                    name='arrow-right'
+                                    size={15}
+                                    color={"magenta"}                                                                        
+                                />
+                            </TouchableOpacity>     
+                        </View>
+                    </View>  
+                    <View key={2} style={{width:width,flexDirection:"row",justifyContent:"space-evenly"}}>
+                    <View style={styles.dataBox2}>
+                            <Text style={{fontWeight:"400",opacity:0.4,marginBottom:5,fontSize:11}}>See, edit or delete your stored data</Text>
+                            <Text style={{fontWeight:"700",opacity:0.7,marginBottom:10,fontSize:16}}>Open Blood Work</Text>       
+                            <View style={{width:"70%",alignItems:"center",flexDirection:"row",justifyContent:"space-between",marginBottom:10}}>
+                                <MaterialCommunityIcons 
+                                    name="pencil"
+                                    size={20}
+                                    opacity={"0.3"}
+                                />
+                                <MaterialCommunityIcons 
+                                    name="delete"
+                                    size={20}
+                                    opacity={"0.3"}
+                                />  
+                                <MaterialCommunityIcons 
+                                    name="eye"
+                                    size={20}
+                                    opacity={"0.3"}
+                                />  
+                            </View>                     
+                            <TouchableOpacity onPress={() => {handleOpenSheet("open");setBloodSelected(latestBloodWork)}} style={{borderWidth:0.3,width:"100%",backgroundColor:"white",padding:10,paddingVertical:10,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
+                                <Text style={{fontWeight:"600",color:"black",marginRight:15,fontSize:13}}>Open</Text>
+                                <MaterialCommunityIcons 
+                                    name='arrow-right'
+                                    size={15}
+                                    color={"magenta"}                                                                        
+                                />
+                            </TouchableOpacity>     
+                        </View>            
+                    </View>   
+                </ScrollView>                                                  
+                <View style={styles.IndicatorContainer}>               
+                    <View style={[styles.Indicator, { opacity: currentPageFeature === 0 ? 1 : 0.3 }]} />                     
+                    <View style={[styles.Indicator, { opacity: currentPageFeature === 1 ? 1 : 0.3 }]} />                                           
+                </View>      
                 <View style={{margin:20}}>
                     <Text style={{fontSize:12,fontWeight:"400",opacity:0.4}}>Latest to oldest !</Text>
                     <Text style={{fontSize:20,fontWeight:"700",opacity:0.8}}>All Blood Works</Text>
                 </View>
                 {latestBloodWork.created_at != "Not provided yet" ?
-                    <View style={[styles.selectBox,{marginTop:30}]}>
-                    <Text style={{position:"absolute",top:-15,opacity:0.5,fontWeight:"700",left:15,fontSize:12}}>Latest</Text>
+                    <View style={[styles.selectBox,{marginTop:20},latestBloodWork == bloodSelected &&{borderColor:"magenta",borderWidth:2} ]}>
+                    <Text style={{position:"absolute",top:-20,opacity:0.3,fontWeight:"700",right:15,fontSize:12}}>Latest</Text>
+                    {latestBloodWork == bloodSelected && <Text style={{position:"absolute",top:-20,opacity:0.5,fontWeight:"700",left:15,fontSize:12,color:"magenta"}}>Selected</Text>}
                         <View style={styles.boxTop}>
                             <View style={{flexDirection:"row"}}>
                                 <MaterialCommunityIcons 
-                                    name='doctor'
+                                    name='water'
                                     size={30}
                                 />
                                 <View style={{marginLeft:20}}>
@@ -263,6 +368,7 @@ const BloodCenter = ({navigation}) => {
                                 <Text style={{color:"black",marginBottom:8,fontSize:12,fontWeight:"300"}}>Outline </Text>
                                 <Text style={{color:"black",fontSize:12,fontWeight:"300"}}>Outdated Moles: {"0"}</Text>
                             </View>
+                            {latestBloodWork == bloodSelected ?
                             <TouchableOpacity onPress={() => {handleOpenSheet("open");setBloodSelected(latestBloodWork)}} style={{width:"45%",backgroundColor:"black",padding:10,paddingVertical:18,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
                                 <Text style={{fontWeight:"600",color:"white",marginRight:15,fontSize:15}}>Open</Text>
                                 <MaterialCommunityIcons 
@@ -270,7 +376,17 @@ const BloodCenter = ({navigation}) => {
                                     size={15}
                                     color={"magenta"}                                                                        
                                 />
-                            </TouchableOpacity>                            
+                            </TouchableOpacity>
+                            :
+                            <TouchableOpacity onPress={() => {setBloodSelected(latestBloodWork);scrollRef.current.scrollTo({x:0,y:0,animated:true})}} style={{width:"45%",backgroundColor:"black",padding:10,paddingVertical:18,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
+                            <Text style={{fontWeight:"600",color:"white",marginRight:15,fontSize:15}}>Select</Text>
+                            <MaterialCommunityIcons 
+                                name='arrow-right'
+                                size={15}
+                                color={"magenta"}                                                                        
+                            />
+                        </TouchableOpacity>
+                            }                          
                         </View>      
                     </View> 
                     :
@@ -279,38 +395,50 @@ const BloodCenter = ({navigation}) => {
                     </View> 
                 }                                                 
                 {bloodWorkHistoryData.map((data)=>(
-                        <View style={styles.selectBox}>   
-                    <View style={styles.boxTop}>
-                        <View style={{flexDirection:"row"}}>
+                    <View style={[styles.selectBox,data == bloodSelected &&{borderColor:"magenta",borderWidth:2} ]}>   
+                            {data == bloodSelected && <Text style={{position:"absolute",top:-20,opacity:0.5,fontWeight:"700",left:15,fontSize:12,color:"magenta"}}>Selected</Text>}
+                        <View style={styles.boxTop}>
+                            <View style={{flexDirection:"row"}}>
+                                <MaterialCommunityIcons 
+                                    name='doctor'
+                                    size={30}
+                                />
+                                <View style={{marginLeft:20}}>
+                                    <Text style={{fontWeight:"800",fontSize:16}}>{dateFormat(data.created_at)}</Text>
+                                    <Text style={{fontWeight:"400",fontSize:10,maxWidth:"85%",opacity:0.5}}>Detailed Analasis with advice and hands on practices </Text>
+                                </View>
+                            </View>    
                             <MaterialCommunityIcons 
-                                name='doctor'
-                                size={30}
+                                name='bell'
+                                size={20}
                             />
-                            <View style={{marginLeft:20}}>
-                                <Text style={{fontWeight:"800",fontSize:16}}>2001.11.17</Text>
-                                <Text style={{fontWeight:"400",fontSize:10,maxWidth:"85%",opacity:0.5}}>Detailed Analasis with advice and hands on practices </Text>
-                            </View>
-                        </View>    
-                        <MaterialCommunityIcons 
-                            name='bell'
-                            size={20}
-                        />
-                    </View>
-                    <View style={styles.boxBottom}>
-                        <View style={{padding:1,width:"55%",marginRight:10,opacity:0.6, borderLeftWidth:0.3,paddingLeft:10,borderColor:"magenta"}}>
-                            <Text style={{color:"black",marginBottom:8,fontSize:12,fontWeight:"300"}}>Eliminating deficiencies</Text>
-                            <Text style={{color:"black",marginBottom:8,fontSize:12,fontWeight:"300"}}>Outline </Text>
-                            <Text style={{color:"black",fontSize:12,fontWeight:"300"}}>Outdated Moles: {"0"}</Text>
                         </View>
-                        <TouchableOpacity onPress={() => {handleOpenSheet("open");setBloodSelected(data)}} style={{width:"45%",backgroundColor:"black",padding:10,paddingVertical:18,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
-                            <Text style={{fontWeight:"600",color:"white",marginRight:15,fontSize:15}}>Open</Text>
-                            <MaterialCommunityIcons 
-                                name='arrow-right'
-                                size={15}
-                                color={"magenta"}                                                                        
-                            />
-                        </TouchableOpacity>                            
-                    </View>  
+                        <View style={styles.boxBottom}>
+                            <View style={{padding:1,width:"55%",marginRight:10,opacity:0.6, borderLeftWidth:0.3,paddingLeft:10,borderColor:"magenta"}}>
+                                <Text style={{color:"black",marginBottom:8,fontSize:12,fontWeight:"300"}}>Eliminating deficiencies</Text>
+                                <Text style={{color:"black",marginBottom:8,fontSize:12,fontWeight:"300"}}>Outline </Text>
+                                <Text style={{color:"black",fontSize:12,fontWeight:"300"}}>Outdated Moles: {"0"}</Text>
+                            </View>
+                            {data == bloodSelected ?
+                                <TouchableOpacity onPress={() => {handleOpenSheet("open");setBloodSelected(data)}} style={{width:"45%",backgroundColor:"black",padding:10,paddingVertical:18,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
+                                    <Text style={{fontWeight:"600",color:"white",marginRight:15,fontSize:15}}>Open</Text>
+                                    <MaterialCommunityIcons 
+                                        name='arrow-right'
+                                        size={15}
+                                        color={"magenta"}                                                                        
+                                    />
+                                </TouchableOpacity>
+                                :
+                                <TouchableOpacity onPress={() => {setBloodSelected(data);scrollRef.current.scrollTo({x:0,y:0,animated:true})}} style={{width:"45%",backgroundColor:"black",padding:10,paddingVertical:18,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
+                                <Text style={{fontWeight:"600",color:"white",marginRight:15,fontSize:15}}>Select</Text>
+                                <MaterialCommunityIcons 
+                                    name='arrow-right'
+                                    size={15}
+                                    color={"magenta"}                                                                        
+                                />
+                            </TouchableOpacity>
+                            }                         
+                        </View>  
                     </View>
                 ))}                               
             </View>
@@ -322,13 +450,12 @@ const BloodCenter = ({navigation}) => {
         </View>
         </ScrollView>
 
-        <BottomSheetModal
+                <BottomSheetModal
                         ref={sheetRef}
                         snapPoints={snapPoints}
                         enablePanDownToClose={true}                        
                         handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:30,color:"white"}}
-                        handleIndicatorStyle={{backgroundColor:"white"}}      
-                        onDismiss={() => setBloodSelected({data:[],created_at:""})}                  
+                        handleIndicatorStyle={{backgroundColor:"white"}}                                              
                         handleComponent={() => 
                         <View style={{width:"100%",height:100,backgroundColor:"black",justifyContent:"center",alignItems:"center",borderRadius:0}}>
                             <View style={{borderWidth:1,borderColor:"white",width:30,marginTop:50}} />   
@@ -393,7 +520,22 @@ const styles = StyleSheet.create({
         borderWidth:0.3,
         borderRadius:20,
         backgroundColor:"white",
-        paddingBottom:100
+        padding:10,    
+        flexDirection:"column",
+        justifyContent:"center",
+        alignItems:"center"
+    },
+    dataBox2:{
+        width:300,
+        height:150,
+        borderWidth:0.3,
+        borderRadius:20,
+        padding:10,
+        backgroundColor:"white",        
+        flexDirection:"column",
+        alignItems:"center",
+        justifyContent:"center",
+        opacity:0.98
     },
     selectBox:{
         width:"90%",
@@ -403,7 +545,7 @@ const styles = StyleSheet.create({
         marginLeft:"auto",
         padding:20,
         borderRadius:20,
-        marginBottom:20,
+        marginBottom:30,
         marginTop:20,
     },
     boxTop:{
@@ -423,12 +565,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',        
-        backgroundColor:"rgba(0,0,0,1)",
+        backgroundColor:"rgba(0,0,0,0.1)",
         padding:15,    
         borderRadius:50,       
         zIndex:30,
-        marginBottom:0,
-        marginTop:20,
+        marginBottom:10,
+        marginTop:10,
         width:"80%",
         marginRight:"auto",
         marginLeft:"auto",        
@@ -436,7 +578,7 @@ const styles = StyleSheet.create({
     Indicator: {
         width: 6,
         height: 6,
-        backgroundColor: 'white',
+        backgroundColor: 'black',
         borderRadius: 3,
         marginHorizontal: 5,
     },

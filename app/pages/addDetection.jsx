@@ -382,8 +382,8 @@ if (result.possibleOutcomes != "qid:too_broad"){
                         <ScrollView style={{width:"100%",height:"100%"}}>
                         <View style={{width:"100%",alignItems:"center"}}>   
                             <View style={{width:"100%",borderTopWidth:1}}>                       
-                            <PagerView style={{marginTop:0,height:430,width:"100%",borderWidth:1}} onPageScroll={(e) => handleScrollReminder(e)} initialPage={0}>                                  
-                                <View key={1} style={{width:"100%",justifyContent:"center",alignItems:"center",borderWidth:1,height:"100%"}}>
+                            <PagerView style={{marginTop:0,height:290,width:"100%",borderWidth:0}} onPageScroll={(e) => handleScrollReminder(e)} initialPage={0}>                                  
+                                <View key={1} style={{width:"100%",justifyContent:"center",alignItems:"center",borderWidth:0,height:"100%"}}>
                                     <View style={{flexDirection:"row",alignItems:"center",marginBottom:10}}>
                                         <Text style={{borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>1</Text> 
                                         <Text style={{width:"80%",fontSize:15,fontWeight:"800",opacity:"0.7",marginBottom:0,marginLeft:20}}>Type in your concerns and describe how you feel in detail ...</Text>    
@@ -394,15 +394,15 @@ if (result.possibleOutcomes != "qid:too_broad"){
                                     />             
                                 </View>
 
-                                <View key={2} style={{width:"100%",justifyContent:"center",alignItems:"center",borderWidth:1,height:"100%"}}>
+                                <View key={2} style={{width:"100%",justifyContent:"center",alignItems:"center",borderWidth:0,height:"100%"}}>
                                 <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>2</Text>
                                 </View>
 
-                                <View key={3} style={{width:"100%",justifyContent:"center",alignItems:"center",borderWidth:1,height:"100%"}}>
+                                <View key={3} style={{width:"100%",justifyContent:"center",alignItems:"center",borderWidth:0,height:"100%"}}>
                                 <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>3</Text>
                                 </View>
 
-                                <View key={4}  style={{width:"100%",justifyContent:"center",alignItems:"center",borderWidth:1,height:"100%"}}>
+                                <View key={4}  style={{width:"100%",justifyContent:"center",alignItems:"center",borderWidth:0,height:"100%"}}>
                                 <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>4</Text>
                                 </View>                                
                             </PagerView>                                                              

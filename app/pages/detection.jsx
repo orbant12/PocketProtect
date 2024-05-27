@@ -10,6 +10,8 @@ import ProgressBar from 'react-native-progress/Bar';
 import React, {useEffect, useState, useRef,useCallback} from 'react';
 import { useAuth } from '../context/UserAuthContext';
 import { fetchAllDiagnosis, fetchUserData,fetchNumberOfMoles } from '../server';
+import PagerView from 'react-native-pager-view';
+
 
 const DetectionLibary = ({navigation}) => {
 
@@ -110,7 +112,7 @@ const handleScroll = (event) => {
 };
 
 const handleScrollReminder = (event) => {
-    const offsetX = event.nativeEvent.contentOffset.x;
+    const offsetX = event.nativeEvent.contentOffset;
     const pageIndex = Math.floor((offsetX + width / 2) / width);
     setCurrentPage(pageIndex);
 }
@@ -171,7 +173,7 @@ function SingleSkinCancerBox(isLatest){
 
 function SingleBloodBox(isLatest){
     return(
-        <View style={{flexDirection:"column",alignItems:"center",justifyContent:"center",width:300}}>
+        <View style={{flexDirection:"column",alignItems:"center",width:300,height:315,justifyContent:"space-between"}}>
         <View style={{marginTop:20,width:"90%",borderLeftWidth:0.3,borderColor:"magenta",paddingLeft:10,opacity:0.6}}>
         { isLatest ? <Text style={{fontSize:12,fontWeight:"700",marginTop:5,opacity:0.5,color:"magenta"}}>Most up to date</Text>:<Text style={{fontSize:12,fontWeight:"700",marginTop:5,opacity:0.5,color:"red"}}>Outdated, but valuable for AI to make comparisons between blood works</Text>      }                                       
             <Text style={{fontSize:12,fontWeight:"700",marginTop:5}}>Date: <Text style={{fontWeight:"300"}}>3 days - 2003.11.17</Text></Text>                                 
@@ -351,17 +353,10 @@ function DetectionMenu(){
                                     opacity={0.4}
                                 />
                             </View>                          
-                            <ScrollView
-                                horizontal
-                                pagingEnabled
-                                showsHorizontalScrollIndicator={false}
-                                onMomentumScrollEnd={handleScrollReminder}               
-                                contentContainerStyle={{width:"400%",marginTop:0}}
-                                scrollEventThrottle={16}  
-                            > 
+                            <PagerView style={{marginTop:0,height:315,width:"100%", alignItems:"center",justifyContent:"center" }} onPageScroll={(e) => handleScrollReminder(e)} initialPage={0}>
                             {SingleBloodBox(isLatest=true) }
                             {SingleBloodBox(isLatest=false) }  
-                            </ScrollView>
+                            </PagerView>
                             <View style={styles.IndicatorContainer}>               
                                 <View style={[styles.Indicator, { opacity: currentPage === 0 ? 1 : 0.3 }]} />   
                                 <View style={[styles.Indicator, { opacity: currentPage === 1 ? 1 : 0.3 }]} />                                                                              

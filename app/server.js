@@ -286,7 +286,7 @@ export const deleteSpotWithHistoryReset = async ({
     }
 };
 
-export const  fetchNumberOfMoles = async ({
+export const fetchNumberOfMoles = async ({
     userId,
     gender
 })=>{
@@ -545,6 +545,9 @@ export const fetchBloodWorkHistory = async ({
             let historyData = [];
             snapshot.forEach((doc) => {
                 historyData.push(doc.data());
+            });
+            historyData.sort((a, b) => {
+                return new Date(b.created_at) - new Date (a.created_at);
             });
             return historyData
         } else {
