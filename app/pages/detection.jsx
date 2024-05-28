@@ -208,26 +208,32 @@ function SingleDiagnosisBox({data}){
                     <Text style={{fontWeight:"800",fontSize:16}}>{data.title}</Text>
                     <Text style={{fontWeight:"400",fontSize:14,marginTop:3}}>Diagnosis: <Text style={{fontWeight:"600",opacity:0.5}}>{data.diagnosis}</Text></Text>
                 </View>
-            </View>    
-            <MaterialCommunityIcons 
-                name='delete'
-                size={20}
-                color={"red"}
-                opacity={0.4}
-            />
+            </View>        
         </View>
         <View style={{marginTop:20,width:"90%",borderLeftWidth:0.3,borderColor:"magenta",paddingLeft:10,opacity:0.6}}>                                                  
             <Text style={{fontSize:12,fontWeight:"700",marginTop:5}}>Reported symphtoms: <Text style={{fontWeight:"300"}}>{data.clientSymphtoms}</Text></Text>
             <Text style={{fontSize:12,fontWeight:"700",marginTop:5}}>Report Date: <Text style={{fontWeight:"300"}}>3 days ago • {data.created_at}</Text></Text>
             <Text style={{fontSize:14,fontWeight:"700",marginTop:10}}>Stages</Text>
-            <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>1. Diagnosis: DONE  <Text style={{color:"lightgreen"}}>(✓)</Text> </Text>
-            <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>2. Sevirity Evalutaion: DONE</Text>
-            <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>3. Iterative Elimination: DONE</Text>
-            <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>4. Appointment: NOT STARTED</Text>
+            <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>1. Hypothesis: {data.stages.stage_one == null ? <Text style={{color:"red",fontSize:10}}>NOT STARTED</Text> : <Text style={{color:"green",fontSize:10}}>DONE (✓)</Text>} </Text>
+            <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>2. Chance Evaluating: {data.stages.stage_two == null ? <Text style={{color:"red",fontSize:10}}>NOT STARTED</Text> : <Text style={{color:"green",fontSize:10}}>DONE (✓)</Text>} </Text>
+            <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>3. Sustained Sympthoms Test: {data.stages.stage_three == null ? <Text style={{color:"red",fontSize:10}}>NOT STARTED</Text> : <Text style={{color:"green",fontSize:10}}>DONE (✓)</Text>} </Text>
+            <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>4. Solution: {data.stages.stage_four == null ? <Text style={{color:"red",fontSize:10}}>NOT STARTED</Text> : <Text style={{color:"green",fontSize:10}}>DONE (✓)</Text>} </Text>
         </View>
         <View style={{marginTop:30}}>
-        <Text style={{fontSize:12,fontWeight:"400",marginBottom:7,opacity:1}}>Diagnosis Stage:  <Text style={{fontWeight:"600",marginBottom:7,opacity:0.4}}>1/4 • Curation</Text></Text>
-            <ProgressBar progress={0.2} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
+        <Text style={{fontSize:12,fontWeight:"500",marginBottom:7,opacity:0.6}}>Diagnosis Stage:  <Text style={{fontWeight:"600",marginBottom:7,opacity:0.4}}>
+            {data.stages.stage_one == null && data.diagnosis == "Not yet" ? 
+            "1/4 • Hyphotesis"
+            :
+            data.stages.stage_two == null && data.stages.stage_one != null && data.diagnosis != "Not yet" ?
+            "2/4 • Chance Evaluating"
+            :
+            data.stages.stage_three == null && data.stages.stage_one != null && data.diagnosis != "Not yet" &&  data.stages.stage_two != null  ?
+            "3/4 • Sustained Symothoms Test"
+            :            
+            "4/4 • Solution"
+            }</Text>
+        </Text>
+            <ProgressBar progress={(data.diagnosis == "Not yet" ? 0 : data.diagnosis != "Not yet" ? 1 : data.stages.stage_two != null ? 2 :data.stages.stage_three != null && 3 )/ 4} width={250} height={4} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
         </View>                     
         <View style={[styles.boxBottom,{marginTop:5}]}>                                
             <TouchableOpacity style={{width:"100%",backgroundColor:"black",padding:10,paddingVertical:12,alignItems:"center",justifyContent:"center",borderRadius:20,flexDirection:"row"}}>
@@ -235,7 +241,7 @@ function SingleDiagnosisBox({data}){
                 <MaterialCommunityIcons 
                     name='arrow-right'
                     size={15}
-                    color={"magenta"}                                                                        
+                    color={"magenta"}                                                                      
                 />
             </TouchableOpacity>                            
         </View>      

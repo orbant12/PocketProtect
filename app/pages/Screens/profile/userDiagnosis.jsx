@@ -30,7 +30,7 @@ const UserDiagnosis = ({navigation}) => {
     }, [])
 
     const handleOpenFromProgress = (data) => {
-            navigation.navigate("SurveyScreen", {data: data.surveyProgress , clientSymphtoms:data.clientSymphtoms, outcomes:data.possibleOutcomes, isDone: data.diagnosis})
+            navigation.navigate("SurveyScreen", {data: data.stages.stage_two == null ? data.stages.stage_one : data.stages.stage_two , clientSymphtoms:data.clientSymphtoms, outcomes:data.possibleOutcomes, isDone: data.diagnosis})
     }
 
     return (

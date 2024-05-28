@@ -38,7 +38,7 @@ const SurveyScreeen = ({route,navigation}) => {
 
     const sessionId = generateHexUID(8)
     const [ session , setSession ] = useState({
-        stage:0,
+        stage:1,
         title:`session#${sessionId}`,
         id:`session#${sessionId}`
     })
@@ -58,7 +58,8 @@ const SurveyScreeen = ({route,navigation}) => {
 
     //<=======> Feature Engineering <=======>
 
-    //<=======> Stage 1 <=======>
+    //<-----> Stage 1 <---------->
+
     const ProcessSingleDiagnosis = async () => {
         const type = "diagnosis"
         const sympthomsPrompt = `Possible causes: ${possibleOutcomes}`;
@@ -160,7 +161,38 @@ const SurveyScreeen = ({route,navigation}) => {
         setIsDiagnosDone(true)
     }
 
-     //<=======> Stage 2 <=======>
+     //<------> Stage 2 <------->
+    const handleAccurateDiagnosis = async(clientSymphtoms,possibleOutcomes) => {
+        setSession({
+            ...session,
+            stage:1
+        })
+        setIsDiagnosDone(false)
+        const currentDate = new Date();
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        const formattedDate = `${year}.${month}.${day}`;
+        const data = {
+            id: session.id,
+            title: session.title,
+            diagnosis: fullDiagnosis.diagnosis,
+            clientSymphtoms: clientSymphtoms,
+            possibleOutcomes: possibleOutcomes,
+            stages:{
+                stage_one:dataFixed,
+                stage_two:null,
+                stage_three:null,
+                stage_four:null, 
+            },
+            created_at: formattedDate,
+        }
+        await saveDiagnosisProgress({
+            userId:currentuser.uid,
+            data
+        })
+        handleStartSurvey()
+    }
     
     const ProcessCreateSurvey= async (causes) => {    
     const binaryFeedback = dataFixed.map(item => {
@@ -212,17 +244,8 @@ const SurveyScreeen = ({route,navigation}) => {
     };
     
 
-    const handleAccurateDiagnosis = () => {
-        setSession({
-            ...session,
-            stage:1
-        })
-        setIsDiagnosDone(false)
-        handleStartSurvey()
-    }
-
     const handleCloseDiagnosis = () => {
-
+        setSaveCardModalActive(!saveCardModalActive)
     }
 
 
@@ -269,7 +292,7 @@ const SurveyScreeen = ({route,navigation}) => {
                 </ScrollView>
                 </View>    
 
-                <TouchableOpacity onPress={handleAccurateDiagnosis} style={{width:"80%",height:50,borderWidth:1,padding:10,marginLeft:"auto",marginRight:"auto",alignItems:"center",justifyContent:"center",borderRadius:10,backgroundColor:"black",marginTop:40}}>
+                <TouchableOpacity onPress={() => handleAccurateDiagnosis(clientSymphtoms,possibleOutcomes)} style={{width:"80%",height:50,borderWidth:1,padding:10,marginLeft:"auto",marginRight:"auto",alignItems:"center",justifyContent:"center",borderRadius:10,backgroundColor:"black",marginTop:40}}>
                 <Text style={{fontSize:15,fontWeight:"600",color:"white"}}>Next [ Stage 2 - Chance ]</Text>
                 </TouchableOpacity>
 
@@ -391,7 +414,12 @@ const SurveyScreeen = ({route,navigation}) => {
             diagnosis: fullDiagnosis.diagnosis,
             clientSymphtoms: clientSymphtoms,
             possibleOutcomes: possibleOutcomes,
-            surveyProgress: dataFixed,
+            stages:{
+                stage_one:dataFixed,
+                stage_two:null,
+                stage_three:null,
+                stage_four:null, 
+            },
             created_at: formattedDate,
         }
         const result = await saveDiagnosisProgress({userId:currentuser.uid,data})
@@ -504,11 +532,11 @@ const SurveyScreeen = ({route,navigation}) => {
                 <View style={{width:"100%",height:"14%",justifyContent:"center",backgroundColor:"black",padding:20,alignItems:"center"}}>
                         <View style={{justifyContent:"center",borderWidth:0,borderColor:"white"}}>
                             <Text style={{fontWeight:"600",color:"white",fontSize:15,opacity:0.6,marginBottom:5,paddingTop:30}}>
-                                {session.stage == 0 ? "Stage 1" : "Stage 2"}
+                                {session.stage == 1 ? "Stage 1" : "Stage 2"}
                             </Text>
 
                             <Text style={{fontWeight:"700",color:"white",fontSize:20}}>
-                            {session.stage == 0 ? "Most likely hypothesis" : "Chance evaluation"}
+                            {session.stage == 1 ? "Most likely hypothesis" : "Chance evaluation"}
                             </Text>
                         </View>                                            
                     </View>
