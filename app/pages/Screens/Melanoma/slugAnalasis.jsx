@@ -7,6 +7,8 @@ import {fetchSlugMelanomaData } from "../../../server";
 
 import { dotsSelectOnPart } from "./components/selectedSlugDots";
 
+import { Navigation_SingleSpotAnalysis, Navigation_AddSlugSpot } from "../../../navigation/navigation"
+
 const SlugAnalasis = ({ route,navigation }) => {
 
 //<***************************  Variables ******************************************>
@@ -39,10 +41,6 @@ const SlugAnalasis = ({ route,navigation }) => {
         fetchAllMelanomaData();       
     },[])
 
-    const handleSpotOpen = (data) => {
-        navigation.navigate("SinglePartAnalasis",{ "data": data,"gender":gender,skin_type:skin_type, userData });
-    }
-
     const showSpot = (melanomaId) => {
         if(melanomaId == highlighted){
             setHighlighted("")
@@ -52,8 +50,24 @@ const SlugAnalasis = ({ route,navigation }) => {
 
     }
 
+    const handleSpotOpen = (bodyPart) => {
+        Navigation_SingleSpotAnalysis({
+            bodyPart: bodyPart,
+            userData:userData,
+            gender:gender,
+            skin_type:skin_type,
+            navigation
+        })
+    }
     const handleAddMelanoma = () => {
-        navigation.navigate("MelanomaAdd", { data: userData, skin_type: skin_type, bodyPart:bodyPart,type:"new"});
+        Navigation_AddSlugSpot({
+            userData:userData,
+            bodyPart:bodyPart,
+            skin_type:skin_type,
+            type: "new",
+            navigation
+        })
+        console.log("222")
     }
 
 

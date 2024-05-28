@@ -13,14 +13,15 @@ import {app} from "../../../firebase"
 
 
 
-const MelanomaAdd = ({route,navigation}) => {     
+const MelanomaAdd = ({ route , navigation }) => {     
  
     const skin_type = route.params.skin_type;
     const addType = route.params.type;
-    const userData = route.params.data
-    const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
+    const userData = route.params.userData    
     const bodyPart = route.params.bodyPart
-    const firstSelectedPart = bodyPart.slug         
+    const firstSelectedPart = bodyPart.slug
+
+    const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
     const [uploadedSpotPicture, setUploadedSpotPicture] = useState(null);
     const [birthmarkId, setBirthmarkId] = useState(`Birthmark#${Math.floor(Math.random() * 100)}`);
     const [isScreenLoading,setIsScreenLoading ]  = useState(false)

@@ -143,7 +143,7 @@ export const fetchSpotHistory = async ({ userId, spotId }) => {
             });
             
             melanomaData.sort((a, b) => {
-                return b.created_at.seconds - a.created_at.seconds;  // Sort by timestamp seconds
+                return b.created_at.seconds - a.created_at.seconds;
             });
             
             return melanomaData;
@@ -176,7 +176,7 @@ export const updateSpot = async ({
     try {
         await saveCurrentToHistory();
         await saveNew();
-        return true; // Assuming success if no errors occur
+        return true;
     } catch (error) {
         console.error("Error updating spot and saving history: ", error);
         return false; 
@@ -242,10 +242,9 @@ export const deleteSpotWithHistoryReset = async ({
                         historyData.push(doc.data());
                     });
                     historyData.sort((a, b) => {
-                        return b.created_at.seconds - a.created_at.seconds;  // Compare Firestore timestamp seconds
+                        return b.created_at.seconds - a.created_at.seconds;
                     });
-                    const elementWithHighestDate = historyData[0];
-                                        
+                    const elementWithHighestDate = historyData[0];       
                     //DELETE
                     const closestDelete = doc(db, "users", userId, "Melanoma", spotId, "History",elementWithHighestDate.storage_name);
                     await deleteDoc(closestDelete)
@@ -257,7 +256,6 @@ export const deleteSpotWithHistoryReset = async ({
                     return { success: true, message: "Deleted from Firestore" };   
                 }                                               
             }
-         
         } catch (error) {
             console.error("Error deleting from Firestore:", error);
             return { success: false, message: "Failed to delete from Firestore" };
@@ -385,7 +383,7 @@ export const changePersonalData = async ({
     userId,
 }) => {
     const changeData = (field) => {
-        const data = { [field]: toChange }; // Dynamically create an object property
+        const data = { [field]: toChange }; 
         const ref = doc(db, "users", userId);
         updateDoc(ref, data);
     };
@@ -512,7 +510,7 @@ export const updateBloodWork = async ({
     try {
         await saveCurrentToHistory();
         await saveNew();
-        return true; // Assuming success if no errors occur
+        return true;
     } catch (error) {
         console.error("Error updating spot and saving history: ", error);
         return false; 

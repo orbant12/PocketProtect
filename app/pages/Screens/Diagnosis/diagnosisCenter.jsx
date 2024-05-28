@@ -10,7 +10,7 @@ import { fetchBloodWork,fetchBloodWorkHistory } from "../../../server"
 import moment from 'moment'
 import PagerView from 'react-native-pager-view';
 
-const BloodCenter = ({navigation}) => {
+const DiagnosisCenter = ({navigation}) => {
 
     //<==================<[ Variables ]>====================>
     
@@ -588,4 +588,4 @@ const styles = StyleSheet.create({
     },
 })
 
-export default BloodCenter
+export default DiagnosisCenter

@@ -22,7 +22,7 @@ const SurveyScreeen = ({route,navigation}) => {
     const possibleOutcomes = route.params.outcomes
     const clientSymphtoms = route.params.clientSymptoms
     const [ answerInput, setAnswerInput ] = useState("")
-    const diagnosisSnapPoints = ["100%"];
+    const diagnosisSnapPoints = ["86%"];
     const diagnoseSheetRef = useRef(null);
     const answerEditSheetRef = useRef(null);
 
@@ -38,12 +38,13 @@ const SurveyScreeen = ({route,navigation}) => {
 
     const sessionId = generateHexUID(8)
     const [ session , setSession ] = useState({
+        stage:0,
         title:`session#${sessionId}`,
         id:`session#${sessionId}`
     })
 
 
-    const generateDiagnosisFromPrompt = async (request) => {
+    const  generateDiagnosisFromPrompt = async (request) => {
         const generateTextFunction = httpsCallable(functions, 'openAIHttpFunctionSec');
         try {
             const result = await generateTextFunction({name: request});
@@ -57,6 +58,7 @@ const SurveyScreeen = ({route,navigation}) => {
 
     //<=======> Feature Engineering <=======>
 
+    //<=======> Stage 1 <=======>
     const ProcessSingleDiagnosis = async () => {
         const type = "diagnosis"
         const sympthomsPrompt = `Possible causes: ${possibleOutcomes}`;
@@ -64,7 +66,7 @@ const SurveyScreeen = ({route,navigation}) => {
                 return item.q + ", " + item.a + '\n';
         });
         console.log(binaryFeedback)
-        const prompt = `Recently I'v asked you to create a survey from which you can confidently decide which of these causes is the most likely. ${sympthomsPrompt}.This is the survey: ${binaryFeedback} . Please choose from the Possible Causes, your answer must only contain that one likely cause.`;
+        const prompt = `Recently I'v asked you to create a survey from which you can confidently decide which of these causes is the most likely. ${sympthomsPrompt}.This is the survey: ${binaryFeedback} . Please choose from the Possible Causes, your answer MUST only contain that one likely cause like "Diagnosis".`;
         const response = await generateDiagnosisFromPrompt(prompt)
         setFullDiagnosis(prevState => ({
         ...prevState,
@@ -100,7 +102,7 @@ const SurveyScreeen = ({route,navigation}) => {
 
     const ProcessDiagnosisSymphtoms = async (diagnosis) => {
         const type = "symphtoms"
-        const prompt = `Can list out all common symphtoms of ${diagnosis}. Be straight forward and you must only state th symphtoms by ascending numbered order.`;
+        const prompt = `Can list out all common symphtoms of ${diagnosis}. Be straight forward and you MUST only state the symphtoms by ascending numbered order.`;
         const response = await generateDiagnosisFromPrompt(prompt)
         const lines = response.split('\n');
         const formating = lines.map(line => {
@@ -154,10 +156,43 @@ const SurveyScreeen = ({route,navigation}) => {
             }
         } else if (editedtTracker == false){
 
-        }
-  
+        }  
         setIsDiagnosDone(true)
     }
+
+     //<=======> Stage 2 <=======>
+    
+    const ProcessCreateSurvey= async (causes) => {    
+    const binaryFeedback = dataFixed.map(item => {
+        return item.q + ", " + item.a + '\n';
+});
+    const sympthomsPrompt = `Previous client answers: ${binaryFeedback}`;
+    const diagnosisScript = `Diagnosis we want to determine wether probable or not: ${fullDiagnosis.diagnosis}`;    
+    const prompt = `${sympthomsPrompt}.${diagnosisScript}. You are a doctor trying to evaluate the hypothesis that your patient has ${fullDiagnosis.diagnosis}. Create a survey with questions that is formed to actively test the possibility of this hipothesys and evaluate it's chance dont include questions that have been asked. Servey must only contain forms of these: yes or no (qid:binary), client feedback required (qid:feedback). Your answer must be only contain the survey and each question asked like this:
+    binary,Have you ...? \n
+    feedback,Please describe ... \n `;
+    const response = await generateDiagnosisFromPrompt(prompt)
+
+    const formattedData = response.split('\n').map(line => {
+        const [type, question] = line.split(',');    
+        return { type, q: question };
+    });    
+
+    const filtered = formattedData.filter(item => item.q !== undefined);
+
+    return filtered
+    }
+
+    const handleStartSurvey = async () => {    
+        const survey = await ProcessCreateSurvey()
+        if (survey) {
+            setDataFixed(survey)        
+            setIsDiagnosDone(true)
+            setProgress(0)
+            diagnoseSheetRef.current.close()
+        }
+    }
+    
 
     const handleBinaryAnswer = (index, type) => {
         setDataFixed(prevData => {
@@ -178,7 +213,12 @@ const SurveyScreeen = ({route,navigation}) => {
     
 
     const handleAccurateDiagnosis = () => {
-
+        setSession({
+            ...session,
+            stage:1
+        })
+        setIsDiagnosDone(false)
+        handleStartSurvey()
     }
 
     const handleCloseDiagnosis = () => {
@@ -187,6 +227,68 @@ const SurveyScreeen = ({route,navigation}) => {
 
 
     const DiagnosisSheet = ({isDiagnosisDone,fullDiagnosis}) => {
+        return(
+            <>
+            {!isDiagnosisDone ?
+                <View style={styles.loadingModal}>
+                    <Text style={{fontSize:20,marginBottom:20,fontWeight:"800",color:"black"}}>Processing your answers ...</Text>
+                    <ActivityIndicator size="large" color="black" />
+                </View>
+            :
+            fullDiagnosis.help &&
+            <ScrollView style={{width:"100%",height:"100%"}} showsVerticalScrollIndicator={false}>
+            <View style={Dstyles.diagnosisPage}>
+
+                <View style={{width:"100%",backgroundColor:"white",marginBottom:0,borderBottomWidth:5,padding:30,}}>
+                <Text style={{color:"back",fontSize:20,fontWeight:"800"}}>{fullDiagnosis.diagnosis}</Text>
+                <View style={{color:"back",fontSize:12,fontWeight:"500",textAlign:"justify",marginTop:10,borderLeftWidth:2,borderColor:"black"}}>
+                    <Text style={{color:"back",fontSize:12,fontWeight:"500",textAlign:"justify",paddingLeft:10}}>{fullDiagnosis.description}</Text>
+                </View>
+                </View>              
+                <View style={{width:"100%",marginTop:0,borderWidth:0,paddingBottom:30,alignItems:"center"}}>
+                <Text  style={{color:"back",fontWeight:"800",marginBottom:10,fontSize:17,padding:20}}>Common symphtoms of {fullDiagnosis.diagnosis}</Text>
+                <ScrollView horizontal style={{width:"100%"}} showsHorizontalScrollIndicator={false} >
+                {fullDiagnosis.symphtoms.map((data)=>(
+                    <View style={{width:200,alignItems:"center",borderRightWidth:0,justifyContent:"center",marginLeft:20,marginTop:0}}>
+                    <Text style={{paddingVertical:10,borderWidth:1,paddingHorizontal:15,borderRadius:20,fontWeight:"800",borderColor:"magenta",opacity:0.5}}>{data.numbering}</Text>
+                    <Text style={{padding:0,fontWeight:600,marginTop:20,textAlign:"center"}}>{data.content}</Text>
+                    </View>
+                ))}
+                </ScrollView>
+                </View>     
+
+                <View style={{width:"100%",marginTop:2,borderTopWidth:3,paddingBottom:30,alignItems:"center",borderBottomWidth:0.3}}>
+                <Text  style={{color:"back",fontWeight:"800",marginBottom:10,fontSize:17,padding:20}}>Common symphtoms of {fullDiagnosis.diagnosis}</Text>
+                <ScrollView horizontal style={{width:"100%"}} showsHorizontalScrollIndicator={false} >
+                {fullDiagnosis.symphtoms.map((data)=>(
+                    <View style={{width:200,alignItems:"center",borderRightWidth:0,justifyContent:"center",marginLeft:20,marginTop:0}}>
+                    <Text style={{paddingVertical:10,borderWidth:1,paddingHorizontal:15,borderRadius:20,fontWeight:"800",borderColor:"magenta",opacity:0.5}}>{data.numbering}</Text>
+                    <Text style={{padding:0,fontWeight:600,marginTop:20,textAlign:"center"}}>{data.content}</Text>
+                    </View>
+                ))}
+                </ScrollView>
+                </View>    
+
+                <TouchableOpacity onPress={handleAccurateDiagnosis} style={{width:"80%",height:50,borderWidth:1,padding:10,marginLeft:"auto",marginRight:"auto",alignItems:"center",justifyContent:"center",borderRadius:10,backgroundColor:"black",marginTop:40}}>
+                <Text style={{fontSize:15,fontWeight:"600",color:"white"}}>Next [ Stage 2 - Chance ]</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={{width:"80%",height:50,borderWidth:1,padding:10,marginLeft:"auto",marginRight:"auto",alignItems:"center",justifyContent:"center",borderRadius:10,backgroundColor:"white",marginTop:20}}>
+                <Text style={{fontSize:15,fontWeight:"500",color:"black"}}>Rediagnose</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={{width:"80%",height:50,borderWidth:1,padding:10,marginLeft:"auto",marginRight:"auto",alignItems:"center",justifyContent:"center",borderRadius:10,backgroundColor:"red",marginTop:20}}>
+                <Text style={{fontSize:15,fontWeight:"500",color:"white"}}>Close</Text>
+                </TouchableOpacity>
+
+            </View>
+            </ScrollView>}
+
+            </>
+        )
+    }
+
+    const DiagnosisSheet22 = ({isDiagnosisDone,fullDiagnosis}) => {
         return(
             <>
             {!isDiagnosisDone ?
@@ -399,9 +501,20 @@ const SurveyScreeen = ({route,navigation}) => {
         <>
             <GestureHandlerRootView>
                 <BottomSheetModalProvider>
+                <View style={{width:"100%",height:"14%",justifyContent:"center",backgroundColor:"black",padding:20,alignItems:"center"}}>
+                        <View style={{justifyContent:"center",borderWidth:0,borderColor:"white"}}>
+                            <Text style={{fontWeight:"600",color:"white",fontSize:15,opacity:0.6,marginBottom:5,paddingTop:30}}>
+                                {session.stage == 0 ? "Stage 1" : "Stage 2"}
+                            </Text>
+
+                            <Text style={{fontWeight:"700",color:"white",fontSize:20}}>
+                            {session.stage == 0 ? "Most likely hypothesis" : "Chance evaluation"}
+                            </Text>
+                        </View>                                            
+                    </View>
                     {ExitModal({isSaveModalActive})}
                     {SaveModal({saveCardModalActive,session,dataFixed})}
-                    {progress != dataFixed.length ?
+                    {progress != dataFixed.length ?        
                     <View style={styles.container}>
                         <View style={styles.ProgressBar}>
                             <TouchableOpacity onPress={handleBack} style={{backgroundColor:"white",borderRadius:30}}>
@@ -654,14 +767,14 @@ const Dstyles = StyleSheet.create({
         position:"relative",
         height:"100%",
         justifyContent:"center"
-  },
-  diagnosisPage:{
-    alignItems:"center",
-    width:"100%",
-    height:"100%",
-    paddingBottom:40,
-  }
-  });
+    },
+    diagnosisPage:{
+        alignItems:"center",
+        width:"100%",
+        height:"100%",
+        paddingBottom:40,
+    }
+});
 
 
 
