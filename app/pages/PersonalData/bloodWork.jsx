@@ -6,33 +6,35 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuth } from "../../context/UserAuthContext";
 import { saveBloodWork,fetchBloodWork, updateBloodWork } from "../../server"
+import moment from 'moment'
 
 const BloodWorkPage = ({navigation,route}) => {
 
-    // Variable
+//<==================<[ Variables ]>====================>
+
     const type = route.params.type
     const { currentuser } = useAuth()
-
+    
     const [progress , setProgress] = useState(0)
-
-    const [ methodSelect ,setMethodSelect] = useState(false)
-
+    
     const [ isSaveModalActive, setIsSaveModalActive] = useState(false)
     const [ saveCardModalActive, setSaveCardModalActive] = useState(false)
     const [ focused,setFocused] = useState(false)
-    const [ creationDate, setCreationDate] = useState("2001-08-25T23:15:00.000Z",)
+    const [ creationDate,setCreationDate] = useState("2001-08-25T23:15:00.000Z")
+    const [ methodSelected, setMethodSelected] = useState("")
+    const [ isUploadStage, setIsUploadStage] = useState(false)
 
+        function formattedDate(timestampRaw) {    
+            if(timestampRaw == "Not provided yet"){
+                return timestampRaw
+            } else{
+                const format = moment(timestampRaw).format('YYYY.MM.DD')
+                return format;
+            }    
+        };
 
-
-    const formattedDate = (date) => {
-        const lastEditedDate = new Date(date)
-        const year = lastEditedDate.getFullYear();
-        const month = String( lastEditedDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
-        const day = String(lastEditedDate.getDate()).padStart(2, '0');
-        const formattedDate = `${year}.${month}.${day}`;
-        return formattedDate
-    }
-
+    
+    
     const [ bloodWorkData2, setBloodWorkData2] = useState([
         {
             title:"Basic Health Indicators",
@@ -118,16 +120,23 @@ const BloodWorkPage = ({navigation,route}) => {
             ]
         },
     ])
-
+    
     const dataFixed = [
-        {
-            q:"When did you recive your blood work results",
-            component:DateInput()
-        },
-        {
-            q:"Why did you decided to make your blood work",
-            component:Why()
-        },
+            {
+                q: "Select a method to upload your blood work",
+                component: <Methods handleMethodSelect={handleMethodSelect} methodSelected={methodSelected} />
+            },
+            {
+                q: "When did you receive your blood work results",
+                component: <DateInput />
+            },
+            {
+                q: "Why did you decide to make your blood work",
+                component: <Why />
+            }
+        ]
+
+    const manual = [
         {
             q:"Basic Health Indicators",
             component:BloodWorkComponent(0)
@@ -169,14 +178,22 @@ const BloodWorkPage = ({navigation,route}) => {
             component:FinishPage()
         }
     ]
-    
+
+    const scan = []
+
+    const gallery = []
+
+    const pdf = []
+
+
+//<==================<[ Functions ]>====================>
+
     const onDateChange = (event, date) => {
         console.log(date)
         setCreationDate(String(date))
     };
-
+    
     const handleDataChange2 = (title,type,e) => {
-       
         setBloodWorkData2((prevData) => 
             prevData.map((section) => 
                 section.title === title 
@@ -192,7 +209,7 @@ const BloodWorkPage = ({navigation,route}) => {
             )
         );  
     }
-
+    
     function generateUID(length) {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let uid = '';
@@ -201,7 +218,7 @@ const BloodWorkPage = ({navigation,route}) => {
         }
         return uid;
     }
-
+    
     const handleSaveProgress = async (type) => {
         const UID = generateUID(16)
         if(type == "first"){
@@ -232,7 +249,7 @@ const BloodWorkPage = ({navigation,route}) => {
             }
         }    
     }
-
+    
     const handleBack = (permission) => {
         if (progress == 0 || permission == true){
             navigation.goBack()
@@ -240,27 +257,70 @@ const BloodWorkPage = ({navigation,route}) => {
             setProgress(progress - 1)
         }
     }
+        
+    const handleMethodSelect = (input) => {
+        setMethodSelected(input);    
+    };
 
-    const fetchBloodWorkData = async () => {
-        const response = await fetchBloodWork({userId:currentuser.uid})
-        if(response != false && response != "NoBloodWork"){
-            setBloodWorkData2(response.data)
-            setCreationDate(response.created_at)
-        } else if ( response == false){
-            alert("Something went wrong")
-        } else if ( response == "NoBloodWork"){            
-        }
+    const handleUpload = () => {
+        setIsUploadStage(true)
+        setProgress(1)
     }
+    
+    
 
-    useEffect(()=> {     
-        if (currentuser){
-            fetchBloodWorkData()         
-        }
-    },[])
+//<==================<[ Components ]>====================>
 
+    function Methods(){
+        return(
+            <View style={{width:"100%",height:"70%",alignItems:"center",marginTop:10}}>
+                <TouchableOpacity onPress={() => handleMethodSelect("gallery")} style={[{width:"95%",padding:0,flexDirection:"row",alignItems:"center",borderWidth:2,borderRadius:10}, methodSelected == "gallery" && {borderColor:"magenta"}]}>
+                    <View style={[{borderWidth:0,padding:15,borderRightWidth:2,borderRadius:10,borderTopRightRadius:0,borderBottomRightRadius:0},methodSelected == "gallery" && {borderColor:"magenta"}]}>
+                        <MaterialCommunityIcons 
+                            name="image"
+                            size={30}
+                            color={methodSelected == "gallery" ? "magenta" : "black"}
+                        />   
+                    </View>                       
+                    <Text style={{marginLeft:20,fontWeight:"700",fontSize:17,opacity:0.7}}>Upload from gallery</Text>     
+                </TouchableOpacity>
 
-    // Components
+                <TouchableOpacity onPress={() => handleMethodSelect("manual")} style={[{width:"95%",padding:0,flexDirection:"row",alignItems:"center",borderWidth:2,borderRadius:10,marginTop:30}, methodSelected == "manual" && {borderColor:"magenta"}]}>
+                    <View style={[{borderWidth:0,padding:15,borderRightWidth:2,borderRadius:10,borderTopRightRadius:0,borderBottomRightRadius:0},methodSelected == "manual" && {borderColor:"magenta"}]}>
+                        <MaterialCommunityIcons 
+                            name="fingerprint"
+                            size={30}
+                            color={methodSelected == "manual" ? "magenta" : "black"}
+                        />   
+                    </View>                       
+                    <Text style={{marginLeft:20,fontWeight:"700",fontSize:17,opacity:0.7}}>Add in manually</Text>     
+                </TouchableOpacity>
 
+                <TouchableOpacity onPress={() => handleMethodSelect("pdf")} style={[{width:"95%",padding:0,flexDirection:"row",alignItems:"center",borderWidth:2,borderRadius:10,marginTop:30}, methodSelected == "pdf" && {borderColor:"magenta"}]}>
+                    <View style={[{borderWidth:0,padding:15,borderRightWidth:2,borderRadius:10,borderTopRightRadius:0,borderBottomRightRadius:0},methodSelected == "pdf" && {borderColor:"magenta"}]}>
+                        <MaterialCommunityIcons 
+                            name="file-upload"
+                            size={30}
+                            color={methodSelected == "pdf" ? "magenta" : "black"}
+                        />   
+                    </View>                       
+                    <Text style={{marginLeft:20,fontWeight:"700",fontSize:17,opacity:0.7}}>Upload from PDF</Text>     
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => handleMethodSelect("scan")} style={[{width:"95%",padding:0,flexDirection:"row",alignItems:"center",borderWidth:2,borderRadius:10,marginTop:30}, methodSelected == "scan" && {borderColor:"magenta"}]}>
+                    <View style={[{borderWidth:0,padding:15,borderRightWidth:2,borderRadius:10,borderTopRightRadius:0,borderBottomRightRadius:0},methodSelected == "scan" && {borderColor:"magenta"}]}>
+                        <MaterialCommunityIcons 
+                            name="data-matrix-scan"
+                            size={30}
+                            color={methodSelected == "scan" ? "magenta" : "black"}
+                        />   
+                    </View>                       
+                    <Text style={{marginLeft:20,fontWeight:"700",fontSize:17,opacity:0.7}}>Scan with your camera</Text>     
+                </TouchableOpacity>
+            </View>    
+        )
+    }
+    
     function DateInput(){ 
         return(
             <>          
@@ -268,18 +328,18 @@ const BloodWorkPage = ({navigation,route}) => {
             {creationDate == "2001-08-25T23:15:00.000Z" ?
             <Text style={{fontWeight:"600"}}>Last Updated: <Text style={{opacity:0.4}}>First Time</Text></Text>
             :
-            <Text style={{fontWeight:"600"}}>Last Updated:<Text style={{opacity:0.4}}> {formattedDate(creationDate)}</Text></Text>
+            <Text style={{fontWeight:"600"}}>Last Updated:<Text style={{opacity:0.4}}>{creationDate}</Text></Text>
             }
             </>
         )
     }
-
+    
     function Why(){
         return(
             <Text style={{color:"black"}}>Hi</Text>
         )
     }
-
+    
     function BloodWorkComponent(index){
         return(
             <ScrollView style={{width:"100%",paddingTop:10}}>
@@ -305,7 +365,7 @@ const BloodWorkPage = ({navigation,route}) => {
             </ScrollView>
         )
     }
-
+    
     function FinishPage(){
         return(
             <View style={{width:"100%",alignItems:"center"}}>
@@ -315,7 +375,7 @@ const BloodWorkPage = ({navigation,route}) => {
             </View>
         )
     }
-
+    
     function FirstScreen(){
         return(
             <View style={styles.startScreen}>
@@ -365,8 +425,7 @@ const BloodWorkPage = ({navigation,route}) => {
             </View>
         )
     }
-
-
+    
     const SaveModal = ({saveCardModalActive}) => {
         return(
             <>
@@ -391,8 +450,7 @@ const BloodWorkPage = ({navigation,route}) => {
             </>
         )
     }
-
-
+    
     const ExitModal = ({isSaveModalActive}) => {
         return(
             <>
@@ -419,71 +477,104 @@ const BloodWorkPage = ({navigation,route}) => {
     }
 
 
+//<==================<[ Mian Return ]>====================>
+
     return(
         <>
-        {ExitModal({isSaveModalActive})}
-        {SaveModal({saveCardModalActive})}
-        <View style={styles.container}>
-            <View style={styles.ProgressBar}>
-                <TouchableOpacity onPress={handleBack} style={{backgroundColor:"#eee",borderRadius:30}}>
-                    <MaterialCommunityIcons 
-                        name="arrow-left"
-                        size={20}
-                        style={{padding:5}}
-                    />
-                </TouchableOpacity>
-
-                <ProgressBar progress={progress / dataFixed.length} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
-                <TouchableOpacity onPress={() => setIsSaveModalActive(!isSaveModalActive)} style={{backgroundColor:"#eee",borderRadius:30}}>
-                    <MaterialCommunityIcons 
-                        name="close"
-                        size={20}
-                        style={{padding:5}}
-                    />
-                </TouchableOpacity>
-            </View>
-            {progress == 0 ?
-            FirstScreen()                
-            :
-            focused ?
-            <Pressable onPress={() => {Keyboard.dismiss();setFocused(false)}} style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
+            {ExitModal({isSaveModalActive})}
+            {SaveModal({saveCardModalActive})}
+            <View style={styles.container}>
+                <View style={styles.ProgressBar}>
+                    <TouchableOpacity onPress={handleBack} style={{backgroundColor:"#eee",borderRadius:30}}>
+                        <MaterialCommunityIcons 
+                            name="arrow-left"
+                            size={20}
+                            style={{padding:5}}
+                        />
+                    </TouchableOpacity>
+                    {!isUploadStage ?
+                        <ProgressBar progress={progress / dataFixed.length} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
+                        :
+                        <ProgressBar progress={progress / manual.length} width={250} height={5} color={"red"} backgroundColor={"white"} borderColor={"magenta"} />
+                    }
+                    
+                    <TouchableOpacity onPress={() => setIsSaveModalActive(!isSaveModalActive)} style={{backgroundColor:"#eee",borderRadius:30}}>
+                        <MaterialCommunityIcons 
+                            name="close"
+                            size={20}
+                            style={{padding:5}}
+                        />
+                    </TouchableOpacity>
+                </View>
+                {progress == 0 ?
+                FirstScreen()                
+                :
+                focused ?
+                <Pressable onPress={() => {Keyboard.dismiss();setFocused(false)}} style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
+                    <View style={{width:"90%",alignItems:"center",backgroundColor:"#eee",justifyContent:"center",padding:20,borderRadius:20,marginTop:10}}>
+                        <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>            
+                    </View> 
+                    {!isUploadStage && 
+                        <>
+                            {dataFixed[progress-1].component}
+                            {progress == dataFixed.length ?
+                                <Pressable onPress={() => handleUpload(methodSelected)} style={[styles.startButton,{marginBottom:10}]}>                        
+                                    <Text style={{padding:14,fontWeight:"600",color:"white"}}>Upload</Text>
+                                </Pressable>
+                                :
+                                <Pressable onPress={() => setProgress(progress + 1)} style={[styles.startButton,{marginBottom:10}]}>                        
+                                    <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
+                                </Pressable>
+                            } 
+                        </>
+                    }                   
+                </Pressable>
+                :
+                <View style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
                 <View style={{width:"90%",alignItems:"center",backgroundColor:"#eee",justifyContent:"center",padding:20,borderRadius:20,marginTop:10}}>
+                    {!isUploadStage ? 
                     <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>            
+                    :
+                    <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{manual[progress - 1].q}</Text>            
+                    }
                 </View> 
-                {dataFixed[progress-1].component}
+                {!isUploadStage ? 
+                <>
+                    {dataFixed[progress-1].component}
                     {progress == dataFixed.length ?
-                        <Pressable onPress={() => handleSaveProgress()} style={[styles.startButton,{marginBottom:10}]}>                        
-                            <Text style={{padding:14,fontWeight:"600",color:"white"}}>Finsih</Text>
+                        <Pressable onPress={() => handleUpload(methodSelected)} style={[styles.startButton,{marginBottom:10}]}>                        
+                            <Text style={{padding:14,fontWeight:"600",color:"white"}}>Upload</Text>
                         </Pressable>
                         :
                         <Pressable onPress={() => setProgress(progress + 1)} style={[styles.startButton,{marginBottom:10}]}>                        
                             <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
                         </Pressable>
-                    }          
-                <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:10,position:"absolute",right:10,bottom:20,opacity:0.3}}>{progress} / {dataFixed.length}</Text>
-            </Pressable>
-            :
-            <View style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
-            <View style={{width:"90%",alignItems:"center",backgroundColor:"#eee",justifyContent:"center",padding:20,borderRadius:20,marginTop:10}}>
-                <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>            
-            </View> 
-            {dataFixed[progress-1].component}
-                {progress == dataFixed.length ?
-                    <Pressable onPress={() => handleSaveProgress()} style={[styles.startButton,{marginBottom:10}]}>                        
-                        <Text style={{padding:14,fontWeight:"600",color:"white"}}>Finsih</Text>
+                    } 
+                </>
+                :
+                <>
+                {manual[progress-1].component}
+                {progress == manual.length ?
+                    <Pressable onPress={() => handleUpload(methodSelected)} style={[styles.startButton,{marginBottom:10}]}>                        
+                        <Text style={{padding:14,fontWeight:"600",color:"white"}}>Upload</Text>
                     </Pressable>
                     :
                     <Pressable onPress={() => setProgress(progress + 1)} style={[styles.startButton,{marginBottom:10}]}>                        
                         <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
                     </Pressable>
-                }          
-            <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:10,position:"absolute",right:10,bottom:20,opacity:0.3}}>{progress} / {dataFixed.length}</Text>
+                } 
+                </>
+                }
+                <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:10,position:"absolute",right:10,bottom:20,opacity:0.3}}>{progress} / {dataFixed.length}</Text>
+                </View>
+                }                                  
             </View>
-            }                                  
-        </View>
         </>
     )
 }
+
+
+//<==================<[ Styles Sheet ]>====================>
 
 const styles = StyleSheet.create({
     ProgressBar:{
@@ -579,5 +670,6 @@ const styles = StyleSheet.create({
         opacity:0.3
     },
 })
+
 
 export default BloodWorkPage

@@ -573,8 +573,8 @@ export const fetchMonthTasks = async ({
         const snapshot = await getDocs(ref);
         let taskData = [];
         snapshot.forEach((doc) => {
-            const date = splitDate(doc.data().id)
-            if(date.month == month && date.year == year){
+            const date = splitDate(doc.data().date)
+            if(date.year == year){
                 taskData.push(doc.data());
             };
         })
@@ -587,12 +587,19 @@ export const fetchMonthTasks = async ({
 
 export const saveTask = async ({
     userId,
-    date,
-    data
+    data,
+    id,
+    date
 }) => {
     try{
-        const ref = doc(db, "users", userId, "Task_Manager", String(date));
-        await setDoc(ref,data);
+        const ref = doc(db, "users", userId, "Task_Manager", id);
+        await setDoc(ref,
+            {
+                data,
+                date,
+                id
+            }
+        );
         return true           
     } catch (error) {
         console.log(error);

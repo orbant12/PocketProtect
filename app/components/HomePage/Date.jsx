@@ -1,16 +1,16 @@
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
 import moment from 'moment'
 
-const Date = ({ date, onSelectDate, selected,today }) => {
+const Date = ({ date, onSelectDate, selected,today,affectedDays }) => {
 
   const day = moment(date).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') ? moment(date).format('dd'):moment(date).format('dd')
   const dayNumber = moment(date).format('D')
   const fullDate = moment(date).format('YYYY-MM-DD')
-  
+  const isAffected = affectedDays.includes(fullDate);
   return (
     <TouchableOpacity
       onPress={() => onSelectDate(fullDate)}
-      style={[styles.card, selected === fullDate ? { backgroundColor: "magenta",borderRadius: 6, } : today == fullDate ? {backgroundColor:"#ffb3ff"} : {backgroundColor:"black"} ]}
+      style={[styles.card, selected === fullDate ? { backgroundColor: "magenta",borderRadius: 6, } : today == fullDate ? {backgroundColor:"#ffb3ff"} : !isAffected ? {backgroundColor:"black"} :{backgroundColor:"red"}  ]}
     >
       <Text
         style={[styles.big, selected === fullDate ? { color: "#fff" , fontSize:13 }: today == fullDate ? {fontSize:13} : {fontSize: 15}]}

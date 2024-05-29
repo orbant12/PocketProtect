@@ -30,6 +30,7 @@ const [historyShown, setHistoryShown ] = useState(true)
 const displayCounter = useTimer(dateCountdown);
 //DATA
 const [thisMonthTasks, setThisMonthTasks] = useState([])
+const [affectedDays,setAffectedDays] = useState([])
 const [allReminders, setAllReminders] = useState([])
 //H-SCROLL
 const [currentPage, setCurrentPage] = useState(0);
@@ -100,6 +101,7 @@ const fetchThisMonthTasks = async () => {
         })
         if(response != false){
             setThisMonthTasks(response)
+            setAffectedDays(response.map(singleDate => singleDate.date));
             console.log(response)
         }
     }
@@ -244,8 +246,7 @@ useEffect(() => {
                     {data.id == "blood_work" && 
                         ReminderBox({data,key:4}) 
                     }   
-                    </PagerView>                            
-                      
+                    </PagerView>                                                  
                         <View style={styles.IndicatorContainer}>               
                             <View style={[styles.Indicator, { opacity: currentPageReminder === 0 ? 1 : 0.3 }]} />                     
                             <View style={[styles.Indicator, { opacity: currentPageReminder === 1 ? 1 : 0.3 }]} />
@@ -393,20 +394,20 @@ useEffect(() => {
             </View>
             <View>
             {thisMonthTasks.map((data)=>(
-                data.id == selectedDate &&
+                data.date == selectedDate &&
                 
                 <View style={styles.TodaySection}>
                     <View style={styles.titleRow}>
-                        <Text style={styles.title}>Schedule</Text>
+                        <Text style={styles.title}>Tasks</Text>
                         <Text style={styles.titleLeft}>0/1</Text>
                     </View>
 
                     <View style={styles.TaskBox}>
-                        <Text style={styles.TaskTitle}>Blood Work Update</Text>
+                        <Text style={styles.TaskTitle}>{data.data.diagnosis} Checkup</Text>
                         <Text style={[styles.TaskSubTitle,{color:"white",opacity:0.7}]}>You haven't updated your blood work in <Text style={{fontWeight:"700",color:"magenta",opacity:0.8}}>{"12"} days</Text></Text>
                         <Text style={styles.TaskSubTitle}>Medical research suggest to update your blood work every 6 months for a healthy lifestyle</Text>
-                        <Pressable onPress={() => handleNavigation("DailyReport")} style={styles.StartButton}>
-                            <Text>Schedule Now</Text>
+                        <Pressable onPress={() => handleNavigation("DailyReport")} style={[styles.StartButton,{opacity:0.3}]}>
+                            <Text>Start in - {displayCounter}</Text>
                             <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
                         </Pressable>
                     </View> 
@@ -497,7 +498,7 @@ useEffect(() => {
                 />
             }
         >
-            <Calendar onSelectDate={setSelectedDate} selected={selectedDate} today={format} todayDate={today} />
+            <Calendar affectedDays={affectedDays} onSelectDate={setSelectedDate} selected={selectedDate} today={format} todayDate={today} />
             <StatusBar style="auto" />
             {format == selectedDate ? 
             TodayScreen()

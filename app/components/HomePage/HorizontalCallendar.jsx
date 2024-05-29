@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, ScrollView } from 'react-native'
 import moment from 'moment'
 import Date from './Date'
 
-export const Calendar = ({ onSelectDate, selected, today, todayDate }) => {
+export const Calendar = ({ onSelectDate, selected, today, todayDate,affectedDays }) => {
         
     const [dates, setDates] = useState([])
     const [scrollPosition, setScrollPosition] = useState()
@@ -84,6 +84,7 @@ return (
                 today={today}
                 onSelectDate={onSelectDate}
                 selected={selected}
+                affectedDays={affectedDays}
                 />
             ))}
             </ScrollView>

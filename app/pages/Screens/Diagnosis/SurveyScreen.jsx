@@ -7,7 +7,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { useAuth } from "../../../context/UserAuthContext";
-import { saveDiagnosisProgress } from "../../../server"
+import { saveDiagnosisProgress,saveTask } from "../../../server"
 import {app} from "../../../firebase"
 
 const SurveyScreeen = ({route,navigation}) => {
@@ -130,6 +130,19 @@ const SurveyScreeen = ({route,navigation}) => {
         }
         return result;
     }
+
+    const dateFormat = (days) => {
+        const currentDate = new Date();
+        currentDate.setDate(currentDate.getDate() + days);  // Add the specified number of days    
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        
+        const formattedDate = `${year}-${month}-${day}`;
+        console.log(formattedDate)
+        return formattedDate;
+    }
+    
     
     useEffect(() =>{
         setDataFixed(prevData => prevData.filter(item => item.q !== undefined));
@@ -336,24 +349,21 @@ const SurveyScreeen = ({route,navigation}) => {
 
     return filtered
     }
-    //<------> Stage 2 <------->     
+    //<------> Stage 3 <------->     
     const handleNextStageThree = async(clientSymphtoms,possibleOutcomes) => {
         setSession({
             ...session,
             stage:3
         })
         setIsDiagnosDone(false)
-        const currentDate = new Date();
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
-        const day = String(currentDate.getDate()).padStart(2, '0');
-        const formattedDate = `${year}.${month}.${day}`;
+        const formattedDate = await dateFormat(0)
         const data = {
             id: session.id,
             title: session.title,
             diagnosis: fullDiagnosis.diagnosis,
             clientSymphtoms: clientSymphtoms,
-            possibleOutcomes: possibleOutcomes,    
+            possibleOutcomes: possibleOutcomes,
+            explain_video:fullDiagnosis.explain_video,            
             stages:{
                 stage_one:memoryDataFixed,
                 stage_two:{survey:dataFixed,chance:fullDiagnosis.chance},
@@ -365,6 +375,12 @@ const SurveyScreeen = ({route,navigation}) => {
         await saveDiagnosisProgress({
             userId:currentuser.uid,
             data
+        })
+        await saveTask({
+            userId: currentuser.uid,
+            data: data,
+            date: fullDiagnosis.periodic_assistance == "Weekly" ? dateFormat(7) : fullDiagnosis.periodic_assistance == "Daily" && dateFormat(1) ,
+            id: data.id
         })
         setIsDiagnosDone(true)
         navigation.navigate("DiagnosisCenter",{diagnosisData:data})
@@ -407,6 +423,17 @@ const SurveyScreeen = ({route,navigation}) => {
         }));
         return response
     }
+
+    const ProcessYoutubeExplainVideo = async (diagnosis) => {   
+        const type = "explain_video"   
+        const prompt = `Can you please recommend the best youtube video that explains ${diagnosis}. Your answer MUST be ONLY the https:// link to the video`
+        const response = await generateDiagnosisFromPrompt(prompt)
+        setFullDiagnosis(prevState => ({
+        ...prevState,
+        [type]: response
+        }));
+        return response
+    }
     
     const handleStartSurvey = async () => {    
         const survey = await ProcessCreateSurvey()
@@ -440,6 +467,7 @@ const SurveyScreeen = ({route,navigation}) => {
                     await ProcessDiagnosisDescription(diagnosis)
                     await ProcessDiagnosisSymphtoms(diagnosis)
                     await ProcessDiagnosisRecovery(diagnosis)
+                    await ProcessYoutubeExplainVideo(diagnosis)
                 }
                 // If data is not edited it stays only --> openEditSheet() can change it
                 setEditedTracker(false)
