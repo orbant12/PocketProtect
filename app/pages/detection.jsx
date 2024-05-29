@@ -236,7 +236,7 @@ function SingleDiagnosisBox({data}){
             <ProgressBar progress={(data.diagnosis == "Not yet" ? 0 : data.diagnosis != "Not yet" ? 1 : data.stages.stage_two != null ? 2 :data.stages.stage_three != null && 3 )/ 4} width={250} height={4} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
         </View>                     
         <View style={[styles.boxBottom,{marginTop:5}]}>                                
-            <TouchableOpacity style={{width:"100%",backgroundColor:"black",padding:10,paddingVertical:12,alignItems:"center",justifyContent:"center",borderRadius:20,flexDirection:"row"}}>
+            <TouchableOpacity onPress={() => navigation.navigate("DiagnosisCenter",{diagnosisData:data})} style={{width:"100%",backgroundColor:"black",padding:10,paddingVertical:12,alignItems:"center",justifyContent:"center",borderRadius:20,flexDirection:"row"}}>
                 <Text style={{fontWeight:"600",color:"white",marginRight:15}}>Open</Text>
                 <MaterialCommunityIcons 
                     name='arrow-right'
