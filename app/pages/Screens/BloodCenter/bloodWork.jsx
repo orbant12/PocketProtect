@@ -4,8 +4,9 @@ import React,{useEffect, useState,useRef} from "react"
 import ProgressBar from 'react-native-progress/Bar';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { useAuth } from "../../context/UserAuthContext";
-import { saveBloodWork,fetchBloodWork, updateBloodWork } from "../../server"
+import { useAuth } from "../../../context/UserAuthContext";
+import { saveBloodWork,fetchBloodWork, updateBloodWork } from "../../../server"
+import { SelectableBars } from "../../../components/SelectableComponents/selectableBars";
 import moment from 'moment'
 
 const BloodWorkPage = ({navigation,route}) => {
@@ -13,28 +14,14 @@ const BloodWorkPage = ({navigation,route}) => {
 //<==================<[ Variables ]>====================>
 
     const type = route.params.type
-    const { currentuser } = useAuth()
-    
-    const [progress , setProgress] = useState(0)
-    
+    const { currentuser } = useAuth()    
+    const [progress , setProgress] = useState(0)    
     const [ isSaveModalActive, setIsSaveModalActive] = useState(false)
     const [ saveCardModalActive, setSaveCardModalActive] = useState(false)
     const [ focused,setFocused] = useState(false)
     const [ creationDate,setCreationDate] = useState("2001-08-25T23:15:00.000Z")
     const [ methodSelected, setMethodSelected] = useState("")
-    const [ isUploadStage, setIsUploadStage] = useState(false)
-
-        function formattedDate(timestampRaw) {    
-            if(timestampRaw == "Not provided yet"){
-                return timestampRaw
-            } else{
-                const format = moment(timestampRaw).format('YYYY.MM.DD')
-                return format;
-            }    
-        };
-
-    
-    
+    const [ isUploadStage, setIsUploadStage] = useState(false)  
     const [ bloodWorkData2, setBloodWorkData2] = useState([
         {
             title:"Basic Health Indicators",
@@ -124,7 +111,7 @@ const BloodWorkPage = ({navigation,route}) => {
     const dataFixed = [
             {
                 q: "Select a method to upload your blood work",
-                component: <Methods handleMethodSelect={handleMethodSelect} methodSelected={methodSelected} />
+                component: <Methods setOptionValue={setMethodSelected} optionValue={methodSelected} />
             },
             {
                 q: "When did you receive your blood work results",
@@ -192,6 +179,15 @@ const BloodWorkPage = ({navigation,route}) => {
         console.log(date)
         setCreationDate(String(date))
     };
+
+    function formattedDate(timestampRaw) {    
+        if(timestampRaw == "Not provided yet"){
+            return timestampRaw
+        } else{
+            const format = moment(timestampRaw).format('YYYY.MM.DD')
+            return format;
+        }    
+    };
     
     const handleDataChange2 = (title,type,e) => {
         setBloodWorkData2((prevData) => 
@@ -257,67 +253,27 @@ const BloodWorkPage = ({navigation,route}) => {
             setProgress(progress - 1)
         }
     }
-        
-    const handleMethodSelect = (input) => {
-        setMethodSelected(input);    
-    };
-
+    
     const handleUpload = () => {
         setIsUploadStage(true)
         setProgress(1)
     }
-    
-    
+
 
 //<==================<[ Components ]>====================>
 
     function Methods(){
         return(
-            <View style={{width:"100%",height:"70%",alignItems:"center",marginTop:10}}>
-                <TouchableOpacity onPress={() => handleMethodSelect("gallery")} style={[{width:"95%",padding:0,flexDirection:"row",alignItems:"center",borderWidth:2,borderRadius:10}, methodSelected == "gallery" && {borderColor:"magenta"}]}>
-                    <View style={[{borderWidth:0,padding:15,borderRightWidth:2,borderRadius:10,borderTopRightRadius:0,borderBottomRightRadius:0},methodSelected == "gallery" && {borderColor:"magenta"}]}>
-                        <MaterialCommunityIcons 
-                            name="image"
-                            size={30}
-                            color={methodSelected == "gallery" ? "magenta" : "black"}
-                        />   
-                    </View>                       
-                    <Text style={{marginLeft:20,fontWeight:"700",fontSize:17,opacity:0.7}}>Upload from gallery</Text>     
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={() => handleMethodSelect("manual")} style={[{width:"95%",padding:0,flexDirection:"row",alignItems:"center",borderWidth:2,borderRadius:10,marginTop:30}, methodSelected == "manual" && {borderColor:"magenta"}]}>
-                    <View style={[{borderWidth:0,padding:15,borderRightWidth:2,borderRadius:10,borderTopRightRadius:0,borderBottomRightRadius:0},methodSelected == "manual" && {borderColor:"magenta"}]}>
-                        <MaterialCommunityIcons 
-                            name="fingerprint"
-                            size={30}
-                            color={methodSelected == "manual" ? "magenta" : "black"}
-                        />   
-                    </View>                       
-                    <Text style={{marginLeft:20,fontWeight:"700",fontSize:17,opacity:0.7}}>Add in manually</Text>     
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={() => handleMethodSelect("pdf")} style={[{width:"95%",padding:0,flexDirection:"row",alignItems:"center",borderWidth:2,borderRadius:10,marginTop:30}, methodSelected == "pdf" && {borderColor:"magenta"}]}>
-                    <View style={[{borderWidth:0,padding:15,borderRightWidth:2,borderRadius:10,borderTopRightRadius:0,borderBottomRightRadius:0},methodSelected == "pdf" && {borderColor:"magenta"}]}>
-                        <MaterialCommunityIcons 
-                            name="file-upload"
-                            size={30}
-                            color={methodSelected == "pdf" ? "magenta" : "black"}
-                        />   
-                    </View>                       
-                    <Text style={{marginLeft:20,fontWeight:"700",fontSize:17,opacity:0.7}}>Upload from PDF</Text>     
-                </TouchableOpacity>
-
-                <TouchableOpacity onPress={() => handleMethodSelect("scan")} style={[{width:"95%",padding:0,flexDirection:"row",alignItems:"center",borderWidth:2,borderRadius:10,marginTop:30}, methodSelected == "scan" && {borderColor:"magenta"}]}>
-                    <View style={[{borderWidth:0,padding:15,borderRightWidth:2,borderRadius:10,borderTopRightRadius:0,borderBottomRightRadius:0},methodSelected == "scan" && {borderColor:"magenta"}]}>
-                        <MaterialCommunityIcons 
-                            name="data-matrix-scan"
-                            size={30}
-                            color={methodSelected == "scan" ? "magenta" : "black"}
-                        />   
-                    </View>                       
-                    <Text style={{marginLeft:20,fontWeight:"700",fontSize:17,opacity:0.7}}>Scan with your camera</Text>     
-                </TouchableOpacity>
-            </View>    
+            <SelectableBars 
+                setOptionValue={setMethodSelected}
+                optionValue={methodSelected}
+                items={[
+                    {type:"gallery", icon:{type:"icon",metaData:{name:"image",size:30}}, title:"Upload from gallery"},
+                    {type:"manual", icon:{type:"icon",metaData:{name:"fingerprint",size:30}}, title:"Add in manually"},
+                    {type:"pdf", icon:{type:"icon",metaData:{name:"file-upload",size:30}}, title:"Upload from PDF"},
+                    {type:"scan", icon:{type:"icon",metaData:{name:"data-matrix-scan",size:30}}, title:"Scan with your camera"}
+                ]}
+            />
         )
     }
     
@@ -379,8 +335,8 @@ const BloodWorkPage = ({navigation,route}) => {
     function FirstScreen(){
         return(
             <View style={styles.startScreen}>
-                <View style={{marginTop:60,alignItems:"center"}}>  
-                    <Text style={{marginBottom:10,fontWeight:"700",fontSize:23,backgroundColor:"white"}}>Why complete this report ?</Text>
+                <View style={{marginTop:60,alignItems:"center",justifyContent:"space-between",height:"70%"}}>  
+                    <Text style={{marginBottom:10,fontWeight:"700",fontSize:24,backgroundColor:"white"}}>Why complete this report ?</Text>
                     <View style={{width:"80%",marginTop:50,height:200,justifyContent:"space-between"}}>
                         <View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:"100%"}}>
                             <MaterialCommunityIcons 
@@ -419,7 +375,7 @@ const BloodWorkPage = ({navigation,route}) => {
                         <Text style={{marginLeft:10,fontWeight:"600",fontSize:13,}}>Imagine visiting your doctor daily, reporting your health that can be used to make analasis today and can be used in the future</Text>
                     </View>
                 </View>
-                <Pressable onPress={() => setProgress(1)} style={[styles.startButton,{marginBottom:10}]}>
+                <Pressable onPress={() => setProgress(1)} style={[styles.startButton,{marginBottom:20}]}>
                     <Text style={{padding:14,fontWeight:"600",color:"white"}}>Start Now</Text>
                 </Pressable>
             </View>
@@ -476,45 +432,56 @@ const BloodWorkPage = ({navigation,route}) => {
         )
     }
 
-
 //<==================<[ Mian Return ]>====================>
 
     return(
         <>
             {ExitModal({isSaveModalActive})}
-            {SaveModal({saveCardModalActive})}
-            <View style={styles.container}>
-                <View style={styles.ProgressBar}>
-                    <TouchableOpacity onPress={handleBack} style={{backgroundColor:"#eee",borderRadius:30}}>
-                        <MaterialCommunityIcons 
-                            name="arrow-left"
-                            size={20}
-                            style={{padding:5}}
-                        />
-                    </TouchableOpacity>
-                    {!isUploadStage ?
-                        <ProgressBar progress={progress / dataFixed.length} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
-                        :
-                        <ProgressBar progress={progress / manual.length} width={250} height={5} color={"red"} backgroundColor={"white"} borderColor={"magenta"} />
-                    }
-                    
-                    <TouchableOpacity onPress={() => setIsSaveModalActive(!isSaveModalActive)} style={{backgroundColor:"#eee",borderRadius:30}}>
-                        <MaterialCommunityIcons 
-                            name="close"
-                            size={20}
-                            style={{padding:5}}
-                        />
-                    </TouchableOpacity>
-                </View>
+            {SaveModal({saveCardModalActive})}            
+            <View style={styles.container}>            
+                <ProgressRow 
+                    handleBack={handleBack}
+                    progress={progress} 
+                    dataFixed={dataFixed} 
+                    manual={manual} 
+                    setIsSaveModalActive={setIsSaveModalActive} 
+                    isSaveModalActive={isSaveModalActive} 
+                    isUploadStage={isUploadStage}
+                    ProgressBar={ProgressBar}
+                />
                 {progress == 0 ?
-                FirstScreen()                
+                    FirstScreen()                
                 :
-                focused ?
-                <Pressable onPress={() => {Keyboard.dismiss();setFocused(false)}} style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
-                    <View style={{width:"90%",alignItems:"center",backgroundColor:"#eee",justifyContent:"center",padding:20,borderRadius:20,marginTop:10}}>
-                        <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>            
-                    </View> 
-                    {!isUploadStage && 
+                    focused ?
+                        <Pressable onPress={() => {Keyboard.dismiss();setFocused(false)}} style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
+                            <View style={{width:"90%",alignItems:"center",backgroundColor:"#eee",justifyContent:"center",padding:20,borderRadius:20,marginTop:10}}>
+                                <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>            
+                            </View> 
+                            {!isUploadStage && 
+                                <>
+                                    {dataFixed[progress-1].component}
+                                    {progress == dataFixed.length ?
+                                        <Pressable onPress={() => handleUpload(methodSelected)} style={[styles.startButton,{marginBottom:10}]}>                        
+                                            <Text style={{padding:14,fontWeight:"600",color:"white"}}>Upload</Text>
+                                        </Pressable>
+                                        :
+                                        <Pressable onPress={() => setProgress(progress + 1)} style={[styles.startButton,{marginBottom:10}]}>                        
+                                            <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
+                                        </Pressable>
+                                    } 
+                                </>
+                            }                   
+                        </Pressable>
+                        :
+                        <View style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
+                        <View style={{width:"90%",alignItems:"center",backgroundColor:"#eee",justifyContent:"center",padding:20,borderRadius:20,marginTop:10}}>
+                            {!isUploadStage ? 
+                            <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>            
+                            :
+                            <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{manual[progress - 1].q}</Text>            
+                            }
+                        </View> 
+                        {!isUploadStage ? 
                         <>
                             {dataFixed[progress-1].component}
                             {progress == dataFixed.length ?
@@ -527,46 +494,22 @@ const BloodWorkPage = ({navigation,route}) => {
                                 </Pressable>
                             } 
                         </>
-                    }                   
-                </Pressable>
-                :
-                <View style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
-                <View style={{width:"90%",alignItems:"center",backgroundColor:"#eee",justifyContent:"center",padding:20,borderRadius:20,marginTop:10}}>
-                    {!isUploadStage ? 
-                    <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>            
-                    :
-                    <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{manual[progress - 1].q}</Text>            
-                    }
-                </View> 
-                {!isUploadStage ? 
-                <>
-                    {dataFixed[progress-1].component}
-                    {progress == dataFixed.length ?
-                        <Pressable onPress={() => handleUpload(methodSelected)} style={[styles.startButton,{marginBottom:10}]}>                        
-                            <Text style={{padding:14,fontWeight:"600",color:"white"}}>Upload</Text>
-                        </Pressable>
                         :
-                        <Pressable onPress={() => setProgress(progress + 1)} style={[styles.startButton,{marginBottom:10}]}>                        
-                            <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
-                        </Pressable>
-                    } 
-                </>
-                :
-                <>
-                {manual[progress-1].component}
-                {progress == manual.length ?
-                    <Pressable onPress={() => handleUpload(methodSelected)} style={[styles.startButton,{marginBottom:10}]}>                        
-                        <Text style={{padding:14,fontWeight:"600",color:"white"}}>Upload</Text>
-                    </Pressable>
-                    :
-                    <Pressable onPress={() => setProgress(progress + 1)} style={[styles.startButton,{marginBottom:10}]}>                        
-                        <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
-                    </Pressable>
-                } 
-                </>
-                }
-                <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:10,position:"absolute",right:10,bottom:20,opacity:0.3}}>{progress} / {dataFixed.length}</Text>
-                </View>
+                        <>
+                        {manual[progress-1].component}
+                        {progress == manual.length ?
+                            <Pressable onPress={() => handleUpload(methodSelected)} style={[styles.startButton,{marginBottom:10}]}>                        
+                                <Text style={{padding:14,fontWeight:"600",color:"white"}}>Upload</Text>
+                            </Pressable>
+                            :
+                            <Pressable onPress={() => setProgress(progress + 1)} style={[styles.startButton,{marginBottom:10}]}>                        
+                                <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
+                            </Pressable>
+                        } 
+                        </>
+                        }
+                        <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:10,position:"absolute",right:10,bottom:20,opacity:0.3}}>{progress} / {dataFixed.length}</Text>
+                        </View>
                 }                                  
             </View>
         </>
@@ -593,7 +536,8 @@ const styles = StyleSheet.create({
         width:"100%",
         height:"100%",
         justifyContent:"center",
-        backgroundColor:"white"
+        backgroundColor:"white",
+        justifyContent:"space-between"
     },
     btn:{
         padding:10,
@@ -673,3 +617,55 @@ const styles = StyleSheet.create({
 
 
 export default BloodWorkPage
+
+
+
+
+const ProgressRow = ({handleBack,progress,dataFixed,manual,setIsSaveModalActive,isSaveModalActive,isUploadStage,ProgressBar}) => {
+    return(
+        <View style={styles.ProgressBar}>
+        <TouchableOpacity onPress={handleBack} style={{backgroundColor:"#eee",borderRadius:30}}>
+            <MaterialCommunityIcons 
+                name="arrow-left"
+                size={20}
+                style={{padding:5}}
+            />
+        </TouchableOpacity>
+        {!isUploadStage ?
+            <ProgressBar progress={progress / dataFixed.length} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
+            :
+            <ProgressBar progress={progress / manual.length} width={250} height={5} color={"red"} backgroundColor={"white"} borderColor={"magenta"} />
+        }
+        
+        <TouchableOpacity onPress={() => setIsSaveModalActive(!isSaveModalActive)} style={{backgroundColor:"#eee",borderRadius:30}}>
+            <MaterialCommunityIcons 
+                name="close"
+                size={20}
+                style={{padding:5}}
+            />
+        </TouchableOpacity>
+        </View>
+    )
+}
+
+
+const SelectableBar = ({
+    handleMethodSelect,
+    methodSelected,
+    type,
+    title,
+    icon_name
+}) => {
+    return(
+        <TouchableOpacity onPress={() => handleMethodSelect(type)} style={[{width:"95%",padding:0,flexDirection:"row",alignItems:"center",borderWidth:2,borderRadius:10,marginTop:20,alignSelf:"center"}, methodSelected == type && {borderColor:"magenta"}]}>
+            <View style={[{borderWidth:0,padding:15,borderRightWidth:2,borderRadius:10,borderTopRightRadius:0,borderBottomRightRadius:0},methodSelected == type && {borderColor:"magenta"}]}>
+                <MaterialCommunityIcons 
+                    name={icon_name}
+                    size={30}
+                    color={methodSelected == type ? "magenta" : "black"}
+                />   
+            </View>                       
+            <Text style={{marginLeft:20,fontWeight:"700",fontSize:17,opacity:0.7}}>{title}</Text>     
+        </TouchableOpacity>
+    )
+}

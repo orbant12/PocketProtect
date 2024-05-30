@@ -1,11 +1,5 @@
-//<********************************************>
-//LAST EDITED DATE: 2023.12.03
-//EDITED BY: Orban Tamas
-//DESCRIPTION: This is the login page, where the user can login to the app
-//<********************************************>
-
 import React,{useState} from 'react';
-import { View, Text,SafeAreaView,StyleSheet,TextInput,Button, Pressable  } from 'react-native';
+import { View, Text,SafeAreaView,StyleSheet,TextInput,Button, Pressable,TouchableOpacity  } from 'react-native';
 import { useAuth } from '../context/UserAuthContext'
 import { auth } from '../firebase';
 import { sendPasswordResetEmail, GoogleAuthProvider,signInWithRedirect } from 'firebase/auth';
@@ -13,105 +7,60 @@ import { Icon } from 'react-native-elements';
 
 const LoginPage = ({navigation}) => {
 
-//<********************VARIABLES************************>
+//<==================<[ Variables ]>====================>
 
-//CURRENT USER | LOGIN
-const {Login, currentuser} = useAuth()
-//INPUTS | LOGIN
-const [inputEmail, setInputEmail] = useState('')
-const [inputPassword, setInputPassword] = useState('')
+    const {Login, currentuser} = useAuth()
+
+    const [inputEmail, setInputEmail] = useState('')
+    const [inputPassword, setInputPassword] = useState('')
 
 
-//<********************FUNCTIONS************************>
+//<==================<[ Functions ]>====================>
 
-//SUBMIT HANDLER | LOGIN
-const SubmitHandler = async (e) => {
-    e.preventDefault();
-    const email = inputEmail;
-    const password = inputPassword;
-    const response = await Login(email, password)
-    {currentuser && setInputEmail("") && setInputPassword("")}
+    const SubmitHandler = async (e) => {
+        e.preventDefault();
+        const email = inputEmail;
+        const password = inputPassword;
+        const response = await Login(email, password)
+        {currentuser && setInputEmail("") && setInputPassword("")}
+    };
 
-};
+    const handleForgotPass = async() => {
+    if(user.email != ""){
+        await sendPasswordResetEmail(auth,user.email)
+        alert("Password Reset Email Sent")
+    }else{
+        alert("Please Enter Email Address to Reset Password")
+    }
+    }
 
-//FORGOT PASSWORD | LOGIN
-const handleForgotPass = async() => {
-  if(user.email != ""){
-    await sendPasswordResetEmail(auth,user.email)
-    alert("Password Reset Email Sent")
-  }else{
-    alert("Please Enter Email Address to Reset Password")
-  }
-}
+    const handleNavigation = () => {
+        navigation.navigate('Register')
+    }
 
-const handleNavigation = () => {
-    navigation.navigate('Register')
-}
+//<==================<[ Main Return ]>====================>
 
-return (
-    <SafeAreaView style={styles.container}>
-        <View style={styles.paper}>
-            <View style={styles.titleSection}>
-                <Text style={styles.title} >Hey, Welcome Back</Text>
-            </View>
-
-            <View style={styles.inputArea}>
-            {/* EMAIL INPUT */}
-
-                <View style={styles.inputFieldContainer}> 
-                    <Icon
-                        name='envelope'
-                        type='font-awesome'
-                        color='black'
-                        style={{paddingLeft:10,opacity:0.3}}
-                    />
-                    <TextInput
-                        style={styles.inputField}
-                        placeholder='Email'
-                        value={inputEmail}
-                        onChangeText={text => setInputEmail(text)}
-                    />
+    return (
+        <SafeAreaView style={styles.container}>
+            <View style={styles.paper}>
+                <View style={styles.titleSection}>
+                    <Text style={styles.title} >Hey, Welcome Back</Text>
                 </View>
-            {/* PASSWORD INPUT */}
-
-                <View style={styles.inputFieldContainer}> 
-                    <Icon
-                        name='lock'
-                        type='font-awesome'
-                        color='black'
-                        onPress={handleForgotPass}
-                        style={{paddingLeft:10,opacity:0.3}}
-                    />
-                    <TextInput
-                        style={styles.inputField}
-                        placeholder={'Password'}
-                        secureTextEntry={true}
-                        value={inputPassword}
-                        onChangeText={text => setInputPassword(text)}
-                    />
-                </View>
-
-                <Pressable style={styles.forgotPassRow}>
-                    <Text>Forgot Password ?</Text>
-                </Pressable>
+                <InputSection 
+                    handleNavigation={handleNavigation}
+                    inputEmail={inputEmail} 
+                    inputPassword={inputPassword} 
+                    setInputEmail={setInputEmail}
+                    setInputPassword={setInputPassword}
+                    handleForgotPass={handleForgotPass}
+                    SubmitHandler={SubmitHandler}
+                />
             </View>
+        </SafeAreaView>
+    )}
 
 
-            <Pressable style={styles.button} onPress={SubmitHandler}>
-                <Text style={styles.buttonTitle} >Login</Text>
-            </Pressable>
-
-            <View style={styles.bottomText} >
-                <Text>Already a user ?</Text>
-                <Pressable onPress={() => handleNavigation()}>
-                    <Text>  Register</Text>
-                </Pressable>
-            </View>
-
-        </View>
-    </SafeAreaView>
-)
-}
+//<==================<[ Style Sheet ]>====================>
 
 const styles = StyleSheet.create({
 container: {
@@ -211,3 +160,58 @@ bottomText:{
 })
 
 export default LoginPage
+
+//<==================<[ Components ]>====================>
+
+const InputSection = ({handleNavigation,inputEmail,inputPassword,setInputPassword,setInputEmail,handleForgotPass,SubmitHandler}) => {
+    return(
+        <>
+            <View style={styles.inputArea}>
+            {/* EMAIL INPUT */}
+                <View style={styles.inputFieldContainer}> 
+                    <Icon
+                        name='envelope'
+                        type='font-awesome'
+                        color='black'
+                        style={{paddingLeft:10,opacity:0.3}}
+                    />
+                    <TextInput
+                        style={styles.inputField}
+                        placeholder='Email'
+                        value={inputEmail}
+                        onChangeText={text => setInputEmail(text)}
+                    />
+                </View>
+            {/* PASSWORD INPUT */}
+                <View style={styles.inputFieldContainer}> 
+                    <Icon
+                        name='lock'
+                        type='font-awesome'
+                        color='black'
+                        onPress={handleForgotPass}
+                        style={{paddingLeft:10,opacity:0.3}}
+                    />
+                    <TextInput
+                        style={styles.inputField}
+                        placeholder={'Password'}
+                        secureTextEntry={true}
+                        value={inputPassword}
+                        onChangeText={text => setInputPassword(text)}
+                    />
+                </View>
+                <Pressable style={styles.forgotPassRow}>
+                    <Text>Forgot Password ?</Text>
+                </Pressable>
+            </View>
+            <TouchableOpacity style={styles.button} onPress={SubmitHandler}>
+                <Text style={styles.buttonTitle} >Login</Text>
+            </TouchableOpacity>
+            <View style={styles.bottomText} >
+                <Text>Already a user ?</Text>
+                <Pressable onPress={() => handleNavigation()}>
+                    <Text>  Register</Text>
+                </Pressable>
+            </View>
+        </>
+    )
+}

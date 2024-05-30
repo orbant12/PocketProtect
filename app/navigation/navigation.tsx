@@ -53,3 +53,5 @@ export const Navigation_AddSlugSpot = ({
         alert("Something went wrong");
     }
 };
+
+

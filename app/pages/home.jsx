@@ -42,84 +42,84 @@ const [refreshing, setRefreshing] = useState(false);
 
 //<==================<[ Functions ]>====================>
 
-const handleNavigation  = (path) => {
-    navigation.navigate(path,{data:[{q:"valami",type:"binary"}], outcomes:""})
-}
-
-const handleScroll = (e) => {
-    const page = Math.round(e.nativeEvent.position);
-    setCurrentPageReminder(page);
-}
-
-const handleScrollReminder = (e) => {
-    const page = Math.round(e.nativeEvent.position);
-    setCurrentPage(page);
-}
-
-function parseDateToMidnight(dateStr) {
-    const [year, month, day] = dateStr.split('-').map(Number);
-    return new Date(year, month - 1, day, 0, 0, 0); 
-}  
-
-function splitDate(date){
-    const [year, month, day] = date.split('-').map(Number);
-    return {year,month,day}
-}
-
-const ThisDayCounter = () => { 
-    const selectedDateStr = String(selectedDate)
-    const selectedDateF = parseDateToMidnight(selectedDateStr);    
-    const calc = Math.floor((selectedDateF - today) / 1000);
-    if (calc > 0) { 
-        setDateCountdown(calc);
-        setHistoryShown(false)
-    } else {
-        setHistoryShown(true)
+    const handleNavigation  = (path) => {
+        navigation.navigate(path,{data:[{q:"valami",type:"binary"}], outcomes:""})
     }
-}
 
-useEffect(() =>{
-    ThisDayCounter()
-},[selectedDate])
+    const handleScroll = (e) => {
+        const page = Math.round(e.nativeEvent.position);
+        setCurrentPageReminder(page);
+    }
 
-const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    fetchThisMonthTasks()
-    fetchAllReminders()
-    setTimeout(() => {
-        setRefreshing(false);
-    }, 2000); // Example: setTimeout for simulating a delay
-}, []);
+    const handleScrollReminder = (e) => {
+        const page = Math.round(e.nativeEvent.position);
+        setCurrentPage(page);
+    }
 
-const fetchThisMonthTasks = async () => {
-    if(currentuser){
-        const date = splitDate(format)       
-        const response = await fetchMonthTasks({
-            userId: currentuser.uid,
-            month: date.month,
-            year: date.year
-        })
-        if(response != false){
-            setThisMonthTasks(response)
-            setAffectedDays(response.map(singleDate => singleDate.date));
-            console.log(response)
+    function parseDateToMidnight(dateStr) {
+        const [year, month, day] = dateStr.split('-').map(Number);
+        return new Date(year, month - 1, day, 0, 0, 0); 
+    }  
+
+    function splitDate(date){
+        const [year, month, day] = date.split('-').map(Number);
+        return {year,month,day}
+    }
+
+    const ThisDayCounter = () => { 
+        const selectedDateStr = String(selectedDate)
+        const selectedDateF = parseDateToMidnight(selectedDateStr);    
+        const calc = Math.floor((selectedDateF - today) / 1000);
+        if (calc > 0) { 
+            setDateCountdown(calc);
+            setHistoryShown(false)
+        } else {
+            setHistoryShown(true)
         }
     }
-}
 
-const fetchAllReminders = async () => {
-    if(currentuser){
-        const response = await fetchReminders({userId:currentuser.uid})
-        if ( response != false ){
-            setAllReminders(response)
+    useEffect(() =>{
+        ThisDayCounter()
+    },[selectedDate])
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        fetchThisMonthTasks()
+        fetchAllReminders()
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 2000); // Example: setTimeout for simulating a delay
+    }, []);
+
+    const fetchThisMonthTasks = async () => {
+        if(currentuser){
+            const date = splitDate(format)       
+            const response = await fetchMonthTasks({
+                userId: currentuser.uid,
+                month: date.month,
+                year: date.year
+            })
+            if(response != false){
+                setThisMonthTasks(response)
+                setAffectedDays(response.map(singleDate => singleDate.date));
+                console.log(response)
+            }
         }
     }
-}
 
-useEffect(() => {
-    fetchThisMonthTasks()
-    fetchAllReminders()
-},[])
+    const fetchAllReminders = async () => {
+        if(currentuser){
+            const response = await fetchReminders({userId:currentuser.uid})
+            if ( response != false ){
+                setAllReminders(response)
+            }
+        }
+    }
+
+    useEffect(() => {
+        fetchThisMonthTasks()
+        fetchAllReminders()
+    },[])
 
 
 //<==================<[ Child Components ]>====================>
@@ -299,7 +299,7 @@ useEffect(() => {
                         key={1}                        
                         />
                         <TaskBox 
-                        title="Allergies" 
+                        title="Lifestyle Assesment" 
                         icon1="robot" 
                         icon2="magnify" 
                         icon3="doctor" 
@@ -308,7 +308,7 @@ useEffect(() => {
                         key={2}   
                         />
                         <TaskBox 
-                        title="BMI" 
+                        title="Personal Assesment" 
                         icon1="robot" 
                         icon2="magnify" 
                         icon3="doctor" 
@@ -317,7 +317,7 @@ useEffect(() => {
                         key={3}   
                         />
                         <TaskBox 
-                        title="Lifestyle" 
+                        title="Medical Assesment" 
                         icon1="robot" 
                         icon2="magnify" 
                         icon3="doctor" 
