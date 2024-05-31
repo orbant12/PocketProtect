@@ -44,10 +44,12 @@ interface SelectionPageProps {
   selectableOption: 'box' | 'bar';
   buttonAction: ButtonAction;
   selectableData: SelectableDataItem[];
-  setOptionValue: (value: string) => void;
-  optionValue: string;
+  setOptionValue: (value: any) => void;
+  optionValue: any;
   setProgress: (progress: number) => void;
-}
+  specialValues: number[];
+  handleEvent: () => void;
+ }
 
 export const SelectionPage: React.FC<SelectionPageProps> = ({
   pageStyle = {},
@@ -59,6 +61,8 @@ export const SelectionPage: React.FC<SelectionPageProps> = ({
   setOptionValue,
   optionValue,
   setProgress,
+  specialValues = [],
+  handleEvent
 }) => {
   return (
     <View style={[styles.startScreen, pageStyle]}>
@@ -80,13 +84,13 @@ export const SelectionPage: React.FC<SelectionPageProps> = ({
         />
       )}
       <View style={{ width: '100%', alignItems: 'center' }}>
-        {optionValue != null ? (
+        {optionValue != null ? ( 
           <Pressable
             onPress={() => {
-              if (buttonAction.type === 'next') {
+              if (buttonAction.type === 'next' && !specialValues.includes(optionValue)) {
                 setProgress(buttonAction.actionData.progress + buttonAction.actionData.increment_value);
-              } else if (buttonAction.type === 'trigger') {
-                buttonAction.actionData.triggerAction();
+              } else if (specialValues.includes(optionValue)) {
+                handleEvent();
               }
             }}
             style={[styles.startButton, { position: 'relative', marginBottom: 20 }]}

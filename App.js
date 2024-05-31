@@ -18,8 +18,8 @@ import RegisterPage from "./app/pages/register";
 import MelanomaAdd from "./app/pages/Screens/Melanoma/melanomaAdd";
 import SinglePartAnalasis from "./app/pages/Screens/Melanoma/singlePart";
 import SlugAnalasis from "./app/pages/Screens/Melanoma/slugAnalasis";
-import MelanomaFullProcess from "./app/pages/ProcessScreens/melanomaFullProcess";
-import MelanomaSingleSlug from "./app/pages/ProcessScreens/melanomaSingleSlug";
+import MelanomaFullProcess from "./app/pages/Screens/Melanoma/ProcessScreens/melanomaFullProcess";
+import MelanomaSingleSlug from "./app/pages/Screens/Melanoma/ProcessScreens/melanomaSingleSlug";
 import AuthHub from "./app/pages/Screens/Login/authHub"
 import RegOnBoarding from "./app/pages/Screens/Login/regOnBoarding";
 import DailyReport from "./app/pages/DailyReportScreens/dailyReportOnboarding";
@@ -27,7 +27,7 @@ import SurveyScreeen from "./app/pages/Screens/Diagnosis/SurveyScreen";
 
 import { Dimensions,StyleSheet} from "react-native"
 import BloodWorkPage from "./app/pages/Screens/BloodCenter/bloodWork";
-import SingleFeature from "./app/pages/Screens/DetectionMenu/singleFeature";
+import MelanomaCenter from "./app/pages/Screens/Melanoma/melanomaCenter";
 import AllMelanomaAdd from "./app/pages/Screens/Melanoma/allMelanomaAdd";
 import BloodCenter from "./app/pages/Screens/BloodCenter/bloodCenter";
 import DiagnosisCenter from "./app/pages/Screens/Diagnosis/diagnosisCenter";
@@ -61,7 +61,7 @@ return (
             <Stack.Screen name="MelanomaAllAdd" component={AllMelanomaAdd}   options={({ route }) => ({ title:"+ Mole", headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
             <Stack.Screen name="SinglePartAnalasis" component={SinglePartAnalasis}   options={({ route }) => ({ title: route.params.bodyPart.melanomaId.charAt(0).toUpperCase() + route.params.bodyPart.melanomaId.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
             <Stack.Screen name="SlugAnalasis" component={SlugAnalasis}   options={({ route }) => ({ title: route.params.data.slug.charAt(0).toUpperCase() + route.params.data.slug.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />            
-            <Stack.Screen name="FeaturePage" component={SingleFeature}   options={({ route }) => ({ title: route.params.data.title, headerStyle: { backgroundColor: "white"},headerTintColor: "black"  })} />
+            <Stack.Screen name="MelanomaCenter" component={MelanomaCenter}   options={({ route }) => ({ headerStyle: { backgroundColor: "white", },headerTintColor: "black",headerShown:false  })} />
             <Stack.Screen name="BloodCenter" component={BloodCenter}   options={({ route }) => ({ title: "", headerStyle: { backgroundColor: "white"},headerTintColor: "black", headerShown:false  })} />
             <Stack.Screen name="DiagnosisCenter" component={DiagnosisCenter}   options={({ route }) => ({ title: "", headerStyle: { backgroundColor: "white"},headerTintColor: "black", headerShown:false  })} />
             <Stack.Screen name="FullMelanomaProcess" component={MelanomaFullProcess}   options={({ route }) => ({ title: "Melanoma Setup",headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerTitleStyle:{fontWeight:"700",fontSize:18}})} />          

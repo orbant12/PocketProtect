@@ -344,14 +344,56 @@ export const fetchNumberOfMoles = async ({
     }
 }
 
+export const fetchNumberOfMolesOnSlugs = async ({
+    userId, 
+})=>{
+    try{
+        const ref = collection(db, "users", userId, "Melanoma");                
+        const snapshot = await getDocs(ref);        
+        let slugValues = [];
+        for (const doc of snapshot.docs) {
+            const data = doc.data();
+            if (data && data.melanomaDoc && data.melanomaDoc.spot && data.melanomaDoc.spot.length > 0) {
+                const slug = data.melanomaDoc.spot[0].slug;
+                slugValues.push(slug);
+            }
+        }            
+        const slugCount = slugValues.reduce((acc, slug) => {
+            acc[slug] = (acc[slug] || 0) + 1;
+            return acc;
+        }, {});    
+        const result = Object.keys(slugCount).map(key => ({ [key]: slugCount[key] }));
+        
+        return result;
+    } catch (error) {
+        console.log(error)
+        return false
+    }
+}
+
 export const updateCompletedParts = async ({
     userId,
     completedArray
 }) => {
     try{
         const ref = doc(db, "users", userId, "Medical_Data", "skin_data")    
-        await setDoc(ref,{completedArray})
+        await updateDoc(ref,{completedArray})
         return true
+    } catch(err) {
+        console.log(err)
+        return false
+    }
+}
+
+export const fetchCompletedParts = async ({
+    userId
+}) => {
+    try{
+        const ref = doc(db, "users", userId, "Medical_Data", "skin_data")    
+        const snapshot = await getDoc(ref);
+        if( snapshot.exists()){
+            return snapshot.data().completedArray
+        }        
     } catch(err) {
         console.log(err)
         return false

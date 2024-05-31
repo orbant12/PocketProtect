@@ -5,16 +5,14 @@ import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { getFunctions, httpsCallable } from "firebase/functions";
 import { useAuth } from "../../../context/UserAuthContext";
 import { saveDiagnosisProgress,saveTask } from "../../../server"
-import {app} from "../../../firebase"
+import { getDiagnosisData,getDiagnosis, getReDiagnosis, getSurvey } from "../../../prompt.jsx"
 
 const SurveyScreeen = ({route,navigation}) => {
 
 //<=============> VARIABLE <===============>
 
-    const functions = getFunctions(app);
     const {currentuser} = useAuth()
 
     const [progress , setProgress] =useState(0)
@@ -46,18 +44,6 @@ const SurveyScreeen = ({route,navigation}) => {
 
 
 //<============> FUNCTIONS <===============>
-    
-    const  generateDiagnosisFromPrompt = async (request) => {
-        const generateTextFunction = httpsCallable(functions, 'openAIHttpFunctionSec');
-        try {
-            const result = await generateTextFunction({name: request});
-            //SETT LOADING FALSE      
-            return `${result.data.data.choices[0].message.content}`
-        } catch (error) {
-            console.error('Firebase function invocation failed:', error);
-            return error
-        }
-    };  
     
     const handleBinaryAnswer = (index, type) => {
         setDataFixed(prevData => {
@@ -143,7 +129,6 @@ const SurveyScreeen = ({route,navigation}) => {
         return formattedDate;
     }
     
-    
     useEffect(() =>{
         setDataFixed(prevData => prevData.filter(item => item.q !== undefined));
         // First Load it must call Openai
@@ -159,95 +144,7 @@ const SurveyScreeen = ({route,navigation}) => {
     },[])
 
 
-//<===========> Feature Engineering <===========>
-    
-    //<-----> Stage 1 <---------->
-    const ProcessSingleDiagnosis = async () => {
-        const type = "diagnosis"
-        const sympthomsPrompt = `Possible causes: ${possibleOutcomes}`;
-        const binaryFeedback = dataFixed.map(item => {
-                return item.q + ", " + item.a + '\n';
-        });
-        console.log(binaryFeedback)
-        const prompt = `Recently I'v asked you to create a survey from which you can confidently decide which of these causes is the most likely. ${sympthomsPrompt}.This is the survey: ${binaryFeedback} . Please choose from the Possible Causes, your answer MUST only contain that one likely cause as a word.`;
-        const response = await generateDiagnosisFromPrompt(prompt)
-        setFullDiagnosis(prevState => ({
-        ...prevState,
-        [type]: response
-        }));
-        return response
-    }
-
-    const ProcessRediagnosis = async () => {
-        const type = "diagnosis"
-        const sympthomsPrompt = `Possible causes: ${possibleOutcomes}`;
-        const binaryFeedback = dataFixed.map(item => {
-                return item.q + ", " + item.a + '\n';
-        });
-        console.log(binaryFeedback)
-        const prompt = `Recently I'v asked you to create a survey from which you can confidently decide which of these causes is the most likely. ${sympthomsPrompt}.This is the survey: ${binaryFeedback} . Please choose from the Possible Causes, you cannot choose ${fullDiagnosis.diagnosis}, your answer MUST only contain that one likely cause as a word.`;
-        const response = await generateDiagnosisFromPrompt(prompt)
-        setFullDiagnosis(prevState => ({
-        ...prevState,
-        [type]: response
-        }));
-        return response
-    }
-    
-    const ProcessHelpForDiagnosis = async (diagnosis) => {
-        const type = "help"
-        const prompt = `I have ${diagnosis}. Can you offer me help advice for solution like: lifestyle choices, medication extc. Be straight forward and you must focus only stating your advice and solutions`;
-        const response = await generateDiagnosisFromPrompt(prompt)
-        const lines = response.split('\n');
-        const formating = lines.map(line => {
-        const [numbering, content] = line.match(/^(\d+)\.\s(.*)$/).slice(1);
-        return { numbering, content };
-        });
-        setFullDiagnosis(prevState => ({
-        ...prevState,
-        [type]: formating
-        }));
-    }
-    
-    const ProcessDiagnosisDescription= async (diagnosis) => {
-        const type = "description"
-        const prompt = `Can you make a short description about ${diagnosis}. Try to explain it under 50 words and as efficently as possible.`;
-        const response = await generateDiagnosisFromPrompt(prompt)
-        setFullDiagnosis(prevState => ({
-        ...prevState,
-        [type]: response
-        }));
-    }
-    
-    const ProcessDiagnosisSymphtoms = async (diagnosis) => {
-        const type = "symphtoms"
-        const prompt = `Can list out all common symphtoms of ${diagnosis}. Be straight forward and you MUST only state the symphtoms by ascending numbered order.`;
-        const response = await generateDiagnosisFromPrompt(prompt)
-        const lines = response.split('\n');
-        const formating = lines.map(line => {
-        const [numbering, content] = line.match(/^(\d+)\.\s(.*)$/).slice(1);
-        return { numbering, content };
-        });
-        setFullDiagnosis(prevState => ({
-        ...prevState,
-        [type]: formating
-        }));
-    }
-    
-    const ProcessDiagnosisRecovery= async (diagnosis) => {
-        const type = "recovery"
-        const prompt = `You are a doctor. I am your patient and I have ${diagnosis}. List out all of the professional medication used in medicine for recovering from ${diagnosis}. Be straight forward and you must only state your solutions by ascending numbered order.`;
-        const response = await generateDiagnosisFromPrompt(prompt)
-        const lines = response.split('\n');
-        const formating = lines.map(line => {
-        const [numbering, content] = line.match(/^(\d+)\.\s(.*)$/).slice(1);
-        return { numbering, content };
-        });
-        setFullDiagnosis(prevState => ({
-        ...prevState,
-        [type]: formating
-        }));
-    }
+//<===========> STAGES <===========>
     
     const handleStartDiagnosis = async (potentialDiagnosis) => {
         diagnoseSheetRef.current.present()
@@ -256,16 +153,37 @@ const SurveyScreeen = ({route,navigation}) => {
             try{
                 if(potentialDiagnosis != "Not yet"){                  
                     const diagnosis = potentialDiagnosis                    
-                    await ProcessDiagnosisDescription(diagnosis)
-                    await ProcessDiagnosisSymphtoms(diagnosis)  
-                    await ProcessDiagnosisRecovery(diagnosis)                  
+                    const diagnosisData = await getDiagnosisData({
+                        diagnosis:diagnosis,
+                        stage:1
+                    })
+                    if ( diagnosisData != false ){
+                        diagnosisData.map((data) => {
+                            setFullDiagnosis(prevState => ({
+                                ...prevState,
+                                ...data
+                                }));
+                        })                                    
+                    }                                
                 } else {
-                    const diagnosis = await ProcessSingleDiagnosis()                    
-                    await ProcessDiagnosisDescription(diagnosis)
-                    await ProcessDiagnosisSymphtoms(diagnosis) 
-                    await ProcessDiagnosisRecovery(diagnosis)                   
-                }
-                // If data is not edited it stays only --> openEditSheet() can change it
+                    const diagnosis = await getDiagnosis({possibleOutcomes,dataFixed})                        
+                    const diagnosisData = await getDiagnosisData({
+                        diagnosis:diagnosis,
+                        stage:1
+                    })
+                    if ( diagnosisData != false ){
+                        diagnosisData.map((data) => {
+                            setFullDiagnosis(prevState => ({
+                                ...prevState,
+                                ...data
+                                }));
+                        })   
+                        setFullDiagnosis(prevState => ({
+                            ...prevState,
+                            diagnosis:diagnosis
+                            }));                             
+                    }   
+                }                
                 setEditedTracker(false)
                 }
             catch (error) {
@@ -281,12 +199,22 @@ const SurveyScreeen = ({route,navigation}) => {
         diagnoseSheetRef.current.present()
         setIsDiagnosDone(false)
     
-            try{  
-                const diagnosis = await ProcessRediagnosis()
-                await ProcessHelpForDiagnosis(diagnosis)
-                await ProcessDiagnosisDescription(diagnosis)
-                await ProcessDiagnosisSymphtoms(diagnosis)
-                await ProcessDiagnosisRecovery(diagnosis)                
+            try{
+                const preDiagnosis = fullDiagnosis.diagnosis
+                const diagnosis = await getReDiagnosis({possibleOutcomes,dataFixed,preDiagnosis})
+                const diagnosisData = await getDiagnosisData({diagnosis:diagnosis,stage:1}) 
+                if ( diagnosisData != false ){
+                    diagnosisData.map((data) => {
+                        setFullDiagnosis(prevState => ({
+                            ...prevState,
+                            ...data
+                            }));
+                        setFullDiagnosis(prevState => ({
+                            ...prevState,
+                            diagnosis:diagnosis
+                            }));
+                    })                                    
+                }                 
                 // If data is not edited it stays only --> openEditSheet() can change it
                 setEditedTracker(false)
                 }
@@ -295,19 +223,14 @@ const SurveyScreeen = ({route,navigation}) => {
             }
         setIsDiagnosDone(true)
     }
-    
-    //<------> Stage 2 <------->     
+
     const handleNextStage = async(clientSymphtoms,possibleOutcomes) => {
         setSession({
             ...session,
             stage:2
         })
         setIsDiagnosDone(false)
-        const currentDate = new Date();
-        const year = currentDate.getFullYear();
-        const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // Months are zero-indexed
-        const day = String(currentDate.getDate()).padStart(2, '0');
-        const formattedDate = `${year}.${month}.${day}`;
+        const createdAt = dateFormat(0)
         const data = {
             id: session.id,
             title: session.title,
@@ -320,35 +243,64 @@ const SurveyScreeen = ({route,navigation}) => {
                 stage_three:null,
                 stage_four:null, 
             },
-            created_at: formattedDate,
+            created_at: createdAt,
         }
         await saveDiagnosisProgress({
             userId:currentuser.uid,
             data
         })
-        handleStartSurvey()
+        const survey = await getSurvey({dataFixed,fullDiagnosis})        
+        if (survey) {
+            setMemoryDataFixed(dataFixed)
+            setDataFixed([...survey])        
+            setIsDiagnosDone(true)
+            setProgress(0)
+            setEditedTracker(true)
+            diagnoseSheetRef.current.close()
+        }
     }
     
-    const ProcessCreateSurvey= async (causes) => {    
-    const binaryFeedback = dataFixed.map(item => {
-        return item.q + ", " + item.a + '\n';
-    });
-    const sympthomsPrompt = `Previous client answers: ${binaryFeedback}`;
-    const diagnosisScript = `Diagnosis we want to determine wether probable or not: ${fullDiagnosis.diagnosis}`;    
-    const prompt = `${sympthomsPrompt}.${diagnosisScript}. You are a doctor trying to evaluate the hypothesis that your patient has ${fullDiagnosis.diagnosis}. Create a survey with questions that is formed to actively test the possibility of this hipothesys and evaluate it's chance dont include questions that have been asked. Servey must only contain forms of these: yes or no (qid:binary), client feedback required (qid:feedback). Your answer must be only contain the survey and each question asked like this:
-    binary,Have you ...? \n
-    feedback,Please describe ... \n `;
-    const response = await generateDiagnosisFromPrompt(prompt)
+    //<------> Stage 2 <------->     
+    const handleStartDiagnosis2 = async (potentialDiagnosis) => {
+        diagnoseSheetRef.current.present()
+        setIsDiagnosDone(false)
+        if (editedtTracker == true){
+            try{
+                if(potentialDiagnosis != "Not yet"){                  
+                    const diagnosis = potentialDiagnosis
+                    const stage2_diagnosisData = await getDiagnosisData({diagnosis,dataFixed,memoryDataFixed,stage:2})
+                    if ( stage2_diagnosisData != false ){
+                        stage2_diagnosisData.map((data) => {
+                            setFullDiagnosis(prevState => ({
+                                ...prevState,
+                                ...data
+                                }));                         
+                            })                                    
+                    }                 
+                } else {
+                    const diagnosis = fullDiagnosis.diagnosis
+                    const stage2_diagnosisData = await getDiagnosisData({diagnosis,dataFixed,memoryDataFixed,stage:2})
+                    if ( stage2_diagnosisData != false ){
+                        stage2_diagnosisData.map((data) => {
+                            setFullDiagnosis(prevState => ({
+                                ...prevState,
+                                ...data
+                                }));                         
+                            })                                    
+                    }                      
+                }
+                // If data is not edited it stays only --> openEditSheet() can change it
+                setEditedTracker(false)
+                }
+            catch (error) {
+                alert(`Something went wrong ${error}`)
+            }
+        } else if (editedtTracker == false){
 
-    const formattedData = response.split('\n').map(line => {
-        const [type, question] = line.split(',');    
-        return { type, q: question };
-    });    
-
-    const filtered = await formattedData.filter(item => item.q !== undefined);
-
-    return filtered
+        }  
+        setIsDiagnosDone(true)
     }
+    
     //<------> Stage 3 <------->     
     const handleNextStageThree = async(clientSymphtoms,possibleOutcomes) => {
         setSession({
@@ -385,101 +337,7 @@ const SurveyScreeen = ({route,navigation}) => {
         setIsDiagnosDone(true)
         navigation.navigate("DiagnosisCenter",{diagnosisData:data})
     }
-
-    const ProcessChanceOfDiagnosis = async (diagnosis) => {
-        const type = "chance"
-        const binaryFeedback = memoryDataFixed.map(item => {
-            return item.q + ", " + item.a + '\n';
-        });
-        const binaryFeedback2 = dataFixed.map(item => {
-            return item.q + ", " + item.a + '\n';
-        });
-        const sympthomsPrompt = `Previous client answers: Stage 1:${binaryFeedback}, Stage 2: ${binaryFeedback2}`;
-        const diagnosisScript = `Diagnosis we want to evaluate the chance of: ${fullDiagnosis.diagnosis}`;    
-        const prompt = `You are a prediction device predicting chance of diases being present by client feed back. Your client has ${fullDiagnosis.diagnosis}.${sympthomsPrompt}.${diagnosisScript}. Your answer MUST be a percentage only !`;
-        const response = await generateDiagnosisFromPrompt(prompt)
-        setFullDiagnosis(prevState => ({
-        ...prevState,
-        [type]: response
-        }));
-        return response
-    }
-
-    const ProcessFutureAssistanceDiagnosis = async (diagnosis) => {   
-        const type = "periodic_assistance"
-        const binaryFeedback = memoryDataFixed.map(item => {
-            return item.q + ", " + item.a + '\n';
-        });
-        const binaryFeedback2 = dataFixed.map(item => {
-            return item.q + ", " + item.a + '\n';
-        });
-        const sympthomsPrompt = `Previous client answers: Stage 1:${binaryFeedback}, Stage 2: ${binaryFeedback2}`;
-        const diagnosisScript = `Diagnosis of the client: ${fullDiagnosis.diagnosis}`;    
-        const prompt = `${diagnosisScript}.${sympthomsPrompt}. If you could gather information from this patient what frequency of interogation sessions be valuable from a data gathering to medicate this patient stand point: DAILY or if < WEEKLY or if < EVERY X DAYS or if < MONTHLY is enough. Your answers MUST only be either "Daily" if you thing daily sessions recommended or "Weekly" if weekly enough or "Every x days" if its more then weekly but less then monthly or "Monthly" if monthly is enough !`;
-        const response = await generateDiagnosisFromPrompt(prompt)
-        setFullDiagnosis(prevState => ({
-        ...prevState,
-        [type]: response
-        }));
-        return response
-    }
-
-    const ProcessYoutubeExplainVideo = async (diagnosis) => {   
-        const type = "explain_video"   
-        const prompt = `Can you please recommend the best youtube video that explains ${diagnosis}. Your answer MUST be ONLY the https:// link to the video`
-        const response = await generateDiagnosisFromPrompt(prompt)
-        setFullDiagnosis(prevState => ({
-        ...prevState,
-        [type]: response
-        }));
-        return response
-    }
     
-    const handleStartSurvey = async () => {    
-        const survey = await ProcessCreateSurvey()
-        if (survey) {
-            setMemoryDataFixed(dataFixed)
-            setDataFixed(survey)        
-            setIsDiagnosDone(true)
-            setProgress(0)
-            setEditedTracker(true)
-            diagnoseSheetRef.current.close()
-        }
-    }
-
-    const handleStartDiagnosis2 = async (potentialDiagnosis) => {
-        diagnoseSheetRef.current.present()
-        setIsDiagnosDone(false)
-        if (editedtTracker == true){
-            try{
-                if(potentialDiagnosis != "Not yet"){                  
-                    const diagnosis = potentialDiagnosis
-                    await ProcessHelpForDiagnosis(diagnosis)
-                    await ProcessFutureAssistanceDiagnosis(diagnosis)
-                    await ProcessDiagnosisDescription(diagnosis)
-                    await ProcessDiagnosisSymphtoms(diagnosis)
-                    await ProcessDiagnosisRecovery(diagnosis)
-                } else {
-                    const diagnosis = fullDiagnosis.diagnosis
-                    await ProcessChanceOfDiagnosis(diagnosis)
-                    await ProcessFutureAssistanceDiagnosis(diagnosis)
-                    await ProcessHelpForDiagnosis(diagnosis)
-                    await ProcessDiagnosisDescription(diagnosis)
-                    await ProcessDiagnosisSymphtoms(diagnosis)
-                    await ProcessDiagnosisRecovery(diagnosis)
-                    await ProcessYoutubeExplainVideo(diagnosis)
-                }
-                // If data is not edited it stays only --> openEditSheet() can change it
-                setEditedTracker(false)
-                }
-            catch (error) {
-                alert(`Something went wrong ${error}`)
-            }
-        } else if (editedtTracker == false){
-
-        }  
-        setIsDiagnosDone(true)
-    }
 
 
 //<===========> Child Components <===========>
@@ -565,7 +423,7 @@ const SurveyScreeen = ({route,navigation}) => {
                     <ActivityIndicator size="large" color="black" />
                 </View>
             :
-            fullDiagnosis.description &&            
+                    
             <ScrollView style={{width:"100%",height:"100%"}} showsVerticalScrollIndicator={false}>
             <View style={Dstyles.diagnosisPage}>
 
@@ -612,8 +470,8 @@ const SurveyScreeen = ({route,navigation}) => {
                 </TouchableOpacity>
 
             </View>
-            </ScrollView>}
-
+            </ScrollView>
+            }
             </>
         )
     }

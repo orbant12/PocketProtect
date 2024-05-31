@@ -95,7 +95,7 @@ const handleNavigation = (path) => {
     const data = {
         title: path
     }
-    navigation.navigate("FeaturePage",{data:data})
+    navigation.navigate("MelanomaCenter",{data:data})
 }
 
 const handleScroll = (event) => {

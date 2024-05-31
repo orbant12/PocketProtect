@@ -1,11 +1,11 @@
-import { View,Text,StyleSheet,Pressable,Animated,Image,ScrollView,ActivityIndicator,TouchableOpacity } from "react-native"
+import { View,Text,StyleSheet,Pressable,Image,ScrollView,ActivityIndicator,TouchableOpacity } from "react-native"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import React, {useState,useEffect,useRef} from "react";
 import * as ImagePicker from 'expo-image-picker';
 import ProgressBar from 'react-native-progress/Bar';
 import { dotSelectOnPart } from './melanomaDotSelect.jsx'
-import { fetchSlugMelanomaData ,melanomaSpotUpload,melanomaUploadToStorage ,deleteSpot} from '../../server';
-import SampleImage from "../../assets/IMG_0626.jpg"
+import { fetchSlugMelanomaData ,melanomaSpotUpload,melanomaUploadToStorage ,deleteSpot} from '../../../../server';
+import SampleImage from "../../../../assets/IMG_0626.jpg"
 
 
 
@@ -185,7 +185,6 @@ const MelanomaSingleSlug = ({route,navigation}) => {
             userId:currentuserUID,
             spotId: id
         })
-
         if( response.firestore.success == true && response.storage.success == true){
             alert("Mole Deleted Sucessfully !")
             fetchSlugSpots()
@@ -195,10 +194,8 @@ const MelanomaSingleSlug = ({route,navigation}) => {
         } else if ( response.firestore.success != true || response.storage.success != true) {
             alert("Deletion failed ...")
         }
-
     }
     
-
     useEffect(() => {
         fetchSlugSpots()
         isThisPartCompleted(sessionMemory)

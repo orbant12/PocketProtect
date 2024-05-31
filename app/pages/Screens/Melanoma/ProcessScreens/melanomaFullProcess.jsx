@@ -1,22 +1,23 @@
-import { View,Text,StyleSheet,Pressable,Animated,Image,ScrollView,TouchableOpacity, SafeAreaView,Dimensions, PixelRatio } from "react-native"
+import { View,Text,StyleSheet,Pressable,Image,ScrollView,TouchableOpacity,Dimensions, PixelRatio } from "react-native"
 import React, {useState,useEffect,useRef} from "react";
 import ProgressBar from 'react-native-progress/Bar';
-import { useAuth } from "../../context/UserAuthContext.jsx";
-import Body from "../../components/BodyParts/index.tsx";
-import doctorImage from "../../assets/doc.jpg"
-import Stage1SVG from "../../assets/skinburn/3.png"
-import stage2SVG from "../../assets/skinburn/2.png"
-import stage3SVG from "../../assets/skinburn/1.png"
-import alertMelanoma from "../../assets/skinburn/Melanoma.png"
-import alertTeam from "../../assets/skinburn/5.png"
+import { useAuth } from "../../../../context/UserAuthContext.jsx";
+import Body from "../../../../components/BodyParts/index.tsx";
+import doctorImage from "../../../../assets/doc.jpg"
+import Stage1SVG from "../../../../assets/skinburn/3.png"
+import stage2SVG from "../../../../assets/skinburn/2.png"
+import stage3SVG from "../../../../assets/skinburn/1.png"
+import alertMelanoma from "../../../../assets/skinburn/Melanoma.png"
+import alertTeam from "../../../../assets/skinburn/5.png"
 import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { melanomaMetaDataUpload } from "../../server.js"
-import { SelectionPage } from "../../components/SelectableComponents/selectPage.tsx";
-import { FactScreenType_1 } from "../../components/FactScreenComponents/factScreenType1.jsx";
-import { FactScreenType_2 } from "../../components/FactScreenComponents/factScreenType2.jsx";
+import { melanomaMetaDataUpload } from "../../../../server.js"
+import { SelectionPage } from "../../../../components/SelectableComponents/selectPage.tsx";
+import { SelectionPage_Binary } from "../../../../components/SelectableComponents/selectPage_Binary.tsx";
+import { FactScreenType_1 } from "../../../../components/FactScreenComponents/factScreenType1.jsx";
+import { FactScreenType_2 } from "../../../../components/FactScreenComponents/factScreenType2.jsx";
 
 
 const { width, height } = Dimensions.get('window');
@@ -279,76 +280,11 @@ const MelanomaFullProcess = ({navigation,route}) => {
     function SkinBurnScreen(){
         return(
             <>
-            {!haveBeenBurned ? 
-                // <View style={[styles.startScreen]}>
-                //     <View style={{marginTop:50,alignItems:"center"}}>  
-                //         <Text style={{marginBottom:10,fontWeight:"800",fontSize:20,backgroundColor:"white"}}>Have you been sunburnt ?</Text>
-                        
-                //     </View>
-                //     <View style={{marginBottom:30}}>
-                //         <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:50}}>
-                //                 <Pressable onPress={() => handleMelanomaDataChange("stage",0)} style={melanomaMetaData.sunburn[0]?.stage  == 0 ? styles.genderOptionButtonA : styles.genderOptionButton}>
-                //                     <MaterialCommunityIcons 
-                //                         name="cancel"
-                //                         size={20}
-                //                         style={{marginBottom:1}}
-                //                     />
-                //                     <Text style={{fontWeight:"600",fontSize:17}}>Never</Text>
-                //                 </Pressable>
-                //                 <Pressable onPress={() => handleMelanomaDataChange("stage",1)} style={melanomaMetaData.sunburn[0]?.stage  == 1 ? styles.genderOptionButtonA : styles.genderOptionButton}>
-                //                     <Image 
-                //                         source={Stage1SVG}
-                //                         style={{position:"relative",width:100,height:100}}
-                //                     />
-                //                     <Text style={{fontWeight:"600",fontSize:17}}>Stage I</Text>
-                //                 </Pressable>
-                //             </View>
-                //             <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:50}}>
-                //                 <Pressable onPress={() => handleMelanomaDataChange("stage",2)} style={melanomaMetaData.sunburn[0]?.stage  == 2 ? styles.genderOptionButtonA : styles.genderOptionButton}>
-                //                     <Image 
-                //                         source={stage3SVG}
-                //                         style={{position:"relative",width:100,height:100}}
-                //                     />
-                //                     <Text style={{fontWeight:"600",fontSize:17}}>Stage II</Text>
-                //                 </Pressable>
-                //                 <Pressable onPress={() => handleMelanomaDataChange("stage",3)}style={melanomaMetaData.sunburn[0]?.stage  == 3 ? styles.genderOptionButtonA : styles.genderOptionButton}>
-                //                     <Image 
-                //                         source={stage2SVG}
-                //                         style={{position:"relative",width:100,height:100}}
-                //                     />
-                //                     <Text style={{fontWeight:"600",fontSize:17}}>Stage III</Text>
-                //                 </Pressable>
-                //             </View>
-                //     </View>      
-                //         <View style={{width:"100%",alignItems:"center"}}>
-                //         {melanomaMetaData.sunburn[0]?.stage  == 0 ? 
-                //             <Pressable  onPress={() => setProgress(progress + 0.1)} style={styles.startButton}>
-                //                 <Text style={{padding:15,fontWeight:"600",color:"white"}}>Next</Text>
-                //             </Pressable>
-                //             :melanomaMetaData.sunburn[0]?.stage== 1 ? 
-                //             <Pressable onPress={() => setHaveBeenBurned(!haveBeenBurned)} style={styles.startButton}>
-                //                 <Text style={{padding:15,fontWeight:"600",color:"white"}}>Where ?</Text>
-                //             </Pressable>
-                //             :
-                //             melanomaMetaData.sunburn[0]?.stage == 2 ? 
-                //             <Pressable onPress={() => setHaveBeenBurned(!haveBeenBurned)} style={styles.startButton}>
-                //                 <Text style={{padding:15,fontWeight:"600",color:"white"}}>Where ?</Text>
-                //             </Pressable>
-                //             :
-                //             melanomaMetaData.sunburn[0]?.stage == 3 ? 
-                //             <Pressable onPress={() => setHaveBeenBurned(!haveBeenBurned)} style={styles.startButton}>
-                //                 <Text style={{padding:15,fontWeight:"600",color:"white"}}>Where ?</Text>
-                //             </Pressable>
-                //             :
-                //             <Pressable style={styles.startButtonNA}>
-                //                 <Text style={{padding:15,fontWeight:"600",color:"black"}}>Not Selected Yet</Text>
-                //             </Pressable>
-                //         }                
-                //     </View>
-                // </View>
+            {!haveBeenBurned ?   
                 <SelectionPage 
-                    buttonAction={{type:"next",actionData:{triggerAction:() => setHaveBeenBurned(!haveBeenBurned)} }}
-                    title={"Have you been sunburnt ?"}
+                    buttonAction={{type:"next",actionData:{progress:progress,increment_value:0.1}}}
+                    specialValues={[1,2,3]}
+                    pageTitle={"Have you been sunburnt ?"}
                     selectableOption="box"
                     selectableData={
                         [
@@ -400,9 +336,10 @@ const MelanomaFullProcess = ({navigation,route}) => {
                     }
                     setOptionValue={(type) => handleMelanomaDataChange("stage",type)}
                     optionValue={melanomaMetaData.sunburn[0]?.stage}
+                    setProgress={(e) => setProgress(e)}
+                    handleEvent={() => setHaveBeenBurned(!haveBeenBurned)}
                 />
                 :
-            
                 <View style={styles.startScreen}>
                         <ScrollView centerContent style={{width:"100%"}}>
                             <View style={{width:"100%",alignItems:"center"}}>
@@ -513,21 +450,12 @@ const MelanomaFullProcess = ({navigation,route}) => {
         return(
         <GestureHandlerRootView style={{ flex: 1,zIndex:-1,width:"100%" }}>
             <BottomSheetModalProvider>
-                <View style={styles.startScreen}>
-                    <View style={{marginTop:200,alignItems:"center",backgroundColor:"rgba(0,0,0,0.04)",padding:20,borderRadius:10,width:"90%"}}>  
-                        <Text style={{marginBottom:10,fontWeight:"700",fontSize:20,textAlign:"center",}}>Has anyone in your family been diagnosed with <Text style={{color:"magenta"}}>Melanoma </Text> before ?</Text>
-                    </View>
-                    <View style={{width:"100%",alignItems:"center"}}>
-                        <Pressable onPress={() => handleOpenBottomSheet("open")} style={[styles.startButton,{backgroundColor:"white",marginBottom:20,position:"relative"}]}>
-                            <Text style={{padding:15,fontWeight:"600"}}>Yes</Text>
-                        </Pressable>
-                        
-                        <Pressable onPress={() => setProgress(progress + 0.1)} style={[styles.startButton,{position:"relative"}]}>
-                            <Text style={{padding:15,fontWeight:"700",color:"white"}}>No</Text>
-                        </Pressable>
-                    </View> 
+                <SelectionPage_Binary 
+                    pageTitle={{text:() => <Text style={{fontWeight:"700",fontSize:21,textAlign:"center",}}>Has anyone in your family been diagnosed with <Text style={{color:"magenta"}}>Melanoma </Text> before ?</Text>}}                    
+                    setProgress={(e) => e == true ? handleOpenBottomSheet("open"):setProgress(progress + 0.1)}
+                />
 
-                    <BottomSheetModal
+                <BottomSheetModal
                         ref={bottomSheetRef}
                         snapPoints={snapPoints}
                         enablePanDownToClose={true}
@@ -551,7 +479,6 @@ const MelanomaFullProcess = ({navigation,route}) => {
                             </Pressable>
                         </View>
                     </BottomSheetModal>
-                </View>
             </BottomSheetModalProvider>
         </GestureHandlerRootView >
         )
