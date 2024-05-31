@@ -9,7 +9,7 @@ export const FactScreenType_1 = ({
     title,
     descriptionRows = [],
     buttonAction = {type:"next" | "trigger", actionData:{progress:Number, increment_value:Number} | {triggerAction:() => Object}},
-
+    setProgress
 }) => {
     return(
         <View style={[styles.startScreen,{justifyContent:"space-between",height:"90%",marginTop:30},pageStyle]}>
