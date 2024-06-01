@@ -363,7 +363,7 @@ export const fetchNumberOfMolesOnSlugs = async ({
             return acc;
         }, {});    
         const result = Object.keys(slugCount).map(key => ({ [key]: slugCount[key] }));
-        
+
         return result;
     } catch (error) {
         console.log(error)
@@ -376,7 +376,7 @@ export const updateCompletedParts = async ({
     completedArray
 }) => {
     try{
-        const ref = doc(db, "users", userId, "Medical_Data", "skin_data")    
+        const ref = doc(db, "users", userId, "Medical_Data", "skin_data")
         await updateDoc(ref,{completedArray})
         return true
     } catch(err) {

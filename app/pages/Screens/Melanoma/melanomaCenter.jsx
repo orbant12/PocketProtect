@@ -10,6 +10,7 @@ import {bodyFront} from "../../../components/BodyParts/bodyFront.ts"
 import {bodyBack} from "../../../components/BodyParts/bodyBack.ts"
 import { useAuth } from '../../../context/UserAuthContext.jsx';
 import { fetchAllMelanomaSpotData, fetchUserData,fetchCompletedParts, fetchNumberOfMolesOnSlugs } from '../../../server.js';
+import { useFocusEffect } from '@react-navigation/native';
 
 const SingleFeature = ({route,navigation}) => {
 
@@ -143,31 +144,33 @@ const SingleFeature = ({route,navigation}) => {
             });
     };
 
-    useEffect(() => {        
+    const handleRefresh = () => {
         BodySvgSelector()
         AffectedSlugMap(); 
         fetchAllUserData();
         fetchAllCompletedParts();
         fetchAllNumberOfMoleOnSlug();
-    }, []);
+    }
+
+    useFocusEffect(
+        React.useCallback(() => {
+        handleRefresh();
+        return () => {};
+        }, [])
+    );
 
     useEffect(() => {
         BodySvgSelector()
         AffectedSlugMap()
     }, [userData, selectedSide,melanomaData]);
 
-
     const [refreshing, setRefreshing] = useState(false);
     const onRefresh = useCallback(() => {
         setRefreshing(true);
-        BodySvgSelector()
-        AffectedSlugMap(); 
-        fetchAllUserData(); 
-        fetchAllCompletedParts();
-        fetchAllNumberOfMoleOnSlug();
+        handleRefresh();
         setTimeout(() => {
             setRefreshing(false);
-        }, 2000); // Example: setTimeout for simulating a delay
+        }, 2000); 
     }, []);
 
 //<==================<[ COMPIINETNS ]>====================>
@@ -446,15 +449,15 @@ const SingleFeature = ({route,navigation}) => {
         return(
         <View style={Mstyles.modalOverlay}> 
         <View style={Mstyles.modalBox}>
-            <View style={{marginTop:50,alignItems:"center"}}>  
-                <Text style={{marginBottom:10,fontWeight:"700",fontSize:20,backgroundColor:"white"}}>What is your skin type ?</Text>        
+            <View style={{marginTop:30,alignItems:"center"}}>  
+                <Text style={{fontWeight:"700",fontSize:20,backgroundColor:"white"}}>What is your skin type ?</Text>        
             </View>
-            <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:0}}>
+            <View style={{flexDirection:"row",width:"85%",justifyContent:"space-between",alignItems:"center",marginBottom:10,marginTop:10}}>
                 <Pressable onPress={() => handleMelanomaDataChange("skin_type",0)} style={[{ backgroundColor:"#fde3ce"}, melanomaMetaData.skin_type == 0 ? Mstyles.skinTypeOptionButtonA : Mstyles.skinTypeOptionButton]} />                    
                 <Pressable onPress={() => handleMelanomaDataChange("skin_type",1)} style={[{ backgroundColor:"#fbc79d"},melanomaMetaData.skin_type  == 1 ? Mstyles.skinTypeOptionButtonA : Mstyles.skinTypeOptionButton]} />                                    
             </View>
 
-            <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:50}}>
+            <View style={{flexDirection:"row",width:"85%",justifyContent:"space-between",alignItems:"center",marginBottom:10}}>
                 <Pressable onPress={() => handleMelanomaDataChange("skin_type",2)} style={[{ backgroundColor:"#934506"},melanomaMetaData.skin_type  == 2 ? Mstyles.skinTypeOptionButtonA: Mstyles.skinTypeOptionButton]} />                
                 <Pressable onPress={() => handleMelanomaDataChange("skin_type",3)} style={[{ backgroundColor:"#311702"},melanomaMetaData.skin_type == 3 ? Mstyles.skinTypeOptionButtonA : Mstyles.skinTypeOptionButton]} />                
             </View>
@@ -516,7 +519,8 @@ const SingleFeature = ({route,navigation}) => {
                                 color={"white"}
                             />   
                         </View>                        
-                    </TouchableOpacity>
+                </TouchableOpacity>
+                
                 <TouchableOpacity onPress={() => scrollRef.current.scrollTo({x:0,y:720,animated:true})} style={{backgroundColor:"black",borderRadius:30,borderColor:"white",borderWidth:2}}>
                     <MaterialCommunityIcons 
                         name="monitor-eye"
@@ -525,6 +529,9 @@ const SingleFeature = ({route,navigation}) => {
                         style={{padding:9}}
                     />
                 </TouchableOpacity>
+                <TouchableOpacity onPress={() => setSkinModal(!skinModal)} style={{backgroundColor:melanomaMetaData.skin_type == 0 ? "#fde3ce" : melanomaMetaData.skin_type == 1 ? "#fbc79d" : melanomaMetaData.skin_type == 2 ? "#934506" : melanomaMetaData.skin_type == 3 ? "#311702":null,borderRadius:"100%",padding:15,borderWidth:2,position:"absolute",right:14,top:70}} />
+                
+                
                 </View>                      
                         <LinearGradient
                             colors={['white', '#fc8bfb','white']}
@@ -579,7 +586,7 @@ const SingleFeature = ({route,navigation}) => {
                                     <Text style={{fontSize:12,opacity:0.5,fontWeight:"500"}}>Open them for analasis results</Text>   
                                     <Text style={{fontSize:20,fontWeight:'bold'}}>Your Moles</Text>                                    
                                 </View>
-                                <TouchableOpacity onPress={() => setSkinModal(!skinModal)} style={{backgroundColor:melanomaMetaData.skin_type == 0 ? "#fde3ce" : melanomaMetaData.skin_type == 1 ? "#fbc79d" : melanomaMetaData.skin_type == 2 ? "#934506" : melanomaMetaData.skin_type == 3 ? "#311702":null,borderRadius:"100%",padding:15,borderWidth:2}} />
+
                             </View>
                             <ScrollView horizontal >
             
@@ -593,7 +600,7 @@ const SingleFeature = ({route,navigation}) => {
                                             <View>
                                                 {dotSelectOnPart(bodyPart)}
                                             </View>
-                                            <TouchableOpacity style={Mstyles.showMoreBtn} onPress={() => navigation.navigate("SlugAnalasis",{ data: bodyPart,userData: userData,skin_type:melanomaMetaData.skin_type})}>
+                                            <TouchableOpacity style={Mstyles.showMoreBtn} onPress={() => navigation.navigate("SlugAnalasis",{ data: bodyPart,userData: userData,skin_type:melanomaMetaData.skin_type,isCompleted:completedParts.includes(bodyPart.slug)})}>
                                                 <Text style={{fontSize:15,fontWeight:500,opacity:0.7,color:"white"}}>Open Analasis</Text>
                                             </TouchableOpacity>
                                            {completedParts.includes(bodyPart.slug) ? <Text style={{color:"lightgreen",fontWeight:"500",opacity:0.5,fontSize:10,position:"absolute",bottom:10}}>Marked as complete</Text> : <Text style={{color:"red",fontWeight:"500",opacity:0.5,fontSize:10,position:"absolute",bottom:10}}>Not marked as complete</Text>}
@@ -833,15 +840,15 @@ const Mstyles = StyleSheet.create({
         justifyContent:"space-between",
         backgroundColor:"white",
         alignItems:"center",
-        borderWidth:0.3,
-        borderRadius:10,
+        borderWidth:6,
+        borderRadius:5,
         padding:0,
-        width:"90%",
-        height:"90%",
+        width:"85%",
+        height:"65%",
         shadowColor: '#171717',
-        shadowOffset: {width: 4, height: -1},
+        shadowOffset: {width: 10, height: -1},
         shadowOpacity: 0.6,
-        shadowRadius: 3,
+        shadowRadius: 30,
     },
     modalYesBtn:{
         padding:5,
@@ -870,14 +877,14 @@ const Mstyles = StyleSheet.create({
         position:"absolute",
         width:"100%",
         height:"100%",
-        backgroundColor: "rgba(0, 0, 0, 0.7)",
+        backgroundColor: "rgba(0, 0, 0, 0.8)",
     },
     skinTypeOptionButtonA:{
         flexDirection:"column",
-        width:140,
+        width:125,
         alignItems:"center",
         justifyContent:"center",
-        height:140,
+        height:125,
         borderWidth:5,
         borderColor:"magenta",
         borderRadius:15,
@@ -885,10 +892,10 @@ const Mstyles = StyleSheet.create({
     },
     skinTypeOptionButton:{
         flexDirection:"column",
-        width:140,
+        width:125,
         alignItems:"center",
         justifyContent:"center",
-        height:140,
+        height:125,
         borderRadius:30,
         padding:20,
     },

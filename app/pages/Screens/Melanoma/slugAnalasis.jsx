@@ -1,13 +1,11 @@
-import { useEffect,useState,useCallback } from "react";
+import React,{ useEffect,useState,useCallback } from "react";
 import { View, StyleSheet,ScrollView,Text, Pressable,TouchableOpacity,RefreshControl,Image } from "react-native";
 import { useAuth } from "../../../context/UserAuthContext";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
-import {fetchSlugMelanomaData } from "../../../server";
-
+import {fetchSlugMelanomaData,updateCompletedParts,fetchCompletedParts } from "../../../server";
 import { dotsSelectOnPart } from "./components/selectedSlugDots";
-
 import { Navigation_SingleSpotAnalysis, Navigation_AddSlugSpot } from "../../../navigation/navigation"
+import { useFocusEffect } from '@react-navigation/native';
 
 const SlugAnalasis = ({ route,navigation }) => {
 
@@ -15,11 +13,13 @@ const SlugAnalasis = ({ route,navigation }) => {
 
     const [melanomaData, setMelanomaData] = useState([]);
     const [highlighted, setHighlighted] = useState(null);
+    const [ completedParts, setCompletedParts] = useState([])
     const { currentuser } = useAuth();   
     const bodyPart = route.params.data;
     const skin_type = route.params.skin_type;
     const userData = route.params.userData;
     const gender = userData.gender
+    const isCompleted = route.params.isCompleted
 
 //<***************************  Functions ******************************************>
 
@@ -37,9 +37,23 @@ const SlugAnalasis = ({ route,navigation }) => {
         }
     }
 
-    useEffect(() => {
-        fetchAllMelanomaData();       
-    },[])
+    const fetchAllCompletedParts = async () => {
+        if(currentuser){
+            const response = await fetchCompletedParts({
+                userId: currentuser.uid,
+            });
+            const completedSlugs = response.map(part => part.slug);     
+            setCompletedParts(completedSlugs)            
+        }
+    }
+
+    useFocusEffect(
+        React.useCallback(() => {
+        fetchAllMelanomaData();     
+        fetchAllCompletedParts();  
+        return () => {};
+        }, [])
+    );
 
     const showSpot = (melanomaId) => {
         if(melanomaId == highlighted){
@@ -47,8 +61,30 @@ const SlugAnalasis = ({ route,navigation }) => {
         } else {
             setHighlighted(melanomaId);
         }
-
     }
+
+    const handleComplete = async (type) => {
+
+        let updatedCompletedParts;
+    
+        if (type === false) {
+            updatedCompletedParts = [...completedParts, bodyPart.slug];
+        } else if (type === true) {
+            updatedCompletedParts = completedParts.filter(part => part !== bodyPart.slug);
+        }
+        const response = updatedCompletedParts.map(slug => {                
+            return { slug: slug };
+        });
+        console.log(response)
+        await updateCompletedParts({
+            userId: currentuser.uid,
+            completedArray: response
+        });
+            
+        setCompletedParts(updatedCompletedParts);
+    };
+    
+    
 
     const handleSpotOpen = (bodyPart) => {
         Navigation_SingleSpotAnalysis({
@@ -87,6 +123,48 @@ const SlugAnalasis = ({ route,navigation }) => {
 
 return(
     <View style={styles.container}>
+            <View style={styles.ProgressBar}>
+                <TouchableOpacity onPress={() => navigation.goBack({refresh:true})}  style={{backgroundColor:"black",borderRadius:30,borderColor:"white",borderWidth:2}}>
+                    <MaterialCommunityIcons 
+                        name="arrow-left"
+                        size={25}
+                        color={"white"}
+                        style={{padding:5}}
+                    />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() =>  handleAddMelanoma()} style={{width:"60%",height:50,borderWidth:2,justifyContent:"center",borderRadius:10,marginTop:0,marginBottom:0,flexDirection:"column",alignItems:"center",backgroundColor:"black",borderColor:"magenta",padding:10}}>
+                        <Text style={{color:"white",opacity:0.7,fontWeight:"500",fontSize:10}}>Click to add</Text>
+                        <View style={{width:"100%",flexDirection:"row",alignItems:"center",justifyContent:"center"}}>  
+                        <MaterialCommunityIcons 
+                                name="plus"
+                                size={15}
+                                color={"white"}
+                            />                      
+                        <Text style={{fontSize:14,fontWeight:"600",marginLeft:10,color:"white"}}>Register new mole</Text>                                       
+                        </View>                        
+                </TouchableOpacity>
+                {!completedParts.includes(bodyPart.slug)? 
+                <TouchableOpacity onPress={() => handleComplete(false)} style={{backgroundColor:"red",borderRadius:30,borderColor:"white",borderWidth:2}}>
+                    <MaterialCommunityIcons 
+                        name="sticker-plus"
+                        size={20}
+                        color={"white"}
+                        style={{padding:9}}
+                    />
+                </TouchableOpacity>  
+                :
+                <TouchableOpacity onPress={() => handleComplete(true)} style={{backgroundColor:"lightgreen",borderRadius:30,borderColor:"white",borderWidth:2}}>
+                <MaterialCommunityIcons 
+                    name="sticker-check"
+                    size={20}
+                    color={"white"}
+                    style={{padding:9}}
+                />
+                </TouchableOpacity>  
+                }              
+                
+                
+                </View>    
         <View style={styles.TopPart }>
             {melanomaData != null ? dotsSelectOnPart({
                 bodyPart: bodyPart,
@@ -160,6 +238,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         backgroundColor:"white",
         padding:10,
+        marginTop:230,
         borderBottomWidth:10
     },
     BirthmarkContainer: {
@@ -167,6 +246,20 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         backgroundColor:"rgba(0,0,0,0.86)"
+    },
+    ProgressBar:{
+        width:"100%",
+        alignItems:"center",
+        borderWidth:0,
+        padding:10,
+        position:"absolute",
+        top:0,
+        backgroundColor:"transparent",
+        flexDirection:"row",
+        justifyContent:"space-between",
+        position:"absolute",
+        top:40,
+        zIndex:5   
     },
     melanomaBox: {
         maxWidth: "100%",
