@@ -349,12 +349,10 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                     </ScrollView>
 
                 </View>
-                {isScreenLoading ? 
+                {isScreenLoading && 
                 <View style={styles.loadingModal}>
                     <ActivityIndicator size="large" color="white" />
-                </View>
-                :
-                null
+                </View>           
                 }            
             </>
         )

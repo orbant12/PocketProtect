@@ -9,7 +9,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 const SlugAnalasis = ({ route,navigation }) => {
 
-//<***************************  Variables ******************************************>
+//<==================<[ Variables ]>====================>
 
     const [melanomaData, setMelanomaData] = useState([]);
     const [highlighted, setHighlighted] = useState(null);
@@ -21,7 +21,7 @@ const SlugAnalasis = ({ route,navigation }) => {
     const gender = userData.gender
     const isCompleted = route.params.isCompleted
 
-//<***************************  Functions ******************************************>
+//<==================<[ Functions ]>====================>
 
     const fetchAllMelanomaData = async () => {
         if(currentuser){
@@ -84,8 +84,6 @@ const SlugAnalasis = ({ route,navigation }) => {
         setCompletedParts(updatedCompletedParts);
     };
     
-    
-
     const handleSpotOpen = (bodyPart) => {
         Navigation_SingleSpotAnalysis({
             bodyPart: bodyPart,
@@ -106,18 +104,17 @@ const SlugAnalasis = ({ route,navigation }) => {
         console.log("222")
     }
 
-
     const [refreshing, setRefreshing] = useState(false);
     const onRefresh = useCallback(() => {
         setRefreshing(true);
         fetchAllMelanomaData();
         setTimeout(() => {
             setRefreshing(false);
-        }, 2000); // Example: setTimeout for simulating a delay
+        }, 2000); 
     }, []);
 
 
-//<***************************  Components ******************************************>
+//<==================<[ Components ]>====================>
 
 
 
@@ -173,6 +170,7 @@ return(
                 highlighted,
                 skin_type
             }):null}
+              {!completedParts.includes(bodyPart.slug)? <Text style={{position:"absolute",top:10,right:10,fontSize:10,fontWeight:"700",color:"red",opacity:0.3}} >Not marked as complete</Text> : <Text style={{position:"absolute",top:10,right:10,fontSize:10,fontWeight:"700",color:"green",opacity:0.4}} >Marked as complete</Text>}
         </View>
         <View style={styles.BirthmarkContainer}>
             <ScrollView

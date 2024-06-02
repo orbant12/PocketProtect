@@ -42,6 +42,21 @@ export const melanomaSpotUpload = async ({
     }
 }
 
+export const updateSpotData = async ({
+    userId,
+    spotId,
+    dataToUpdate
+}) => {
+    try{
+        const ref = doc(db, "users", userId, "Melanoma", spotId)
+        await updateDoc(ref,{risk: dataToUpdate.risk})
+        return true
+    } catch(err) {
+        console.error(err)
+        return false
+    }
+}
+
 export const melanomaMetaDataUpload = async ({
     userId,
     metaData

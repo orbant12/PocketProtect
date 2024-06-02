@@ -1,13 +1,14 @@
 import { useEffect,useState,useRef } from "react";
-import { View, StyleSheet,Text,Image,TouchableOpacity,Pressable } from "react-native";
+import { View, StyleSheet,Text,Image,TouchableOpacity,Pressable,ActivityIndicator } from "react-native";
 import { useAuth } from "../../../context/UserAuthContext";
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
 import { Tabs} from 'react-native-collapsible-tab-view'
 import Entypo from 'react-native-vector-icons/Entypo';
-import { fetchSpotHistory, deleteSpotWithHistoryReset } from "../../../server";
+import { fetchSpotHistory, deleteSpotWithHistoryReset, updateSpot, updateSpotData } from "../../../server";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Navigation_AddSlugSpot } from "../../../navigation/navigation";
-
+import { getFunctions, httpsCallable } from "firebase/functions";
+import {app} from "../../../firebase"
 import moment from 'moment'
 
 const SinglePartAnalasis = ({ route,navigation }) => {
@@ -21,7 +22,7 @@ const skin_type = route.params.skin_type
 const userData = route.params.userData
 
 const today = new Date();
-
+const functions = getFunctions(app);
 const format = moment(today).format('YYYY-MM-DD')
 
 const moleDataRef = useRef(null)
@@ -33,6 +34,7 @@ const [selectedMelanoma, setSelectedMelanoma] = useState(null)
 const [highlight, setHighlighted ]= useState("")
 const [deleteModal,setDeleteModal] = useState(false)
 const [moleToDelete,setMoleToDelete] = useState("")
+const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
 
 
 //<==================<[ Functions ]>====================>
@@ -127,6 +129,47 @@ const [moleToDelete,setMoleToDelete] = useState("")
                 alert("Deletion failed ...")
             }
         }
+    }
+
+
+    const handleCallNeuralNetwork = async (pictureURL) => {
+        setDiagnosisLoading(true)
+        const blobToBase64 = (blob) => {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onloadend = () => resolve(reader.result.split(',')[1]); // Get only the base64 part
+                reader.onerror = reject;
+                reader.readAsDataURL(blob);
+            });
+        };
+        const evaluate = async (photo) => {
+            const generatePrediction = httpsCallable(functions, 'predict');
+            try {            
+                const response = await fetch(photo);
+                if (!response.ok) throw new Error('Failed to fetch image');                                
+                const blob = await response.blob();                                
+                const base64String = await blobToBase64(blob);                                
+                const result = await generatePrediction({ input: base64String });                    
+                console.log('Prediction result:', result.data);
+                return result.data
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        };
+        try{            
+            const prediction = await evaluate(pictureURL)      
+            const response = await updateSpotData({
+                userId: currentuser.uid,
+                spotId: selectedMelanoma.melanomaId,
+                dataToUpdate: {risk: prediction}
+            })
+            if(response == true){
+                fetchAllSpotHistory()                
+            }        
+        } catch {
+            return alert("Prediction failed")
+        }
+        setDiagnosisLoading(false)
     }
 
 
@@ -428,9 +471,18 @@ const [moleToDelete,setMoleToDelete] = useState("")
         )
     }
 
+    const LoadingOverlay = () => {
+        return(
+            <View style={styles.loadingModal}>
+                <ActivityIndicator size="large" color="white" />
+            </View>      
+        )
+    }
+
 //<==================<[ Main Return ]>====================>
 
     return(
+        <>
         <View style={styles.container}>
         
             <Tabs.Container
@@ -446,14 +498,24 @@ const [moleToDelete,setMoleToDelete] = useState("")
             >
                 <Tabs.ScrollView ref={moleDataRef}>
                     <View style={[styles.container]}>
-                        <View style={[{marginTop:20,alignItems:"center",width:"100%"}]}>
-                            <Text style={{width:"90%",textAlign:"center",fontSize:20,color:"white",fontWeight:"800",opacity:0.6}}>Our deep learning model analasis result:</Text>
-                            <Text style={{color:"lightgreen",fontWeight:"800",marginTop:20,fontSize:30}}>Bening</Text>
-                            <View style={styles.scoreCircle}>
-                                <Text style={[{fontSize:50,fontWeight:'bold'},{color:"lightgreen",opacity:0.5}]}>17%</Text>
-                                <Text style={[{fontSize:15,fontWeight:700},{color:"lightgreen",opacity:0.8}]}>Accuracy</Text>
+                    {selectedMelanoma != null &&
+                        selectedMelanoma.risk != null ?
+                            <View style={[{marginTop:20,alignItems:"center",width:"100%"}]}>                             
+                                <Text style={{color:"lightgreen",fontWeight:"800",marginTop:0,fontSize:30}}>Bening</Text>
+                                <View style={styles.scoreCircle}>
+                                    <Text style={[{fontSize:50,fontWeight:'bold'},{color:"lightgreen",opacity:0.5}]}>{selectedMelanoma.risk * 10}%</Text>
+                                    <Text style={[{fontSize:9,fontWeight:700,maxWidth:"100%"},{color:"lightgreen",opacity:0.2}]}>Chance to be malignant</Text>
+                                </View>
                             </View>
-                        </View>
+                            :
+                            <View style={{width:"100%",alignItems:"center",marginTop:30}}>
+                                <Text style={{width:"90%",textAlign:"center",fontSize:10,color:"white",fontWeight:"800",opacity:0.3,marginBottom:5}}>Not started yet...</Text>
+                                <Text style={{width:"90%",textAlign:"center",fontSize:25,color:"white",fontWeight:"800",opacity:0.6,marginBottom:40}}>Diagnosis</Text>                                
+                                <TouchableOpacity onPress={() => handleCallNeuralNetwork(selectedMelanoma.melanomaPictureUrl)} style={{width:"80%",padding:20,backgroundColor:"black",alignItems:"center",borderRadius:30,marginBottom:50}}>
+                                    <Text style={{fontWeight:"700",color:"white",opacity:0.7}}>Start Deep Learning AI Model</Text>
+                                </TouchableOpacity>
+                            </View>                        
+                        }         
 
                         <View style={[{marginTop:50,alignItems:"center",width:"100%"}]} >
                             <Text style={{width:"90%",textAlign:"center",fontSize:25,color:"white",fontWeight:"800",opacity:0.6}}>Mole Data</Text>
@@ -582,6 +644,8 @@ const [moleToDelete,setMoleToDelete] = useState("")
 
         {deleteModal && SureModal()}      
         </View>
+        {diagnosisLoading && LoadingOverlay()}
+        </>
     )}
 
 
@@ -594,6 +658,14 @@ const styles = StyleSheet.create({
         alignItems: "center",
         height:"100%",
         flexDirection: "column",
+    },
+    loadingModal:{
+        alignItems:"center",
+        justifyContent:"center",
+        position:"absolute",
+        width:"100%",
+        height:"100%",
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
     },
     TopPart: {
         width: "100%",
