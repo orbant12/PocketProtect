@@ -10,11 +10,11 @@ import {Image, Text,View,TouchableOpacity,Animated} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 //COMPONENTS
-import TabOneScreen from '../pages/home';
-import Profile from '../pages/profile';
-import AssistantPage from '../pages/Personal_Assistant';
-import DetectionLibary from '../pages/detection';
-import AddDetection from '../pages/addDetection'
+import TabOneScreen from '../pages/Screens/MainScreens/home';
+import Profile from '../pages/Screens/MainScreens/profile';
+import AssistantPage from '../pages/Screens/MainScreens/Personal_Assistant';
+import DetectionLibary from '../pages/Screens/MainScreens/detection';
+import AddDetection from '../pages/Screens/MainScreens/addDetection'
 
 
 //ICONS

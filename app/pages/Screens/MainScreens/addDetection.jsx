@@ -7,9 +7,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { FontAwesome6 } from '@expo/vector-icons';
 import React, {useEffect, useState,useRef} from 'react';
 import { ScrollView,StyleSheet,Text,View, Pressable,TextInput,TouchableOpacity,Switch,ActivityIndicator,Keyboard,Dimensions ,Image} from 'react-native';
-import tutorial1 from "../assets/diagnosis/first.png"
+import tutorial1 from "../../../assets/diagnosis/first.png"
 import { getFunctions, httpsCallable } from "firebase/functions";
-import {app} from "../firebase"
+import {app} from "../../../firebase"
 import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';

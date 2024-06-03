@@ -8,10 +8,10 @@ import { ScrollView,StyleSheet,Text,View, Pressable,Dimensions,RefreshControl } 
 import { StatusBar } from 'expo-status-bar';
 import moment from 'moment'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useAuth } from '../context/UserAuthContext';
-import Calendar from '../components/HomePage/HorizontalCallendar';
-import {useTimer}  from '../components/HomePage/timer';
-import { fetchMonthTasks, fetchReminders } from '../server';
+import { useAuth } from '../../../context/UserAuthContext';
+import Calendar from '../../../components/HomePage/HorizontalCallendar';
+import {useTimer}  from '../../../components/HomePage/timer';
+import { fetchMonthTasks, fetchReminders } from '../../../server';
 import PagerView from 'react-native-pager-view';
 
 
@@ -124,8 +124,8 @@ const [refreshing, setRefreshing] = useState(false);
 
 //<==================<[ Child Components ]>====================>
 
-    const TaskBox = ({ title, icon1, icon2, icon3, icon4, buttonText,nav_page,key }) => (
-        <View key={key} style={styles.DataBox}>
+    const TaskBox = ({ title, icon1, icon2, icon3, icon4, buttonText,nav_page,index }) => (
+        <View key={index} style={styles.DataBox}>
         <Text style={styles.TaskTitle}>{title}</Text>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             <MaterialCommunityIcons
@@ -221,30 +221,43 @@ const [refreshing, setRefreshing] = useState(false);
         )
     }
 
+    const DailyTaskBox = () => {
+        return(
+            <View style={styles.TaskBox}>
+            <Text style={styles.TaskTitle}>Daily Health Report</Text>
+            <Text style={styles.TaskSubTitle}>Do your daily report so our AI model can have a better accuracy in detecting your problems !</Text>
+            <Pressable onPress={() => handleNavigation("DailyReport")} style={styles.StartButton}>
+                <Text>Start Now</Text>
+                <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
+            </Pressable>
+        </View> 
+        )
+    }
+
 
 //<==================<[ Parent Components ]>====================>
 
     function TodayScreen() {
         return(
             <>
-            {allReminders.map((data) => (
-                <View style={styles.TodaySection}>
+            {allReminders.map((data,index) => (
+                <View key={index} style={styles.TodaySection}>
                     <View style={styles.titleRow}>
                         <Text style={styles.title}>Reminders</Text>
                         <Text style={styles.titleLeft}>{allReminders.length}</Text>
                     </View>    
                     <PagerView style={{marginTop:10,height:220 }} onPageScroll={(e) => handleScroll(e)} initialPage={0}>    
                     {data.id == "blood_work" && 
-                        ReminderBox({data,key:1}) 
+                        ReminderBox({data,index:1}) 
                     }
                     {data.id == "blood_work" && 
-                        ReminderBox({data,key:2}) 
+                        ReminderBox({data,index:2}) 
                     }               
                     {data.id == "blood_work" && 
-                        ReminderBox({data,key:3}) 
+                        ReminderBox({data,index:3}) 
                     }               
                     {data.id == "blood_work" && 
-                        ReminderBox({data,key:4}) 
+                        ReminderBox({data,index:4}) 
                     }   
                     </PagerView>                                                  
                         <View style={styles.IndicatorContainer}>               
@@ -261,15 +274,7 @@ const [refreshing, setRefreshing] = useState(false);
                         <Text style={styles.title}>Today's Tasks</Text>
                         <Text style={styles.titleLeft}>0/1</Text>
                     </View>
-
-                    <View style={styles.TaskBox}>
-                        <Text style={styles.TaskTitle}>Daily Health Report</Text>
-                        <Text style={styles.TaskSubTitle}>Do your daily report so our AI model can have a better accuracy in detecting your problems !</Text>
-                        <Pressable onPress={() => handleNavigation("DailyReport")} style={styles.StartButton}>
-                            <Text>Start Now</Text>
-                            <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
-                        </Pressable>
-                    </View>
+                    {DailyTaskBox()}
 
                     <View style={styles.TaskBox}>
                         <Text style={styles.TaskTitle}>Jaudance Diagnosis</Text>
@@ -338,46 +343,12 @@ const [refreshing, setRefreshing] = useState(false);
 
                 <View style={styles.TodaySection}>
                     <Text style={styles.title}>Personal Advice</Text>
-
-                    <View style={styles.TaskBox}>
-                        <Text style={styles.TaskTitle}>Daily Health Report</Text>
-                        <Text style={styles.TaskSubTitle}>Do your daily report so our AI model can have a better accuracy in detecting your problems !</Text>
-                        <Pressable style={styles.StartButton}>
-                            <Text>Start Now</Text>
-                            <MaterialCommunityIcons name="arrow-right" size={20} color="black" style={{marginLeft:10}} />
-                        </Pressable>
-                    </View>
+                    
                 </View>
 
                 <View style={styles.TodaySection}>
                     <Text style={styles.title}>News</Text>
-
-                    <View style={styles.TaskBox}>
-                        <Text style={styles.TaskTitle}>Daily Health Report</Text>
-                        <Text style={styles.TaskSubTitle}>Do your daily report so our AI model can have a better accuracy in detecting your problems !</Text>
-                        <Pressable style={styles.StartButton}>
-                            <Text>Start Now</Text>
-                            <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
-                        </Pressable>
-                    </View>
-
-                    <View style={styles.TaskBox}>
-                        <Text style={styles.TaskTitle}>Daily Health Report</Text>
-                        <Text style={styles.TaskSubTitle}>Do your daily report so our AI model can have a better accuracy in detecting your problems !</Text>
-                        <Pressable style={styles.StartButton}>
-                            <Text>Start Now</Text>
-                            <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
-                        </Pressable>
-                    </View>
-
-                    <View style={styles.TaskBox}>
-                        <Text style={styles.TaskTitle}>Daily Health Report</Text>
-                        <Text style={styles.TaskSubTitle}>Do your daily report so our AI model can have a better accuracy in detecting your problems !</Text>
-                        <Pressable style={styles.StartButton}>
-                            <Text>Start Now</Text>
-                            <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
-                        </Pressable>
-                    </View>
+                                            
                 </View>
             </>
         )
@@ -414,22 +385,6 @@ const [refreshing, setRefreshing] = useState(false);
                 </View>
             ))}
             
-
-                <View style={styles.TodaySection}>
-                        <View style={styles.titleRow}>
-                            <Text style={styles.title}>{selectedDate} Tasks</Text>
-                            <Text style={styles.titleLeft}>0/1</Text>
-                        </View>
-
-                        <View style={styles.TaskBox}>
-                            <Text style={styles.TaskTitle}>Daily Health Report</Text>
-                            <Text style={styles.TaskSubTitle}>Do your daily report so our AI model can have a better accuracy in detecting your problems !</Text>
-                            <Pressable onPress={() => handleNavigation("DailyReport")} style={styles.StartButton}>
-                                <Text>Start Now</Text>
-                                <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
-                            </Pressable>
-                        </View> 
-                </View>
             </View>
             </View>
         )
@@ -453,7 +408,7 @@ const [refreshing, setRefreshing] = useState(false);
                         </View>
 
                         <View style={styles.TaskBox}>
-                            <Text style={styles.TaskTitle}>Blood Work Update</Text>
+                            <Text style={styles.TaskTitle}>Blood Work Reminder</Text>
                             <Text style={[styles.TaskSubTitle,{color:"white",opacity:0.7}]}>You haven't updated your blood work in <Text style={{fontWeight:"700",color:"magenta",opacity:0.8}}>{"12"} days</Text></Text>
                             <Text style={styles.TaskSubTitle}>Medical research suggest to update your blood work every 6 months for a healthy lifestyle</Text>
                             <Pressable onPress={() => handleNavigation("DailyReport")} style={styles.StartButton}>
@@ -469,14 +424,7 @@ const [refreshing, setRefreshing] = useState(false);
                             <Text style={styles.titleLeft}>0/1</Text>
                         </View>
 
-                        <View style={styles.TaskBox}>
-                            <Text style={styles.TaskTitle}>Daily Health Report</Text>
-                            <Text style={styles.TaskSubTitle}>Do your daily report so our AI model can have a better accuracy in detecting your problems !</Text>
-                            <Pressable onPress={() => handleNavigation("DailyReport")} style={styles.StartButton}>
-                                <Text>Start Now</Text>
-                                <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
-                            </Pressable>
-                        </View> 
+                        {DailyTaskBox()}
                 </View>
             </View>
             </View>

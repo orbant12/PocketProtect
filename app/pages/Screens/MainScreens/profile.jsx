@@ -1,11 +1,11 @@
 import { View,Text,StyleSheet,Image,TouchableOpacity } from "react-native"
 import React, { useEffect, useState } from 'react';
-import UserDiagnosis from "./Screens/profile/userDiagnosis"
-import UserSavedPage from "../pages/Screens/profile/userSavedPage"
+import UserDiagnosis from "../profile/userDiagnosis"
+import UserSavedPage from "../profile/userSavedPage"
 import { Tabs} from 'react-native-collapsible-tab-view'
 import Entypo from 'react-native-vector-icons/Entypo';
-import { useAuth } from "../context/UserAuthContext";
-import { fetchUserData } from "../server";
+import { useAuth } from "../../../context/UserAuthContext";
+import { fetchUserData } from "../../../server";
 import { Icon } from 'react-native-elements';
 
 const Profile = ({navigation,handleSettings}) => {

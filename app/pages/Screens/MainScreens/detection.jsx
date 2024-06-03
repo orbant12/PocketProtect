@@ -8,8 +8,8 @@ import { View, Text, Pressable, ScrollView,StyleSheet,TouchableOpacity,Dimension
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import ProgressBar from 'react-native-progress/Bar';
 import React, {useEffect, useState, useRef,useCallback} from 'react';
-import { useAuth } from '../context/UserAuthContext';
-import { fetchAllDiagnosis, fetchUserData,fetchNumberOfMoles } from '../server';
+import { useAuth } from '../../../context/UserAuthContext';
+import { fetchAllDiagnosis, fetchUserData,fetchNumberOfMoles } from '../../../server';
 import PagerView from 'react-native-pager-view';
 
 

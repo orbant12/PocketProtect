@@ -3,8 +3,8 @@ import React, {useEffect, useState,useRef} from 'react';
 import { ScrollView,StyleSheet,Text,View, Pressable,TextInput,TouchableOpacity,Switch,ActivityIndicator,Keyboard } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getFunctions, httpsCallable } from "firebase/functions";
-import {app} from "../firebase"
-import ChatMessage from "../components/Assistant/chatLog";
+import {app} from "../../../firebase"
+import ChatMessage from "../../../components/Assistant/chatLog";
 import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
