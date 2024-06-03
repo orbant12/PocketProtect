@@ -499,7 +499,7 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
                 <Tabs.ScrollView ref={moleDataRef}>
                     <View style={[styles.container]}>
                     {selectedMelanoma != null &&
-                        selectedMelanoma.risk != null ?
+                        selectedMelanoma.risk != 0 ?
                             <View style={[{marginTop:20,alignItems:"center",width:"100%"}]}>                             
                                 <Text style={{color:"lightgreen",fontWeight:"800",marginTop:0,fontSize:30}}>Bening</Text>
                                 <View style={styles.scoreCircle}>
@@ -508,11 +508,11 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
                                 </View>
                             </View>
                             :
-                            <View style={{width:"100%",alignItems:"center",marginTop:30}}>
+                            <View style={{width:"90%",alignItems:"center",paddingTop:30,backgroundColor:"black",borderBottomLeftRadius:30,borderBottomRightRadius:30}}>
                                 <Text style={{width:"90%",textAlign:"center",fontSize:10,color:"white",fontWeight:"800",opacity:0.3,marginBottom:5}}>Not started yet...</Text>
                                 <Text style={{width:"90%",textAlign:"center",fontSize:25,color:"white",fontWeight:"800",opacity:0.6,marginBottom:40}}>Diagnosis</Text>                                
-                                <TouchableOpacity onPress={() => handleCallNeuralNetwork(selectedMelanoma.melanomaPictureUrl)} style={{width:"80%",padding:20,backgroundColor:"black",alignItems:"center",borderRadius:30,marginBottom:50}}>
-                                    <Text style={{fontWeight:"700",color:"white",opacity:0.7}}>Start Deep Learning AI Model</Text>
+                                <TouchableOpacity onPress={() => handleCallNeuralNetwork(selectedMelanoma.melanomaPictureUrl)} style={{width:"80%",padding:20,backgroundColor:"lightgray",alignItems:"center",borderRadius:30,marginBottom:50,borderColor:"black",borderWidth:2}}>
+                                    <Text style={{fontWeight:"600",color:"black",opacity:0.8}}>Start Deep Learning AI Model</Text>
                                 </TouchableOpacity>
                             </View>                        
                         }         
