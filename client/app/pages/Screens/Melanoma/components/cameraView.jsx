@@ -7,7 +7,7 @@ import Slider from '@react-native-community/slider';
 import LoadingOverlay  from "../../../../components/Loading/processing"
 import { manipulateAsync } from 'expo-image-manipulator';
 
-export default function CameraScreenView({navigation}) {
+export default function CameraScreenView({navigation,onClose,onPictureTaken}) {
     const [facing, setFacing] = useState('back');
     const [permission, requestPermission] = useCameraPermissions();
     const [ zoomValue, setZoomValue ] = useState(0)
@@ -29,7 +29,7 @@ export default function CameraScreenView({navigation}) {
         setFacing(current => (current === 'back' ? 'front' : 'back'));
     }
 
-    const handlePictureUpload = async() => {      
+    const handlePictureUpload = async () => {      
       let result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.All,
           allowsEditing: true,
@@ -41,6 +41,7 @@ export default function CameraScreenView({navigation}) {
           setUploadedSpotPicture(result.assets[0].uri);
           setShow(true)
       }
+      
     };
 
     const takePicture = async () => {
@@ -51,6 +52,10 @@ export default function CameraScreenView({navigation}) {
           setShow(true)
       }
   };
+
+  const handleDone = () => {
+    onPictureTaken(uploadedSpotPicture)
+  }
 
   const simulateLoading = () => {
     setLoading(true);
@@ -67,7 +72,7 @@ export default function CameraScreenView({navigation}) {
         <View style={styles.container}>
             <CameraView style={styles.camera} facing={facing} zoom={zoomValue} ref={cameraRef}>
               
-                  <TouchableOpacity onPress={() => navigation.goBack()} style={{position:"absolute",top:30,left:10,borderWidth:2,borderColor:"white",borderRadius:30,padding:5}}>
+                  <TouchableOpacity onPress={() => onClose()} style={{position:"absolute",top:30,left:10,borderWidth:2,borderColor:"white",borderRadius:30,padding:5}}>
                   <MaterialCommunityIcons 
                     name='arrow-left'
                     color={"white"}
@@ -116,7 +121,7 @@ export default function CameraScreenView({navigation}) {
                   </View>
             </CameraView>
             <LoadingOverlay visible={loading} />
-            <ImageShowcase show={show} uploadedSpotPicture={uploadedSpotPicture} handleUndoPicture={handleUndoPicture} />
+            <ImageShowcase show={show} uploadedSpotPicture={uploadedSpotPicture} handleUndoPicture={handleUndoPicture} handleDone={handleDone} />
         </View>
       );
     }
@@ -151,7 +156,7 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ImageShowcase = ({uploadedSpotPicture,show,handleUndoPicture}) => {
+export const ImageShowcase = ({uploadedSpotPicture,show,handleUndoPicture,handleDone}) => {
   return(
     <>
     {show &&
@@ -161,7 +166,7 @@ export const ImageShowcase = ({uploadedSpotPicture,show,handleUndoPicture}) => {
         source={{uri: uploadedSpotPicture}}
         style={{width:300,height:300,borderRadius:50}}
       />
-      <TouchableOpacity style={{marginTop:80,width:"80%",justifyContent:"center",alignItems:"center",borderWidth:0,borderColor:"magenta",padding:10,borderRadius:40,flexDirection:"row",backgroundColor:"white"}}>
+      <TouchableOpacity onPress={handleDone} style={{marginTop:80,width:"80%",justifyContent:"center",alignItems:"center",borderWidth:0,borderColor:"magenta",padding:10,borderRadius:40,flexDirection:"row",backgroundColor:"white"}}>
         <MaterialCommunityIcons 
           name='upload'
           color={"black"}

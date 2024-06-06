@@ -1,14 +1,10 @@
-import { View,Text,StyleSheet,Pressable,Image,ScrollView,ActivityIndicator,TouchableOpacity } from "react-native"
+import { View,Text,StyleSheet,Pressable,Image,ScrollView,ActivityIndicator,TouchableOpacity,Modal } from "react-native"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import React, {useState,useEffect,useRef} from "react";
-import * as ImagePicker from 'expo-image-picker';
 import ProgressBar from 'react-native-progress/Bar';
 import { dotSelectOnPart } from './melanomaDotSelect.jsx'
 import { fetchSlugMelanomaData ,melanomaSpotUpload,melanomaUploadToStorage ,deleteSpot} from '../../../../server';
 import SampleImage from "../../../../assets/IMG_0626.jpg"
-import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
-import "react-native-gesture-handler"
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import CameraScreenView from "../components/cameraView.jsx"
 
 
@@ -37,30 +33,14 @@ const MelanomaSingleSlug = ({route,navigation}) => {
     const [isModalUp, setIsModalUp] = useState(false)
     const [moleToDeleteId,setMoleToDeleteId] = useState("")
     //Ref for Top Animation
-    const scrollViewRef = useRef(null);
-    const cameraSheetRef = useRef(null)
-
-
+    const scrollViewRef = useRef(null);    
+    const [isCameraOverlayVisible, setIsCameraOverlayVisible] = useState(false);
     //<==============> Functions <=============> 
 
     const handlePartClick = (e) => {
         const { locationX, locationY } = e.nativeEvent;
         setRedDotLocation({ x: locationX, y: locationY })    
     }
-
-    const handlePictureUpload = async() => {
-        //UPLOAD PICTURE OR OPEN CAMERA
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.All,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-        });
-
-        if (!result.canceled) {
-            setUploadedSpotPicture(result.assets[0].uri);
-        }
-    };  
 
     function formatDate(date) {
         const year = date.getFullYear();
@@ -201,6 +181,14 @@ const MelanomaSingleSlug = ({route,navigation}) => {
             alert("Deletion failed ...")
         }
     }
+
+    const navigateToCamera = () => {
+        navigation.navigate("CameraView",{data: bodyPart, gender:gender, userId: currentuserUID, sessionMemory:sessionMemory, progress:progress,skinColor: skinColor })
+    }
+
+    const toggleCameraOverlay = () => {
+        setIsCameraOverlayVisible(!isCameraOverlayVisible);
+      };
     
     useEffect(() => {
         fetchSlugSpots()
@@ -268,8 +256,8 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                                                 <Text style={{fontWeight:400,fontSize:10}}>Birthmark is on the spotlight with the same ration as in this image</Text>
                                             </View>
                                             </View>
-                                            <TouchableOpacity style={styles.uploadButton} onPress={cameraSheetRef.current.present()}>
-                                                <Text style={{color:"white"}}>Upload handlePictureUpload</Text>
+                                            <TouchableOpacity style={styles.uploadButton} onPress={toggleCameraOverlay}>
+                                                <Text style={{color:"white"}}>Upload</Text>
                                             </TouchableOpacity>
 
                                         </>
@@ -354,6 +342,17 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                         </View>
                     </ScrollView>
 
+
+                    <Modal visible={isCameraOverlayVisible} animationType="slide">
+                        <CameraScreenView
+                        onClose={toggleCameraOverlay}
+                        onPictureTaken={(pictureUri) => {
+                            setUploadedSpotPicture(pictureUri);
+                            toggleCameraOverlay();
+                        }}
+                        />
+                    </Modal>
+
                 </View>
                 {isScreenLoading && 
                 <View style={styles.loadingModal}>
@@ -392,9 +391,6 @@ const MelanomaSingleSlug = ({route,navigation}) => {
     //<==============> Main Component Return <=============> 
 
     return(
-    
-        <GestureHandlerRootView>
-                <BottomSheetModalProvider>
         <View style={[styles.container]}>
             {progress != null &&
             <View style={styles.ProgressBar}>
@@ -403,20 +399,6 @@ const MelanomaSingleSlug = ({route,navigation}) => {
             {SecoundScreen()}
             {isModalUp && SureModal()}      
         </View>
-        <BottomSheetModal
-            ref={cameraSheetRef}
-            snapPoints={["100%"]}
-            enablePanDownToClose={true}         
-            handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:30,color:"white"}}
-            handleIndicatorStyle={{backgroundColor:"white"}}
-        >
-        <View>
-            <CameraScreenView />
-        </View>
-        </BottomSheetModal>
-    </BottomSheetModalProvider>
-    </GestureHandlerRootView>
-    
     )
 }
 
