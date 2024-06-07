@@ -183,8 +183,7 @@ return(
                     />
                 }
                 style={{width:"100%",height:"100%"}} >
-                <View style={{width:"100%",alignItems:"center",marginBottom:250}}>           
-                    <AddSection melanomaData={melanomaData} handleAddMelanoma={handleAddMelanoma} />
+                <View style={{width:"100%",alignItems:"center",marginBottom:250}}>                               
                     {melanomaData.map((data,index) => (
                         data.melanomaDoc.spot[0].slug == bodyPart.slug  ? (
                         <TouchableOpacity onPress={() => handleSpotOpen(data)} key={index} style={styles.melanomaBox}>

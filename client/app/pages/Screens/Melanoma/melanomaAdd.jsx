@@ -391,8 +391,7 @@ const MelanomaAdd = ({ route , navigation }) => {
         }
     }
 
-    const handlePictureUpload = async() => {
-        //UPLOAD PICTURE OR OPEN CAMERA
+    const handlePictureUpload = async() => {        
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.All,
             allowsEditing: true,

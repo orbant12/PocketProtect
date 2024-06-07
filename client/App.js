@@ -58,8 +58,8 @@ return (
             <Stack.Screen name="Main" component={HomeBottomTabNavigator} options={{ headerShown:false}} />
             <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown:true,title:"Settings"}} />
             <Stack.Screen name="GeneralSettings" component={GeneralSettings}   options={({ route }) => ({ title: route.params.data,headerStyle: { backgroundColor: "#18191a"},headerTintColor: "white" })} />
-            <Stack.Screen name="MelanomaAdd" component={MelanomaAdd}   options={({ route }) => ({ title:"+ Mole", headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
-            <Stack.Screen name="MelanomaAllAdd" component={AllMelanomaAdd}   options={({ route }) => ({ title:"+ Mole", headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
+            <Stack.Screen name="MelanomaAdd" component={MelanomaAdd}   options={({ route }) => ({ title:"+ Mole", headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black", headerShown:false })} />
+            <Stack.Screen name="MelanomaAllAdd" component={AllMelanomaAdd}   options={({ route }) => ({ title:"+ Mole", headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black", headerShown:false  })} />
             <Stack.Screen name="SinglePartAnalasis" component={SinglePartAnalasis}   options={({ route }) => ({ title: route.params.bodyPart.melanomaId.charAt(0).toUpperCase() + route.params.bodyPart.melanomaId.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
             <Stack.Screen name="SlugAnalasis" component={SlugAnalasis}   options={({ route }) => ({ title: route.params.data.slug.charAt(0).toUpperCase() + route.params.data.slug.slice(1), headerShown:false, headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />            
             <Stack.Screen name="MelanomaCenter" component={MelanomaCenter}   options={({ route }) => ({ headerStyle: { backgroundColor: "white", },headerTintColor: "black",headerShown:false  })} />

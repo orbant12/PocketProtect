@@ -77,6 +77,16 @@ const SingleFeature = ({route,navigation}) => {
         }
     }
 
+    const decodeParts = (parts) => {        
+        let updatedSessionMemory = []        
+
+        parts.forEach((doc) => {
+            updatedSessionMemory.push({ slug: doc });
+        })
+
+        return updatedSessionMemory        
+    }
+
     const fetchAllNumberOfMoleOnSlug = async () => {
         if(currentuser){
             const response = await fetchNumberOfMolesOnSlugs({
@@ -112,7 +122,7 @@ const SingleFeature = ({route,navigation}) => {
     }
 
     const handleAddMelanoma = () => {
-        navigation.navigate("MelanomaAllAdd", { gender: userData.gender, skin_type: melanomaMetaData.skin_type,sessionMemory:[] });
+        navigation.navigate("MelanomaAllAdd", { gender: userData.gender, skin_type: melanomaMetaData.skin_type,sessionMemory:decodeParts(completedParts) });
     }
 
     const PrevandleAddMelanoma = () => {

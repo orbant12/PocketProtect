@@ -85,13 +85,6 @@ const CancerDetectionData = [
 ]
 const OverallHealthData = [
     {
-        id: "health_assesment",
-        title: "Health Assesment",
-        desc: "Coming early 2025 ! - Not Avalible Yet",
-        state: "ready",
-        icon: "magnifying-glass-location"
-    },
-    {
         id: "blood_work",
         title: "Blood Work Analasis",
         desc: "Coming early 2025 ! - Not Avalible Yet",
@@ -230,7 +223,7 @@ if (result.possibleOutcomes != "qid:too_broad"){
         return(
             <View style={{width:"100%",alignItems:"center",justifyContent:"center"}}>
                 <View style={styles.FlatTitleStyle}>
-                    <Text style={styles.FlatTitleStyleText}>Cancer Detection</Text>
+                    <Text style={styles.FlatTitleStyleText}>AI Vision</Text>
                 </View>
                 <View style={styles.FlatlistStyle}>
                     {CancerDetectionData.map((data) => (
