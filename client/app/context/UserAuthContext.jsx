@@ -12,7 +12,7 @@ import { useNavigation } from "@react-navigation/core";
 import { AuthErrorCodes, createUserWithEmailAndPassword, onAuthStateChanged,signInWithEmailAndPassword,sendEmailVerification  } from "firebase/auth";
 
 //FIREBASE
-import { auth,db} from "../firebase";
+import { auth,db} from "../services/firebase";
 import { collection, doc, setDoc,getDoc} from "firebase/firestore";
 
 //CREATE CONTEXT

@@ -1,45 +1,32 @@
-//<********************************************>
-//Last Update: 2024/05/10
-//Edited by: Orban Tamas
-//Desc: This is the main file of the application. It contains the navigation stack and the context provider.
-//<********************************************>
 
-//BASE IMPORTS
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-//COMPONENTS
-import LoginPage from "./app/pages/login";
+import LoginPage from "./app/pages/Auth/login";
 import UserAuthContext from "./app/context/UserAuthContext";
 import HomeBottomTabNavigator from "./app/navigation/homeBottomTabNavigation";
-import SettingsPage from "./app/pages/Screens/SettingsPage"
-import GeneralSettings from "./app/pages/Screens/generalSettings/generalSettings"
-import RegisterPage from "./app/pages/register";
-import MelanomaAdd from "./app/pages/Screens/Melanoma/melanomaAdd";
-import SinglePartAnalasis from "./app/pages/Screens/Melanoma/singlePart";
-import SlugAnalasis from "./app/pages/Screens/Melanoma/slugAnalasis";
-import MelanomaFullProcess from "./app/pages/Screens/Melanoma/ProcessScreens/melanomaFullProcess";
-import MelanomaSingleSlug from "./app/pages/Screens/Melanoma/ProcessScreens/melanomaSingleSlug";
-import AuthHub from "./app/pages/Screens/Login/authHub"
-import RegOnBoarding from "./app/pages/Screens/Login/regOnBoarding";
-import DailyReport from "./app/pages/DailyReportScreens/dailyReportOnboarding";
-import SurveyScreeen from "./app/pages/Screens/Diagnosis/SurveyScreen";
-
-import { Dimensions,StyleSheet} from "react-native"
-import BloodWorkPage from "./app/pages/Screens/BloodCenter/bloodWork";
-import MelanomaCenter from "./app/pages/Screens/Melanoma/melanomaCenter";
-import AllMelanomaAdd from "./app/pages/Screens/Melanoma/allMelanomaAdd";
-import BloodCenter from "./app/pages/Screens/BloodCenter/bloodCenter";
-import DiagnosisCenter from "./app/pages/Screens/Diagnosis/diagnosisCenter";
-import AssesmentScreen from "./app/pages/DailyReportScreens/assesmentScreen";
-import CameraView from "./app/pages/Screens/Melanoma/components/cameraView";
+import SettingsPage from "./app/pages/Profile/Settings/SettingsPage"
+import GeneralSettings from "./app/pages/Profile/Settings/generalSettings/generalSettings"
+import RegisterPage from "./app/pages/Auth/register";
+import MelanomaAdd from "./app/pages/Libary/Melanoma/melanomaAdd";
+import SinglePartAnalasis from "./app/pages/Libary/Melanoma/singlePart";
+import SlugAnalasis from "./app/pages/Libary/Melanoma/slugAnalasis";
+import MelanomaFullProcess from "./app/pages/Libary/Melanoma/ProcessScreens/melanomaFullProcess";
+import MelanomaSingleSlug from "./app/pages/Libary/Melanoma/ProcessScreens/melanomaSingleSlug";
+import AuthHub from "./app/pages/Auth/Login/authHub"
+import RegOnBoarding from "./app/pages/Auth/Login/regOnBoarding";
+import DailyReport from "./app/pages/Home/DailyReportScreens/dailyReportOnboarding";
+import SurveyScreeen from "./app/pages/Add/Diagnosis/SurveyScreen";
+import BloodWorkPage from "./app/pages/Libary/BloodCenter/bloodWork";
+import MelanomaCenter from "./app/pages/Libary/Melanoma/melanomaCenter";
+import AllMelanomaAdd from "./app/pages/Libary/Melanoma/allMelanomaAdd";
+import BloodCenter from "./app/pages/Libary/BloodCenter/bloodCenter";
+import DiagnosisCenter from "./app/pages/Add/Diagnosis/diagnosisCenter";
+import AssesmentScreen from "./app/pages/Home/DailyReportScreens/assesmentScreen";
+import CameraView from "./app/pages/Libary/Melanoma/components/cameraView";
 
 
-//CREATING THE NAVIGATION STACK
 const Stack = createNativeStackNavigator();
-
-const { height: screenHeight } = Dimensions.get('window');
-const responsiveHeight = screenHeight * 0.10;
 
 export default function App() {
 return (
@@ -49,10 +36,7 @@ return (
             <Stack.Screen name="AuthHub" component={AuthHub} options={{ headerShown:false}} />
             <Stack.Screen name="RegOnBoarding" component={RegOnBoarding} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerLeftShown:false,headerTitle:"Welcome !"}} />
             <Stack.Screen name="Login" component={LoginPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
-            <Stack.Screen name="SurveyScreen" component={SurveyScreeen} options={{headerStyle: { backgroundColor: "black", headerShown:false},headerTintColor: "white",headerBackVisible:false,headerLeftShown:false,
-                header : () => (
-                <></>
-            ),} } />
+            <Stack.Screen name="SurveyScreen" component={SurveyScreeen} options={{headerStyle: { backgroundColor: "black", headerShown:false},headerTintColor: "white",headerBackVisible:false,headerLeftShown:false} } />
             <Stack.Screen name="DailyReport" component={DailyReport} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerTitle:"Daily Report" }} />
             <Stack.Screen name="Register" component={RegisterPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
             <Stack.Screen name="Main" component={HomeBottomTabNavigator} options={{ headerShown:false}} />
@@ -76,34 +60,5 @@ return (
 )
 }
 
-const styles = StyleSheet.create({
-    safeArea: {                
-        width:"100%"
-    },
-    headerContainer: {
-        width: "100%",
-        justifyContent: "center",        
-        padding: 10,
-        alignItems: "center",
-        borderWidth: 10,
-        borderColor: "white", // Ensure border is visible
-    },
-    textContainer: {
-        justifyContent: "center",
-        borderWidth: 0,
-    },
-    subTitle: {
-        fontWeight: "600",
-        color: "white",
-        fontSize: 15,
-        opacity: 0.6,
-        marginBottom: 5,
-    },
-    title: {
-        fontWeight: "700",
-        color: "white",
-        fontSize: 20,
-    },
-});
 
 

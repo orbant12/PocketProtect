@@ -10,11 +10,11 @@ import {Image, Text,View,TouchableOpacity,Animated} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 //COMPONENTS
-import TabOneScreen from '../pages/Screens/MainScreens/home';
-import Profile from '../pages/Screens/MainScreens/profile';
-import AssistantPage from '../pages/Screens/MainScreens/Personal_Assistant';
-import DetectionLibary from '../pages/Screens/MainScreens/detection';
-import AddDetection from '../pages/Screens/MainScreens/addDetection'
+import TabOneScreen from '../pages/Home/home';
+import Profile from '../pages/Profile/profile';
+import AssistantPage from '../pages/Chat/Personal_Assistant';
+import DetectionLibary from '../pages/Libary/detection';
+import AddDetection from '../pages/Add/addDetection'
 
 
 //ICONS
@@ -30,7 +30,6 @@ const HomeBottomTabNavigator = ({navigation}) => {
 
 //<**********************FUNCTIONS******************************>
 
-//SETTINGS NAVIGATION
 const handleSettingsNavigation = () => {
   navigation.navigate("SettingsPage")
 }
@@ -67,9 +66,6 @@ return (
         options={{
           headerShown: false,
           headerTransparent: true,
-          header : () => (
-            <></>
-          ),
           tabBarIcon: ({color}) => (
             <Entypo name={'folder'} size={25} color={color} />
           ),
