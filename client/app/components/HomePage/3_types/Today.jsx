@@ -1,0 +1,215 @@
+import { styles } from "../../../styles/home_style"
+import { View,Text,Pressable,TouchableOpacity,Image } from "react-native"
+import { TaskBox_2,TaskBox_1 } from "../taskBoxes"
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
+import PagerView from 'react-native-pager-view';
+import { splitDate } from "../../../utils/date_manipulations";
+
+export const TodayScreen = ({
+    allReminders,
+    handleNavigation,
+    handleScrollReminder,
+    handleScroll,
+    currentPageReminder,
+    currentPage,
+    format
+}) => {
+    return(    
+        <>
+            <View style={styles.TodaySection}>
+                <View style={styles.titleRow}>
+                    <Text style={styles.title}>Melanoma Monitor</Text>
+                    <View style={styles.titleLeft}>
+                        <MaterialCommunityIcons 
+                            name='liquid-spot'
+                            color={"white"}
+                            size={30}
+                        />
+                    </View>
+                </View>
+                <View style={{margin:0,width:"100%",borderBottomWidth:2,borderColor:"white",paddingBottom:10,alignItems:"center"}}>
+                    <Text style={{color:"white",fontWeight:"700",opacity:0.4,margin:10,alignSelf:"left"}}>Outdated Moles</Text>
+                    <View style={{width:"95%",marginTop:10,alignItems:"center"}}>
+                        <OutdatedMelanomaBox />
+                        <OutdatedMelanomaBox />
+                    </View>
+                </View>
+
+
+            </View>
+        {allReminders.map((data,index) => (
+            <View key={index} style={styles.TodaySection}>
+                <View style={styles.titleRow}>
+                    <Text style={styles.title}>Reminders</Text>
+                    <Text style={styles.titleLeft}>{allReminders.length}</Text>
+                </View>    
+                <PagerView style={{marginTop:10,height:220 }} onPageScroll={(e) => handleScroll(e)} initialPage={0}>    
+                {data.id == "blood_work" && 
+                    <ReminderBox data={data} format={format} handleNavigation={handleNavigation} />
+                }
+                {data.id == "blood_work" && 
+                    <ReminderBox data={data} format={format} handleNavigation={handleNavigation} />
+                }               
+                {data.id == "blood_work" && 
+                    <ReminderBox data={data} format={format} handleNavigation={handleNavigation} />
+                }               
+                {data.id == "blood_work" && 
+                    ReminderBox({data,index:4,format}) 
+                }   
+                </PagerView>                                                  
+                    <View style={styles.IndicatorContainer}>               
+                        <View style={[styles.Indicator, { opacity: currentPageReminder === 0 ? 1 : 0.3 }]} />                     
+                        <View style={[styles.Indicator, { opacity: currentPageReminder === 1 ? 1 : 0.3 }]} />
+                        <View style={[styles.Indicator, { opacity: currentPageReminder === 2 ? 1 : 0.3 }]} />
+                        <View style={[styles.Indicator, { opacity: currentPageReminder === 3 ? 1 : 0.3 }]} />                                    
+                    </View>
+            </View>
+        ))}            
+
+            <View style={styles.TodaySection}>
+                <View style={styles.titleRow}>
+                    <Text style={styles.title}>Today's Tasks</Text>
+                    <Text style={styles.titleLeft}>0/1</Text>
+                </View>
+                <TaskBox_1 />
+
+                <View style={styles.TaskBox}>
+                    <Text style={styles.TaskTitle}>Jaudance Diagnosis</Text>
+                    <Text style={styles.TaskSubTitle}>Do your daily report so our AI model can have a better accuracy in detecting your problems !</Text>
+                    <Pressable onPress={() => handleNavigation("DailyReport")} style={styles.StartButton}>
+                        <Text>Start Now</Text>
+                        <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
+                    </Pressable>
+                </View>
+            </View>
+
+            <View style={[styles.DataSection]}>
+                <View style={{}}>
+                    <Text style={{color:"white",opacity:0.3,fontWeight:"400",fontSize:11,paddingHorizontal:10,marginBottom:-10,paddingVertical:5}}>More data, better prediction</Text>
+                    <Text style={styles.title}>Haven't added yet ...</Text>                     
+                </View>
+
+                <PagerView style={{marginTop:10,height:365 }} onPageScroll={(e) => handleScrollReminder(e)}   initialPage={0}>
+                    <TaskBox_2 
+                    title="Blood Work" 
+                    icon1="robot" 
+                    icon2="magnify" 
+                    icon3="doctor" 
+                    icon4="calendar" 
+                    buttonText="Add Now"
+                    nav_page="Add_BloodWork"
+                    key={1}                        
+                    />
+                    <TaskBox_2
+                    title="Lifestyle Assesment" 
+                    icon1="robot" 
+                    icon2="magnify" 
+                    icon3="doctor" 
+                    icon4="calendar" 
+                    buttonText="Add Now" 
+                    key={2}   
+                    />
+                    <TaskBox_2
+                    title="Personal Assesment" 
+                    icon1="robot" 
+                    icon2="magnify" 
+                    icon3="doctor" 
+                    icon4="calendar" 
+                    buttonText="Add Now" 
+                    key={3}   
+                    />
+                    <TaskBox_2
+                    title="Medical Assesment" 
+                    icon1="robot" 
+                    icon2="magnify" 
+                    icon3="doctor" 
+                    icon4="calendar" 
+                    buttonText="Add Now" 
+                    key={4}   
+                    />    
+                </PagerView>                                 
+
+                <View style={styles.IndicatorContainer}>
+                    <View style={[styles.Indicator, { opacity: currentPage === 0 ? 1 : 0.3 }]} />
+                    <View style={[styles.Indicator, { opacity: currentPage === 1 ? 1 : 0.3 }]} />
+                    <View style={[styles.Indicator, { opacity: currentPage === 2 ? 1 : 0.3 }]} />
+                    <View style={[styles.Indicator, { opacity: currentPage === 3 ? 1 : 0.3 }]} />
+                </View>
+
+            </View>
+
+            <View style={styles.TodaySection}>
+                <Text style={styles.title}>Personal Advice</Text>
+                
+            </View>
+
+            <View style={styles.TodaySection}>
+                <Text style={styles.title}>News</Text>
+                                        
+            </View>
+        </>
+        )
+}
+
+const ReminderBox = ({data,format,handleNavigation}) =>{
+    return(
+        <>
+        {splitDate(data.expires).year > splitDate(format).year || (splitDate(data.expires).year == splitDate(format).year && splitDate(data.expires).month > splitDate(format).month) || 
+        (splitDate(data.expires).year == splitDate(format).year && splitDate(data.expires).month == splitDate(format).month &&  splitDate(data.expires).day > splitDate(format).day)  ?
+        <View style={styles.DataBox}>
+            <Text style={styles.TaskTitle}>Blood work is up do date</Text>
+            <Text style={[styles.TaskSubTitle,{color:"white",opacity:0.7}]}>You should update it in
+            {((splitDate(data.expires).month - splitDate(format).month) + ((splitDate(data.expires).year - splitDate(format).year) * 12)) == 0 ?
+            <Text style={{fontWeight:"700",color:"lightgreen",opacity:0.8}}> { splitDate(data.expires).day - splitDate(format).day} days</Text>
+                :
+            <Text style={{fontWeight:"700",color:"lightgreen",opacity:0.8}}> {(splitDate(data.expires).month - splitDate(format).month) + ((splitDate(data.expires).year - splitDate(format).year) * 12)  } months</Text>
+            }
+            </Text>
+            <Text style={styles.TaskSubTitle}>Medical research suggest to update your blood work annually for a healthy lifestyle</Text>
+            <Pressable onPress={() => handleNavigation("DailyReport")} style={styles.StartButton}>
+                <Text>Schedule Now</Text>
+                <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
+            </Pressable>
+        </View>
+        :
+        <View style={styles.DataBox}>
+            <Text style={styles.TaskTitle}>Blood Work Update</Text>
+            <Text style={[styles.TaskSubTitle,{color:"white",opacity:0.7}]}>Your blood work is outdated since
+                {(((splitDate(data.expires).month - splitDate(format).month) + ((splitDate(data.expires).year - splitDate(format).year) * 12))* -1) == 0 ?
+                    splitDate(format).day - splitDate(data.expires).day == 0 ? 
+                        <Text style={{fontWeight:"700",color:"magenta",opacity:0.8}}> Today</Text>
+                        :                                        
+                        <Text style={{fontWeight:"700",color:"magenta",opacity:0.8}}> { splitDate(format).day - splitDate(data.expires).day} days</Text>
+                :
+                <Text style={{fontWeight:"700",color:"magenta",opacity:0.8}}> {((splitDate(data.expires).month - splitDate(format).month) + ((splitDate(data.expires).year - splitDate(format).year) * 12))* -1  } months</Text>
+                }                              
+            </Text>
+            <Text style={styles.TaskSubTitle}>Medical research suggest to update your blood work annually for a healthy lifestyle</Text>
+            <Pressable onPress={() => handleNavigation("DailyReport")} style={[styles.StartButton,{marginTop:20}]}>
+                <Text>Schedule Now</Text>
+                <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
+            </Pressable>
+        </View>}
+        </>
+    )
+}
+
+const OutdatedMelanomaBox = () => {
+    return(
+        <View style={{width:"100%",borderWidth:1,borderColor:"gray",justifyContent:"space-between",alignItems:"center",flexDirection:"row",marginBottom:20,padding:10,borderRadius:20}}>
+        <Image 
+            source={""}
+            style={{width:50,height:50,borderWidth:1,borderColor:"white",borderRadius:10}}
+        />
+        <Text style={{color:"white",fontWeight:"600",opacity:0.8}}>Birthmark#20211</Text>
+        <TouchableOpacity style={{backgroundColor:"white",flexDirection:"row",alignItems:"center",padding:10,borderRadius:10}}>
+            <Text style={{color:"black",fontWeight:"400",fontSize:11,marginRight:5,opacity:0.5}}>Update</Text>
+            <MaterialCommunityIcons 
+                name='arrow-right'
+                color={"magenta"}
+                size={15}
+            />
+        </TouchableOpacity>
+    </View>
+    )
+}
