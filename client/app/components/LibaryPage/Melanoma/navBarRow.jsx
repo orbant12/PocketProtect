@@ -96,3 +96,33 @@ export const NavBar_Slug = ({
         </View>       
     )
 }
+
+export const NavBar_SpotAdd = ({
+    navigation, 
+}) => {
+    return( 
+        <View style={[Mstyles.ProgressBar,{marginTop:-5}]}>
+        <TouchableOpacity onPress={() => navigation.goBack({refresh:true})}  style={{backgroundColor:"black",borderRadius:30,borderColor:"white",borderWidth:2}}>
+            <MaterialCommunityIcons 
+                name="arrow-left"
+                size={25}
+                color={"white"}
+                style={{padding:5}}
+            />
+        </TouchableOpacity>
+        <TouchableOpacity  style={{width:"50%",height:40,borderWidth:2,justifyContent:"center",borderRadius:10,marginTop:0,marginBottom:0,flexDirection:"column",alignItems:"center",backgroundColor:"black",borderColor:"magenta",padding:10,opacity:0.9}}>
+                <View style={{width:"100%",flexDirection:"row",alignItems:"center",justifyContent:"center"}}>                      
+                    <Text style={{fontSize:14,fontWeight:"700",marginLeft:10,color:"white"}}>Spot Update</Text>                       
+                </View>                        
+        </TouchableOpacity>   
+        <TouchableOpacity onPress={() => navigation.goBack({refresh:true})}  style={{backgroundColor:"black",borderRadius:30,borderColor:"white",borderWidth:2}}>
+            <MaterialCommunityIcons 
+                name="information"
+                size={25}
+                color={"white"}
+                style={{padding:5}}
+            />
+        </TouchableOpacity>         
+        </View>       
+    )
+}

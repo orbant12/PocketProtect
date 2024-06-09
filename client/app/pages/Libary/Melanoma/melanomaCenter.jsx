@@ -10,7 +10,7 @@ import {bodyBack} from "../../../components/LibaryPage/Melanoma/BodyParts/bodyBa
 import { useAuth } from '../../../context/UserAuthContext.jsx';
 import { fetchAllMelanomaSpotData, fetchUserData,fetchCompletedParts, fetchNumberOfMolesOnSlugs } from '../../../services/server.js';
 import { useFocusEffect } from '@react-navigation/native';
-import { SkinModal } from "../../../components/LibaryPage/Melanoma/modal";
+import { SkinModal } from "../../../components/LibaryPage/Melanoma/modals";
 import { Mstyles } from "../../../styles/libary_style";
 import { NavBar_Main } from "../../../components/LibaryPage/Melanoma/navBarRow";
 import { SlugCard } from "../../../components/LibaryPage/Melanoma/slugCard";
@@ -39,6 +39,7 @@ const SingleFeature = ({route,navigation}) => {
     const [ skinModal,setSkinModal] = useState(false)
     const scrollRef = useRef(null)
     const [refreshing, setRefreshing] = useState(false);
+
 
 //<==================<[ Functions ]>====================>
 
@@ -180,11 +181,10 @@ const SingleFeature = ({route,navigation}) => {
         setTimeout(() => {
             setRefreshing(false);
         }, 2000); 
-    }, []);
-
-//<==================<[ COMPIINETNS ]>====================>
+    }, []); 
 
 
+//<==================<[ Main Return ]>====================>
 
     return(
         <>

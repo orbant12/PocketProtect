@@ -1,4 +1,4 @@
-import { Mstyles } from "../../../styles/libary_style"
+import { Mstyles, SingleSlugStyle } from "../../../styles/libary_style"
 import {View, Text,Pressable,TouchableOpacity} from "react-native"
 
 export const SkinModal = ({
@@ -29,6 +29,39 @@ export const SkinModal = ({
             </TouchableOpacity>
         </View>
         </View>
+        }
+        </>
+    )
+}
+
+export function SureModal({
+    moleToDelete,
+    handleSpotDelete,
+    setDeleteModal,
+    visible
+}){
+    return(
+        <>
+        {visible &&
+        <View style={SingleSlugStyle.modalOverlay}> 
+        <View style={SingleSlugStyle.modalBox}>
+            <View style={{alignItems:"center",padding:20}}>
+                <Text style={{fontWeight:"700",fontSize:18,marginTop:10,textAlign:"center"}}>Are you sure about deleting {moleToDelete.storage_name}</Text>
+                <Text style={{fontWeight:"400",fontSize:15,marginTop:10}}>It will be lost forever !</Text>
+            </View>
+            <View style={{flexDirection:"row-reverse",width:"100%",borderTopWidth:1,padding:10,paddingRight:20}}>
+
+                <TouchableOpacity onPress={() => {moleToDelete != "" && handleSpotDelete(moleToDelete)}} style={SingleSlugStyle.modalNoBtn}>
+                    <Text style={{fontWeight:"700",color:"white"}}>Yes</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={SingleSlugStyle.modalYesBtn} onPress={() => setDeleteModal(!visible)}>
+                    <Text style={{fontWeight:"700",color:"black"}}>No</Text>
+                </TouchableOpacity>
+
+            </View>
+        </View>
+    </View>
         }
         </>
     )
