@@ -1,4 +1,4 @@
-import { Mstyles, SingleSlugStyle } from "../../../styles/libary_style"
+import { Mstyles, SingleSlugStyle,spotUpload_2_styles } from "../../../styles/libary_style"
 import {View, Text,Pressable,TouchableOpacity} from "react-native"
 
 export const SkinModal = ({
@@ -64,5 +64,37 @@ export function SureModal({
     </View>
         }
         </>
+    )
+}
+
+export function SureModal_MoleUpload({
+    moleToDeleteId,
+    setIsModalUp,
+    visible,
+    handleSpotDelete
+}){
+    return(
+        <>
+    {visible && 
+    <View style={spotUpload_2_styles.modalOverlay}> 
+        <View style={spotUpload_2_styles.modalBox}>
+            <View style={{alignItems:"center",padding:20}}>
+                <Text style={{fontWeight:"700",fontSize:18,marginTop:10,textAlign:"center"}}>Are you sure about deleting {moleToDeleteId}</Text>
+                <Text style={{fontWeight:"400",fontSize:15,marginTop:10}}>It will be lost forever !</Text>
+            </View>
+            <View style={{flexDirection:"row-reverse",width:"100%",borderTopWidth:1,padding:10,paddingRight:20}}>
+
+                <TouchableOpacity onPress={() => {moleToDeleteId != "" && handleSpotDelete(moleToDeleteId)}} style={spotUpload_2_styles.modalNoBtn}>
+                    <Text style={{fontWeight:"700",color:"white"}}>Yes</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={spotUpload_2_styles.modalYesBtn} onPress={() => setIsModalUp(!visible)}>
+                    <Text style={{fontWeight:"700",color:"black"}}>No</Text>
+                </TouchableOpacity>
+
+            </View>
+        </View>
+    </View>}
+    </>
     )
 }

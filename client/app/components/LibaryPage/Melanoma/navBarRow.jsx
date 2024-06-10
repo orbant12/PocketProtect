@@ -1,6 +1,6 @@
 import { View,Text,TouchableOpacity } from "react-native"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
-import { Mstyles } from "../../../styles/libary_style"
+import { Mstyles, spotUploadStyle } from "../../../styles/libary_style"
 
 export const NavBar_Main  = ({
     navigation,
@@ -124,5 +124,23 @@ export const NavBar_SpotAdd = ({
             />
         </TouchableOpacity>         
         </View>       
+    )
+}
+
+export const NavBar_Upload_1 = ({navigation}) => {
+    return(
+        <View style={spotUploadStyle.ProgressBar}>
+        <TouchableOpacity onPress={() => navigation.goBack()}  style={{backgroundColor:"black",borderRadius:30,borderColor:"white",borderWidth:2}}>
+            <MaterialCommunityIcons 
+                name="arrow-left"
+                size={25}
+                color={"white"}
+                style={{padding:5}}
+            />
+        </TouchableOpacity> 
+        <View style={{width:"85%",backgroundColor:"rgba(0,0,0,0.05)",alignItems:"center",justifyContent:"center",marginBottom:0,padding:10,borderRadius:10}}>
+                <Text style={{fontWeight:"700",fontSize:18}}>Press the body part to monitor</Text>    
+            </View>                                
+        </View> 
     )
 }
