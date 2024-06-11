@@ -8,9 +8,9 @@ type UpdateMethod = {} | "new"
 interface NavigationParams {
     melanomaId: string;
     bodyPart: any[];
-    gender: Gender;
-    skin_type: SkinType;
-    userData: any[];
+    gender?: Gender;
+    skin_type?: SkinType;
+    userData?: any[];
     navigation: any;
     type: UpdateMethod;
 }
@@ -54,5 +54,19 @@ export const Navigation_AddSlugSpot = ({
         alert("Something went wrong");
     }
 };
+
+export const Navigation_MoleUpload = ({
+    gender,
+    skin_type,
+    navigation
+}:NavigationParams) => {
+    navigation.navigate("MelanomaAllAdd", {         
+        gender: gender,
+        skin_type: skin_type,
+    });        
+}
+
+
+
 
 

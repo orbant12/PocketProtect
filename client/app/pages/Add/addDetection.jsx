@@ -12,13 +12,15 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Tabs} from 'react-native-collapsible-tab-view'
 import Entypo from 'react-native-vector-icons/Entypo';
 import PagerView from 'react-native-pager-view';
+import { Horizontal_Navbar } from '../../components/LibaryPage/mainNav';
+import { ExploreView } from '../../components/AddPage/exploreView';
 
 const AddDetection = ({navigation}) => {
 
 //<==================<[ Variable ]>====================>  
 
 //NAV
-const [headerSelect, setHeaderSelect] = useState(false)
+const [headerSelect, setHeaderSelect] = useState("melanoma")
 //DIAGNOSIS
 const [sympthomInput, setSympthomInput] = useState('')
 const [addedSymptoms, setAddedSymptoms] = useState([])
@@ -370,7 +372,7 @@ if (result.possibleOutcomes != "qid:too_broad"){
                     : (
                         <ScrollView style={{width:"100%",height:"100%"}}>
                         <View style={{width:"100%",alignItems:"center"}}>   
-                            <View style={{width:"100%",borderTopWidth:1}}>                       
+                            <View style={{width:"100%",borderTopWidth:0}}>                       
                             <PagerView style={{marginTop:0,height:290,width:"100%",borderWidth:0}} onPageScroll={(e) => handleScrollReminder(e)} initialPage={0}>                                  
                                 <View key={1} style={{width:"100%",justifyContent:"center",alignItems:"center",borderWidth:0,height:"100%"}}>
                                     <View style={{flexDirection:"row",alignItems:"center",marginBottom:10}}>
@@ -484,50 +486,23 @@ if (result.possibleOutcomes != "qid:too_broad"){
         <View style={styles.container}>
             <GestureHandlerRootView style={{ flex: 1,width:"100%" }}>
                 <BottomSheetModalProvider>
-                    <View style={[{width:"100%",backgroundColor:"rgba(0,0,0,1)",padding:10,textAlign:"center",position:"relative",height:"20%",justifyContent:"center",alignItems:"center",paddingTop:30},]}>
-                        {!isContextPanelOpen ? 
-                        headerSelect ? (
-                            <View style={{paddingTop:30}}>
-                                <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>Are you having suspicious sympthoms ?</Text>
-                                <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Be protected !</Text>
-                            </View>
-                        ):(
-                        isAddTriggered ?
-                            !isDiagnosisLoading ?
-                            <View style={{paddingTop:30}}>
-                                <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>One by one !</Text>
-                                <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white",maxWidth:"80%"}}>Share what concerns you</Text>
-                            </View>
-                            :
-                            <View style={{paddingTop:30}}>
-                                <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>Done in a moment !</Text>
-                                <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Diagnosis in process ...</Text>
-                                </View>                                        
-                            :
-                            <View style={{paddingTop:30}}>
-                                <Text style={{fontWeight:"500",fontSize:13,color:"white",opacity:0.6}}>Are you having suspicious sympthoms ?</Text>
-                                <Text style={{fontWeight:"800",fontSize:20,marginTop:5,color:"white"}}>Get a diagnosis</Text>
-                            </View>
-                        )
-                        :
-                        <Text style={{fontWeight:"700",fontSize:20,width:"100%",color:"white",textAlign:"center",position:"relative"}}>
-                            <Text style={{color:"gray",fontWeight:"800",}}> Pick the data </Text>
-                            you want <Text style={{color:"gray",fontWeight:"800"}}>Ai</Text> to see during your assistance
-                        </Text> 
-                        
-                        }
-                    </View> 
-
-                    <View style={{flexDirection:"row",justifyContent:"space-evenly",alignItems:"center",width:"100%",zIndex:0, position:"relative",backgroundColor:"white",height:50,borderBottomWidth:0.3}}>
-                        <TouchableOpacity onPress={() => setHeaderSelect(true)} style={headerSelect ? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
-                            <Text style={headerSelect?{fontWeight:"600",color:"black"}:{opacity:0.4,fontWeight:600,color:"black"}}>Get Checked</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => setHeaderSelect(false)} style={!headerSelect ? {borderBottomColor:"magenta",borderBottomWidth:2} : {}}>
-                            <Text style={headerSelect?{opacity:0.4,fontWeight:600,color:"black"}:{fontWeight:"600",color:"black"}}>Diagnosis</Text>
-                        </TouchableOpacity>
-                    </View>        
-                    {headerSelect ? 
-                        <ScrollView style={{width:"100%",backgroundColor:"white",height:"100%",paddingBottom:100}}>
+                    <Horizontal_Navbar
+                        setIsSelected={setHeaderSelect}
+                        isSelected={headerSelect}
+                        absolute={true}
+                        options={[
+                            {
+                                title:"Melanoma Monitor",
+                                value:"melanoma",
+                            },
+                            {
+                                title:"Blood Work",
+                                value:"blood_work",
+                            },
+                        ]}
+                    />       
+                    {/* {headerSelect == "melanoma" ? 
+                        <ScrollView style={{width:"100%",backgroundColor:"white",height:"100%",paddingBottom:100,marginTop:100}}>
                             <View style={{width:"100%",backgroundColor:"white",height:"100%",paddingBottom:50}} >
                                 {OverallHealthSection()}
                                 {CancerSection()}
@@ -535,7 +510,10 @@ if (result.possibleOutcomes != "qid:too_broad"){
                         </ScrollView>
                         :
                         AiDiagnosis({sympthomInput})
-                    }
+                    } */}
+                    <ExploreView 
+                        navigation={navigation}
+                    />
 
                     <BottomSheetModal
                         ref={bottomSheetRef}
@@ -773,14 +751,14 @@ const styles = StyleSheet.create({
 
 const Dstyles = StyleSheet.create({
     container: {
-      backgroundColor: '#fff',
-      flexDirection: 'column',
-      paddingTop:0,
-      width:'100%',
-      alignItems:'center',
-      position:"relative",
-      height:"100%",
-      justifyContent:"center"
+        backgroundColor: '#fff',
+        flexDirection: 'column',
+        marginTop:100,
+        width:'100%',
+        alignItems:'center',
+        position:"relative",
+        height:"100%",
+        justifyContent:"center"
   },
   diagnosisPage:{
     alignItems:"center",
@@ -805,3 +783,8 @@ container: {
 });
 
 export default AddDetection;
+
+
+
+
+

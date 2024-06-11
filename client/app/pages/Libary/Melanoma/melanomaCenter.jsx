@@ -14,6 +14,7 @@ import { SkinModal } from "../../../components/LibaryPage/Melanoma/modals";
 import { Mstyles } from "../../../styles/libary_style";
 import { NavBar_Main } from "../../../components/LibaryPage/Melanoma/navBarRow";
 import { SlugCard } from "../../../components/LibaryPage/Melanoma/slugCard";
+import { Navigation_MoleUpload } from "../../../navigation/navigation";
 
 const SingleFeature = ({route,navigation}) => {
 
@@ -81,16 +82,6 @@ const SingleFeature = ({route,navigation}) => {
         }
     }
 
-    const decodeParts = (parts) => {        
-        let updatedSessionMemory = []        
-
-        parts.forEach((doc) => {
-            updatedSessionMemory.push({ slug: doc });
-        })
-
-        return updatedSessionMemory        
-    }
-
     const fetchAllNumberOfMoleOnSlug = async () => {
         if(currentuser){
             const response = await fetchNumberOfMolesOnSlugs({
@@ -126,7 +117,11 @@ const SingleFeature = ({route,navigation}) => {
     }
 
     const handleAddMelanoma = () => {
-        navigation.navigate("MelanomaAllAdd", { gender: userData.gender, skin_type: melanomaMetaData.skin_type,sessionMemory:decodeParts(completedParts) });
+        Navigation_MoleUpload({
+            gender:userData.gender,
+            skin_type: melanomaMetaData.skin_type,
+            navigation: navigation
+        })
     }
 
     const handleMelanomaDataChange = (type, data) => {

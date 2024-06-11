@@ -6,7 +6,7 @@ import { useAuth } from '../../context/UserAuthContext';
 import { fetchAllDiagnosis, fetchUserData,fetchNumberOfMoles } from '../../services/server';
 import { MainBloodBox, MainMelanomaBox, MainDiagnosisBox } from '../../components/LibaryPage/mainBoxes';
 import { styles } from '../../styles/libary_style';
-import { Navbar } from '../../components/LibaryPage/mainNav';
+import { Horizontal_Navbar} from '../../components/LibaryPage/mainNav';
 
 const DetectionLibary = ({navigation}) => {
 
@@ -150,10 +150,32 @@ useEffect(() => {
 
 return(
     <>
-        <Navbar 
+        <Horizontal_Navbar 
             scrollViewRef={scrollViewRef}
             isSelected={isSelected}
             setIsSelected={setIsSelected}
+            options={[
+                {
+                    title:"AI Vision",
+                    value:"ai_vision",
+                    scroll: { x: 0, y: 0, animated: true }
+                },
+                {
+                    title:"Blood Analasis",
+                    value:"blood_work",
+                    scroll: { x: 0, y: 650, animated: true }
+                },
+                {
+                    title:"Custom Diagnosis",
+                    value:"diagnosis",
+                    
+                },
+                {
+                    title:"Coming Soon",
+                    value:"soon",
+                    
+                }
+            ]}
         />
         <ScrollView 
             style={{backgroundColor:"white",marginTop:90}}

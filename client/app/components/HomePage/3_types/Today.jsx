@@ -4,7 +4,6 @@ import { TaskBox_2,TaskBox_1 } from "../taskBoxes"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import PagerView from 'react-native-pager-view';
 import { formatTimestampToString, splitDate } from "../../../utils/date_manipulations";
-import { DateToString,dateDistanceFromToday } from "../../../utils/date_manipulations";
 
 export const TodayScreen = ({
     allReminders,
@@ -82,34 +81,40 @@ export const TodayScreen = ({
                 }
 
             </View>
-        {allReminders.map((data,index) => (
-            <View key={index} style={styles.TodaySection}>
-                <View style={styles.titleRow}>
-                    <Text style={styles.title}>Reminders</Text>
-                    <Text style={styles.titleLeft}>{allReminders.length}</Text>
-                </View>    
-                <PagerView style={{marginTop:10,height:220 }} onPageScroll={(e) => handleScroll(e)} initialPage={0}>    
-                {data.id == "blood_work" && 
-                    <ReminderBox data={data} format={format} handleNavigation={handleNavigation} />
-                }
-                {data.id == "blood_work" && 
-                    <ReminderBox data={data} format={format} handleNavigation={handleNavigation} />
-                }               
-                {data.id == "blood_work" && 
-                    <ReminderBox data={data} format={format} handleNavigation={handleNavigation} />
-                }               
-                {data.id == "blood_work" && 
-                    ReminderBox({data,index:4,format}) 
-                }   
-                </PagerView>                                                  
-                    <View style={styles.IndicatorContainer}>               
-                        <View style={[styles.Indicator, { opacity: currentPageReminder === 0 ? 1 : 0.3 }]} />                     
-                        <View style={[styles.Indicator, { opacity: currentPageReminder === 1 ? 1 : 0.3 }]} />
-                        <View style={[styles.Indicator, { opacity: currentPageReminder === 2 ? 1 : 0.3 }]} />
-                        <View style={[styles.Indicator, { opacity: currentPageReminder === 3 ? 1 : 0.3 }]} />                                    
-                    </View>
-            </View>
-        ))}            
+            {allReminders.map((data,index) => (
+                <View key={index} style={styles.TodaySection}>
+                    <View style={styles.titleRow}>
+                        <Text style={styles.title}>Blood Work</Text>
+                        <View style={styles.titleLeft}>
+                            <MaterialCommunityIcons 
+                                name="water-plus"
+                                color={"white"}                            
+                                size={30}
+                            />
+                        </View>
+                    </View>    
+                    <PagerView style={{marginTop:10,height:220 }} onPageScroll={(e) => handleScroll(e)} initialPage={0}>    
+                    {data.id == "blood_work" && 
+                        <ReminderBox data={data} format={format} handleNavigation={handleNavigation} />
+                    }
+                    {data.id == "blood_work" && 
+                        <ReminderBox data={data} format={format} handleNavigation={handleNavigation} />
+                    }               
+                    {data.id == "blood_work" && 
+                        <ReminderBox data={data} format={format} handleNavigation={handleNavigation} />
+                    }               
+                    {data.id == "blood_work" && 
+                        ReminderBox({data,index:4,format}) 
+                    }   
+                    </PagerView>                                                  
+                        <View style={styles.IndicatorContainer}>               
+                            <View style={[styles.Indicator, { opacity: currentPageReminder === 0 ? 1 : 0.3 }]} />                     
+                            <View style={[styles.Indicator, { opacity: currentPageReminder === 1 ? 1 : 0.3 }]} />
+                            <View style={[styles.Indicator, { opacity: currentPageReminder === 2 ? 1 : 0.3 }]} />
+                            <View style={[styles.Indicator, { opacity: currentPageReminder === 3 ? 1 : 0.3 }]} />                                    
+                        </View>
+                </View>
+            ))}            
 
             <View style={styles.TodaySection}>
                 <View style={styles.titleRow}>

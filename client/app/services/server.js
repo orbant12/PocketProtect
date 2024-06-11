@@ -462,7 +462,7 @@ export const fetchRiskySpots = async ({
         const snapshot = await getDocs(ref);
         let melanomaData = [];
         snapshot.forEach((doc) => {
-            if(doc.data().risk >= 0 && doc.data().risk != null ){
+            if(doc.data().risk >= 5 && doc.data().risk != null ){
                 melanomaData.push(doc.data());
             }
         }
@@ -487,6 +487,22 @@ export const fetchUnfinishedSpots = async ({
         }
         );
         return melanomaData;
+    } catch (error) {
+        return false
+    }
+}
+
+export const fetchSkinType = async ({
+    userId
+}) => {
+    try{
+        const ref = collection(db, "users", userId, "Medical_Data","skin_data");
+        const docSnap = await getDoc(ref);
+        if (docSnap.exists()) {
+            return docSnap.data().skin_type;
+        } else {
+            console.log("No such document!");
+        }
     } catch (error) {
         return false
     }
