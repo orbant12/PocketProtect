@@ -133,6 +133,8 @@ export const fetchAllMelanomaSpotData = async ({
         snapshot.forEach((doc) => {
             if(doc.data().gender == gender){
                 melanomaData.push(doc.data());
+            } else if ( gender == ""){
+                melanomaData.push(doc.data());
             }
         }
         );

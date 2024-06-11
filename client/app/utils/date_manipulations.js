@@ -15,6 +15,7 @@ export function DateToString(date){
     return format
 }
 
+
 export function formatTimestampToString(timestamp) {        
     const milliseconds = (timestamp.seconds * 1000) + (timestamp.nanoseconds / 1000000);    
     const date = new Date(milliseconds);    
@@ -27,8 +28,8 @@ export function formatTimestampToString(timestamp) {
 
 export function dateDistanceFromToday(date1) {
     const d1 = new Date(formatTimestampToString(date1))
-    const d2 = DateToString(new Date)
-    const diffTime = d1 - d2;
+    const d2 = new Date
+    const diffTime = d2 - d1;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays + 186;
+    return diffDays;
 }

@@ -179,7 +179,7 @@ const MelanomaAdd = ({ route , navigation }) => {
                     birthmarkId: ID,
                     melanomaPictureUrl: pictureUrl,
                     storageLocation: storageLocation,
-                    risk:0,
+                    risk:null,
                     storage_name: ID,
                     created_at:new Date(),
                 })
@@ -225,7 +225,7 @@ const MelanomaAdd = ({ route , navigation }) => {
                 melanomaId: spotId.id,
                 melanomaPictureUrl: pictureUrl,
                 storage_location: storageLocation,
-                risk:0,
+                risk:null,
                 storage_name:`${spotId.id}_updated#${ID}`,
                 created_at: new Date()
             }
@@ -346,7 +346,6 @@ const MelanomaAdd = ({ route , navigation }) => {
                 ):(
                     <Text style={{fontWeight:300,opacity:0.5,fontSize:10}}>Not All Steps Completed</Text>
                 )}
-         
             </View>
             </View>
         </ScrollView>

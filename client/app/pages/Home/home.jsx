@@ -5,12 +5,13 @@ import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../../context/UserAuthContext';
 import Calendar from '../../components/HomePage/Callendar/HorizontalCallendar';
 import {useTimer}  from '../../components/HomePage/timer';
-import { fetchMonthTasks, fetchReminders } from '../../services/server';
+import { fetchMonthTasks, fetchReminders,fetchAllMelanomaSpotData } from '../../services/server';
 import { styles } from "../../styles/home_style";
 import { TodayScreen } from '../../components/HomePage/3_types/Today';
 import { DateToString, splitDate, parseDateToMidnight } from '../../utils/date_manipulations';
 import { FutureScreen } from '../../components/HomePage/3_types/Future';
 import { PastScreen } from '../../components/HomePage/3_types/Past';
+
 
 
 export default function TabOneScreen({navigation}) {
@@ -35,6 +36,7 @@ const [currentPage, setCurrentPage] = useState(0);
 const [currentPageReminder, setCurrentPageReminder] = useState(0);
 //REFRESH
 const [refreshing, setRefreshing] = useState(false);
+const [ melanomaData, setMelanomaData ] = useState([])
 
 
 //<==================<[ Functions ]>====================>
@@ -90,9 +92,25 @@ const [refreshing, setRefreshing] = useState(false);
         }
     }
 
+    const fetchAllSpots = async () => {
+        if(currentuser){
+            const response = await fetchAllMelanomaSpotData({
+                userId: currentuser.uid,
+                gender: ""
+            });
+            const melanomaData = response;
+            if(melanomaData != false){
+                setMelanomaData(melanomaData);
+            } else {
+                setMelanomaData([])
+            }
+        }
+    }
+
     const handleLoadPage = () => {
         fetchThisMonthTasks()
         fetchAllReminders()
+        fetchAllSpots()
     }
 
     useEffect(() =>{
@@ -137,6 +155,7 @@ const [refreshing, setRefreshing] = useState(false);
                     currentPageReminder={currentPageReminder}
                     handleScroll={handleScroll}
                     format={format}
+                    melanomaData={melanomaData}
                 />
             :
             !historyShown?

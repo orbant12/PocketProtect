@@ -26,7 +26,7 @@ export const MoleTab = ({
         {bodyPart != null &&
             <View style={[SingleSlugStyle.container]}>
             {selectedMelanoma != null && bodyPart != null &&
-                selectedMelanoma.risk != 0 ?
+                selectedMelanoma.risk != null ?
                     <MalignantOrBeningDisplay 
                         selectedMelanoma={selectedMelanoma}
                     />

@@ -1,4 +1,4 @@
-import { View,Text,StyleSheet,Pressable,Image,ScrollView,TouchableOpacity,Dimensions, PixelRatio } from "react-native"
+import { View,Text,StyleSheet,Pressable,Image,ScrollView,TouchableOpacity,PixelRatio } from "react-native"
 import React, {useState,useEffect,useRef} from "react";
 import ProgressBar from 'react-native-progress/Bar';
 import { useAuth } from "../../../../context/UserAuthContext.jsx";
@@ -20,7 +20,7 @@ import { FactScreenType_1 } from "../../../../components/Common/FactScreenCompon
 import { FactScreenType_2 } from "../../../../components/Common/FactScreenComponents/factScreenType2.jsx";
 
 
-const { width, height } = Dimensions.get('window');
+
 
 const responsiveFontSize = (size) => {
     return size * PixelRatio.getFontScale();
@@ -97,10 +97,6 @@ const MelanomaFullProcess = ({navigation,route}) => {
         }
     }
     
-    useEffect(() => {
-        completedArea(sessionMemory);        
-    }, [sessionMemory,]); 
-
     const handleOpenBottomSheet = (state) => {
         if(state == "open"){
             bottomSheetRef.current.present();
@@ -180,6 +176,10 @@ const MelanomaFullProcess = ({navigation,route}) => {
             alert("Something Went Wrong. Please check your intenet connection or restart the app !")
         }
     }
+
+    useEffect(() => {
+        completedArea(sessionMemory);        
+    }, [sessionMemory,]); 
 
 
     //<==============> Components  <=============> 

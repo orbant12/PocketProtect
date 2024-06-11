@@ -3,7 +3,8 @@ import { View,Text,Pressable,TouchableOpacity,Image } from "react-native"
 import { TaskBox_2,TaskBox_1 } from "../taskBoxes"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import PagerView from 'react-native-pager-view';
-import { splitDate } from "../../../utils/date_manipulations";
+import { formatTimestampToString, splitDate } from "../../../utils/date_manipulations";
+import { DateToString,dateDistanceFromToday } from "../../../utils/date_manipulations";
 
 export const TodayScreen = ({
     allReminders,
@@ -12,7 +13,8 @@ export const TodayScreen = ({
     handleScroll,
     currentPageReminder,
     currentPage,
-    format
+    format,
+    melanomaData
 }) => {
     return(    
         <>
@@ -27,11 +29,29 @@ export const TodayScreen = ({
                         />
                     </View>
                 </View>
-                <View style={{margin:0,width:"100%",borderBottomWidth:2,borderColor:"white",paddingBottom:10,alignItems:"center"}}>
+                <View style={{margin:0,width:"90%",borderBottomWidth:0,borderColor:"white",paddingBottom:10,alignItems:"center",marginRight:"auto",marginLeft:"auto"}}>
                     <Text style={{color:"white",fontWeight:"700",opacity:0.4,margin:10,alignSelf:"left"}}>Outdated Moles</Text>
                     <View style={{width:"95%",marginTop:10,alignItems:"center"}}>
-                        <OutdatedMelanomaBox />
-                        <OutdatedMelanomaBox />
+                        {melanomaData.map((data) => (
+                            dateDistanceFromToday(data.created_at) >= 200 &&
+                            <OutdatedMelanomaBox 
+                                type={""}
+                                data={data}
+                            />
+                        ))}  
+                    </View>
+                </View>
+
+                <View style={{margin:0,width:"90%",borderBottomWidth:0,borderColor:"white",paddingBottom:10,alignItems:"center",marginRight:"auto",marginLeft:"auto"}}>
+                    <Text style={{color:"white",fontWeight:"700",opacity:0.4,margin:10,alignSelf:"left"}}>Action Required</Text>
+                    <View style={{width:"95%",marginTop:10,alignItems:"center"}}>
+                        {melanomaData.map((data) => (
+                            data.risk >= 0 &&
+                            <OutdatedMelanomaBox 
+                                type={"risk"}
+                                data={data}
+                            />
+                        ))}   
                     </View>
                 </View>
 
@@ -194,22 +214,42 @@ const ReminderBox = ({data,format,handleNavigation}) =>{
     )
 }
 
-const OutdatedMelanomaBox = () => {
+const OutdatedMelanomaBox = ({
+    type,
+    data
+}) => {
     return(
-        <View style={{width:"100%",borderWidth:1,borderColor:"gray",justifyContent:"space-between",alignItems:"center",flexDirection:"row",marginBottom:20,padding:10,borderRadius:20}}>
+        <View style={{width:"100%",borderBottomWidth:1,borderColor:"gray",justifyContent:"space-between",alignItems:"center",flexDirection:"row",paddingBottom:20,padding:10,borderRadius:0,marginBottom:10}}>
         <Image 
-            source={""}
+            source={{uri: data.melanomaPictureUrl}}
             style={{width:50,height:50,borderWidth:1,borderColor:"white",borderRadius:10}}
         />
-        <Text style={{color:"white",fontWeight:"600",opacity:0.8}}>Birthmark#20211</Text>
-        <TouchableOpacity style={{backgroundColor:"white",flexDirection:"row",alignItems:"center",padding:10,borderRadius:10}}>
-            <Text style={{color:"black",fontWeight:"400",fontSize:11,marginRight:5,opacity:0.5}}>Update</Text>
+        <View style={{marginRight:30}}>
+            <Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:13}}>{data.melanomaId}</Text>
+            {type == "risk" ? <Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:10,marginTop:5}}><Text style={{opacity:0.5}}>Risk:</Text> {data.risk}</Text> : <Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:10,marginTop:5}}><Text style={{opacity:0.5}}>Uploaded:</Text> {formatTimestampToString(data.created_at)}</Text>}
+        </View>
+        
+        <TouchableOpacity style={{backgroundColor:"white",flexDirection:"row",alignItems:"center",padding:9,borderRadius:5,opacity:0.8}}>
+            <Text style={{color:"black",fontWeight:"500",fontSize:10,marginRight:5,opacity:0.8}}>Update</Text>
             <MaterialCommunityIcons 
                 name='arrow-right'
                 color={"magenta"}
-                size={15}
+                size={10}
             />
         </TouchableOpacity>
     </View>
+    )
+}
+
+
+const EmptyLabel = ({
+    label
+}) => {
+    return(
+        <View>
+            <Text style={{color:"white"}}>
+                {label}
+            </Text>
+        </View>
     )
 }

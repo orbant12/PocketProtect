@@ -35,6 +35,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
     const scrollViewRef = useRef(null);    
     const [isCameraOverlayVisible, setIsCameraOverlayVisible] = useState(false);
 
+
     //<==============> Functions <=============> 
 
     const handleMoreBirthmark = async () => {
@@ -77,7 +78,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                 melanomaPictureUrl: pictureUrl,
                 birthmarkId: ID,
                 storageLocation: storageLocation,
-                risk:0,
+                risk:null,
                 storage_name: ID,
                 created_at: new Date()
             })
@@ -179,11 +180,6 @@ const MelanomaSingleSlug = ({route,navigation}) => {
     },[])
 
 
-    //<==============> Child Components <=============> 
-
-
-
-
     //<==============> Main Component Return <=============> 
 
     return(
@@ -254,8 +250,6 @@ const MelanomaSingleSlug = ({route,navigation}) => {
         </View>
     )
 }
-
-
 
 export default MelanomaSingleSlug
 
