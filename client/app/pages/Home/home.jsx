@@ -5,13 +5,13 @@ import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../../context/UserAuthContext';
 import Calendar from '../../components/HomePage/Callendar/HorizontalCallendar';
 import {useTimer}  from '../../components/HomePage/timer';
-import { fetchMonthTasks, fetchReminders,fetchAllMelanomaSpotData } from '../../services/server';
+import { fetchMonthTasks, fetchReminders,fetchOutDatedSpots,fetchRiskySpots, fetchUnfinishedSpots, fetchUserData } from '../../services/server';
 import { styles } from "../../styles/home_style";
 import { TodayScreen } from '../../components/HomePage/3_types/Today';
 import { DateToString, splitDate, parseDateToMidnight } from '../../utils/date_manipulations';
 import { FutureScreen } from '../../components/HomePage/3_types/Future';
 import { PastScreen } from '../../components/HomePage/3_types/Past';
-
+import { Navigation_SingleSpotAnalysis } from '../../navigation/navigation';
 
 
 export default function TabOneScreen({navigation}) {
@@ -36,13 +36,26 @@ const [currentPage, setCurrentPage] = useState(0);
 const [currentPageReminder, setCurrentPageReminder] = useState(0);
 //REFRESH
 const [refreshing, setRefreshing] = useState(false);
-const [ melanomaData, setMelanomaData ] = useState([])
+const [ outdatedMelanomaData, setOutdatedMelanomaData ] = useState([])
+const [ riskyMelanomaData, setRiskyMelanomaData ] = useState([])
+const [ unfinishedMelanomaData, setUnfinishedMelanomaData ] = useState([])
+const [ userData, setUserData] = useState([])
 
 
 //<==================<[ Functions ]>====================>
 
-    const handleNavigation  = (path) => {
-        navigation.navigate(path,{data:[{q:"valami",type:"binary"}], outcomes:""})
+    const handleNavigation  = (path,data) => {
+        if (path == "dasdas"){
+            navigation.navigate(path,{data:[{q:"valami",type:"binary"}], outcomes:""})
+        } else if ( path == "risk" || path == ""  || path == "unfinished" ){
+            Navigation_SingleSpotAnalysis({
+                melanomaId: data.melanomaId,
+                userData: userData,
+                gender: userData.gender,
+                skin_type: 0,
+                navigation
+            })
+        } 
     }
 
     const handleScroll = (e) => {
@@ -94,23 +107,48 @@ const [ melanomaData, setMelanomaData ] = useState([])
 
     const fetchAllSpots = async () => {
         if(currentuser){
-            const response = await fetchAllMelanomaSpotData({
-                userId: currentuser.uid,
-                gender: ""
+            const response = await fetchOutDatedSpots({
+                userId: currentuser.uid,            
             });
             const melanomaData = response;
             if(melanomaData != false){
-                setMelanomaData(melanomaData);
+                setOutdatedMelanomaData(melanomaData);
             } else {
-                setMelanomaData([])
+                setOutdatedMelanomaData([])
+            }
+            const responseRisk = await fetchRiskySpots({
+                userId: currentuser.uid,            
+            });
+            const melanomaDataRisk = responseRisk;
+            if(melanomaDataRisk != false){
+                setRiskyMelanomaData(melanomaDataRisk);
+            } else {
+                setRiskyMelanomaData([])
+            }
+            const responseUnf = await fetchUnfinishedSpots({
+                userId: currentuser.uid,            
+            });
+            const melanomaDataUnf = responseUnf;
+            if(melanomaDataUnf != false){
+                setUnfinishedMelanomaData(melanomaDataUnf);
+            } else {
+                setUnfinishedMelanomaData([])
             }
         }
+    }
+
+    const fetchAllUserData = async () =>{
+        const response = await fetchUserData({
+            userId:currentuser.uid
+        })
+        setUserData(response)
     }
 
     const handleLoadPage = () => {
         fetchThisMonthTasks()
         fetchAllReminders()
         fetchAllSpots()
+        fetchAllUserData()
     }
 
     useEffect(() =>{
@@ -155,7 +193,9 @@ const [ melanomaData, setMelanomaData ] = useState([])
                     currentPageReminder={currentPageReminder}
                     handleScroll={handleScroll}
                     format={format}
-                    melanomaData={melanomaData}
+                    outdatedMelanomaData={outdatedMelanomaData}
+                    riskyMelanomaData={riskyMelanomaData}
+                    unfinishedMelanomaData={unfinishedMelanomaData}                    
                 />
             :
             !historyShown?

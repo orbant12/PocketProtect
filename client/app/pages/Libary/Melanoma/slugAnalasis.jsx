@@ -81,7 +81,7 @@ const SlugAnalasis = ({ route,navigation }) => {
     
     const handleSpotOpen = (bodyPart) => {
         Navigation_SingleSpotAnalysis({
-            bodyPart: bodyPart,
+            melanomaId: bodyPart.melanomaId,
             userData:userData,
             gender:gender,
             skin_type:skin_type,

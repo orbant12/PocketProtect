@@ -6,6 +6,7 @@ type SkinType = 0 | 1 | 2 | 3;
 type UpdateMethod = {} | "new"
 
 interface NavigationParams {
+    melanomaId: string;
     bodyPart: any[];
     gender: Gender;
     skin_type: SkinType;
@@ -15,16 +16,16 @@ interface NavigationParams {
 }
 
 export const Navigation_SingleSpotAnalysis = ({
-    bodyPart = [],
+    melanomaId,
     gender = "female",
     skin_type = 0,
     userData = [],
     navigation
 }: NavigationParams) => {
 
-    if (bodyPart && gender && skin_type !== undefined && userData) {
+    if (melanomaId && gender && skin_type !== undefined && userData) {
         navigation.navigate("SinglePartAnalasis", { 
-            bodyPart: bodyPart,
+            melanomaId: melanomaId,
             gender: gender,
             skin_type: skin_type,
             userData: userData

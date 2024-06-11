@@ -1,4 +1,4 @@
-import { useEffect,useState,useRef } from "react";
+import { useEffect,useState,useRef,useCallback } from "react";
 import { View } from "react-native";
 import { useAuth } from "../../../context/UserAuthContext";
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/client/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
@@ -12,6 +12,7 @@ import { formatTimestampToString } from "../../../utils/date_manipulations";
 import { SureModal } from "../../../components/LibaryPage/Melanoma/modals";
 import { MoleTab } from "../../../components/LibaryPage/Melanoma/SingleMole/tabs/moleTab";
 import { AssistTab } from "../../../components/LibaryPage/Melanoma/SingleMole/tabs/assistTab";
+import { useFocusEffect } from '@react-navigation/native';
 import { Navigation_AddSlugSpot } from "../../../navigation/navigation";
 
 const SinglePartAnalasis = ({ route,navigation }) => {
@@ -19,7 +20,7 @@ const SinglePartAnalasis = ({ route,navigation }) => {
 //<==================<[ Variables ]>====================>
 
 //Route Params
-const bodyPartID = route.params.bodyPart.melanomaId;
+const bodyPartID = route.params.melanomaId;
 const gender = route.params.gender
 const skin_type = route.params.skin_type
 const userData = route.params.userData
@@ -45,13 +46,13 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
             })
             if (res == "NoHistory"){
                 setMelanomaHistory([])
-                setHighlighted(formatTimestampToString(bPart.created_at))                
+                setHighlighted(bPart.storage_name)                
             } else if (res == false){
                 alert("Something went wrong !")
-                setHighlighted(formatTimestampToString(bPart.created_at))
+                setHighlighted(bPart.storage_name)
             } else {
                 setMelanomaHistory(res)
-                setHighlighted(formatTimestampToString(bPart.created_at))            
+                setHighlighted(bPart.storage_name)            
             }
         }
     }
@@ -152,6 +153,13 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
     useEffect(() => {        
         fetchDataSelectedMole()
     },[])
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchDataSelectedMole()
+        return () => {};
+        }, [])
+    );
 
 
 //<==================<[ Components ]>====================>

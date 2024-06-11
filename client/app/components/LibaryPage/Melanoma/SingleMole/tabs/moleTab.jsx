@@ -41,7 +41,7 @@ export const MoleTab = ({
                     <Text style={{width:"90%",textAlign:"center",fontSize:25,color:"white",fontWeight:"800",opacity:0.6}}>Mole Data</Text>
                     {selectedMelanoma != null && bodyPart != null &&
                     <>
-                        <View style={[SingleSlugStyle.melanomaBox, highlight != formatTimestampToString(selectedMelanoma.created_at) && {borderColor:"white"}]}>
+                        <View style={[SingleSlugStyle.melanomaBox, highlight != selectedMelanoma.storage_name && {borderColor:"white"}]}>
                             
                             <Image 
                                 source={{ uri:selectedMelanoma.melanomaPictureUrl}}
@@ -95,8 +95,8 @@ export const MoleTab = ({
                     <View style={[SingleSlugStyle.container,{marginTop:50}]}>
                         <Text style={{width:"90%",textAlign:"center",fontSize:25,color:"white",fontWeight:"800",opacity:0.6}}>History</Text>    
                         <Text style={{color:"white",opacity:0.2,fontWeight:"600",marginTop:5}}>Latest to oldest</Text>                                  
-                            <TouchableOpacity onPress={() => {setHighlighted(formatTimestampToString(bodyPart.created_at)); setSelectedMelanoma(bodyPart); moleDataRef.current.scrollTo({ x: 0, y: 0, animated: true }); }}  style={[SingleSlugStyle.melanomaBox, highlight != formatTimestampToString(bodyPart.created_at) && {borderColor:"white"}]}>
-                            <Text style={[{color:"magenta",opacity:0.6, fontWeight:"700",top:-22,position:"absolute",left:0},highlight != formatTimestampToString(bodyPart.created_at) && {color:"white"}]}>Latest</Text>
+                            <TouchableOpacity onPress={() => {setHighlighted(bodyPart.storage_name); setSelectedMelanoma(bodyPart); moleDataRef.current.scrollTo({ x: 0, y: 0, animated: true }); }}  style={[SingleSlugStyle.melanomaBox, highlight != bodyPart.storage_name && {borderColor:"white"}]}>
+                            <Text style={[{color:"magenta",opacity:0.6, fontWeight:"700",top:-22,position:"absolute",left:0},highlight != bodyPart.storage_name && {color:"white"}]}>Latest</Text>
                             <Image 
                                 source={{ uri:bodyPart.melanomaPictureUrl}}
                                 style={{width:80,height:80,borderWidth:1,borderRadius:10}}
@@ -117,7 +117,7 @@ export const MoleTab = ({
                             </TouchableOpacity>
                             {melanomaHistory.length != 0 && 
                                 melanomaHistory.map((data,index) => (
-                                <TouchableOpacity key={index} onPress={() => {setHighlighted(formatTimestampToString(data.created_at));setSelectedMelanoma(data);moleDataRef.current.scrollTo({ x: 0, y: 0, animated: true });}}  style={[SingleSlugStyle.melanomaBox, highlight != formatTimestampToString(data.created_at) && {borderColor:"white"}]}>                                    
+                                <TouchableOpacity key={index} onPress={() => {setHighlighted(data.storage_name);setSelectedMelanoma(data);moleDataRef.current.scrollTo({ x: 0, y: 0, animated: true });}}  style={[SingleSlugStyle.melanomaBox, highlight != data.storage_name && {borderColor:"white"}]}>                                    
                                     <Image 
                                         source={{ uri:data.melanomaPictureUrl}}
                                         style={{width:80,height:80,borderWidth:1,borderRadius:10}}

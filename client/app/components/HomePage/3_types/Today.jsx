@@ -14,7 +14,9 @@ export const TodayScreen = ({
     currentPageReminder,
     currentPage,
     format,
-    melanomaData
+    outdatedMelanomaData,
+    riskyMelanomaData,
+    unfinishedMelanomaData,
 }) => {
     return(    
         <>
@@ -32,29 +34,52 @@ export const TodayScreen = ({
                 <View style={{margin:0,width:"90%",borderBottomWidth:0,borderColor:"white",paddingBottom:10,alignItems:"center",marginRight:"auto",marginLeft:"auto"}}>
                     <Text style={{color:"white",fontWeight:"700",opacity:0.4,margin:10,alignSelf:"left"}}>Outdated Moles</Text>
                     <View style={{width:"95%",marginTop:10,alignItems:"center"}}>
-                        {melanomaData.map((data) => (
-                            dateDistanceFromToday(data.created_at) >= 200 &&
-                            <OutdatedMelanomaBox 
-                                type={""}
-                                data={data}
+                        {outdatedMelanomaData.length != 0 ?
+                            outdatedMelanomaData.map((data) => (                    
+                                <OutdatedMelanomaBox 
+                                    type={""}
+                                    data={data}
+                                    handleNavigation={handleNavigation}
+                                />
+                            ))
+                            :
+                            <EmptyLabel 
+                                label={"All moles are up to date"}
                             />
-                        ))}  
+                        }  
                     </View>
                 </View>
-
+                {riskyMelanomaData.length != 0 &&
                 <View style={{margin:0,width:"90%",borderBottomWidth:0,borderColor:"white",paddingBottom:10,alignItems:"center",marginRight:"auto",marginLeft:"auto"}}>
                     <Text style={{color:"white",fontWeight:"700",opacity:0.4,margin:10,alignSelf:"left"}}>Action Required</Text>
                     <View style={{width:"95%",marginTop:10,alignItems:"center"}}>
-                        {melanomaData.map((data) => (
-                            data.risk >= 0 &&
-                            <OutdatedMelanomaBox 
-                                type={"risk"}
-                                data={data}
-                            />
-                        ))}   
+                        
+                            {riskyMelanomaData.map((data) => (
+                                data.risk >= 0 &&
+                                <OutdatedMelanomaBox 
+                                    type={"risk"}
+                                    data={data}
+                                    handleNavigation={handleNavigation}
+                                />
+                            ))                    
+                            }   
                     </View>
                 </View>
-
+                }
+                {unfinishedMelanomaData.length != 0 &&
+                <View style={{margin:0,width:"90%",borderBottomWidth:0,borderColor:"white",paddingBottom:10,alignItems:"center",marginRight:"auto",marginLeft:"auto"}}>
+                    <Text style={{color:"white",fontWeight:"700",opacity:0.4,margin:10,alignSelf:"left"}}>Unfinished Moles</Text>
+                    <View style={{width:"95%",marginTop:10,alignItems:"center"}}>
+                    {unfinishedMelanomaData.map((data) => (                    
+                        <OutdatedMelanomaBox 
+                            type={"unfinished"}
+                            data={data}
+                            handleNavigation={handleNavigation}
+                        />
+                    ))}
+                    </View>
+                </View>
+                }
 
             </View>
         {allReminders.map((data,index) => (
@@ -216,7 +241,8 @@ const ReminderBox = ({data,format,handleNavigation}) =>{
 
 const OutdatedMelanomaBox = ({
     type,
-    data
+    data,
+    handleNavigation
 }) => {
     return(
         <View style={{width:"100%",borderBottomWidth:1,borderColor:"gray",justifyContent:"space-between",alignItems:"center",flexDirection:"row",paddingBottom:20,padding:10,borderRadius:0,marginBottom:10}}>
@@ -226,11 +252,13 @@ const OutdatedMelanomaBox = ({
         />
         <View style={{marginRight:30}}>
             <Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:13}}>{data.melanomaId}</Text>
-            {type == "risk" ? <Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:10,marginTop:5}}><Text style={{opacity:0.5}}>Risk:</Text> {data.risk}</Text> : <Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:10,marginTop:5}}><Text style={{opacity:0.5}}>Uploaded:</Text> {formatTimestampToString(data.created_at)}</Text>}
+            {type == "risk" ? <Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:10,marginTop:5}}><Text style={{opacity:0.5}}>Risk:</Text> {data.risk}</Text> : type != "unfinished" ? <Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:10,marginTop:5}}><Text style={{opacity:0.5}}>Uploaded:</Text> {formatTimestampToString(data.created_at)}</Text>:<Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:10,marginTop:5}}><Text style={{opacity:0.5}}> Not analised: </Text>{data.melanomaDoc.spot[0].slug} </Text>}
         </View>
         
-        <TouchableOpacity style={{backgroundColor:"white",flexDirection:"row",alignItems:"center",padding:9,borderRadius:5,opacity:0.8}}>
-            <Text style={{color:"black",fontWeight:"500",fontSize:10,marginRight:5,opacity:0.8}}>Update</Text>
+        <TouchableOpacity onPress={() => handleNavigation(type,data)} style={{backgroundColor:"white",flexDirection:"row",alignItems:"center",padding:9,borderRadius:5,opacity:0.8}}>
+            {type == "risk" && <Text style={{color:"black",fontWeight:"500",fontSize:10,marginRight:5,opacity:0.8}}>Show</Text>}
+            {type == "" && <Text style={{color:"black",fontWeight:"500",fontSize:10,marginRight:5,opacity:0.8}}>Update</Text>}
+            {type == "unfinished" && <Text style={{color:"black",fontWeight:"500",fontSize:10,marginRight:5,opacity:0.8}}>Analise</Text>}
             <MaterialCommunityIcons 
                 name='arrow-right'
                 color={"magenta"}
@@ -246,8 +274,8 @@ const EmptyLabel = ({
     label
 }) => {
     return(
-        <View>
-            <Text style={{color:"white"}}>
+        <View style={{margin:15,opacity:0.1}}>
+            <Text style={{color:"white",fontWeight:"800",fontSize:15}}>
                 {label}
             </Text>
         </View>

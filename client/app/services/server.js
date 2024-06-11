@@ -9,7 +9,7 @@ import {
 } from "firebase/firestore"
 import { db,storage } from './firebase.js';
 import { ref,  getDownloadURL, uploadBytes,deleteObject} from "firebase/storage";
-
+import { dateDistanceFromToday } from "../utils/date_manipulations.js";
 
 //<===> Melanoma <====>
 
@@ -431,6 +431,63 @@ export const fetchCompletedParts = async ({
         }        
     } catch(err) {
         console.log(err)
+        return false
+    }
+}
+
+export const fetchOutDatedSpots = async ({
+    userId
+}) => {
+    try{
+        const ref = collection(db, "users", userId, "Melanoma");
+        const snapshot = await getDocs(ref);
+        let melanomaData = [];
+        snapshot.forEach((doc) => {
+            if(dateDistanceFromToday(doc.data().created_at) >= 200){
+                melanomaData.push(doc.data());
+            }
+        }
+        );
+        return melanomaData;
+    } catch (error) {
+        return false
+    }
+}
+
+export const fetchRiskySpots = async ({
+    userId
+}) => {
+    try{
+        const ref = collection(db, "users", userId, "Melanoma");
+        const snapshot = await getDocs(ref);
+        let melanomaData = [];
+        snapshot.forEach((doc) => {
+            if(doc.data().risk >= 0 && doc.data().risk != null ){
+                melanomaData.push(doc.data());
+            }
+        }
+        );
+        return melanomaData;
+    } catch (error) {
+        return false
+    }
+}
+
+export const fetchUnfinishedSpots = async ({
+    userId
+}) => {
+    try{
+        const ref = collection(db, "users", userId, "Melanoma");
+        const snapshot = await getDocs(ref);
+        let melanomaData = [];
+        snapshot.forEach((doc) => {
+            if(doc.data().risk == null){
+                melanomaData.push(doc.data());
+            }
+        }
+        );
+        return melanomaData;
+    } catch (error) {
         return false
     }
 }
