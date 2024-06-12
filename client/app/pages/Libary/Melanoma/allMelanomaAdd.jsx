@@ -1,6 +1,6 @@
 
 import { View,Text} from "react-native"
-import React, {useState,useEffect} from "react";
+import React, {useState,useEffect,useCallback} from "react";
 import { useAuth } from "../../../context/UserAuthContext.jsx";
 import Body from "../../../components/LibaryPage/Melanoma/BodyParts/index";
 import ProgressBar from 'react-native-progress/Bar';
@@ -9,6 +9,7 @@ import { spotUploadStyle } from "../../../styles/libary_style.jsx";
 import { SideSwitch } from "../../../components/LibaryPage/Melanoma/sideSwitch.jsx";
 import { NavBar_Upload_1 } from "../../../components/LibaryPage/Melanoma/navBarRow.jsx";
 import { decodeParts } from "../../../utils/melanoma/decodeParts.js";
+import { useFocusEffect } from '@react-navigation/native';
 
 const AllMelanomaAdd = ({route,navigation}) => {
 
@@ -87,6 +88,8 @@ const AllMelanomaAdd = ({route,navigation}) => {
         if ( completedParts.length != 0){
             const response = await completedArea(completedParts)
             updateCompletedSlug(response)
+        } else {
+            const response = await completedArea(completedParts)
         }
     }
 
@@ -94,10 +97,13 @@ const AllMelanomaAdd = ({route,navigation}) => {
         handleSlugMemoryChange()
     }, [completedParts]); 
 
-    useEffect(() => {
-        fetchCompletedSlugs()
-        conditionalFetching()
-    },[])
+    useFocusEffect(
+        useCallback(() => {
+            fetchCompletedSlugs()
+            conditionalFetching()
+        return () => {};
+        }, [])
+    );
 
     return(        
         <View style={spotUploadStyle.startScreen}>

@@ -8,6 +8,8 @@ import { CameraViewModal } from "../components/cameraModal.jsx";
 import { SpotPicker } from "../../../../components/LibaryPage/Melanoma/SpotUpload/spotPicker.jsx";
 import { SpotUpload, AlreadyUploadedSpots,UploadButtons } from "../../../../components/LibaryPage/Melanoma/SpotUpload/spotUpload.jsx";
 import { spotUpload_2_styles } from "../../../../styles/libary_style.jsx";
+import { updateCompletedParts } from "../../../../services/server.js";
+import { useAuth } from "../../../../context/UserAuthContext.jsx";
 
 const MelanomaSingleSlug = ({route,navigation}) => {
 
@@ -20,6 +22,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
     const sessionMemory = route.params.sessionMemory
     const currentuserUID = route.params.userId
     const skinColor = route.params.skinColor
+    const { currentuser } = useAuth()
     //Add Melanoma Data
     const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
     const [uploadedSpotPicture, setUploadedSpotPicture] = useState(null);
@@ -100,7 +103,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
         }
     }
 
-    const handleMarkeAsComplete = (action) => {
+    const handleMarkeAsComplete = async (action) => {
         let updatedSessionMemory;
 
         if (action === "add" || action === "remove") {
@@ -114,7 +117,11 @@ const MelanomaSingleSlug = ({route,navigation}) => {
             if(progress != null){
                 navigation.navigate("FullMelanomaProcess", { sessionMemory: updatedSessionMemory });
             } else {
-                navigation.navigate("MelanomaAllAdd", { sessionMemory: updatedSessionMemory,gender:gender,skin_type:skinColor  });
+                await updateCompletedParts({
+                    userId:currentuser.uid,
+                    completedArray:updatedSessionMemory
+                })
+                navigation.goBack()
             }
         }
     }

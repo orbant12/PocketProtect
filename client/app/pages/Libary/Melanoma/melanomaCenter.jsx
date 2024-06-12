@@ -15,6 +15,7 @@ import { Mstyles } from "../../../styles/libary_style";
 import { NavBar_Main } from "../../../components/LibaryPage/Melanoma/navBarRow";
 import { SlugCard } from "../../../components/LibaryPage/Melanoma/slugCard";
 import { Navigation_MoleUpload } from "../../../navigation/navigation";
+import { AssistantAdvertBox } from "../../../components/LibaryPage/Melanoma/Assistance/assistantAdvert";
 
 const SingleFeature = ({route,navigation}) => {
 
@@ -285,11 +286,8 @@ const SingleFeature = ({route,navigation}) => {
                     </View>
     
                     <View style={Mstyles.educationSection}>
-                        <View style={{width:"90%",height:100,borderWidth:1,alignItems:"center",justifyContent:"center",borderRadius:10,marginBottom:20}}>
-                            <Text style={{fontSize:15,fontWeight:"600"}}>How do we detect moles ?</Text>
-                        </View>
-
-                        <View style={{width:"90%",height:100,borderWidth:1,alignItems:"center",justifyContent:"center",borderRadius:10,marginBottom:20}}>
+                        <AssistantAdvertBox />
+                        <View style={{width:"90%",height:100,borderWidth:1,alignItems:"center",justifyContent:"center",borderRadius:10,marginBottom:20,marginTop:20}}>
                             <Text style={{fontSize:15,fontWeight:"600"}}>How can you detect moles ?</Text>
                         </View>
 

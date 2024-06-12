@@ -8,6 +8,7 @@ import { Navigation_SingleSpotAnalysis, Navigation_AddSlugSpot } from "../../../
 import { useFocusEffect } from '@react-navigation/native';
 import { NavBar_Slug } from "../../../components/LibaryPage/Melanoma/navBarRow";
 import { SlugStyles } from "../../../styles/libary_style";
+import { decodeParts } from "../../../utils/melanoma/decodeParts";
 
 const SlugAnalasis = ({ route,navigation }) => {
 
@@ -90,14 +91,7 @@ const SlugAnalasis = ({ route,navigation }) => {
     }
 
     const handleAddMelanoma = () => {
-        Navigation_AddSlugSpot({
-            userData:userData,
-            bodyPart:bodyPart,
-            skin_type:skin_type,
-            type: "new",
-            navigation
-        })
-        console.log("222")
+        navigation.navigate("MelanomaProcessSingleSlug", { data: bodyPart, gender:userData.gender, userId: currentuser.uid, sessionMemory: decodeParts(completedParts), progress:null,skinColor: skin_type })
     }
 
     useFocusEffect(

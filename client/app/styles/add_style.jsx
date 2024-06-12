@@ -4,7 +4,7 @@ export const ExpStyle = StyleSheet.create({
     container:{
         width:"100%",
         height:"100%",
-        backgroundColor:"#eee",
+        backgroundColor:"white",
         paddingTop:100,
         alignItems:"center",
         
@@ -13,11 +13,13 @@ export const ExpStyle = StyleSheet.create({
         width:"100%",
         padding:0,
         maxWidth:"100%",
-        borderWidth:1,
+        borderWidth:0,
         flexWrap:"wrap",
         alignItems:"center",
         flexDirection:"row",
-        justifyContent:"center"
+        justifyContent:"center",
+        paddingBottom:20,
+        borderBottomWidth:0.3
     },
     featureBox:{
         width:"90%",

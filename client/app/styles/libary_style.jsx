@@ -1213,3 +1213,23 @@ export const spotUpload_2_styles = StyleSheet.create({
     },
 
 })
+
+export const assist_styles = StyleSheet.create({
+    bio_box:{
+        width:"80%",
+        height:300,
+        borderRadius:30,
+        borderWidth:1,
+        marginTop:50,
+        alignItems:"center",
+        padding:20,
+        justifyContent:"space-between"
+    },
+    button:{
+        width:"100%",
+        alignItems:"center",
+        borderWidth:1,
+        padding:10,
+        borderRadius:30
+    }
+})

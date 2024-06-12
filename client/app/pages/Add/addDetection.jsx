@@ -1,5 +1,4 @@
-
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import { FontAwesome6 } from '@expo/vector-icons';
 import React, {useEffect, useState, useRef} from 'react';
 import { ScrollView,StyleSheet,Text,View, Pressable,TextInput,TouchableOpacity,Switch,ActivityIndicator,Keyboard,Dimensions ,Image} from 'react-native';

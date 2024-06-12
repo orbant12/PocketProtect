@@ -1,6 +1,7 @@
 import { View, Text, ScrollView,Image,TouchableOpacity } from "react-native"
 import { Navigation_MoleUpload } from "../../navigation/navigation"
 import melanomaBG from "../../assets/features/melanoma.png"
+import bloodBG from "../../assets/features/blood.png"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { ExpStyle } from "../../styles/add_style";
 
@@ -15,9 +16,9 @@ export const ExploreView = ({navigation}) => {
     }
     
     return(
-        <ScrollView style={{width:"100%",height:"100%"}}>
+        <ScrollView style={{width:"100%",height:"100%",backgroundColor:"white"}}>
         <View style={ExpStyle.container}>
-                <Text style={{margin:30,fontSize:20,fontWeight:"600",alignSelf:"left"}}>Explore</Text>
+                <Text style={{fontWeight:"800",fontSize:24,margin:15,alignSelf:"left"}}>AI vision</Text>
                 <View style={ExpStyle.section}>
                     <FeatureBox 
                         icon={{name:"liquid-spot",size:30}}
@@ -44,7 +45,35 @@ export const ExploreView = ({navigation}) => {
                         handleNavigation={handleNavigation}
                     />
                 </View>
+                <Text style={{fontWeight:"800",fontSize:24,margin:15,alignSelf:"left"}}>Blood Analasis</Text>
+                <View style={ExpStyle.section}>
+                    <FeatureBox 
+                        icon={{name:"water-plus",size:30}}
+                        backgroundImage={bloodBG}
+                        title={"Blood Work"}
+                        labels={[
+                            {
+                                text:"Real Dermotologis",
+                                icon_name:"doctor"
+                            },
+                            {
+                                text:"Deep Neural Network",
+                                icon_name:"brain"
+                            },
+                            {
+                                text:"Personal Reminder",
+                                icon_name:"calendar"
+                            },
+                            {
+                                text:"Personalised Advice",
+                                icon_name:"magnify"
+                            },
+                        ]}
+                        handleNavigation={handleNavigation}
+                    />
+                </View>
         </View>
+        
         </ScrollView>
         
     )

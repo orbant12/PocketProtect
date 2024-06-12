@@ -1,21 +1,19 @@
 
 import React, {useEffect, useState} from 'react';
-import { Text, View, StyleSheet,Pressable ,ScrollView,Image,TouchableOpacity} from 'react-native';
-import Body from "../../../components/LibaryPage/Melanoma/BodyParts/index";
+import { Text, View,Pressable ,ScrollView,Image,TouchableOpacity} from 'react-native';
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/client/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
-import { melanomaSpotUpload,melanomaUploadToStorage,updateSpot  } from '../../../services/server.js';
-import { getFunctions, httpsCallable } from "firebase/functions";
+import {melanomaUploadToStorage,updateSpot} from '../../../services/server.js';
 import { useAuth } from '../../../context/UserAuthContext.jsx';
 import * as ImagePicker from 'expo-image-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { NavBar_SpotAdd } from '../../../components/LibaryPage/Melanoma/navBarRow';
 import { spotUpdateStyle } from '../../../styles/libary_style';
-
-import {app} from "../../../services/firebase"
-
+import { fileUriConverterToBlob } from '../../../utils/melanoma/fileUriConverter';
 
 
-const MelanomaAdd = ({ route , navigation }) => {     
+const MelanomaAdd = ({ route , navigation }) => {    
+    
+    //<==========> VARIABLE <============>
 
     const skin_type = route.params.skin_type;
     const spotId = route.params.type; 
@@ -25,106 +23,11 @@ const MelanomaAdd = ({ route , navigation }) => {
 
     const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
     const [uploadedSpotPicture, setUploadedSpotPicture] = useState(null);
-    const [birthmarkId, setBirthmarkId] = useState(`Birthmark#${Math.floor(Math.random() * 100)}`);
     const [isScreenLoading,setIsScreenLoading ]  = useState(false)
-
     const { currentuser } = useAuth()    
-    const functions = getFunctions(app);
 
-    const ownSelectedPart = () => {
-        return (
-                <View style={{alignItems:"center",flexDirection:"column",justifyContent:"center",padding:20}}>
-                    <Text style={{maxWidth:250,textAlign:"center",fontWeight:"600",opacity:0.6}}>You haven't selected a body part yet</Text>
-                    <Pressable style={{marginTop:25,borderRadius:10,backgroundColor:"lightgray",width:150,alignItems:"center"}}>
-                        <Text style={{color:"black",padding:15,fontWeight:500,opacity:0.6}}>Select a slug first</Text>
-                    </Pressable>
-                </View>
-        )
-    }
 
-    const handlePartClick = (e) => {
-        const { locationX, locationY } = e.nativeEvent;
-        setRedDotLocation({ x: locationX, y: locationY })    
-    }
-
-    const handleSaveSvg = async() => {
-        const storageLocation = `users/${currentuser.uid}/melanomaImages/${birthmarkId}`;
-
-        const uploadToStorage = async(uri) => {
-            const blob = await new Promise((resolve, reject) => {
-                const xhr = new XMLHttpRequest();
-                xhr.onload = function () {
-                  resolve(xhr.response);
-                };
-                xhr.onerror = function (e) {
-                  console.log(e);
-                  reject(new TypeError("Network request failed"));
-                };
-                xhr.responseType = "blob";
-                xhr.open("GET", uri, true);
-                xhr.send(null);
-            });
-            const response = await melanomaUploadToStorage({
-                melanomaPicFile: blob,
-                userId: currentuser.uid,
-                birthmarkId: birthmarkId,
-                storageLocation: storageLocation,
-            })
-            return response;
-        }
-                
-        const blobToBase64 = (blob) => {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result.split(',')[1]); // Get only the base64 part
-                reader.onerror = reject;
-                reader.readAsDataURL(blob);
-            });
-        };
-                                
-        const evaluate = async (photo) => {
-            const generatePrediction = httpsCallable(functions, 'predict');
-            try {
-                // Fetch the image from the URL
-                const response = await fetch(photo);
-                if (!response.ok) throw new Error('Failed to fetch image');
-        
-                // Convert the response to a Blob
-                const blob = await response.blob();
-        
-                // Convert blob to base64
-                const base64String = await blobToBase64(blob);
-        
-                // Send the base64 encoded JPEG string to the Firebase function
-                const result = await generatePrediction({ input: base64String });
-                
-                console.log('Prediction result:', result.data);
-                return result.data
-            } catch (error) {
-                console.error('Error:', error);
-            }
-        };
-
-        const pictureUrl = await uploadToStorage(uploadedSpotPicture);
-        const rate = await evaluate(pictureUrl)
-        const res = await melanomaSpotUpload({
-            userId: currentuser.uid,
-            melanomaDocument: {"spot": selectedPart, "location": redDotLocation},
-            gender: userData.gender,
-            melanomaPictureUrl: pictureUrl,
-            birthmarkId: birthmarkId,
-            storageLocation: storageLocation,
-            risk:rate
-        })
-        if (res == true) {
-            //NAVIGATE BACK
-            alert("Melanoma spot saved successfully");            
-            setRedDotLocation({ x: -100, y: 10 });
-            setUploadedSpotPicture(null);
-            setBirthmarkId(`Birthmark#${Math.floor(Math.random() * 100)}`);
-            navigaton.goBack()
-        }
-    }
+    //<==========> Function <============>
 
     const handlePictureUpload = async() => {        
         let result = await ImagePicker.launchImageLibraryAsync({
@@ -139,111 +42,44 @@ const MelanomaAdd = ({ route , navigation }) => {
         }
     };
 
-    const handleMoreBirthmark = async () => {
-        const today = new Date();
-        if(spotId == "new"){
-            const BirthmarkIdGenerator = () => {
-                return `Birthmark#${generateNumericalUID(4)}`
-            }
-            const ID =  BirthmarkIdGenerator()
-            const storageLocation = `users/${userData.id}/melanomaImages/${ID}`;
-            setIsScreenLoading(true)
-            try{
-                const uploadToStorage = async(uri) => {
-                    const blob = await new Promise((resolve, reject) => {
-                        const xhr = new XMLHttpRequest();
-                        xhr.onload = function () {
-                            resolve(xhr.response);
-                        };
-                        xhr.onerror = function (e) {
-                            console.log(e);
-                            reject(new TypeError("Network request failed"));
-                        };
-                        xhr.responseType = "blob";
-                        xhr.open("GET", uri, true);
-                        xhr.send(null);
-                    });
-                    const response = await melanomaUploadToStorage({
-                        melanomaPicFile: blob,                           
-                        storageLocation: storageLocation,
-                    })
-                    return response;
-                }
-    
-                const pictureUrl = await uploadToStorage(uploadedSpotPicture);
-    
-                const res = await melanomaSpotUpload({
-                    userId: userData.id,
-                    melanomaDocument: {"spot": [bodyPart], "location": redDotLocation},
-                    gender: userData.gender,        
-                    birthmarkId: ID,
-                    melanomaPictureUrl: pictureUrl,
-                    storageLocation: storageLocation,
-                    risk:null,
-                    storage_name: ID,
-                    created_at:new Date(),
-                })
-                if (res == true) {
-                    setIsScreenLoading(false)
-                    setRedDotLocation({ x: -100, y: 10 });                             
-                    setUploadedSpotPicture(null)     
-                    navigation.goBack()           
-                }
-            } catch (err) {
-                alert(err)
-                console.log(err)
-            }
-        } else {
-            setIsScreenLoading(true)
-            const ID = generateNumericalUID(4)
-            const storageLocation = `users/${userData.id}/melanomaImages/${spotId.id}_updated#${ID}`;
-            const uploadToStorage = async(uri) => {
-                const blob = await new Promise((resolve, reject) => {
-                    const xhr = new XMLHttpRequest();
-                    xhr.onload = function () {
-                        resolve(xhr.response);
-                    };
-                    xhr.onerror = function (e) {
-                        console.log(e);
-                        reject(new TypeError("Network request failed"));
-                    };
-                    xhr.responseType = "blob";
-                    xhr.open("GET", uri, true);
-                    xhr.send(null);
-                });
-                const response = await melanomaUploadToStorage({
-                    melanomaPicFile: blob,                           
-                    storageLocation: storageLocation,
-                })
-                return response;
-            }
+    const handleMoreBirthmark = async () => {    
+        setIsScreenLoading(true)
+        const ID = generateNumericalUID(4)
+        const storageLocation = `users/${userData.id}/melanomaImages/${spotId.id}_updated#${ID}`;
 
-            const pictureUrl = await uploadToStorage(uploadedSpotPicture);
-            const data = {
-                melanomaDoc: {"spot": [bodyPart], "location": redDotLocation},
-                gender: userData.gender,        
-                melanomaId: spotId.id,
-                melanomaPictureUrl: pictureUrl,
-                storage_location: storageLocation,
-                risk:null,
-                storage_name:`${spotId.id}_updated#${ID}`,
-                created_at: new Date()
-            }
-            const res = await updateSpot({
-                userId: currentuser.uid,
-                spotId: spotId.id,
-                data: data,                
+        const uploadToStorage = async(uri) => {
+            const blob = await fileUriConverterToBlob({uri})
+            const response = await melanomaUploadToStorage({
+                melanomaPicFile: blob,                           
+                storageLocation: storageLocation,
             })
-            if (res == true){
-                setIsScreenLoading(false)
-                setRedDotLocation({ x: -100, y: 10 });                             
-                setUploadedSpotPicture(null)     
-                navigation.goBack()   
-            } else {
-
-            }
+            return response;
         }
+        const pictureUrl = await uploadToStorage(uploadedSpotPicture);
 
+        const data = {
+            melanomaDoc: {"spot": [bodyPart], "location": redDotLocation},
+            gender: userData.gender,        
+            melanomaId: spotId.id,
+            melanomaPictureUrl: pictureUrl,
+            storage_location: storageLocation,
+            risk:null,
+            storage_name:`${spotId.id}_updated#${ID}`,
+            created_at: new Date()
+        }
+        const res = await updateSpot({
+            userId: currentuser.uid,
+            spotId: spotId.id,
+            data: data,                
+        })
+        if (res == true){
+            setIsScreenLoading(false)
+            setRedDotLocation({ x: -100, y: 10 });                             
+            setUploadedSpotPicture(null)     
+            navigation.goBack()   
+        } else {
+
+        }
     }
     
     function generateNumericalUID(length) {
@@ -259,12 +95,11 @@ const MelanomaAdd = ({ route , navigation }) => {
     }
 
     useEffect(() => {
-        if(spotId != "new"){
-            setRedDotLocation({x:spotId.locationX, y:spotId.locationY})
-        }
+        setRedDotLocation({x:spotId.locationX, y:spotId.locationY})
     },[])
 
 
+    //<==========> Main Return <============>
     
     return (
         <View style={spotUpdateStyle.container}>

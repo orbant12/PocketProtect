@@ -178,7 +178,7 @@ return(
             ]}
         />
         <ScrollView 
-            style={{backgroundColor:"white",marginTop:90}}
+            style={{backgroundColor:"white",marginTop:100}}
             ref={scrollViewRef} 
             onScroll={handleScroll} 
             scrollEventThrottle={16}
