@@ -1,7 +1,7 @@
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import { FontAwesome6 } from '@expo/vector-icons';
 import React, {useEffect, useState, useRef} from 'react';
-import { ScrollView,StyleSheet,Text,View, Pressable,TextInput,TouchableOpacity,Switch,ActivityIndicator,Keyboard,Dimensions ,Image} from 'react-native';
+import { ScrollView,StyleSheet,Text,View, Pressable,TextInput,TouchableOpacity,Switch,ActivityIndicator,Keyboard,Dimensions ,Image,Modal} from 'react-native';
 import tutorial1 from "../../assets/diagnosis/first.png"
 import { getFunctions, httpsCallable } from "firebase/functions";
 import {app} from "../../services/firebase"
@@ -13,6 +13,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import PagerView from 'react-native-pager-view';
 import { Horizontal_Navbar } from '../../components/LibaryPage/mainNav';
 import { ExploreView } from '../../components/AddPage/exploreView';
+const { width } = Dimensions.get('window');
 
 const AddDetection = ({navigation}) => {
 
@@ -25,6 +26,7 @@ const [sympthomInput, setSympthomInput] = useState('')
 const [addedSymptoms, setAddedSymptoms] = useState([])
 const [ isDiagnosisLoading, setIsDiagnosisLoading] = useState(false)
 const [isAddTriggered, setIsAddTriggered] = useState(false)
+const [selected, setSelected ] = useState(null)
 //CONTEXT
 const [ contextToggles , setContextToggles ] = useState({
     useBloodWork:false,
@@ -60,7 +62,6 @@ const snapPoints = ['80%'];
 //GOOGLE FIREBASE FUNCTIONS
 const functions = getFunctions(app);
 //H-SWIPE
-const { width } = Dimensions.get('window');
 const [currentPage, setCurrentPage] = useState(0);
 //DETECTION
 const CancerDetectionData = [
@@ -149,6 +150,10 @@ function handleNavigation(id){
     if (id == "melanoma"){
         navigation.navigate("FullMelanomaProcess",{sessionMemory:[]})
     }
+}
+
+const handleAction = (action) => {
+
 }
 
 const handleScrollReminder = (e) => {
@@ -479,6 +484,25 @@ if (result.possibleOutcomes != "qid:too_broad"){
     }
 
 
+
+    function Explain_NavBar(){
+        return(
+            <View style={{padding:10,width:"100%",position:"absolute",top:50,justifyContent:"space-between",flexDirection:"row",alignItems:"center"}}>
+                <MaterialCommunityIcons 
+                    name="arrow-left"
+                    size={30}
+                    onPress={() => setSelected(null)}
+                />
+                <Text style={{fontWeight:"800",fontSize:20,opacity:1}}>How it works</Text>
+                <MaterialCommunityIcons 
+                    name="arrow-left"
+                    size={30}
+                    opacity={"0"}
+                />
+            </View>
+        )
+    }
+
 //<==================<[ Main Return ]>====================> 
 
     return(
@@ -491,11 +515,11 @@ if (result.possibleOutcomes != "qid:too_broad"){
                         absolute={true}
                         options={[
                             {
-                                title:"Melanoma Monitor",
+                                title:"AI Vision",
                                 value:"melanoma",
                             },
                             {
-                                title:"Blood Work",
+                                title:"Blood Analasis",
                                 value:"blood_work",
                             },
                         ]}
@@ -512,7 +536,22 @@ if (result.possibleOutcomes != "qid:too_broad"){
                     } */}
                     <ExploreView 
                         navigation={navigation}
+                        setSelected={setSelected}
                     />
+
+                    <Modal visible={selected != null}>
+                        {Explain_NavBar()}
+                        <ExplainPanel 
+                            handleAction={handleAction}
+                            handleScrollReminder={handleScrollReminder}
+                            selected={selected}
+                            currentPage={currentPage}
+                            actions={[
+                                {title:"Full Body Setup", action:"", icon_name:""},
+                                {title:"Manual Body Setup", action:"", icon_name:""}
+                            ]}
+                        />
+                    </Modal>
 
                     <BottomSheetModal
                         ref={bottomSheetRef}
@@ -735,9 +774,13 @@ const styles = StyleSheet.create({
         marginBottom: 0,
         backgroundColor:"rgba(0,0,0,1)",
         padding:15,    
-        borderRadius:50,        
+        borderBottomLeftRadius:30,        
+        borderBottomRightRadius:30,        
         marginTop:0,
-        marginBottom:30
+        marginBottom:0,
+        marginTop:0,
+        width:"50%",
+        alignSelf:"center"
     },
     Indicator: {
         width: 6,
@@ -782,6 +825,67 @@ container: {
 });
 
 export default AddDetection;
+
+
+
+function ExplainPanel({selected,actions,handleScrollReminder,currentPage,handleAction}){
+    return(
+        <View style={{width:"100%",alignItems:"center",height:"80%",justifyContent:"space-between",marginTop:100}}>   
+            <View style={{width:"100%",borderTopWidth:0}}>  
+            <View style={{height:"70%",width:"100%",borderBottomWidth:3,borderTopWidth:0.3}}>                    
+                <PagerView style={{width:"100%",height:"100%"}} onPageScroll={(e) => handleScrollReminder(e)} initialPage={0}>                                  
+                    <View key={1} style={{width:"100%",justifyContent:"center",alignItems:"center",borderWidth:0}}>
+                        <View style={{flexDirection:"row",alignItems:"center",marginBottom:10}}>
+                            <Text style={{borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>1</Text> 
+                            <Text style={{width:"80%",fontSize:15,fontWeight:"800",opacity:"0.7",marginBottom:0,marginLeft:20}}>Type in your concerns and describe how you feel in detail ...</Text>    
+                        </View>         
+                        <Image 
+                            source={tutorial1}
+                            style={{width:width,height:"60%"}}
+                        />             
+                    </View>
+
+                    <View key={2} style={{width:"100%",justifyContent:"center",alignItems:"center",borderWidth:0}}>
+                    <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>2</Text>
+                    </View>
+
+                    <View key={3} style={{width:"100%",justifyContent:"center",alignItems:"center",borderWidth:0}}>
+                    <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>3</Text>
+                    </View>
+
+                    <View key={4}  style={{width:"100%",justifyContent:"center",alignItems:"center",borderWidth:0}}>
+                    <Text style={{position:"absolute",right:20,top:0,borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>4</Text>
+                    </View>                                
+                </PagerView>  
+            </View>    
+            <View style={[styles.IndicatorContainer]}>               
+                <View style={[styles.Indicator, { opacity: currentPage === 0 ? 1 : 0.3 }]} />                     
+                <View style={[styles.Indicator, { opacity: currentPage === 1 ? 1 : 0.3 }]} />
+                <View style={[styles.Indicator, { opacity: currentPage === 2 ? 1 : 0.3 }]} />
+                <View style={[styles.Indicator, { opacity: currentPage === 3 ? 1 : 0.3 }]} />                                
+            </View>                                                             
+            </View>                        
+            <View style={{borderWidth:1,width:"95%",borderRadius:20,alignItems:"center",backgroundColor:"black",marginTop:-50,padding:0,paddingBottom:25}}>                            
+                <View style={{width:50, borderWidth:1.5,borderColor:"white", opacity:0.7,marginTop:10}} />
+                <Text style={{color:"white",fontWeight:"700",fontSize:15,marginTop:10}}>Get Started</Text>
+                {actions.map((data,index) => (
+                    <TouchableOpacity key={index} onPress={() => handleAction(data.action)} style={!index % 2 == 0 ? styles.addInputContainerMental : styles.addInputContainer }>
+                        <MaterialCommunityIcons 
+                            name={data.icon_name}
+                            color={!index % 2 == 0 ? "black" : "white"}
+                            size={20}
+                            style={{opacity:0.3}}
+                        />
+                        <Text style={[{color:"black",fontWeight:"400",marginLeft:20,fontWeight:"600"},index % 2 == 0 && {color:"white"}] }>{data.title}</Text>
+                    </TouchableOpacity >  
+                ))
+
+                }                          
+            </View> 
+        </View> 
+    
+    )
+}
 
 
 

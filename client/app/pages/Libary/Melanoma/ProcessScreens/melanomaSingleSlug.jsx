@@ -17,11 +17,10 @@ const MelanomaSingleSlug = ({route,navigation}) => {
 
     //ROUTE DATA
     const progress = route.params.progress
-    const bodyPart = route.params.data
+    const bodyPart = route.params.bodyPart
     const gender = route.params.gender
-    const sessionMemory = route.params.sessionMemory
-    const currentuserUID = route.params.userId
-    const skinColor = route.params.skinColor
+    const sessionMemory = route.params.completedArray
+    const skinColor = route.params.skin_type
     const { currentuser } = useAuth()
     //Add Melanoma Data
     const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
@@ -46,7 +45,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
             return `Birthmark#${generateNumericalUID(4)}`
         }
         const ID =  BirthmarkIdGenerator()
-        const storageLocation = `users/${currentuserUID}/melanomaImages/${ID}`;
+        const storageLocation = `users/${currentuser.uid}/melanomaImages/${ID}`;
         setIsScreenLoading(true)
         try{
             const uploadToStorage = async(uri) => {
@@ -65,7 +64,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                 });
                 const response = await melanomaUploadToStorage({
                     melanomaPicFile: blob,
-                    userId: currentuserUID,
+                    userId: currentuser.uid,
                     birthmarkId: ID,
                     storageLocation: storageLocation,
                 })
@@ -75,7 +74,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
             const pictureUrl = await uploadToStorage(uploadedSpotPicture);
 
             const res = await melanomaSpotUpload({
-                userId: currentuserUID,
+                userId: currentuser.uid,
                 melanomaDocument: {"spot": [bodyPart], "location": redDotLocation},
                 gender: gender,
                 melanomaPictureUrl: pictureUrl,
@@ -114,21 +113,18 @@ const MelanomaSingleSlug = ({route,navigation}) => {
             } else if (action === "remove") {
                 updatedSessionMemory = updatedSessionMemory.filter(item => item.slug !== bodyPart.slug);
             }
-            if(progress != null){
-                navigation.navigate("FullMelanomaProcess", { sessionMemory: updatedSessionMemory });
-            } else {
-                await updateCompletedParts({
-                    userId:currentuser.uid,
-                    completedArray:updatedSessionMemory
-                })
-                navigation.goBack()
-            }
+            await updateCompletedParts({
+                userId:currentuser.uid,
+                completedArray:updatedSessionMemory
+            })
+            navigation.goBack()
+            
         }
     }
 
     const fetchSlugSpots = async () =>{
         const response = await fetchSlugMelanomaData({
-            userId: currentuserUID,
+            userId: currentuser.uid,
             gender,
             slug: bodyPart.slug
         })
@@ -163,7 +159,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
 
     const handleSpotDelete = async (id) => {
         const response = await deleteSpot({
-            userId:currentuserUID,
+            userId:currentuser.uid,
             spotId: id
         })
         if( response.firestore.success == true && response.storage.success == true){

@@ -1,5 +1,5 @@
-import { View,Text,StyleSheet,Pressable,Image,ScrollView,TouchableOpacity,PixelRatio } from "react-native"
-import React, {useState,useEffect,useRef} from "react";
+import { View,Text,StyleSheet,Pressable,Image,ScrollView,TouchableOpacity,PixelRatio,Dimensions } from "react-native"
+import React, {useState,useEffect,useRef,useCallback} from "react";
 import ProgressBar from 'react-native-progress/Bar';
 import { useAuth } from "../../../../context/UserAuthContext.jsx";
 import Body from "../../../../components/LibaryPage/Melanoma/BodyParts/index";
@@ -13,15 +13,17 @@ import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { melanomaMetaDataUpload } from "../../../../services/server.js"
+import { melanomaMetaDataUpload, updateCompletedParts, fetchCompletedParts } from "../../../../services/server.js"
 import { SelectionPage } from "../../../../components/Common/SelectableComponents/selectPage";
 import { SelectionPage_Binary } from "../../../../components/Common/SelectableComponents/selectPage_Binary";
 import { FactScreenType_1 } from "../../../../components/Common/FactScreenComponents/factScreenType1.jsx";
 import { FactScreenType_2 } from "../../../../components/Common/FactScreenComponents/factScreenType2.jsx";
+import { useFocusEffect } from '@react-navigation/native';
+import { decodeParts } from "../../../../utils/melanoma/decodeParts.js";
+import { Navigation_MoleUpload_2 } from "../../../../navigation/navigation.tsx";
 
-
-
-
+const { width, height } = Dimensions.get('window');
+const scaleFactor = width < 380 ? 1 : 1.2;
 const responsiveFontSize = (size) => {
     return size * PixelRatio.getFontScale();
 };
@@ -39,8 +41,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
     const [currentSide, setCurrentSide] = useState("front")
     const [gender, setGender]= useState(null)
     const [completedAreaMarker, setCompletedAreaMarker] = useState([])
-    //ROUTING MEMORY
-    const sessionMemory = route.params.sessionMemory
+    const [completedParts, setCompletedParts] = useState([])
     //Modal toggle
     const [isModalUp, setIsModalUp] = useState(false)
     const [ melanomaMetaData, setMelanomaMetaData] = useState({
@@ -94,6 +95,30 @@ const MelanomaFullProcess = ({navigation,route}) => {
             setBodyProgress(response.length / 13)
         } else if (currentSide == "back"){
             setBodyProgressBack(response.length / 11)
+        }
+        return sessionMemory   
+    }
+
+    const updateCompletedSlug = async (completedArray) => {
+        if(currentuser){
+            const response = await updateCompletedParts({
+                userId:currentuser.uid,
+                completedArray
+            })
+            if (response != true){
+                alert("something went wrong")
+            }
+        }
+    }
+
+    const fetchCompletedSlugs = async () => {
+        if(currentuser){
+            const response = await fetchCompletedParts({
+                userId: currentuser.uid,
+            });
+            const completedSlugs = response.map(part => part.slug); 
+            const decoded = decodeParts(completedSlugs)
+            setCompletedParts(decoded)  
         }
     }
     
@@ -177,9 +202,25 @@ const MelanomaFullProcess = ({navigation,route}) => {
         }
     }
 
+    const handleSlugMemoryChange = async () => {
+        if ( completedParts.length != 0){
+            const response = await completedArea(completedParts)
+            updateCompletedSlug(response)
+        } else {
+            await completedArea(completedParts)
+        }
+    }
+
     useEffect(() => {
-        completedArea(sessionMemory);        
-    }, [sessionMemory,]); 
+        handleSlugMemoryChange()     
+    }, [completedParts]); 
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchCompletedSlugs()            
+        return () => {};
+        }, [])
+    );
 
 
     //<==============> Components  <=============> 
@@ -524,21 +565,30 @@ const MelanomaFullProcess = ({navigation,route}) => {
     function ThirdScreen(){
         return(
             <>
-                <ScrollView style={{width:"100%",zIndex:-5,height:"100%",backgroundColor:"white"}}>
-                    <View style={[styles.startScreen]}>
-                        <View style={{marginTop:50,alignItems:"center"}}>  
-                            <Text style={{marginBottom:30,fontWeight:"700",fontSize:20}}>Press the body part to monitor:</Text>
+                    <View style={[styles.startScreen,{height:"90%",marginTop:20,justifyContent:"space-between"}]}>
+                        <View style={{marginTop:0,alignItems:"center"}}>  
+                            <Text style={{marginBottom:20,fontWeight:"700",fontSize:20}}>Press the body part to monitor:</Text>
                             <ProgressBar progress={bodyProgress} width={150} height={10} color={"lightgreen"}backgroundColor={"white"} />
+                            <View style={{marginTop:20}}>
                                 <Body
-                                    data={completedAreaMarker}
-                                    gender={gender}
-                                    side={currentSide}
-                                    scale={1.2}
-                                    //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
-                                    colors={['#A6FF9B']}
-                                    onBodyPartPress={(slug) => navigation.navigate("MelanomaProcessSingleSlug", { data: slug, gender: gender, userId: currentuser.uid, sessionMemory:sessionMemory, progress:progress,skinColor: melanomaMetaData.skin_type })}
-                                    zoomOnPress={true}
-                                />
+                                        data={completedAreaMarker}
+                                        gender={gender}
+                                        side={currentSide}
+                                        scale={scaleFactor}
+                                        //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
+                                        colors={['#A6FF9B']}
+                                        onBodyPartPress={(slug) => 
+                                            Navigation_MoleUpload_2({
+                                                bodyPart:slug,
+                                                gender: gender,
+                                                skin_type: melanomaMetaData.skin_type,
+                                                progress: progress,
+                                                completedArray: completedParts,
+                                                navigation: navigation
+                                            })}
+                                        zoomOnPress={true}                                
+                                    />
+                            </View>        
 
                                 <View style={styles.colorExplain}>
                                     <View style={styles.colorExplainRow} >
@@ -553,12 +603,11 @@ const MelanomaFullProcess = ({navigation,route}) => {
                                 </View>
                         </View>
 
-                        <Pressable onPress={() => bodyProgress == 1 ? setProgress(progress + 0.1) : setIsModalUp(!isModalUp)} style={bodyProgress == 1 ? styles.startButton : {opacity:0.85,borderWidth:1,alignItems:"center",width:"90%",borderRadius:20,marginBottom:10,backgroundColor:"black",marginTop:20}}>
+                        <Pressable onPress={() => bodyProgress == 1 ? setProgress(progress + 0.1) : setIsModalUp(!isModalUp)} style={bodyProgress == 1 ? styles.startButton : {opacity:0.85,borderWidth:1,alignItems:"center",width:"90%",borderRadius:30,marginBottom:10,backgroundColor:"black",marginTop:20}}>
                             <Text style={{padding:15,fontWeight:"600",color:"white"}}>Next</Text>
                         </Pressable>
 
                     </View >
-                </ScrollView>
                 {isModalUp ?
                     NotAllSlugModal()
                 :null
@@ -570,21 +619,30 @@ const MelanomaFullProcess = ({navigation,route}) => {
     function FourthScreen(){
         return(
             <>
-            <ScrollView style={{width:"100%",zIndex:-5,height:"100%",backgroundColor:"white"}}>
-            <View style={styles.startScreen}>
-                <View style={{marginTop:60,alignItems:"center"}}>  
-                    <Text style={{marginBottom:10,fontWeight:"700",fontSize:20}}>Press the body part to monitor:</Text>
+            <View style={[styles.startScreen,{height:"90%",marginTop:20,justifyContent:"space-between"}]}>
+                <View style={{marginTop:0,alignItems:"center"}}>  
+                    <Text style={{marginBottom:20,fontWeight:"700",fontSize:20}}>Press the body part to monitor:</Text>
                     <ProgressBar progress={bodyProgressBack} width={150} height={10} color={"lightgreen"}backgroundColor={"white"} />
+                    <View style={{marginTop:20}}>
                     <Body
                         data={completedAreaMarker}
                         gender={gender}
                         side={currentSide}
-                        scale={1.2}
+                        scale={scaleFactor}
                         //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
-                        colors={['#A6FF9B']}
-                        onBodyPartPress={(slug) => navigation.navigate("MelanomaProcessSingleSlug", { data: slug, gender: gender, userId: currentuser.uid, sessionMemory:sessionMemory, skinColor: melanomaMetaData.skin_type})}
+                        colors={['#A6FF9B']}                       
+                        onBodyPartPress={(slug) => 
+                            Navigation_MoleUpload_2({
+                                bodyPart:slug,
+                                gender: gender,
+                                skin_type: melanomaMetaData.skin_type,
+                                progress: progress,
+                                completedArray: completedParts,
+                                navigation: navigation
+                            })}
                         zoomOnPress={true}
                     />
+                    </View>
 
                 <View style={styles.colorExplain}>
                     <View style={styles.colorExplainRow} >
@@ -599,11 +657,10 @@ const MelanomaFullProcess = ({navigation,route}) => {
                     </View>
                 </View>
 
-                <Pressable onPress={() => bodyProgress == 1 ? setProgress(1) : setIsModalUp(!isModalUp)} style={bodyProgress == 1 ? styles.startButton : {opacity:0.85,borderWidth:1,alignItems:"center",width:"90%",borderRadius:20,marginBottom:10,backgroundColor:"black",marginTop:20}}>
+                <Pressable onPress={() => bodyProgressBack == 1 ? setProgress(1) : setIsModalUp(!isModalUp)} style={bodyProgressBack == 1 ? styles.startButton : {opacity:0.85,borderWidth:1,alignItems:"center",width:"90%",borderRadius:30,marginBottom:0,backgroundColor:"black",marginTop:20}}>
                     <Text style={{padding:15,fontWeight:"600",color:"white"}}>Next</Text>
                 </Pressable>
             </View>
-            </ScrollView>
             {isModalUp ?
                 NotAllSlugModal()
             :null
@@ -734,10 +791,11 @@ const styles = StyleSheet.create({
         width:"100%",
         alignItems:"center",
         height:"100%",
-        justifyContent:"space-between",
         marginBottom:0,
         backgroundColor:"white",
-        zIndex:-1
+        zIndex:-1,
+        marginTop:0,
+        justifyContent:"space-between"
     },
     startButton:{
         borderWidth:1,
@@ -745,8 +803,8 @@ const styles = StyleSheet.create({
         width:"90%",
         borderRadius:10,        
         backgroundColor:"black",
-        position:"absolute",
-        bottom:20
+        position:"relative",
+        marginTop:20,
     },
     startButtonNA:{
         borderWidth:1,

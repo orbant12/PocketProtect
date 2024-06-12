@@ -3,7 +3,8 @@
 
 type Gender = "female" | "male";
 type SkinType = 0 | 1 | 2 | 3;
-type UpdateMethod = {} | "new"
+type UpdateMethod = {} | "new";
+type Progress = Number | null;
 
 interface NavigationParams {
     melanomaId: string;
@@ -13,6 +14,8 @@ interface NavigationParams {
     userData?: any[];
     navigation: any;
     type: UpdateMethod;
+    completedArray: any[];
+    progress: Progress
 }
 
 export const Navigation_SingleSpotAnalysis = ({
@@ -55,7 +58,7 @@ export const Navigation_AddSlugSpot = ({
     }
 };
 
-export const Navigation_MoleUpload = ({
+export const Navigation_MoleUpload_1 = ({
     gender,
     skin_type,
     navigation
@@ -64,6 +67,41 @@ export const Navigation_MoleUpload = ({
         gender: gender,
         skin_type: skin_type,
     });        
+}
+
+export const Navigation_MelanomaCenter = ({
+    navigation
+}:NavigationParams) => {
+    if ( navigation != undefined){
+        navigation.navigate("MelanomaCenter")
+    }       
+}
+
+export const Navigation_MelanomaFullsetup = ({
+    navigation
+}:NavigationParams) => {
+    if ( navigation != undefined){
+        navigation.navigate("FullMelanomaProcess")
+    }       
+}
+
+export const Navigation_MoleUpload_2 = ({
+    navigation,
+    bodyPart,
+    gender,
+    completedArray = [],
+    progress,
+    skin_type,
+}:NavigationParams) => {
+    if ( navigation != undefined ){
+        navigation.navigate("MelanomaProcessSingleSlug",{
+            bodyPart:bodyPart,
+            gender: gender,
+            completedArray: completedArray,
+            progress: progress,
+            skin_type: skin_type,
+        })
+    }       
 }
 
 

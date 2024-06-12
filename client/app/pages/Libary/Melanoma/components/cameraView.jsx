@@ -6,6 +6,9 @@ import * as ImagePicker from 'expo-image-picker';
 import Slider from '@react-native-community/slider';
 import LoadingOverlay  from "../../../../components/Common/Loading/processing"
 import { manipulateAsync } from 'expo-image-manipulator';
+import { Overlay_1 } from '../../../../components/Common/overlay';
+import zoomMoleImage from "../../../../assets/melanoma/1.png"
+import molesImage from "../../../../assets/melanoma/2.png"
 
 export default function CameraScreenView({navigation,onClose,onPictureTaken}) {
     const [facing, setFacing] = useState('back');
@@ -15,6 +18,9 @@ export default function CameraScreenView({navigation,onClose,onPictureTaken}) {
     const [loading, setLoading] = useState(false);
     const cameraRef = useRef(null)
     const [ show, setShow ] = useState(false)
+    const [ overlayVisible, setOverlayVisible] = useState(true)
+    //PAGER
+    
 
     if (!permission) {
         return <View />;
@@ -68,61 +74,72 @@ export default function CameraScreenView({navigation,onClose,onPictureTaken}) {
     setShow(false)
   }
 
+
       return (
-        <View style={styles.container}>
-            <CameraView style={styles.camera} facing={facing} zoom={zoomValue} ref={cameraRef}>
-              
-                  <TouchableOpacity onPress={() => onClose()} style={{position:"absolute",top:30,left:10,borderWidth:2,borderColor:"white",borderRadius:30,padding:5}}>
-                  <MaterialCommunityIcons 
-                    name='arrow-left'
-                    color={"white"}
-                    size={25}                
-                  />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => navigation.goBack()} style={{position:"absolute",top:30,right:10,borderWidth:0,borderColor:"white",borderRadius:30,padding:5}}>
+        <>
+          <View style={styles.container}>
+              <CameraView style={styles.camera} facing={facing} zoom={zoomValue} ref={cameraRef}>
+                
+                    <TouchableOpacity onPress={() => onClose()} style={{position:"absolute",top:30,left:10,borderWidth:2,borderColor:"white",borderRadius:30,padding:5}}>
                     <MaterialCommunityIcons 
-                      name='information'
+                      name='arrow-left'
                       color={"white"}
-                      size={30}                
+                      size={25}                
                     />
-                  </TouchableOpacity>
-                  <View style={{width:300,height:300,borderWidth:5,backgroundColor:"transparent",borderColor:"magenta",borderRadius:20}} />
-                  <Slider
-                    style={{width: 200, height: 40,marginTop:50}}
-                    minimumValue={0}
-                    maximumValue={0.5}
-                    minimumTrackTintColor="magenta"
-                    maximumTrackTintColor="#000000"
-                    value={zoomValue}
-                    onValueChange={(value) => setZoomValue(value)}
-                  />
-                  <View style={styles.buttonContainer}>
-                      <TouchableOpacity style={styles.button} onPress={handlePictureUpload}>
-                          <MaterialCommunityIcons 
-                            name='image'
-                            color={"white"}
-                            size={25}                
-                          />
-                      </TouchableOpacity>
-                      <TouchableOpacity style={{padding:15,borderWidth:2,borderColor:"white",borderRadius:100}} onPress={takePicture}>
-                          <MaterialCommunityIcons
-                            name='camera-plus'
-                            color={"white"}
-                            size={35}
-                          />
-                      </TouchableOpacity>
-                      <TouchableOpacity  style={styles.button} onPress={toggleCameraFacing}>
-                          <MaterialCommunityIcons 
-                            name='refresh'
-                            color={"white"}
-                            size={25}                
-                          />
-                      </TouchableOpacity>
-                  </View>
-            </CameraView>
-            <LoadingOverlay visible={loading} />
-            <ImageShowcase show={show} uploadedSpotPicture={uploadedSpotPicture} handleUndoPicture={handleUndoPicture} handleDone={handleDone} />
-        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setOverlayVisible(!overlayVisible)} style={{position:"absolute",top:30,right:10,borderWidth:0,borderColor:"white",borderRadius:30,padding:5}}>
+                      <MaterialCommunityIcons 
+                        name='information'
+                        color={"white"}
+                        size={30}                
+                      />
+                    </TouchableOpacity>
+                    <View style={{width:300,height:300,borderWidth:5,backgroundColor:"transparent",borderColor:"magenta",borderRadius:20}} />
+                    <Slider
+                      style={{width: 200, height: 40,marginTop:50}}
+                      minimumValue={0}
+                      maximumValue={0.5}
+                      minimumTrackTintColor="magenta"
+                      maximumTrackTintColor="#000000"
+                      value={zoomValue}
+                      onValueChange={(value) => setZoomValue(value)}
+                    />
+                    <View style={styles.buttonContainer}>
+                        <TouchableOpacity style={styles.button} onPress={handlePictureUpload}>
+                            <MaterialCommunityIcons 
+                              name='image'
+                              color={"white"}
+                              size={25}                
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity style={{padding:15,borderWidth:2,borderColor:"white",borderRadius:100}} onPress={takePicture}>
+                            <MaterialCommunityIcons
+                              name='camera-plus'
+                              color={"white"}
+                              size={35}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity  style={styles.button} onPress={toggleCameraFacing}>
+                            <MaterialCommunityIcons 
+                              name='refresh'
+                              color={"white"}
+                              size={25}                
+                            />
+                        </TouchableOpacity>
+                    </View>
+              </CameraView>
+              <LoadingOverlay visible={loading} />
+              <ImageShowcase show={show} uploadedSpotPicture={uploadedSpotPicture} handleUndoPicture={handleUndoPicture} handleDone={handleDone} />
+          </View>
+          <Overlay_1 
+            visible={overlayVisible}
+            pages={[
+              {text:"Center your mole inside the rectangle and zoom while keeping quality",image:zoomMoleImage},
+              {text:"Try to make your photo look simular to the images above ",image:molesImage}
+            ]}
+            setOverlayVisible={setOverlayVisible}
+          />
+        </>
       );
     }
 

@@ -10,12 +10,13 @@ import { SideSwitch } from "../../../components/LibaryPage/Melanoma/sideSwitch.j
 import { NavBar_Upload_1 } from "../../../components/LibaryPage/Melanoma/navBarRow.jsx";
 import { decodeParts } from "../../../utils/melanoma/decodeParts.js";
 import { useFocusEffect } from '@react-navigation/native';
+import { Navigation_MoleUpload_2 } from "../../../navigation/navigation.tsx";
 
 const AllMelanomaAdd = ({route,navigation}) => {
 
     const [selectedSide, setSelectedSide] = useState("front");
     const {currentuser} = useAuth()
-    const [completedParts, setCompletedParts] = useState([])
+    const [completedParts, setCompletedParts] = useState(null)
     const [completedAreaMarker, setCompletedAreaMarker] = useState([])
     const [bodyProgress, setBodyProgress] = useState(0)
     const [userData, setUserData] = useState([])
@@ -85,11 +86,11 @@ const AllMelanomaAdd = ({route,navigation}) => {
     }
 
     const handleSlugMemoryChange = async () => {
-        if ( completedParts.length != 0){
+        if ( completedParts.length != 0 && completedParts != null ){
             const response = await completedArea(completedParts)
             updateCompletedSlug(response)
-        } else {
-            const response = await completedArea(completedParts)
+        } else if (completedParts != null) {
+            await completedArea(completedParts)
         }
     }
 
@@ -117,7 +118,14 @@ const AllMelanomaAdd = ({route,navigation}) => {
                         scale={1.2}
                         //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
                         colors={['#A6FF9B']}
-                        onBodyPartPress={(slug) => navigation.navigate("MelanomaProcessSingleSlug", { data: slug, gender:userData.gender, userId: currentuser.uid, sessionMemory:completedParts, progress:null,skinColor: skinType })}
+                        onBodyPartPress={(slug) => Navigation_MoleUpload_2({
+                            bodyPart: slug,
+                            gender: userData.gender,
+                            completedArray:completedParts,
+                            progress:null,
+                            skin_type: skinType,
+                            navigation: navigation
+                        })}
                         zoomOnPress={true}
                     />
                     <ColorLabels />

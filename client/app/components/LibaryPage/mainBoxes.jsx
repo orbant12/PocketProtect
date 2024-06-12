@@ -50,7 +50,7 @@ export function MainMelanomaBox({
                 padding:5,
                 alignItems:"center"                
             }}>                                
-                <TouchableOpacity  onPress={() => handleNavigation("Skin Cancer")} style={{width:"100%",backgroundColor:"black",padding:10,paddingVertical:15,alignItems:"center",justifyContent:"center",borderRadius:50,flexDirection:"row"}}>
+                <TouchableOpacity  onPress={() => handleNavigation("MelanomaCenter")} style={{width:"100%",backgroundColor:"black",padding:10,paddingVertical:15,alignItems:"center",justifyContent:"center",borderRadius:50,flexDirection:"row"}}>
                     <Text style={{fontWeight:"600",color:"white",marginRight:15}}>Open</Text>
                     <MaterialCommunityIcons 
                         name='arrow-right'

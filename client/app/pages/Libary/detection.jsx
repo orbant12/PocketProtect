@@ -7,6 +7,7 @@ import { fetchAllDiagnosis, fetchUserData,fetchNumberOfMoles } from '../../servi
 import { MainBloodBox, MainMelanomaBox, MainDiagnosisBox } from '../../components/LibaryPage/mainBoxes';
 import { styles } from '../../styles/libary_style';
 import { Horizontal_Navbar} from '../../components/LibaryPage/mainNav';
+import { Navigation_MelanomaCenter, Navigation_MelanomaFullsetup } from '../../navigation/navigation';
 
 const DetectionLibary = ({navigation}) => {
 
@@ -87,10 +88,11 @@ const fetchAllUserData = async () => {
 }
 
 const handleNavigation = (path) => {
-    const data = {
-        title: path
+    if( path == "MelanomaCenter"){
+        Navigation_MelanomaCenter({navigation})
+    } else if ( path == "MelanomaFullprocess"){
+        Navigation_MelanomaFullsetup({navigation})
     }
-    navigation.navigate("MelanomaCenter",{data:data})
 }
 
 const handleScroll = (event) => {
@@ -222,7 +224,7 @@ return(
                                 <Text style={{color:"black",marginBottom:8,fontSize:12,fontWeight:"300"}}>Setup Time: <Text style={{fontWeight:"600"}}>{"15"} min</Text></Text>
                                 <Text style={{color:"black",marginBottom:0,fontSize:10,fontWeight:"300"}}>Monitored by<Text style={{fontWeight:"600"}}> Dermotologists & Neural Network</Text></Text>                                
                             </View>
-                            <TouchableOpacity onPress={() => navigation.navigate("FullMelanomaProcess",{sessionMemory:[]})} style={{width:"45%",backgroundColor:"black",padding:10,paddingVertical:18,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
+                            <TouchableOpacity onPress={() => handleNavigation("MelanomaFullprocess")} style={{width:"45%",backgroundColor:"black",padding:10,paddingVertical:18,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
                                 <Text style={{fontWeight:"600",color:"white",marginRight:15,fontSize:15}}>Start</Text>
                                 <MaterialCommunityIcons 
                                     name='arrow-right'

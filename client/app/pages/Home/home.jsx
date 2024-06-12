@@ -46,7 +46,7 @@ const [ userData, setUserData] = useState([])
 
     const handleNavigation  = (path,data) => {
         if (path == "dasdas"){
-            navigation.navigate(path,{data:[{q:"valami",type:"binary"}], outcomes:""})
+            navigation.navigate(path,{data:[{q:"valami",type:"binary"}], outcomes:""}) // DAILY REPORT
         } else if ( path == "risk" || path == ""  || path == "unfinished" ){
             Navigation_SingleSpotAnalysis({
                 melanomaId: data.melanomaId,

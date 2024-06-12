@@ -5,15 +5,15 @@ import bloodBG from "../../assets/features/blood.png"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { ExpStyle } from "../../styles/add_style";
 
-export const ExploreView = ({navigation}) => {
+export const ExploreView = ({navigation,setSelected}) => {
 
-    const handleNavigation = (path) => {
-        if ( path == "Melanoma Monitor"){
-            Navigation_MoleUpload({
-                navigation: navigation
-            })
-        }
-    }
+    // const handleNavigation = (path) => {
+    //     if ( path == "Melanoma Monitor"){
+    //         Navigation_MoleUpload({
+    //             navigation: navigation
+    //         })
+    //     }
+    // }
     
     return(
         <ScrollView style={{width:"100%",height:"100%",backgroundColor:"white"}}>
@@ -42,7 +42,7 @@ export const ExploreView = ({navigation}) => {
                                 icon_name:"magnify"
                             },
                         ]}
-                        handleNavigation={handleNavigation}
+                        setSelected={setSelected}
                     />
                 </View>
                 <Text style={{fontWeight:"800",fontSize:24,margin:15,alignSelf:"left"}}>Blood Analasis</Text>
@@ -69,7 +69,7 @@ export const ExploreView = ({navigation}) => {
                                 icon_name:"magnify"
                             },
                         ]}
-                        handleNavigation={handleNavigation}
+                        setSelected={setSelected}
                     />
                 </View>
         </View>
@@ -84,7 +84,7 @@ const FeatureBox = ({
     backgroundImage,
     title,
     labels,
-    handleNavigation
+    setSelected
 }) => {
     return(
         <View style={[ExpStyle.featureBox]}>
@@ -107,7 +107,7 @@ const FeatureBox = ({
                         <TagLabel label={data.text} icon={data.icon_name} />
                     ))}                    
                 </View>
-                <TouchableOpacity onPress={() => handleNavigation(title)} style={{flexDirection:"row",alignItems:"center",backgroundColor:"white",width:"100%",justifyContent:"center",padding:12,borderRadius:5,opacity:0.7}}>
+                <TouchableOpacity onPress={() => setSelected(title)} style={{flexDirection:"row",alignItems:"center",backgroundColor:"white",width:"100%",justifyContent:"center",padding:12,borderRadius:5,opacity:0.7}}>
                     <Text style={{fontSize:14,fontWeight:"600",marginRight:10}}>Start</Text>
                     <MaterialCommunityIcons 
                         name='arrow-right'

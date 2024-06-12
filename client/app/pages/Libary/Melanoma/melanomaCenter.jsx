@@ -14,7 +14,7 @@ import { SkinModal } from "../../../components/LibaryPage/Melanoma/modals";
 import { Mstyles } from "../../../styles/libary_style";
 import { NavBar_Main } from "../../../components/LibaryPage/Melanoma/navBarRow";
 import { SlugCard } from "../../../components/LibaryPage/Melanoma/slugCard";
-import { Navigation_MoleUpload } from "../../../navigation/navigation";
+import { Navigation_MoleUpload_1 } from "../../../navigation/navigation";
 import { AssistantAdvertBox } from "../../../components/LibaryPage/Melanoma/Assistance/assistantAdvert";
 
 const SingleFeature = ({route,navigation}) => {
@@ -118,7 +118,7 @@ const SingleFeature = ({route,navigation}) => {
     }
 
     const handleAddMelanoma = () => {
-        Navigation_MoleUpload({
+        Navigation_MoleUpload_1({
             gender:userData.gender,
             skin_type: melanomaMetaData.skin_type,
             navigation: navigation
