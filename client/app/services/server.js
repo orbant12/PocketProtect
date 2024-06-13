@@ -5,11 +5,13 @@ import {
     getDoc,
     getDocs,
     updateDoc,
-    deleteDoc
+    deleteDoc,
+    addDoc
 } from "firebase/firestore"
 import { db,storage } from './firebase.js';
 import { ref,  getDownloadURL, uploadBytes,deleteObject} from "firebase/storage";
 import { dateDistanceFromToday } from "../utils/date_manipulations.js";
+import { generateNumericalUID } from "../utils/uid_generator.js";
 
 //<===> Melanoma <====>
 
@@ -774,6 +776,56 @@ export const fetchReminders = async ({
         
     } catch {   
         return false
+    }
+}
+
+
+//<===> Payment <====>
+
+export const handleSuccesfullPayment = async ({
+    userId,
+    assistantData,
+    item,
+}) => {
+    try {
+        const session_UID = "session_" + generateNumericalUID(12)
+        const clientRef = doc(db,"users",userId, "Assist_Panel",session_UID)
+        const assistRef = doc(db,"assistants",assistantData, "Requests",session_UID)
+        const data = {
+            answered:false,
+            assistantData,
+            id: session_UID,
+            purchase:item,
+            chat:[]
+        }
+        await setDoc(clientRef,data)
+        await setDoc(assistRef,data)
+        return true
+    } catch(err) {
+        console.log(err)
+        return err
+    }
+}
+
+
+export const fetchAssistantsByField = async ({
+    field
+}) => {
+    try{
+        const assistantRef = collection(db,"assistants")
+        const snapshot = await getDocs(assistantRef)
+
+        let assistants = [];
+        snapshot.forEach((doc) => {
+            if(doc.data().field == field){
+                assistants.push(doc.data());
+            } 
+        }
+        );
+        return assistants;
+    } catch(err) {
+        console.log(err)
+        return err
     }
 }
 

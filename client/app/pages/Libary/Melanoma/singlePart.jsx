@@ -4,7 +4,7 @@ import { useAuth } from "../../../context/UserAuthContext";
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/client/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
 import { Tabs} from 'react-native-collapsible-tab-view'
 import Entypo from 'react-native-vector-icons/Entypo';
-import { fetchSpotHistory, deleteSpotWithHistoryReset, updateSpotData,fetchSelectedMole } from "../../../services/server";
+import { fetchSpotHistory, deleteSpotWithHistoryReset, updateSpotData,fetchSelectedMole,handleSuccesfullPayment,fetchAssistantsByField } from "../../../services/server";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import {app} from "../../../services/firebase"
 import { SingleSlugStyle } from "../../../styles/libary_style";
@@ -34,6 +34,7 @@ const [highlight, setHighlighted ]= useState("")
 const [deleteModal,setDeleteModal] = useState(false)
 const [moleToDelete,setMoleToDelete] = useState("")
 const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
+const [properAssistants, setProperAssistants] = useState([])
 
 
 //<==================<[ Functions ]>====================>
@@ -67,6 +68,13 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
             setSelectedMelanoma(response)
             fetchAllSpotHistory(response)
         }
+    }
+
+    const fetchAssistants = async () => {
+        const response = await fetchAssistantsByField({
+            field:"dermotology"
+        })
+        setProperAssistants(response)
     }
 
     const handleSpotDelete = async (data) => {
@@ -150,13 +158,24 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
         })
     }
 
+    const handlePaymentProcess = async (assistantData) => {
+        const response = await handleSuccesfullPayment({
+            userId:currentuser.uid,
+            assistantData:assistantData,
+            item:{type:"spot",moles:{[bodyPart.melanomaId]:{bodyPart}}}
+        })
+
+    }
+
     useEffect(() => {        
         fetchDataSelectedMole()
+        
     },[])
 
     useFocusEffect(
         useCallback(() => {
             fetchDataSelectedMole()
+            fetchAssistants()
         return () => {};
         }, [])
     );
@@ -473,7 +492,10 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
                 label={() => <Entypo name={'warning'} size={25} color={"white"} />}
             >
                 <Tabs.ScrollView>
-                    <AssistTab />
+                    <AssistTab
+                        properAssistants={properAssistants}
+                        handlePaymentProcess={handlePaymentProcess}
+                    />
                 </Tabs.ScrollView>
             </Tabs.Tab>
         </Tabs.Container> 

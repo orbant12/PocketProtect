@@ -7,6 +7,7 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import { useAuth } from "../../context/UserAuthContext";
 import { fetchUserData } from "../../services/server";
 import { Icon } from 'react-native-elements';
+import AssistPanel from "./tabs/userAssistPanel"
 
 const Profile = ({navigation,handleSettings}) => {
 
@@ -53,7 +54,7 @@ const handleSettingsNavigation = () => {
                     label={() => <Entypo name={'folder'} size={25} color={"white"} />}
                 >
                     <Tabs.ScrollView>
-                        <UserDiagnosis navigation={navigation} />
+                        <AssistPanel navigation={navigation} />
                     </Tabs.ScrollView>
                 </Tabs.Tab>
                 {/* SAVED PAGE */}
