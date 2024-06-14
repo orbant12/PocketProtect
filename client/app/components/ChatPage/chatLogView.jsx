@@ -6,13 +6,22 @@ export const ChatLogView = ({
     chatLog,
     handleKeyboardDismiss,
     me,
-    end
+    end,
+    profileUrl,
+    chatScrollRef
 }) => {
     return(
-        <ScrollView onTouchStart={handleKeyboardDismiss} style={{width:"100%",marginBottom:90,borderWidth:0}}>
+        <ScrollView ref={chatScrollRef} onTouchStart={handleKeyboardDismiss} style={{width:"100%",borderWidth:0,height:"100%"}}>
         {
             chatLog.map((message,index) => (
-                <ChatMessage message={message} key={index} me={me} end={end} isLast={index === chatLog.length - 1} />
+                <ChatMessage 
+                    message={message}
+                    key={index} 
+                    me={me} 
+                    end={end} 
+                    isLast={index === chatLog.length - 1} 
+                    profileUrl={profileUrl}
+                />
             ))
         }
         </ScrollView>
@@ -20,17 +29,22 @@ export const ChatLogView = ({
 }
 
 
-const ChatMessage = ({ message, me, end, isLast }) => {
+const ChatMessage = ({ message, me, end, isLast,profileUrl }) => {
 return(
-<View style={[{flexDirection:"row",width:"100%",borderWidth:0,padding:10,paddingTop:1,paddingBottom:1}, message.user == me ? {backgroundColor:"rgba(0,0,0,0)", flexDirection:"row-reverse"}:{backgroundColor:"rgba(0,0,0,0)"}, isLast && !message.sent && {marginTop:5}]}>
+<View style={[{flexDirection:"row",width:"100%",borderWidth:0,padding:10,paddingTop:1,paddingBottom:1}, message.user == me ? {backgroundColor:"rgba(0,0,0,0)", flexDirection:"row-reverse"}:{backgroundColor:"rgba(0,0,0,0)"}, !message.inline_answer && message.sent && {marginTop:30},isLast && message.user == me && {marginBottom:50}]}>
     {message.user == end &&
+        (
+        !message.inline_answer ?
         <Image
-            source={{uri:"https://picsum.photos/200/300"}}
+            source={{uri:profileUrl}}
             style={{width:40,height:40,borderRadius:10,marginRight:5}}
         />
+        :
+        <View style={{width:40,height:40,marginRight:5}} />
+        )
     }
     {message.user == end ? (
-        <View style={[{alignItems:"start",paddingVertical:8,paddingHorizontal:10,backgroundColor:"rgba(0,0,255,0.4)",borderRadius:10,borderTopLeftRadius:0,borderBottomLeftRadius:2,marginBottom:10}, isLast && {marginBottom:10}]}>
+        <View style={[{alignItems:"start",paddingVertical:8,paddingHorizontal:10,backgroundColor:"rgba(0,0,255,0.4)",borderRadius:10,borderTopLeftRadius:0,borderBottomLeftRadius:2,marginBottom:0}, isLast && {marginBottom:10}]}>
             <Text style={[{maxWidth:290,color:"black"},{fontWeight:"500"}]}>
                 {message.message}
             </Text>
@@ -45,16 +59,14 @@ return(
     )
     }
     {message.sent ? (
-        isLast ? (
-        // <View style={{flexDirection:"row",alignItems:"center",position:"absolute",bottom:-3,right:10}}>
-        //     <MaterialCommunityIcons 
-        //         name="check-circle-outline"
-        //         size={13}
-        //     />
-        // </View>
-        <View>
-            
+        isLast && message.user == me ? (
+        <View style={{flexDirection:"row",alignItems:"center",position:"absolute",bottom:-3,right:10}}>
+            <MaterialCommunityIcons 
+                name="check-circle-outline"
+                size={13}
+            />
         </View>
+    
         ): null
     ):(
         <View style={{flexDirection:"row",alignItems:"center",position:"absolute",bottom:-10,right:15}}>
@@ -80,7 +92,7 @@ export const ChatInput = ({
             keyboardVerticalOffset={20} 
             
         >
-            <View style={{ width: '95%', padding: 5, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.1)', alignSelf: 'center', borderRadius: 30,marginTop:20}}>
+            <View style={{ width: '95%', padding: 5, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.1)', alignSelf: 'center', borderRadius: 30,marginTop:30}}>
 
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               {inputValue === '' ? ( 

@@ -16,6 +16,7 @@ export const ChatSessionModal = ({
 }) => {
 
     const scrollRef = useRef(null);
+    const chatScrollRef = useRef(null);
     const { currentuser } = useAuth();
 
     const [chatLog,setChatLog] = useState(selectedChat.chat);
@@ -38,12 +39,15 @@ export const ChatSessionModal = ({
         return response
     }
 
-
+    const scrollToBottom = () => {
+        chatScrollRef.current.scrollToEnd({ animated: true });
+    };
 
     const handleSend = async (content) => {
-        const message = {user:`${currentuser.uid}`,message:content,sent:false,date: new Date()};
+        const message = {user:`${currentuser.uid}`,message:content,sent:false,date: new Date(),inline_answer: chatLog[chatLog.length -1 ].user == currentuser.uid};
         const chatState = [...chatLog,message]
         setChatLog(chatState)
+        scrollToBottom()
         setInputValue(null)
         try {
             const response = await updateChatLog(chatState);
@@ -68,12 +72,14 @@ export const ChatSessionModal = ({
                     profileUrl={selectedChat.length != 0 ? selectedChat.assistantData.profileUrl : ""}
                     id={selectedChat.length != 0 ? selectedChat.id : ""}
                 />
-                <View style={{borderWidth:1,height:"85%",paddingTop:150,backgroundColor:"rgba(0,0,0,0.1)"}}>
+                <View style={{borderWidth:1,height:"73%",marginTop:115,backgroundColor:"rgba(0,0,0,0.1)"}}>
                     <ChatLogView 
                         chatLog={chatLog}
                         me={currentuser.uid}
                         handleKeyboardDismiss={handleKeyboardDismiss}
                         end={selectedChat.length != 0 ? selectedChat.assistantData.id : ""}
+                        profileUrl={selectedChat.length != 0 ? selectedChat.assistantData.profileUrl : ""}
+                        chatScrollRef={chatScrollRef}
                     />
                 </View>
                 <ChatInput 

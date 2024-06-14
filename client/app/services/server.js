@@ -805,7 +805,7 @@ export const handleSuccesfullPayment = async ({
             id: session_UID,
             purchase:item,
             chat:[
-                {message:WelcomeTexts(request), user:assistantData.id,date: new Date(),sent:true}
+                {message:WelcomeTexts(request), user:assistantData.id,date: new Date(),sent:true,inline_answer:false}
             ]
         }
         await createAssistantSession({
