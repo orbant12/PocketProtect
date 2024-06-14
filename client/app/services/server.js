@@ -12,6 +12,7 @@ import { db,storage } from './firebase.js';
 import { ref,  getDownloadURL, uploadBytes,deleteObject} from "firebase/storage";
 import { dateDistanceFromToday } from "../utils/date_manipulations.js";
 import { generateNumericalUID } from "../utils/uid_generator.js";
+import { WelcomeTexts } from "../../assets/welcome_scripts/welcomeTexts.js";
 
 //<===> Melanoma <====>
 
@@ -789,13 +790,23 @@ export const handleSuccesfullPayment = async ({
 }) => {
     try {
         const session_UID = "session_" + generateNumericalUID(12)
-        const assistRef = doc(db,"assistants",assistantData, "Requests",session_UID)
+        const assistRef = doc(db,"assistants",assistantData.id, "Requests",session_UID)
+        const userData = await fetchUserData({
+            userId:userId
+        })
+        const request = {
+            fullname: userData.data().fullname,
+            sessionId: session_UID,
+            type: "spot_check"
+        }
         const data = {
             answered:false,
             assistantData,
             id: session_UID,
             purchase:item,
-            chat:[]
+            chat:[
+                {message:WelcomeTexts(request), user:assistantData.id,date: new Date(),sent:true}
+            ]
         }
         await createAssistantSession({
             userId: userId,

@@ -33,3 +33,27 @@ export function dateDistanceFromToday(date1) {
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     return diffDays;
 }
+
+export function timeDistanceFromToday(timestamp) {
+    // Assuming timestamp is an object with seconds and nanoseconds fields
+    const { seconds, nanoseconds } = timestamp;
+
+    // Convert nanoseconds to milliseconds
+    const milliseconds = seconds * 1000 + Math.round(nanoseconds / 1000000);
+
+    const now = new Date();
+    const inputTime = new Date(milliseconds);
+    const diffInMilliseconds = now - inputTime;
+
+    const diffInSeconds = Math.floor(diffInMilliseconds / 1000);
+    const diffInMinutes = Math.floor(diffInMilliseconds / (1000 * 60));
+    const diffInHours = Math.floor(diffInMilliseconds / (1000 * 60 * 60));
+
+    if (diffInSeconds < 60) {
+        return `${diffInSeconds} s`;
+    } else if (diffInMinutes < 60) {
+        return `${diffInMinutes} m`;
+    } else {
+        return `${diffInHours} h`;
+    }
+}

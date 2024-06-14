@@ -162,7 +162,7 @@ const [properAssistants, setProperAssistants] = useState([])
         const response = await handleSuccesfullPayment({
             userId:currentuser.uid,
             assistantData:assistantData,
-            item:{type:"spot",moles:{[bodyPart.melanomaId]:{bodyPart}}}
+            item:{type:"Mole Check",moles:{[bodyPart.melanomaId]:{bodyPart}}}
         })
 
     }

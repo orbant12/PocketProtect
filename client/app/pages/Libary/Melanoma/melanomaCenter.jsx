@@ -17,6 +17,8 @@ import { SlugCard } from "../../../components/LibaryPage/Melanoma/slugCard";
 import { Navigation_MoleUpload_1 } from "../../../navigation/navigation";
 import { AssistantAdvertBox } from "../../../components/LibaryPage/Melanoma/Assistance/assistantAdvert";
 
+
+
 const SingleFeature = ({route,navigation}) => {
 
 //<==================<[ Variables ]>====================>

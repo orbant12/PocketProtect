@@ -29,7 +29,7 @@ export const AssistModal = ({
                 
             </View>
         </ScrollView>
-        <TouchableOpacity onPress={() => handlePaymentProcess(assistantData.id)} style={{width:"90%",position:"absolute",padding:20,paddingVertical:15,bottom:30,justifyContent:"center",backgroundColor:"magenta",borderRadius:10,alignItems:"center",alignSelf:"center"}}>
+        <TouchableOpacity onPress={() => handlePaymentProcess(assistantData)} style={{width:"90%",position:"absolute",padding:20,paddingVertical:15,bottom:30,justifyContent:"center",backgroundColor:"magenta",borderRadius:10,alignItems:"center",alignSelf:"center"}}>
             <Text style={{fontWeight:"600",color:"white"}}>Start Appointment</Text>
         </TouchableOpacity>
         </>

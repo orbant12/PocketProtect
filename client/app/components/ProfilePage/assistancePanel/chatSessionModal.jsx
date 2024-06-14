@@ -7,7 +7,7 @@ import { ChatInput } from "../../ChatPage/chatLogView"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useAuth } from "../../../context/UserAuthContext"
 import { realTimeUpdateChat } from "../../../services/server"
-
+import { messageStateChange } from "../../../utils/assist/messageStateChanger"
 
 
 export const ChatSessionModal = ({
@@ -18,7 +18,7 @@ export const ChatSessionModal = ({
     const scrollRef = useRef(null);
     const { currentuser } = useAuth();
 
-    const [chatLog,setChatLog] = useState([]);
+    const [chatLog,setChatLog] = useState(selectedChat.chat);
     const [isInputActive, setIsInputActive] = useState(false);
     const [ inputValue, setInputValue] = useState("")
 
@@ -28,26 +28,27 @@ export const ChatSessionModal = ({
     }
 
     const updateChatLog = async (chatState) => {
+        const updatedChatState = await messageStateChange(chatState)
         const response = await realTimeUpdateChat({
             userId: currentuser.uid,
             sessionId: selectedChat.id,
-            chat:chatState
+            chat: updatedChatState
         })
         console.log(response)
         return response
     }
 
+
+
     const handleSend = async (content) => {
-        const message = {user:`${currentuser.uid}`,message:content,sent:false};
+        const message = {user:`${currentuser.uid}`,message:content,sent:false,date: new Date()};
         const chatState = [...chatLog,message]
         setChatLog(chatState)
         setInputValue(null)
         try {
             const response = await updateChatLog(chatState);
             if (response === true) {
-                const updatedChatState = chatState.map((msg, index) => 
-                    index === chatState.length - 1 ? { ...msg, sent: true } : msg
-                );
+                const updatedChatState = await messageStateChange(chatState)
                 setChatLog(updatedChatState);
             } else {
                 console.error('Failed to update chat log');
@@ -63,8 +64,11 @@ export const ChatSessionModal = ({
                 <NavBar_AssistantModal 
                     goBack={setSelectedChat}
                     scrollRef={scrollRef}
+                    title={selectedChat.length != 0 ? selectedChat.purchase.type : ""}
+                    profileUrl={selectedChat.length != 0 ? selectedChat.assistantData.profileUrl : ""}
+                    id={selectedChat.length != 0 ? selectedChat.id : ""}
                 />
-                <View style={{borderWidth:1,height:"85%",paddingTop:150}}>
+                <View style={{borderWidth:1,height:"85%",paddingTop:150,backgroundColor:"rgba(0,0,0,0.1)"}}>
                     <ChatLogView 
                         chatLog={chatLog}
                         me={currentuser.uid}

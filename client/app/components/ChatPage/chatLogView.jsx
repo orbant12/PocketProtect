@@ -22,25 +22,38 @@ export const ChatLogView = ({
 
 const ChatMessage = ({ message, me, end, isLast }) => {
 return(
-<View style={[{flexDirection:"row",width:"100%",borderWidth:0,padding:10,paddingTop:1,paddingBottom:1}, message.user == me ? {backgroundColor:"rgba(0,0,0,0)", flexDirection:"row-reverse"}:{backgroundColor:"#ffd1fa"}, isLast && !message.sent && {marginTop:5}]}>
+<View style={[{flexDirection:"row",width:"100%",borderWidth:0,padding:10,paddingTop:1,paddingBottom:1}, message.user == me ? {backgroundColor:"rgba(0,0,0,0)", flexDirection:"row-reverse"}:{backgroundColor:"rgba(0,0,0,0)"}, isLast && !message.sent && {marginTop:5}]}>
     {message.user == end &&
         <Image
             source={{uri:"https://picsum.photos/200/300"}}
-            style={{width:50,height:50,borderRadius:10}}
+            style={{width:40,height:40,borderRadius:10,marginRight:5}}
         />
     }
-    <View style={{alignItems:"start",paddingVertical:8,paddingHorizontal:20,backgroundColor:"rgba(0,0,255,0.4)",borderRadius:10,borderTopRightRadius:0,borderBottomRightRadius:2,}}>
-        <Text style={[{maxWidth:290,color:"black"}, message.user == end ? {fontWeight:"700"} : {fontWeight:"500"}]}>
-            {message.message}
-        </Text>
-    </View>
+    {message.user == end ? (
+        <View style={[{alignItems:"start",paddingVertical:8,paddingHorizontal:10,backgroundColor:"rgba(0,0,255,0.4)",borderRadius:10,borderTopLeftRadius:0,borderBottomLeftRadius:2,marginBottom:10}, isLast && {marginBottom:10}]}>
+            <Text style={[{maxWidth:290,color:"black"},{fontWeight:"500"}]}>
+                {message.message}
+            </Text>
+        </View>
+    ):(
+        
+        <View style={[{alignItems:"start",paddingVertical:8,paddingHorizontal:10,backgroundColor:"rgba(0,0,255,0.4)",borderRadius:10,borderTopRightRadius:0,borderBottomRightRadius:2,marginBottom:0}, isLast && {marginBottom:10}]}>
+            <Text style={[{maxWidth:290,color:"black"},{fontWeight:"500"}]}>
+                {message.message}
+            </Text>
+        </View>
+    )
+    }
     {message.sent ? (
         isLast ? (
-        <View style={{flexDirection:"row",alignItems:"center",position:"absolute",bottom:-13,right:10}}>
-            <MaterialCommunityIcons 
-                name="check-circle-outline"
-                size={13}
-            />
+        // <View style={{flexDirection:"row",alignItems:"center",position:"absolute",bottom:-3,right:10}}>
+        //     <MaterialCommunityIcons 
+        //         name="check-circle-outline"
+        //         size={13}
+        //     />
+        // </View>
+        <View>
+            
         </View>
         ): null
     ):(

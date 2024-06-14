@@ -9,13 +9,13 @@ import { fetchUserData } from "../../services/server";
 import { Icon } from 'react-native-elements';
 import AssistPanel from "./tabs/userAssistPanel"
 
+
 const Profile = ({navigation,handleSettings}) => {
 
 //<==================<[ Variables ]>====================>
 
 const [userData, setUserData] = useState([]);
-const {currentuser} = useAuth();
-
+const { currentuser } = useAuth()
 
 //<==================<[ Functions ]>====================>
 
@@ -36,6 +36,7 @@ useEffect(() => {
 const handleSettingsNavigation = () => {
     navigation.navigate("SettingsPage")
 }
+
 
 
 //<==================<[ Main Return ]>====================>

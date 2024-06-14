@@ -1,10 +1,13 @@
-import { View, Text, TouchableOpacity } from "react-native"
+import { View, Text, TouchableOpacity,Image } from "react-native"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 
 
 export const NavBar_AssistantModal = ({
     scrollRef,
-    goBack
+    goBack,
+    title,
+    id,
+    profileUrl
 }) => {
     return(
             <View style={{
@@ -18,8 +21,9 @@ export const NavBar_AssistantModal = ({
                 flexDirection:"row",
                 justifyContent:"space-between",
                 position:"absolute",
-                top:50,
-                zIndex:5
+                paddingTop:50,
+                zIndex:5,
+                backgroundColor:"black"
             }}>
             <TouchableOpacity onPress={() => goBack([])}  style={{backgroundColor:"black",borderRadius:30,borderColor:"white",borderWidth:2}}>
                 <MaterialCommunityIcons 
@@ -29,13 +33,16 @@ export const NavBar_AssistantModal = ({
                     style={{padding:5}}
                 />
             </TouchableOpacity>
+
+            <View style={{alignItems:"center"}}>
+                <Text style={{color:"white",fontWeight:"700",marginBottom:5,fontSize:17}}>{title}</Text>
+                <Text style={{color:"white",opacity:0.3,fontSize:10}}>{id}</Text>
+            </View>
             
             <TouchableOpacity onPress={() => scrollRef.current.scrollTo({x:0,y:720,animated:true})} style={{backgroundColor:"black",borderRadius:30,borderColor:"white",borderWidth:2}}>
-                <MaterialCommunityIcons 
-                    name="monitor-eye"
-                    size={20}
-                    color={"white"}
-                    style={{padding:9}}
+                <Image
+                    source={{uri: profileUrl}}
+                    style={{width:50,height:50,borderWidth:1,borderColor:"white",borderRadius:100}}
                 />
             </TouchableOpacity>
             </View>   
