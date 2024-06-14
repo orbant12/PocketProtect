@@ -8,6 +8,7 @@ import ChatMessage from "../../components/ChatPage/chatLog";
 import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { ChatLogView } from '../../components/ChatPage/chatLogView';
 
 
 const AssistantPage = ({navigation}) => {
@@ -639,15 +640,6 @@ export default AssistantPage
         </View>
         )
       }
-      function ChatLogView(){
-        return(
-          <ScrollView onTouchStart={handleKeyboardDismiss} style={{width:"100%",marginBottom:90,borderWidth:1}}>
-          {chatLog.map((message,index) => (
-              <ChatMessage message={message} key={index} />
-          ))}
-          </ScrollView>
-        )
-      }
       function ChatInputField(){
         return(
           <View style={[!isInputActive ? styles.inputContainerNotActive : [styles.inputContainerActive,{ height:"48%"}]]}>
@@ -682,7 +674,10 @@ export default AssistantPage
               HandleComponent()          
             }
           >
-            {ChatLogView()}
+            <ChatLogView 
+              chatLog={chatLog}
+              handleKeyboardDismiss={handleKeyboardDismiss}
+            />
             {ChatInputField()}
           </BottomSheetModal>
       )

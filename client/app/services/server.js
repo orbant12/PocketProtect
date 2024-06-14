@@ -789,7 +789,6 @@ export const handleSuccesfullPayment = async ({
 }) => {
     try {
         const session_UID = "session_" + generateNumericalUID(12)
-        const clientRef = doc(db,"users",userId, "Assist_Panel",session_UID)
         const assistRef = doc(db,"assistants",assistantData, "Requests",session_UID)
         const data = {
             answered:false,
@@ -798,7 +797,11 @@ export const handleSuccesfullPayment = async ({
             purchase:item,
             chat:[]
         }
-        await setDoc(clientRef,data)
+        await createAssistantSession({
+            userId: userId,
+            session_UID:session_UID,
+            data:data
+        })
         await setDoc(assistRef,data)
         return true
     } catch(err) {
@@ -807,6 +810,7 @@ export const handleSuccesfullPayment = async ({
     }
 }
 
+//<===> Asssistants <====>
 
 export const fetchAssistantsByField = async ({
     field
@@ -827,5 +831,51 @@ export const fetchAssistantsByField = async ({
         console.log(err)
         return err
     }
+}
+
+export const createAssistantSession = async({
+    userId,
+    session_UID,
+    data
+}) => {
+    try{
+        const clientRef = doc(db,"users",userId, "Assist_Panel",session_UID)
+        await setDoc(clientRef,data)
+    } catch(err) {
+        
+    }
+}
+
+export const fetchAssistantSessions = async({
+    userId
+}) => {
+    try{
+        const clientRef = collection(db,"users",userId, "Assist_Panel")
+        const snapshot = await getDocs(clientRef);
+        //ONLY PUT IF doc.data().gender == gender
+        let sessionData = [];
+        snapshot.forEach((doc) => {
+            sessionData.push(doc.data());
+        }
+        );
+        return sessionData;
+    } catch {
+
+    }
+}
+
+export const realTimeUpdateChat = async ({
+    userId,
+    sessionId,
+    chat
+}) => {
+    try{
+        const ref = doc(db, "users", userId, "Assist_Panel", sessionId) 
+        await updateDoc(ref,{chat:[...chat]})
+        return true
+     } catch(Err) {
+        console.log(Err)
+        return Err
+     }
 }
 
