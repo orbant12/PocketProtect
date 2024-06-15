@@ -7,7 +7,8 @@ export const NavBar_AssistantModal = ({
     goBack,
     title,
     id,
-    profileUrl
+    profileUrl,
+    bgColor
 }) => {
     return(
             <View style={{
@@ -23,7 +24,7 @@ export const NavBar_AssistantModal = ({
                 position:"absolute",
                 paddingTop:50,
                 zIndex:5,
-                backgroundColor:"black"
+                backgroundColor:bgColor
             }}>
             <TouchableOpacity onPress={() => goBack([])}  style={{backgroundColor:"black",borderRadius:30,borderColor:"white",borderWidth:2}}>
                 <MaterialCommunityIcons 
@@ -48,3 +49,4 @@ export const NavBar_AssistantModal = ({
             </View>   
     )
 }
+

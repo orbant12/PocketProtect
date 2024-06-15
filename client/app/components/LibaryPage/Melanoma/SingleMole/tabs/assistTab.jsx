@@ -4,10 +4,12 @@ import { AssistantBioBox } from "../../Assistance/assistantBio"
 import { AssistModal } from "../../../../../pages/Assist/assistantModal"
 import { useState } from "react"
 import assistant from "../../../../../assets/assist/assistant.png"
+import { useAuth } from "../../../../../context/UserAuthContext"
 
 export const AssistTab = ({
-    handlePaymentProcess,
-    properAssistants
+    properAssistants,
+    bodyPart,
+    navigation
 }) => {
 
     const [ selectedAssistant, setSelectedAssistant] = useState([])
@@ -37,7 +39,8 @@ export const AssistTab = ({
                 <AssistModal 
                     assistantData={selectedAssistant}
                     setSelectedAssistant={setSelectedAssistant}
-                    handlePaymentProcess={handlePaymentProcess}
+                    bodyPart={bodyPart}
+                    navigation={navigation}
                 />
             </Modal>
         </View>

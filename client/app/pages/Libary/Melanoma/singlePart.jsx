@@ -158,14 +158,7 @@ const [properAssistants, setProperAssistants] = useState([])
         })
     }
 
-    const handlePaymentProcess = async (assistantData) => {
-        const response = await handleSuccesfullPayment({
-            userId:currentuser.uid,
-            assistantData:assistantData,
-            item:{type:"Mole Check",moles:{[bodyPart.melanomaId]:{bodyPart}}}
-        })
 
-    }
 
     useEffect(() => {        
         fetchDataSelectedMole()
@@ -494,7 +487,8 @@ const [properAssistants, setProperAssistants] = useState([])
                 <Tabs.ScrollView>
                     <AssistTab
                         properAssistants={properAssistants}
-                        handlePaymentProcess={handlePaymentProcess}
+                        bodyPart={bodyPart}
+                        navigation={navigation}
                     />
                 </Tabs.ScrollView>
             </Tabs.Tab>

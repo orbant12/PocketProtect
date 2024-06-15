@@ -24,6 +24,8 @@ import BloodCenter from "./app/pages/Libary/BloodCenter/bloodCenter";
 import DiagnosisCenter from "./app/pages/Add/Diagnosis/diagnosisCenter";
 import AssesmentScreen from "./app/pages/Home/DailyReportScreens/assesmentScreen";
 import CameraView from "./app/pages/Libary/Melanoma/components/cameraView";
+import { StripeProvider } from '@stripe/stripe-react-native';
+import CheckoutScreen from "./app/components/Payment/checkOutScreen";
 
 
 const Stack = createNativeStackNavigator();
@@ -32,6 +34,9 @@ export default function App() {
 return (
 <NavigationContainer>
     <UserAuthContext>
+        <StripeProvider
+            publishableKey="pk_test_51PRx4QGWClPUuUnF9GNoIEOpKugJy30Sip6vstMnPwaaojxw4vJ2DWZwRPs9mabQcX7DolDjT6s4TJHbZSfBWxZI00nrYjmKNm"
+        >
         <Stack.Navigator initialRouteName="AuthHub">
             <Stack.Screen name="AuthHub" component={AuthHub} options={{ headerShown:false}} />
             <Stack.Screen name="RegOnBoarding" component={RegOnBoarding} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerLeftShown:false,headerTitle:"Welcome !"}} />
@@ -54,7 +59,9 @@ return (
             <Stack.Screen name="MelanomaProcessSingleSlug" component={MelanomaSingleSlug}   options={({ route }) => ({ title: route.params.bodyPart.slug.charAt(0).toUpperCase() + route.params.bodyPart.slug.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
             <Stack.Screen name="Add_BloodWork" component={BloodWorkPage}   options={({ route }) => ({ title: "+ Add Blood Work",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShon:true, headerBackVisible:false})} />
             <Stack.Screen name="AssesmentScreen" component={AssesmentScreen}   options={({ route }) => ({ title: route.title,headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShon:true, headerBackVisible:false})} />
+            <Stack.Screen name="Checkout" component={CheckoutScreen} />
         </ Stack.Navigator>
+    </StripeProvider>
     </UserAuthContext>
 </NavigationContainer>   
 )

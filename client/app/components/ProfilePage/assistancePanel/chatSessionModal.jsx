@@ -1,7 +1,7 @@
 
 import { View, ScrollView,Pressable, Keyboard } from "react-native"
 import { NavBar_AssistantModal } from "./navbarAssistantModal"
-import { useRef, useState } from "react"
+import { useRef, useState,useEffect } from "react"
 import { ChatLogView } from "../../ChatPage/chatLogView"
 import { ChatInput } from "../../ChatPage/chatLogView"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -68,6 +68,7 @@ export const ChatSessionModal = ({
                 <NavBar_AssistantModal 
                     goBack={setSelectedChat}
                     scrollRef={scrollRef}
+                    bgColor={"black"}
                     title={selectedChat.length != 0 ? selectedChat.purchase.type : ""}
                     profileUrl={selectedChat.length != 0 ? selectedChat.assistantData.profileUrl : ""}
                     id={selectedChat.length != 0 ? selectedChat.id : ""}

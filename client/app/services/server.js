@@ -784,15 +784,13 @@ export const fetchReminders = async ({
 //<===> Payment <====>
 
 export const handleSuccesfullPayment = async ({
-    userId,
-    assistantData,
-    item,
+    checkOutData
 }) => {
     try {
         const session_UID = "session_" + generateNumericalUID(12)
-        const assistRef = doc(db,"assistants",assistantData.id, "Requests",session_UID)
+        const assistRef = doc(db,"assistants", checkOutData.assistantData.id, "Requests",session_UID)
         const userData = await fetchUserData({
-            userId:userId
+            userId: checkOutData.client
         })
         const request = {
             fullname: userData.data().fullname,
@@ -801,15 +799,15 @@ export const handleSuccesfullPayment = async ({
         }
         const data = {
             answered:false,
-            assistantData,
+            assistantData: checkOutData.assistantData,
             id: session_UID,
-            purchase:item,
+            purchase:checkOutData.item,
             chat:[
-                {message:WelcomeTexts(request), user:assistantData.id,date: new Date(),sent:true,inline_answer:false}
+                {message:WelcomeTexts(request), user: checkOutData.assistantData.id,date: new Date(),sent:true,inline_answer:false}
             ]
         }
         await createAssistantSession({
-            userId: userId,
+            userId: checkOutData.client,
             session_UID:session_UID,
             data:data
         })

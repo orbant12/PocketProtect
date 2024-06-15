@@ -1,5 +1,4 @@
-import { TextInput, ScrollView,View, Text, Image, KeyboardAvoidingView, Platform  } from "react-native"
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { TextInput, ScrollView,View, Text, Image, KeyboardAvoidingView, Platform,TouchableOpacity,Pressable  } from "react-native"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 
 export const ChatLogView = ({
@@ -31,7 +30,7 @@ export const ChatLogView = ({
 
 const ChatMessage = ({ message, me, end, isLast,profileUrl }) => {
 return(
-<View style={[{flexDirection:"row",width:"100%",borderWidth:0,padding:10,paddingTop:1,paddingBottom:1}, message.user == me ? {backgroundColor:"rgba(0,0,0,0)", flexDirection:"row-reverse"}:{backgroundColor:"rgba(0,0,0,0)"}, !message.inline_answer && message.sent && {marginTop:30},isLast && message.user == me && {marginBottom:50}]}>
+<Pressable onLongPress={() => alert("edit")} style={[{flexDirection:"row",width:"100%",borderWidth:0,padding:10,paddingTop:1,paddingBottom:1}, message.user == me ? {backgroundColor:"rgba(0,0,0,0)", flexDirection:"row-reverse"}:{backgroundColor:"rgba(0,0,0,0)"}, !message.inline_answer && message.sent && {marginTop:30},isLast && message.user == me && {marginBottom:50}]}>
     {message.user == end &&
         (
         !message.inline_answer ?
@@ -75,7 +74,7 @@ return(
         </View>
     )
     }
-</View>
+</Pressable>
 )
 };
 
