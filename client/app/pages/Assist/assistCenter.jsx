@@ -286,7 +286,7 @@ const Shop_Modal = ({
     selectedProduct,
     properAssistants,
     navigation,
-    setSelectedProduct
+    setSelectedProduct,
 }) => {
     return(
         <Modal animationType="slide" visible={selectedProduct != null}>
@@ -294,6 +294,7 @@ const Shop_Modal = ({
                 show={selectedProduct}
                 properAssistants={properAssistants}
                 setSelectedProduct={setSelectedProduct}
+                navigation={navigation}
             />
         </Modal>
     )
@@ -301,13 +302,15 @@ const Shop_Modal = ({
 
 const ManualMole_ModalScreen = ({
     show,
-    setSelectedProduct
+    setSelectedProduct,
+    navigation
 }) => {
     return(
         <>
         {show == "Mole Check" &&
             <ManualAdd_Moles 
                 closeAction={() => setSelectedProduct(null)}
+                navigation={navigation}
             />
         }
         </>
