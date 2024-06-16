@@ -6,7 +6,7 @@ type SkinType = 0 | 1 | 2 | 3;
 type UpdateMethod = {} | "new";
 type Progress = Number | null;
 
-interface NavigationParams {
+interface MelanomaNavigationParams {
     melanomaId: string;
     bodyPart: any[];
     gender?: Gender;
@@ -24,7 +24,7 @@ export const Navigation_SingleSpotAnalysis = ({
     skin_type = 0,
     userData = [],
     navigation
-}: NavigationParams) => {
+}: MelanomaNavigationParams) => {
 
     if (melanomaId && gender && skin_type !== undefined && userData) {
         navigation.navigate("SinglePartAnalasis", { 
@@ -44,7 +44,7 @@ export const Navigation_AddSlugSpot = ({
     skin_type = 0,   
     type = {},
     navigation
-}: NavigationParams) => {
+}: MelanomaNavigationParams) => {
 
     if (userData && bodyPart && skin_type !== undefined && type) {
         navigation.navigate("MelanomaAdd",{ 
@@ -62,7 +62,7 @@ export const Navigation_MoleUpload_1 = ({
     gender,
     skin_type,
     navigation
-}:NavigationParams) => {
+}:MelanomaNavigationParams) => {
     navigation.navigate("MelanomaAllAdd", {         
         gender: gender,
         skin_type: skin_type,
@@ -71,7 +71,7 @@ export const Navigation_MoleUpload_1 = ({
 
 export const Navigation_MelanomaCenter = ({
     navigation
-}:NavigationParams) => {
+}:MelanomaNavigationParams) => {
     if ( navigation != undefined){
         navigation.navigate("MelanomaCenter")
     }       
@@ -79,7 +79,7 @@ export const Navigation_MelanomaCenter = ({
 
 export const Navigation_MelanomaFullsetup = ({
     navigation
-}:NavigationParams) => {
+}:MelanomaNavigationParams) => {
     if ( navigation != undefined){
         navigation.navigate("FullMelanomaProcess")
     }       
@@ -92,7 +92,7 @@ export const Navigation_MoleUpload_2 = ({
     completedArray = [],
     progress,
     skin_type,
-}:NavigationParams) => {
+}:MelanomaNavigationParams) => {
     if ( navigation != undefined ){
         navigation.navigate("MelanomaProcessSingleSlug",{
             bodyPart:bodyPart,
@@ -105,6 +105,16 @@ export const Navigation_MoleUpload_2 = ({
 }
 
 
+//<========> Assistance <=========>
 
+interface AssistanceNavigationParams {
+    navigation: any;
+}
 
-
+export const Navigation_AssistCenter = ({
+    navigation
+}:AssistanceNavigationParams) => {
+    if ( navigation != undefined ) {
+        navigation.navigate("AssistCenter")
+    }
+}

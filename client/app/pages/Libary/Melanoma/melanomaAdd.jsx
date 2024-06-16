@@ -113,7 +113,7 @@ const MelanomaAdd = ({ route , navigation }) => {
                 redDotLocation={redDotLocation}
                 spotId={spotId}
                 userData={userData}
-                bodyPart={bodyPart}
+                bodyPart={bodyPart}y
                 skin_type={skin_type}
             />
 

@@ -25,7 +25,7 @@ import DiagnosisCenter from "./app/pages/Add/Diagnosis/diagnosisCenter";
 import AssesmentScreen from "./app/pages/Home/DailyReportScreens/assesmentScreen";
 import CameraView from "./app/pages/Libary/Melanoma/components/cameraView";
 import { StripeProvider } from '@stripe/stripe-react-native';
-import CheckoutScreen from "./app/components/Payment/checkOutScreen";
+import AssistCenter from "./app/pages/Assist/assistCenter";
 
 
 const Stack = createNativeStackNavigator();
@@ -59,7 +59,7 @@ return (
             <Stack.Screen name="MelanomaProcessSingleSlug" component={MelanomaSingleSlug}   options={({ route }) => ({ title: route.params.bodyPart.slug.charAt(0).toUpperCase() + route.params.bodyPart.slug.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />
             <Stack.Screen name="Add_BloodWork" component={BloodWorkPage}   options={({ route }) => ({ title: "+ Add Blood Work",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShon:true, headerBackVisible:false})} />
             <Stack.Screen name="AssesmentScreen" component={AssesmentScreen}   options={({ route }) => ({ title: route.title,headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShon:true, headerBackVisible:false})} />
-            <Stack.Screen name="Checkout" component={CheckoutScreen} />
+            <Stack.Screen name="AssistCenter" component={AssistCenter}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
         </ Stack.Navigator>
     </StripeProvider>
     </UserAuthContext>

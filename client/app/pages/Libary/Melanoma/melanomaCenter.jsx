@@ -288,7 +288,9 @@ const SingleFeature = ({route,navigation}) => {
                     </View>
     
                     <View style={Mstyles.educationSection}>
-                        <AssistantAdvertBox />
+                        <AssistantAdvertBox 
+                            navigation={navigation}
+                        />
                         <View style={{width:"90%",height:100,borderWidth:1,alignItems:"center",justifyContent:"center",borderRadius:10,marginBottom:20,marginTop:20}}>
                             <Text style={{fontSize:15,fontWeight:"600"}}>How can you detect moles ?</Text>
                         </View>

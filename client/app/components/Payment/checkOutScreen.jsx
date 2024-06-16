@@ -4,7 +4,9 @@ import { View, TouchableOpacity, Text, Alert } from "react-native";
 import { handleSuccesfullPayment } from "../../services/server";
 
 export default function CheckoutScreen(
-    {checkOutData}
+{
+    checkOutData    
+}
 ) {
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const [loading, setLoading] = useState(false);
@@ -27,7 +29,6 @@ export default function CheckoutScreen(
             }
         } catch (error) {
             console.error("Error handling product data:", error);
-            // Handle the error appropriately
         }
     };
     
