@@ -11,8 +11,8 @@ export const SessionBar = ({data,index,setSelectedChat}) => {
                 <Image
                     source={{uri: data.assistantData.profileUrl}}
                     style={{
-                        width:70,
-                        height:70,
+                        width:60,
+                        height:60,
                         borderWidth:0.5,
                         borderRadius:100
                     }}

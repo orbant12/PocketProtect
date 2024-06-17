@@ -290,11 +290,11 @@ export const SlugCard = ({
 
 
     return(
-        <View style={[Mstyles.melanomaBox,styles_shadow.shadowContainer,!completedParts.includes(bodyPart.slug) ? {borderColor:"red"} : {borderColor:"lightgreen"}]} key={`box_${bodyPart.slug}_${index}`}>
+        <View style={[Mstyles.melanomaBox,styles_shadow.hightShadowContainer,!completedParts.includes(bodyPart.slug) ? {borderColor:"red"} : {borderColor:"lightgreen"}]} key={`box_${bodyPart.slug}_${index}`}>
         <Text style={{fontSize:20,fontWeight:700,color:"white"}}>{bodyPart.slug}</Text>
         <Text style={{fontSize:15,fontWeight:500,opacity:0.7,color:"white",marginBottom:10}}>Birthmarks: {getSlugCount(bodyPart.slug,numberOfMolesOnSlugs)}</Text>
         
-        <View style={styles_shadow.shadowContainer}>
+        <View style={styles_shadow.hightShadowContainer}>
             {dotSelectOnPart(bodyPart,userData,melanomaData)}
         </View>
         <TouchableOpacity style={[Mstyles.showMoreBtn,styles_shadow.shadowContainer]} onPress={() => handleNavigation("SlugAnalasis",bodyPart)}>

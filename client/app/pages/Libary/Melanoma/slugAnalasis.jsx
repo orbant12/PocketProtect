@@ -121,7 +121,7 @@ return(
             bodyPart={bodyPart}
             navigation={navigation}
         />
-        <View style={SlugStyles.TopPart }>
+        <View style={[SlugStyles.TopPart,styles_shadow.hightShadowContainer]}>
             {melanomaData != null ? dotsSelectOnPart({
                 bodyPart: bodyPart,
                 melanomaData: melanomaData,

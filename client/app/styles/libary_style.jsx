@@ -106,14 +106,16 @@ export const styles = StyleSheet.create({
     },
     selectBox:{
         width:"90%",
-        borderWidth:0.3,
+        borderWidth:0,
         alignItems:"center",
         marginRight:"auto",
         marginLeft:"auto",
         padding:20,
         borderRadius:20,
         marginBottom:20,
-        marginTop:10
+        marginTop:10,
+        backgroundColor:"white",
+        borderColor:"black"
     },
     boxTop:{
         flexDirection:"row",
@@ -160,13 +162,10 @@ export const Mstyles = StyleSheet.create({
         alignItems:"center",
         borderWidth:0,
         padding:10,
-        position:"absolute",
-        top:0,
+        position:"relative",
         backgroundColor:"transparent",
         flexDirection:"row",
         justifyContent:"space-between",
-        position:"absolute",
-        top:50,
         zIndex:5   
     },
     titleTag: {
@@ -293,7 +292,7 @@ export const Mstyles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 10,
         width: '92%',
-        marginTop:135
+        marginTop:15
     },
     melanomaTitleLeft: {
         flexDirection: 'column',
@@ -424,7 +423,7 @@ export const SlugStyles = StyleSheet.create({
         height: "100%",
         alignItems: "center",
         justifyContent: "center",
-        paddingTop: 110,
+        paddingTop: 30,
     },
     TopPart: {
         width: "100%",

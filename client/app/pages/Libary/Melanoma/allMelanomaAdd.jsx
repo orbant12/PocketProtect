@@ -15,7 +15,7 @@ import { NavBar_OneOption } from "../../../components/Common/navBars.jsx";
 import { styles_shadow } from "../../../styles/shadow_styles.jsx";
 
 const { width, height } = Dimensions.get('window');
-const scaleFactor = width < 380 ? 1.2 : 1.4;
+const scaleFactor = width < 380 ? 1.1 : 1.4;
 
 const AllMelanomaAdd = ({route,navigation}) => {
 

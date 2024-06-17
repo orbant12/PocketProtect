@@ -244,8 +244,9 @@ export const ExpStyle = StyleSheet.create({
     featureBox:{
         width:"90%",
         height:170,
-        borderWidth:1,
-        borderRadius:5,
+        borderWidth:3,
+        borderColor:"white",
+        borderRadius:10,
         margin:10,
         flexDirection:"column",
         justifyContent:"space-between",

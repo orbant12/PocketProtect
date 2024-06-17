@@ -5,6 +5,7 @@ import bloodBG from "../../assets/features/blood.png"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { ExpStyle } from "../../styles/add_style";
 import { TagContainer } from "../Common/tagContainer";
+import { styles_shadow } from "../../styles/shadow_styles";
 
 export const ExploreView = ({navigation,setSelected}) => {
 
@@ -106,10 +107,10 @@ const FeatureBox = ({
     }
 
     return(
-        <View style={[ExpStyle.featureBox]}>
+        <View style={[ExpStyle.featureBox,styles_shadow.hightShadowContainer]}>
             <Image 
                 source={backgroundImage}
-                style={{position:"absolute",width:"100%",height:"100%",zIndex:0,opacity:0.4}}
+                style={{position:"absolute",width:"100%",height:"100%",zIndex:0,opacity:0.4,borderRadius:10}}
             />
             <View style={{padding:10,width:"100%",height:"100%",justifyContent:"space-between",alignItems:"center"}}>
                 <View style={{width:"100%",justifyContent:"center",flexDirection:"row",alignItems:"center",marginTop:10}}>

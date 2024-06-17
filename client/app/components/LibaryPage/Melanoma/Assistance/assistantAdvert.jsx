@@ -7,7 +7,7 @@ import { styles_shadow } from "../../../../styles/shadow_styles"
 
 export const AssistantAdvertBox = ({navigation}) => {
     return(
-        <View style={[{width:"90%",marginTop:20,alignItems:"center",backgroundColor:"black",padding:0,borderRadius:10,flexDirection:"row",height:170},styles_shadow.shadowContainer]}>
+        <View style={[{width:"90%",marginTop:20,alignItems:"center",backgroundColor:"black",padding:0,borderRadius:10,flexDirection:"row",height:170,borderWidth:4,borderColor:"white"},styles_shadow.shadowContainer]}>
         <View style={{width:130,marginRight:15,padding:10}}>
             <Text style={{fontWeight:"700",fontSize:10,color:"white",opacity:0.4,position:"absolute",width:200,top:0,marginLeft:10,marginTop:5}}>Registered Dermotologists</Text>
             <Text style={{marginTop:5,fontWeight:"800",fontSize:16,color:"white",opacity:0.8,marginTop:20}}>Get Professional Help</Text>

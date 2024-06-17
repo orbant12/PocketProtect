@@ -4,7 +4,7 @@ import { Navigation_MoleUpload_1 } from "../../navigation/navigation";
 import { NavBar_TwoOption } from "../Common/navBars"
 import { useState } from "react";
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/client/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
-import { styles } from "../../styles/shadow_styles";
+import { styles_shadow } from "../../styles/shadow_styles";
 
 
 export const MoleSelectorScreen = ({
@@ -144,7 +144,7 @@ const SelectableMole_Bar = ({
     setOverlayVisible
 }) => {
     return(
-        <View style={[{width:"95%",flexDirection:"row",alignItems:"center",justifyContent:"space-between",padding:10,borderWidth:0.3,marginTop:20,paddingVertical:10,borderRadius:10,backgroundColor:"black"},selectedMoles.includes(data.melanomaId) && {borderWidth:3,borderColor:"magenta"},styles.shadowContainer]}>
+        <View style={[{width:"95%",flexDirection:"row",alignItems:"center",justifyContent:"space-between",padding:10,borderWidth:0.3,marginTop:20,paddingVertical:10,borderRadius:10,backgroundColor:"black"},selectedMoles.includes(data.melanomaId) && {borderWidth:3,borderColor:"magenta"},styles_shadow.shadowContainer]}>
             <Image 
                 style={{height:70,width:70,borderRadius:10,borderWidth:0.5}}
                 source={{uri: data.melanomaPictureUrl}}
@@ -468,24 +468,18 @@ const BodyPartOverlay = ({
     return(
         <>
         {visible &&
-            <View style={[{flex:1,position:"absolute",zIndex:30,width:"100%",height:"100%",backgroundColor:"rgba(0,0,0,0.8)",alignItems:"center",justifyContent:"center",padding:0},styles.shadowContainer]}>
-                <View style={{width:"85%",height:"70%",backgroundColor:"white",borderRadius:30,alignItems:"center",justifyContent:"space-between",padding:10, borderColor:"black",borderWidth:3}}>
+            <View style={[{flex:1,position:"absolute",zIndex:30,width:"100%",height:"100%",backgroundColor:"rgba(0,0,0,0.8)",alignItems:"center",justifyContent:"center",padding:0}]}>
+        
+                <View style={[{width:"85%",height:"80%",backgroundColor:"white",borderRadius:30,alignItems:"center",justifyContent:"space-between",padding:10, borderColor:"black",borderWidth:3},styles_shadow.shadowContainer]}>
                 <MaterialCommunityIcons 
                     name="close"
                     size={25}
-                    style={{position:"absolute",right:20,top:20}}
+                    style={{position:"absolute",right:20,top:20,zIndex:80}}
                     onPress={() => setOverlayVisible(!visible)}
                 />
-                <View style={[{marginTop:30},styles.shadowContainer]} >
-                {dotSelectOnPart({
-                    bodyPart:overlaySpot.melanomaDoc.spot[0],
-                    userData,
-                    melanomaData,
-                    highlighted:overlaySpot.melanomaId
-                })}
-                </View>
-                <Text style={{fontWeight:"800",fontSize:20}}>{overlaySpot.melanomaId}</Text>
-                <View style={styles.shadowContainer}>
+                <ScrollView style={{width:"100%"}} contentContainerStyle={{alignItems:"center"}}>
+                <Text style={{fontWeight:"800",fontSize:20,marginTop:30}}>{overlaySpot.melanomaId}</Text>
+                <View style={[styles_shadow.shadowContainer,{width:"100%",alignItems:"center",marginTop:10}]}>
                     <Image 
                         source={{ uri: overlaySpot.melanomaPictureUrl }}
                         style={{
@@ -495,6 +489,16 @@ const BodyPartOverlay = ({
                         }}
                     />
                 </View>
+                <View style={{width:"100%",borderWidth:0.5,margin:30}} />
+                    <View style={[styles_shadow.shadowContainer,{marginTop:-20}]} >
+                    {dotSelectOnPart({
+                        bodyPart:overlaySpot.melanomaDoc.spot[0],
+                        userData,
+                        melanomaData,
+                        highlighted:overlaySpot.melanomaId
+                    })}
+                    </View>
+                </ScrollView>
                 <TouchableOpacity onPress={() => setOverlayVisible(!visible)} style={{width:"90%",justifyContent:"center",alignItems:"center",padding:10, borderWidth:2,borderRadius:100}}>
                     <Text style={{fontWeight:"600"}}>Close</Text>
                 </TouchableOpacity>

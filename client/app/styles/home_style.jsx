@@ -29,12 +29,14 @@ export const styles = StyleSheet.create({
         borderTopRightRadius: 10,
         padding: 10,
         paddingBottom:20,
-        borderRadius:20,
+        borderRadius:3,
         width: '95%',
         marginTop: 20,
         marginLeft:"auto",
         marginRight:"auto",
         justifyContent: 'center',
+        borderWidth:5,
+        borderColor:"white"
         
     },
     titleRow: {

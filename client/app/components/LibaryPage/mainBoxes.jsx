@@ -12,7 +12,7 @@ export function MainMelanomaBox({
     handleNavigation,
 }){
     return ( 
-        <View style={[styles.selectBox,styles_shadow.shadowContainer]}> 
+        <View style={[styles.selectBox,styles_shadow.hightShadowContainer]}> 
             <View style={styles.boxTop}>
                 <View style={{flexDirection:"row"}}>
                     <MaterialCommunityIcons 

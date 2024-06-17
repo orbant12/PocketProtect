@@ -6,15 +6,16 @@
 
 //BASIC IMPORTS
 import React,{useState} from 'react';
-import {Image, Text,View,TouchableOpacity,Animated} from 'react-native';
+import {Image, Text,View,TouchableOpacity,Animated,StyleSheet,SafeAreaView} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 //COMPONENTS
 import TabOneScreen from '../pages/Home/home';
 import Profile from '../pages/Profile/profile';
-import AssistantPage from '../pages/Chat/Personal_Assistant';
+import ChatCenter from '../pages/Chat/chatCenter';
 import DetectionLibary from '../pages/Libary/detection';
 import AddDetection from '../pages/Add/addDetection'
+import { HeaderContainer } from '../components/Common/headerContainer';
 
 
 //ICONS
@@ -37,11 +38,12 @@ const handleSettingsNavigation = () => {
 //<**********************VARIABLES******************************>
 const [isExplore,setIsExplore] = useState(true);
 
+
 return (
   <Tab.Navigator
     screenOptions={{
       tabStyle: {
-        backgroundColor: '#fff',
+        backgroundColor: '#ffffff',
       },
       tabBarActiveTintColor: "magenta"
       
@@ -105,13 +107,19 @@ return (
       {/* Detection */}
       <Tab.Screen
         name={'Assistant'}
-        component={AssistantPage}
+        component={ChatCenter}
         options={{
-          headerShown:false,
-          headerTransparent: true,
+          headerShown:true,
+          headerTransparent: false,
           tabBarIcon: ({color}) => (
             <Entypo name={'heart'} size={25} color={color} />
           ),
+          header:() => HeaderContainer({
+            outerBg:"white",
+            content:() => <View style={{justifyContent:'center',height:60,backgroundColor: "white",alignItems: 'center'}}>
+                            <Text style={{fontSize: 20,fontWeight: 'bold'}}>Chats</Text>
+                          </View>
+          }) 
         }}
       />
 
@@ -146,3 +154,20 @@ return (
 };
 
 export default HomeBottomTabNavigator;
+
+const styles = StyleSheet.create({
+  safeArea: {// or your desired background color
+    flex:0,
+  },
+  header: {
+    justifyContent: 'center',
+    height:60,
+    backgroundColor: 'white',
+  
+    alignItems: 'center',
+  },
+  headerText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+});

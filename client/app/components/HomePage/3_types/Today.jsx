@@ -4,6 +4,7 @@ import { TaskBox_2,TaskBox_1 } from "../taskBoxes"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import PagerView from 'react-native-pager-view';
 import { formatTimestampToString, splitDate } from "../../../utils/date_manipulations";
+import { styles_shadow } from "../../../styles/shadow_styles";
 
 export const TodayScreen = ({
     allReminders,
@@ -19,7 +20,7 @@ export const TodayScreen = ({
 }) => {
     return(    
         <>
-            <View style={styles.TodaySection}>
+            <View style={[styles.TodaySection,styles_shadow.hightShadowContainer]}>
                 <View style={styles.titleRow}>
                     <Text style={styles.title}>Melanoma Monitor</Text>
                     <View style={styles.titleLeft}>

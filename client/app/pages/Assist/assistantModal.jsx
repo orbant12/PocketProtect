@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text,ScrollView,Image,TouchableOpacity } from "react-native";
+import { StyleSheet, View, Text,ScrollView,Image,TouchableOpacity,Dimensions } from "react-native";
 import { NavBar_AssistantModal } from "../../components/ProfilePage/assistancePanel/navbarAssistantModal";
 import { useRef,useState } from "react";
 import { Rating } from 'react-native-stock-star-rating'
@@ -8,6 +8,10 @@ import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import CheckoutScreen from "../../components/Payment/checkOutScreen"
+
+
+const { width, height } = Dimensions.get('window');
+const scaleFactor = width < 380 ? "50%" : "40%";
 
 export const AssistModal = ({
     assistantData,
@@ -58,12 +62,12 @@ export const AssistModal = ({
         </TouchableOpacity>
         <BottomSheetModal
             ref={paymentModalRef}
-            snapPoints={["40%"]}
+            snapPoints={[scaleFactor]}
             enablePanDownToClose={true}
-            handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:30,color:"white"}}
+            handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:10,color:"white"}}
             handleIndicatorStyle={{backgroundColor:"white"}}
             handleComponent={() => 
-                <View style={{width:"100%",borderTopLeftRadius:5,borderTopRightRadius:10,padding:20,alignItems:"center",backgroundColor:"black",alignSelf:"center"}}>
+                <View style={{width:"100%",borderTopLeftRadius:5,borderTopRightRadius:10,padding:"4%",alignItems:"center",backgroundColor:"black",alignSelf:"center"}}>
                     <View style={{width:50,borderWidth:1.5,borderColor:"white"}}/>
                 </View>       
             }
@@ -170,37 +174,43 @@ const PaymentStartView = ({
     bodyPart
 }) => {
     return(
+        <ScrollView>
         <View style={paymentStyles.container}>
             <Text style={{margin:20,fontSize:25,fontWeight:"800",alignSelf:"left"}}>Confirm</Text>
-            <View style={paymentStyles.innerContainer}>
-            <View>
-                <Text style={{fontWeight:"700"}}>{checkOutData.assistantData.fullname}</Text>
-                <Text style={{fontSize:12,marginTop:2}}>Service: {bodyPart.length} Mole Check</Text>
-            </View>
-            <Image 
-                style={paymentStyles.image}
-                source={{ uri: checkOutData.assistantData.profileUrl }} // Replace with your image source
-            />
-            </View>
-            <View style={{width:"70%",flexDirection:"row",justifyContent:"space-between",alignItems:"center",marginRight:10}}>
-                <MaterialCommunityIcons 
-                    name="lock"
-                    size={15}
-                    color={"gray"}
-                    style={{marginRight:10}}
+            <View style={{width:"100%",alignItems:"center",marginTop:20}}>
+                <View style={paymentStyles.innerContainer}>
+                <View>
+                    <Text style={{fontWeight:"700"}}>{checkOutData.assistantData.fullname}</Text>
+                    <Text style={{fontSize:12,marginTop:2}}>Service: {bodyPart.length} Mole Check</Text>
+                </View>
+                <Image 
+                    style={paymentStyles.image}
+                    source={{ uri: checkOutData.assistantData.profileUrl }} // Replace with your image source
                 />
-                <Text style={{maxWidth:"100%",fontSize:10,opacity:0.6}}>All Payments are handled by Stripe. Which is one of the safest and trusted way to handle digital purchases! </Text>
+                </View>
+                <View style={{width:"70%",flexDirection:"row",justifyContent:"space-between",alignItems:"center",marginRight:10,marginTop:10}}>
+                    <MaterialCommunityIcons 
+                        name="lock"
+                        size={15}
+                        color={"gray"}
+                        style={{marginRight:10}}
+                    />
+                    <Text style={{maxWidth:"100%",fontSize:10,opacity:0.6}}>All Payments are handled by Stripe. Which is one of the safest and trusted way to handle digital purchases! </Text>
+                </View>
             </View>
-            <View style={{width:"85%",flexDirection:"row",justifyContent:"space-between",alignItems:"center",marginTop:10}}>
-                <Text style={{fontWeight:"600"}}>Total Ammount</Text>
-                <Text>{bodyPart.length * 5} €</Text>
+            <View style={{width:"100%",alignItems:"center",marginTop:30}}>
+                <View style={{width:"85%",flexDirection:"row",justifyContent:"space-between",alignItems:"center",marginBottom:15}}>
+                    <Text style={{fontWeight:"600"}}>Total Ammount</Text>
+                    <Text>{bodyPart.length * 5} €</Text>
+                </View>
+                
+                <CheckoutScreen 
+                    checkOutData={checkOutData}
+                    price={bodyPart.length * 5}
+                />
             </View>
-            
-            <CheckoutScreen 
-                checkOutData={checkOutData}
-                price={bodyPart.length * 5}
-            />
       </View>
+      </ScrollView>
     )
 }
 
