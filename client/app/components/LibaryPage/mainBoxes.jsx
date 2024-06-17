@@ -3,6 +3,7 @@ import ProgressBar from 'react-native-progress/Bar';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import { styles } from "../../styles/libary_style";
 import PagerView from 'react-native-pager-view';
+import { styles_shadow } from "../../styles/shadow_styles";
 
 
 export function MainMelanomaBox({
@@ -11,7 +12,7 @@ export function MainMelanomaBox({
     handleNavigation,
 }){
     return ( 
-        <View style={styles.selectBox}> 
+        <View style={[styles.selectBox,styles_shadow.shadowContainer]}> 
             <View style={styles.boxTop}>
                 <View style={{flexDirection:"row"}}>
                     <MaterialCommunityIcons 

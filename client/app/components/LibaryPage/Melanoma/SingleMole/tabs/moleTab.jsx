@@ -1,4 +1,5 @@
 import { SingleSlugStyle } from "../../../../../styles/libary_style";
+import { styles_shadow } from "../../../../../styles/shadow_styles";
 import { formatTimestampToString , dateDistanceFromToday} from "../../../../../utils/date_manipulations";
 import LoadingOverlay from "../../../../Common/Loading/processing"
 import { View, Text, Image, TouchableOpacity } from "react-native";
@@ -24,7 +25,7 @@ export const MoleTab = ({
     return(
         <>
         {bodyPart != null &&
-            <View style={[SingleSlugStyle.container]}>
+            <View style={[SingleSlugStyle.container,styles_shadow.shadowContainer]}>
             {selectedMelanoma != null && bodyPart != null &&
                 selectedMelanoma.risk != null ?
                     <MalignantOrBeningDisplay 

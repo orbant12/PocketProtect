@@ -1,6 +1,7 @@
 import { View,Text,TouchableOpacity } from "react-native"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import { Mstyles, spotUploadStyle } from "../../../styles/libary_style"
+import { styles_shadow } from "../../../styles/shadow_styles"
 
 export const NavBar_Main  = ({
     navigation,
@@ -63,7 +64,7 @@ export const NavBar_Slug = ({
                 style={{padding:5}}
             />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() =>  handleAddMelanoma()} style={{width:"60%",height:50,borderWidth:2,justifyContent:"center",borderRadius:10,marginTop:0,marginBottom:0,flexDirection:"column",alignItems:"center",backgroundColor:"black",borderColor:"magenta",padding:10}}>
+        <TouchableOpacity onPress={() =>  handleAddMelanoma()} style={[{width:"60%",height:50,borderWidth:2,justifyContent:"center",borderRadius:10,marginTop:0,marginBottom:0,flexDirection:"column",alignItems:"center",backgroundColor:"black",borderColor:"magenta",padding:10},styles_shadow.shadowContainer]}>
                 <Text style={{color:"white",opacity:0.7,fontWeight:"500",fontSize:10}}>Click to add</Text>
                 <View style={{width:"100%",flexDirection:"row",alignItems:"center",justifyContent:"center"}}>  
                 <MaterialCommunityIcons 

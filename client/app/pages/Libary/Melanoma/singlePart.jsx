@@ -1,19 +1,19 @@
-import { useEffect,useState,useRef,useCallback } from "react";
+import { useState,useRef,useCallback } from "react";
 import { View } from "react-native";
 import { useAuth } from "../../../context/UserAuthContext";
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/client/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
 import { Tabs} from 'react-native-collapsible-tab-view'
 import Entypo from 'react-native-vector-icons/Entypo';
-import { fetchSpotHistory, deleteSpotWithHistoryReset, updateSpotData,fetchSelectedMole,handleSuccesfullPayment,fetchAssistantsByField } from "../../../services/server";
+import { fetchSpotHistory, deleteSpotWithHistoryReset, updateSpotData,fetchSelectedMole } from "../../../services/server";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import {app} from "../../../services/firebase"
 import { SingleSlugStyle } from "../../../styles/libary_style";
-import { formatTimestampToString } from "../../../utils/date_manipulations";
 import { SureModal } from "../../../components/LibaryPage/Melanoma/modals";
 import { MoleTab } from "../../../components/LibaryPage/Melanoma/SingleMole/tabs/moleTab";
 import { AssistTab } from "../../../components/LibaryPage/Melanoma/SingleMole/tabs/assistTab";
 import { useFocusEffect } from '@react-navigation/native';
 import { Navigation_AddSlugSpot } from "../../../navigation/navigation";
+import { styles_shadow } from "../../../styles/shadow_styles";
 
 const SinglePartAnalasis = ({ route,navigation }) => {
 
@@ -34,7 +34,6 @@ const [highlight, setHighlighted ]= useState("")
 const [deleteModal,setDeleteModal] = useState(false)
 const [moleToDelete,setMoleToDelete] = useState("")
 const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
-const [properAssistants, setProperAssistants] = useState([])
 
 
 //<==================<[ Functions ]>====================>
@@ -68,13 +67,6 @@ const [properAssistants, setProperAssistants] = useState([])
             setSelectedMelanoma(response)
             fetchAllSpotHistory(response)
         }
-    }
-
-    const fetchAssistants = async () => {
-        const response = await fetchAssistantsByField({
-            field:"dermotology"
-        })
-        setProperAssistants(response)
     }
 
     const handleSpotDelete = async (data) => {
@@ -158,17 +150,9 @@ const [properAssistants, setProperAssistants] = useState([])
         })
     }
 
-
-
-    useEffect(() => {        
-        fetchDataSelectedMole()
-        
-    },[])
-
     useFocusEffect(
         useCallback(() => {
             fetchDataSelectedMole()
-            fetchAssistants()
         return () => {};
         }, [])
     );
@@ -441,7 +425,7 @@ const [properAssistants, setProperAssistants] = useState([])
 
     const Header = () => {
         return(
-            <View style={SingleSlugStyle.TopPart}>
+            <View style={[SingleSlugStyle.TopPart,styles_shadow.shadowContainer]}>
             {bodyPart != null ? dotSelectOnPart():null}
             </View>
         )
@@ -486,8 +470,7 @@ const [properAssistants, setProperAssistants] = useState([])
             >
                 <Tabs.ScrollView>
                     <AssistTab
-                        properAssistants={properAssistants}
-                        bodyPart={bodyPart}
+                        bodyPart={bodyPart != null &&[bodyPart.melanomaId]}
                         navigation={navigation}
                     />
                 </Tabs.ScrollView>

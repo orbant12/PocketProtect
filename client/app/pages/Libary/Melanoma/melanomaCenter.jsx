@@ -16,6 +16,7 @@ import { NavBar_Main } from "../../../components/LibaryPage/Melanoma/navBarRow";
 import { SlugCard } from "../../../components/LibaryPage/Melanoma/slugCard";
 import { Navigation_MoleUpload_1 } from "../../../navigation/navigation";
 import { AssistantAdvertBox } from "../../../components/LibaryPage/Melanoma/Assistance/assistantAdvert";
+import { styles_shadow } from "../../../styles/shadow_styles";
 
 
 
@@ -220,16 +221,18 @@ const SingleFeature = ({route,navigation}) => {
                             <Text style={{fontSize:12,maxWidth:"100%",opacity:0.4,marginTop:5,fontWeight:"500"}}>Click on the body part for part analasis</Text>   
                         </View>       
                     </View>
-                    <Body
-                        data={affectedSlugs}
-                        gender={userData.gender}
-                        side={selectedSide}
-                        scale={1.1}
-                        //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
-                        colors={['#FF0000', '#A6FF9B','#FFA8A8']}
-                        onBodyPartPress={(slug) => navigation.navigate("SlugAnalasis", { data: slug,userData:userData, skin_type: melanomaMetaData.skin_type })}
-                        zoomOnPress={true}
-                    />
+                    <View style={styles_shadow.shadowContainer}>
+                        <Body
+                            data={affectedSlugs}
+                            gender={userData.gender}
+                            side={selectedSide}
+                            scale={1.1}
+                            //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
+                            colors={['#FF0000', '#A6FF9B','#FFA8A8']}
+                            onBodyPartPress={(slug) => navigation.navigate("SlugAnalasis", { data: slug,userData:userData, skin_type: melanomaMetaData.skin_type })}
+                            zoomOnPress={true}
+                        />
+                    </View>
         
                     <View style={Mstyles.colorExplain}>
                         <View style={Mstyles.colorExplainRow} >
@@ -243,7 +246,7 @@ const SingleFeature = ({route,navigation}) => {
                         </View>
                     </View>
         
-                    <View style={Mstyles.positionSwitch}>
+                    <View style={[Mstyles.positionSwitch,styles_shadow.shadowContainer]}>
                         <Pressable onPress={() => setSelectedSide("front")}>
                             <Text style={selectedSide == "front" ? {fontWeight:600}:{opacity:0.5}}>Front</Text>
                         </Pressable>
@@ -255,8 +258,8 @@ const SingleFeature = ({route,navigation}) => {
                     </LinearGradient>                    
             
                     <View style={Mstyles.analasisSection}>
-                        <Pressable onPress={handleAddMelanoma} style={Mstyles.AddMelanomaBtn}>
-                            <View style={{borderRadius:10,backgroundColor:"black",width:"100%",alignItems:"center",justifyContent:"center",height:"100%"}}>                                         
+                        <Pressable onPress={handleAddMelanoma} style={[Mstyles.AddMelanomaBtn]}>
+                            <View style={[{borderRadius:10,backgroundColor:"black",width:"100%",alignItems:"center",justifyContent:"center",height:"100%"},styles_shadow.shadowContainer]}>                                         
                                 <Text style={{color:"white",opacity:0.5,fontWeight:"600",fontSize:10,marginBottom:5}}>Click to registe a new mole</Text>
                                 <Text style={{color:"white",fontWeight:"700",fontSize:17,opacity:0.8}}>
                                     + Add New Mole
@@ -270,7 +273,7 @@ const SingleFeature = ({route,navigation}) => {
                             </View>
 
                         </View>
-                        <ScrollView horizontal >
+                        <ScrollView horizontal showsHorizontalScrollIndicator={false} >
                             {bodySlugs != null && affectedSlugs.length != 0 ? (
                                 bodySlugs.map((bodyPart,index) => (
                                     <SlugCard 

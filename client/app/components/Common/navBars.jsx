@@ -25,9 +25,9 @@ export const NavBar_TwoOption = ({title,icon_right,icon_left}) => {
     )
 }
 
-export const NavBar_OneOption = ({title,icon_left}) => {
+export const NavBar_OneOption = ({title,icon_left,styles={}}) => {
     return(
-        <View style={{width:"95%",padding:0,marginTop:50,flexDirection:"row",backgroundColor:"black",borderRadius:10,borderWidth:0,borderColor:"black",justifyContent:"space-between",alignItems:"center"}}>
+        <View style={[{width:"95%",padding:0,marginTop:50,flexDirection:"row",backgroundColor:"black",borderRadius:10,borderWidth:0,borderColor:"black",justifyContent:"space-between",alignItems:"center"},styles]}>
         <TouchableOpacity  onPress={icon_left.action != undefined ? icon_left.action :  () => {}} style={{padding:8,backgroundColor:"black",borderRadius:10,borderWidth:3,borderColor:"white",borderTopRightRadius:0,borderBottomRightRadius:0}}>
             <MaterialCommunityIcons 
                 name={icon_left.name}

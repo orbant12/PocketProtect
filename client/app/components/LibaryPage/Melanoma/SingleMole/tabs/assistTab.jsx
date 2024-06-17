@@ -2,17 +2,28 @@ import { View,Modal } from "react-native"
 import { AssistantAdvertBox } from "../../Assistance/assistantAdvert"
 import { AssistantBioBox } from "../../Assistance/assistantBio"
 import { AssistModal } from "../../../../../pages/Assist/assistantModal"
-import { useState } from "react"
-import assistant from "../../../../../assets/assist/assistant.png"
-import { useAuth } from "../../../../../context/UserAuthContext"
+import { useState,useEffect } from "react"
+import { fetchAssistantsByField } from "../../../../../services/server"
 
 export const AssistTab = ({
-    properAssistants,
     bodyPart,
     navigation
 }) => {
 
     const [ selectedAssistant, setSelectedAssistant] = useState([])
+    const [ properAssistants, setProperAssistants] = useState([])
+
+
+    const fetchAssistants = async () => {
+        const response = await fetchAssistantsByField({
+            field:"dermotology"
+        })
+        setProperAssistants(response)
+    }
+
+    useEffect(() => {        
+        fetchAssistants()
+    },[])
 
     return(
         <View style={{width:"100%",height:"100%",alignItems:"center"}}>

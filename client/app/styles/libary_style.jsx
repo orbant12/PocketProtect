@@ -315,10 +315,11 @@ export const Mstyles = StyleSheet.create({
     showMoreBtn: {
         alignItems: 'center',
         justifyContent: 'center',
-        borderWidth: 1,
-        width: "80%",
-        height: 30,
+        borderWidth: 0.3,
+        backgroundColor:"rgba(255,255,255,0.08)",
         borderRadius: 10,
+        paddingVertical:8,
+        width:"100%",
         margin: 10,
         borderColor:"white"
     },

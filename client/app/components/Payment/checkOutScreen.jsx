@@ -3,11 +3,10 @@ import { useState, useEffect } from "react";
 import { View, TouchableOpacity, Text, Alert } from "react-native";
 import { handleSuccesfullPayment } from "../../services/server";
 
-export default function CheckoutScreen(
-{
-    checkOutData    
-}
-) {
+export default function CheckoutScreen({
+    checkOutData,
+    price
+}) {
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
     const [loading, setLoading] = useState(false);
     const API_URL = "http://localhost:3000/intents";
@@ -40,7 +39,7 @@ export default function CheckoutScreen(
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ amount: Math.floor(5 * 100) }), // Convert body to JSON string
+                body: JSON.stringify({ amount: Math.floor(price * 100) }), // Convert body to JSON string
             });
     
             if (!response.ok) {

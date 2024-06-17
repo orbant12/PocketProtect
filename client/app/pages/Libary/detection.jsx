@@ -9,6 +9,7 @@ import { styles } from '../../styles/libary_style';
 import { Horizontal_Navbar} from '../../components/LibaryPage/mainNav';
 import { Navigation_MelanomaCenter, Navigation_MelanomaFullsetup } from '../../navigation/navigation';
 
+
 const DetectionLibary = ({navigation}) => {
 
 //<==================<[ Variable ]>====================>     

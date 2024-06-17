@@ -472,7 +472,7 @@ export const fetchRiskySpots = async ({
         );
         return melanomaData;
     } catch (error) {
-        return false
+        return []
     }
 }
 
@@ -491,7 +491,7 @@ export const fetchUnfinishedSpots = async ({
         );
         return melanomaData;
     } catch (error) {
-        return false
+        return []
     }
 }
 

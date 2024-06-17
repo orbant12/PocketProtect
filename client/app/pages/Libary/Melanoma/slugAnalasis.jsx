@@ -9,6 +9,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { NavBar_Slug } from "../../../components/LibaryPage/Melanoma/navBarRow";
 import { SlugStyles } from "../../../styles/libary_style";
 import { decodeParts } from "../../../utils/melanoma/decodeParts";
+import { styles_shadow } from "../../../styles/shadow_styles";
 
 const SlugAnalasis = ({ route,navigation }) => {
 
@@ -193,7 +194,7 @@ const MoleBar = ({
     showSpot
 }) => {
     return(
-        <TouchableOpacity onPress={() => handleSpotOpen(data)} key={index} style={SlugStyles.melanomaBox}>
+        <TouchableOpacity onPress={() => handleSpotOpen(data)} key={index} style={[SlugStyles.melanomaBox,styles_shadow.shadowContainer]}>
         <Image 
             source={{ uri:data.melanomaPictureUrl}}
             style={{width:80,height:80,borderWidth:1,borderRadius:10}}

@@ -54,7 +54,7 @@ export const AssistModal = ({
             </View>
         </ScrollView>
         <TouchableOpacity onPress={() => paymentModalRef.current.present()} style={{width:"90%",position:"absolute",padding:20,paddingVertical:15,bottom:30,justifyContent:"center",backgroundColor:"magenta",borderRadius:10,alignItems:"center",alignSelf:"center"}}>
-            <Text style={{fontWeight:"600",color:"white"}}>Start Appointment</Text>
+            <Text style={{fontWeight:"600",color:"white"}}>Start Payment</Text>
         </TouchableOpacity>
         <BottomSheetModal
             ref={paymentModalRef}
@@ -70,6 +70,7 @@ export const AssistModal = ({
         >
         <PaymentStartView 
             checkOutData={checkOutData}
+            bodyPart={bodyPart}
         />
        
         </BottomSheetModal>
@@ -165,7 +166,8 @@ const BioSection = ({
 }
 
 const PaymentStartView = ({
-    checkOutData
+    checkOutData,
+    bodyPart
 }) => {
     return(
         <View style={paymentStyles.container}>
@@ -173,7 +175,7 @@ const PaymentStartView = ({
             <View style={paymentStyles.innerContainer}>
             <View>
                 <Text style={{fontWeight:"700"}}>{checkOutData.assistantData.fullname}</Text>
-                <Text style={{fontSize:12,marginTop:2}}>Service: Mole Check</Text>
+                <Text style={{fontSize:12,marginTop:2}}>Service: {bodyPart.length} Mole Check</Text>
             </View>
             <Image 
                 style={paymentStyles.image}
@@ -191,11 +193,12 @@ const PaymentStartView = ({
             </View>
             <View style={{width:"85%",flexDirection:"row",justifyContent:"space-between",alignItems:"center",marginTop:10}}>
                 <Text style={{fontWeight:"600"}}>Total Ammount</Text>
-                <Text>5 £</Text>
+                <Text>{bodyPart.length * 5} €</Text>
             </View>
             
             <CheckoutScreen 
                 checkOutData={checkOutData}
+                price={bodyPart.length * 5}
             />
       </View>
     )

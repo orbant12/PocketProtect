@@ -1,5 +1,5 @@
 
-import { View,Text} from "react-native"
+import { View,Text,PixelRatio,Dimensions} from "react-native"
 import React, {useState,useEffect,useCallback} from "react";
 import { useAuth } from "../../../context/UserAuthContext.jsx";
 import Body from "../../../components/LibaryPage/Melanoma/BodyParts/index";
@@ -11,6 +11,11 @@ import { NavBar_Upload_1 } from "../../../components/LibaryPage/Melanoma/navBarR
 import { decodeParts } from "../../../utils/melanoma/decodeParts.js";
 import { useFocusEffect } from '@react-navigation/native';
 import { Navigation_MoleUpload_2 } from "../../../navigation/navigation.tsx";
+import { NavBar_OneOption } from "../../../components/Common/navBars.jsx";
+import { styles_shadow } from "../../../styles/shadow_styles.jsx";
+
+const { width, height } = Dimensions.get('window');
+const scaleFactor = width < 380 ? 1.2 : 1.4;
 
 const AllMelanomaAdd = ({route,navigation}) => {
 
@@ -108,14 +113,19 @@ const AllMelanomaAdd = ({route,navigation}) => {
 
     return(        
         <View style={spotUploadStyle.startScreen}>
-            <NavBar_Upload_1 navigation={navigation} />
+                <NavBar_OneOption 
+                icon_left={{name:"arrow-left",size:30,action:() => navigation.goBack()}}
+                title={"Press to select a body part"}
+                styles={{marginTop:-50,marginBottom:30}}
+            />  
             <View style={{marginTop:0,alignItems:"center",width:"100%",height:"100%",justifyContent:"space-between"}}>            
                 <ProgressBar progress={bodyProgress} width={150} height={10} color={"lightgreen"}backgroundColor={"white"} />
-                    <Body
+                <View style={styles_shadow.shadowContainer}>
+                <Body
                         data={completedAreaMarker}
                         gender={userData.gender}
                         side={selectedSide}
-                        scale={1.2}
+                        scale={scaleFactor}
                         //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
                         colors={['#A6FF9B']}
                         onBodyPartPress={(slug) => Navigation_MoleUpload_2({
@@ -128,6 +138,7 @@ const AllMelanomaAdd = ({route,navigation}) => {
                         })}
                         zoomOnPress={true}
                     />
+                </View>
                     <ColorLabels />
                     <SideSwitch 
                         selectedSide={selectedSide}

@@ -1,5 +1,6 @@
 import { View,Text,StyleSheet,Image,TouchableOpacity } from "react-native"
 import { TagContainer } from "../../../Common/tagContainer"
+import { styles_shadow } from "../../../../styles/shadow_styles"
 
 export const AssistantBioBox = ({
     labels,
@@ -8,10 +9,10 @@ export const AssistantBioBox = ({
     assistantData,
 }) => {
     return(
-        <View key={index} style={[assist_styles.bio_box,index == 0 && {marginTop:80}]}>
+        <View key={index} style={[assist_styles.bio_box, styles_shadow.shadowContainer ,index == 0 && {marginTop:80}]}>
             {index == 0 &&
             <View style={{position:"absolute",top:-35,borderWidth:1,padding:10,borderRadius:100,paddingVertical:5,opacity:0.8,borderColor:"magenta"}}> 
-                <Text style={{fontWeight:"600",color:"white",fontSize:10}}>Recommended</Text>
+                <Text style={{fontWeight:"600",color:"black",fontSize:10,opacity:0.5}}>Recommended</Text>
             </View>
             }
             <Text style={{position:"absolute",color:"white",opacity:0.8,right:20,top:20,fontWeight:"700"}}>5$ / Mole</Text>
@@ -27,7 +28,7 @@ export const AssistantBioBox = ({
                     style={{backgroundColor:"rgba(255,255,255,0.2)",margin:10,width:"100%"}}
                 />
             <TouchableOpacity onPress={() => setSelectedAssistant(assistantData)} style={assist_styles.button}>
-                <Text style={{color:"white"}}>See More</Text>
+                <Text style={{color:"white"}}>Select</Text>
             </TouchableOpacity>
         </View>
     )
