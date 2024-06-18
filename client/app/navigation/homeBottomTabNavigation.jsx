@@ -109,7 +109,7 @@ return (
         name={'Assistant'}
         component={ChatCenter}
         options={{
-          headerShown:true,
+          headerShown:false,
           headerTransparent: false,
           tabBarIcon: ({color}) => (
             <Entypo name={'heart'} size={25} color={color} />

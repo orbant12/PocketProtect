@@ -106,7 +106,7 @@ export const styles = StyleSheet.create({
     },
     selectBox:{
         width:"90%",
-        borderWidth:0,
+        borderWidth:0.3,
         alignItems:"center",
         marginRight:"auto",
         marginLeft:"auto",
@@ -166,7 +166,7 @@ export const Mstyles = StyleSheet.create({
         backgroundColor:"transparent",
         flexDirection:"row",
         justifyContent:"space-between",
-        zIndex:5   
+        zIndex:50
     },
     titleTag: {
         flexDirection: 'column',
@@ -292,7 +292,7 @@ export const Mstyles = StyleSheet.create({
         justifyContent: 'space-between',
         marginBottom: 10,
         width: '92%',
-        marginTop:15
+        marginTop:30
     },
     melanomaTitleLeft: {
         flexDirection: 'column',
@@ -422,8 +422,9 @@ export const SlugStyles = StyleSheet.create({
         width: "100%",
         height: "100%",
         alignItems: "center",
-        justifyContent: "center",
-        paddingTop: 30,
+        justifyContent: "space-between",
+        marginTop: 0,
+        backgroundColor:"white"
     },
     TopPart: {
         width: "100%",
@@ -433,7 +434,7 @@ export const SlugStyles = StyleSheet.create({
         justifyContent: "center",
         backgroundColor:"white",
         padding:10,
-        marginTop:230,
+        marginTop:10,
         borderBottomWidth:10
     },
     BirthmarkContainer: {
@@ -529,10 +530,11 @@ export const SingleSlugStyle = StyleSheet.create({
     },
     TopPart: {
         width: "100%",
-        borderWidth: 0.3,
+        borderWidth: 0,
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
+        zIndex:-1,
         padding:10,
         backgroundColor:"white"
     },

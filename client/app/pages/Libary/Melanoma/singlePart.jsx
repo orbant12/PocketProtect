@@ -14,6 +14,7 @@ import { AssistTab } from "../../../components/LibaryPage/Melanoma/SingleMole/ta
 import { useFocusEffect } from '@react-navigation/native';
 import { Navigation_AddSlugSpot } from "../../../navigation/navigation";
 import { styles_shadow } from "../../../styles/shadow_styles";
+import { NavBar_OneOption } from "../../../components/Common/navBars";
 
 const SinglePartAnalasis = ({ route,navigation }) => {
 
@@ -425,7 +426,7 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
 
     const Header = () => {
         return(
-            <View style={[SingleSlugStyle.TopPart,styles_shadow.shadowContainer]}>
+            <View style={[SingleSlugStyle.TopPart]}>
             {bodyPart != null ? dotSelectOnPart():null}
             </View>
         )
@@ -436,6 +437,10 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
     return(
         <>
         <View style={SingleSlugStyle.container}>
+            <NavBar_OneOption 
+                icon_left={{name:"arrow-left",size:25, action:() => navigation.goBack()}}
+                title={bodyPart != null && bodyPart.melanomaId}
+            />
             <Tabs.Container
                 renderHeader={Header}
                 headerContainerStyle={{backgroundColor:"black"}}

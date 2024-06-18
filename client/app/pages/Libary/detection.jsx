@@ -8,6 +8,7 @@ import { MainBloodBox, MainMelanomaBox, MainDiagnosisBox } from '../../component
 import { styles } from '../../styles/libary_style';
 import { Horizontal_Navbar} from '../../components/LibaryPage/mainNav';
 import { Navigation_MelanomaCenter, Navigation_MelanomaFullsetup } from '../../navigation/navigation';
+import { styles_shadow } from '../../styles/shadow_styles';
 
 
 const DetectionLibary = ({navigation}) => {
@@ -203,7 +204,7 @@ return(
                         skinCancerProgress={skinCancerProgress}
                         handleNavigation={handleNavigation}
                     />
-                    <View style={styles.selectBox}>
+                    <View style={[styles.selectBox]}>
                         <View style={styles.boxTop}>
                             <View style={{flexDirection:"row"}}>
                                 <MaterialCommunityIcons 

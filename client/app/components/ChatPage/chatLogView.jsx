@@ -7,10 +7,11 @@ export const ChatLogView = ({
     me,
     end,
     profileUrl,
-    chatScrollRef
+    chatScrollRef,
+    handleScroll
 }) => {
     return(
-        <ScrollView ref={chatScrollRef} onTouchStart={handleKeyboardDismiss} style={{width:"100%",borderWidth:0,height:"100%"}}>
+        <ScrollView  onContentSizeChange={() =>  chatScrollRef.current.scrollToEnd({ animated: true })} onScroll={handleScroll} ref={chatScrollRef} onTouchStart={handleKeyboardDismiss} style={{width:"100%",borderWidth:1,height:"70%",marginTop:0}}>
         {
             chatLog.map((message,index) => (
                 <ChatMessage 
@@ -30,7 +31,7 @@ export const ChatLogView = ({
 
 const ChatMessage = ({ message, me, end, isLast,profileUrl }) => {
 return(
-<Pressable onLongPress={() => alert("edit")} style={[{flexDirection:"row",width:"100%",borderWidth:0,padding:10,paddingTop:1,paddingBottom:1}, message.user == me ? {backgroundColor:"rgba(0,0,0,0)", flexDirection:"row-reverse"}:{backgroundColor:"rgba(0,0,0,0)"}, !message.inline_answer && message.sent && {marginTop:30},isLast && message.user == me && {marginBottom:50}]}>
+<Pressable onLongPress={() => alert("edit")} style={[{flexDirection:"row",width:"100%",borderWidth:0,padding:10,paddingTop:1,paddingBottom:1}, message.user == me ? {backgroundColor:"rgba(0,0,0,0)", flexDirection:"row-reverse"}:{backgroundColor:"rgba(0,0,0,0)"}, !message.inline_answer && message.sent && {marginTop:30},isLast && message.user == me && {marginBottom:20}]}>
     {message.user == end &&
         (
         !message.inline_answer ?
@@ -91,7 +92,7 @@ export const ChatInput = ({
             keyboardVerticalOffset={20} 
             
         >
-            <View style={{ width: '95%', padding: 5, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.1)', alignSelf: 'center', borderRadius: 30,marginTop:30}}>
+            <View style={{ width: '95%', padding: 5, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.1)', alignSelf: 'center', borderRadius: 30,marginVertical:10,marginBottom:20}}>
 
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               {inputValue === '' ? ( 

@@ -3,12 +3,12 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { HeaderContainer } from "./headerContainer"
 
 
-export const NavBar_TwoOption = ({title,icon_right,icon_left}) => {
+export const NavBar_TwoOption = ({title,icon_right,icon_left,titleComponent}) => {
     return(
     HeaderContainer({
     outerBg:"transparent",
     content:() =>
-        <View style={{width:"95%",padding:0,marginTop:0,flexDirection:"row",backgroundColor:"black",borderRadius:10,borderWidth:0,borderColor:"black",justifyContent:"space-between",alignItems:"center",alignSelf:"center"}}>
+        <View style={{width:"95%",padding:0,marginTop:10,flexDirection:"row",backgroundColor:"black",borderRadius:10,borderWidth:0,borderColor:"black",justifyContent:"space-between",alignItems:"center",alignSelf:"center"}}>
         <TouchableOpacity  onPress={icon_left.action != undefined ? icon_left.action :  () => {}} style={{padding:8,backgroundColor:"black",borderRadius:10,borderWidth:3,borderColor:"white",borderTopRightRadius:0,borderBottomRightRadius:0}}>
             <MaterialCommunityIcons 
                 name={icon_left.name}
@@ -16,7 +16,12 @@ export const NavBar_TwoOption = ({title,icon_right,icon_left}) => {
                 color={"white"}
             />
         </TouchableOpacity>
-        <Text style={{color:"white",fontWeight:"800",fontSize:16}}>{title}</Text>
+        {title != null ? 
+            <Text style={{color:"white",fontWeight:"800",fontSize:16}}>{title}</Text>
+            :
+            titleComponent()
+        }
+        
         <TouchableOpacity onPress={icon_right.action != undefined ? icon_right.action : () => {}} style={{padding:8,backgroundColor:"black",borderRadius:10,borderWidth:3,borderColor:"white",borderTopLeftRadius:0,borderBottomLeftRadius:0}}>
             <MaterialCommunityIcons  
                 name={icon_right.name}

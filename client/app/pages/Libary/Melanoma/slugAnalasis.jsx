@@ -10,6 +10,7 @@ import { NavBar_Slug } from "../../../components/LibaryPage/Melanoma/navBarRow";
 import { SlugStyles } from "../../../styles/libary_style";
 import { decodeParts } from "../../../utils/melanoma/decodeParts";
 import { styles_shadow } from "../../../styles/shadow_styles";
+import { NavBar_TwoOption } from "../../../components/Common/navBars";
 
 const SlugAnalasis = ({ route,navigation }) => {
 

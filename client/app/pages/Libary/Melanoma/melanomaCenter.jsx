@@ -17,6 +17,7 @@ import { SlugCard } from "../../../components/LibaryPage/Melanoma/slugCard";
 import { Navigation_MoleUpload_1 } from "../../../navigation/navigation";
 import { AssistantAdvertBox } from "../../../components/LibaryPage/Melanoma/Assistance/assistantAdvert";
 import { styles_shadow } from "../../../styles/shadow_styles";
+import { NavBar_TwoOption } from "../../../components/Common/navBars";
 
 
 
@@ -202,13 +203,32 @@ const SingleFeature = ({route,navigation}) => {
                 ref={scrollRef}
             >
                 <View style={Mstyles.container}>
-                    <NavBar_Main 
+                    {/* <NavBar_Main 
                         setSkinModal={setSkinModal}
                         skinModal={skinModal}
                         navigation={navigation}
                         scrollRef={scrollRef}
                         melanomaMetaData={melanomaMetaData}
-                    />                   
+                    />               */}
+                    <NavBar_TwoOption 
+                        icon_left={{name:"arrow-left", size:25,action:() => navigation.goBack()}}
+                        icon_right={{name:"monitor-eye", size:25,action:() => navigation.goBack()}}
+                        title={null}
+                        titleComponent={() =>  
+                            <TouchableOpacity onPress={() =>  navigation.navigate("FullMelanomaProcess",{sessionMemory:[]})} style={[{width:"60%",height:50,borderWidth:0,justifyContent:"center",borderRadius:10,marginTop:0,marginBottom:0,flexDirection:"column",alignItems:"center",backgroundColor:"black",borderColor:"magenta",padding:10},styles_shadow.shadowContainer]}>
+                    <Text style={{color:"white",opacity:0.7,fontWeight:"500",fontSize:10}}>Click to start</Text>
+                    <View style={{width:"100%",flexDirection:"row",alignItems:"center",justifyContent:"center"}}>                     
+                    <Text style={{fontSize:14,fontWeight:"600",marginRight:10,color:"white"}}>Full Body Monitor Setup</Text>                        
+                        <MaterialCommunityIcons 
+                            name="liquid-spot"
+                            size={15}
+                            color={"white"}
+                        />   
+                    </View>                        
+                            </TouchableOpacity>
+                        }
+                    />     
+                    
                     <LinearGradient
                         colors={['white', '#fc8bfb','white']}
                         locations={[0.2,0.9,0.2]}        

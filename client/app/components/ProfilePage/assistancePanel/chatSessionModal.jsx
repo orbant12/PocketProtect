@@ -1,5 +1,5 @@
 
-import { View, ScrollView,Pressable, Keyboard } from "react-native"
+import { View, ScrollView,Pressable, Keyboard,TouchableOpacity } from "react-native"
 import { NavBar_AssistantModal } from "./navbarAssistantModal"
 import { useRef, useState,useEffect } from "react"
 import { ChatLogView } from "../../ChatPage/chatLogView"
@@ -8,6 +8,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useAuth } from "../../../context/UserAuthContext"
 import { realTimeUpdateChat } from "../../../services/server"
 import { messageStateChange } from "../../../utils/assist/messageStateChanger"
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
+import { styles_shadow } from "../../../styles/shadow_styles"
 
 
 export const ChatSessionModal = ({
@@ -22,6 +24,7 @@ export const ChatSessionModal = ({
     const [chatLog,setChatLog] = useState(selectedChat.chat);
     const [isInputActive, setIsInputActive] = useState(false);
     const [ inputValue, setInputValue] = useState("")
+    const [isAtBottom, setIsAtBottom] = useState(true);
 
     const handleKeyboardDismiss = () => {
         setIsInputActive(false)
@@ -38,6 +41,13 @@ export const ChatSessionModal = ({
         console.log(response)
         return response
     }
+
+    const handleScroll = (event) => {
+        const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
+        const isBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height;
+        setIsAtBottom(isBottom);
+      };
+    
 
     const scrollToBottom = () => {
         chatScrollRef.current.scrollToEnd({ animated: true });
@@ -73,21 +83,30 @@ export const ChatSessionModal = ({
                     profileUrl={selectedChat.length != 0 ? selectedChat.assistantData.profileUrl : ""}
                     id={selectedChat.length != 0 ? selectedChat.id : ""}
                 />
-                <View style={{borderWidth:1,height:"73%",marginTop:115,backgroundColor:"rgba(0,0,0,0.1)"}}>
-                    <ChatLogView 
-                        chatLog={chatLog}
-                        me={currentuser.uid}
-                        handleKeyboardDismiss={handleKeyboardDismiss}
-                        end={selectedChat.length != 0 ? selectedChat.assistantData.id : ""}
-                        profileUrl={selectedChat.length != 0 ? selectedChat.assistantData.profileUrl : ""}
-                        chatScrollRef={chatScrollRef}
-                    />
-                </View>
+                
+                <ChatLogView 
+                    chatLog={chatLog}
+                    me={currentuser.uid}
+                    handleKeyboardDismiss={handleKeyboardDismiss}
+                    end={selectedChat.length != 0 ? selectedChat.assistantData.id : ""}
+                    profileUrl={selectedChat.length != 0 ? selectedChat.assistantData.profileUrl : ""}
+                    chatScrollRef={chatScrollRef}
+                    handleScroll={handleScroll}
+                />
+                
                 <ChatInput 
                     inputValue={inputValue}
                     setInputValue={setInputValue}
                     handleSend={handleSend}
                 />
+                {!isAtBottom &&
+                    <TouchableOpacity onPress={() => scrollToBottom()} style={[{position:"absolute",zIndex:100,padding:5,backgroundColor:"white",borderRadius:100,borderWidth:0,bottom:90,right:15,alignItems:"center",opacity:0.9},styles_shadow.hightShadowContainer]} >
+                        <MaterialCommunityIcons 
+                            name="chevron-down"
+                            size={35}
+                        />
+                    </TouchableOpacity>
+                }
         </View>
     </GestureHandlerRootView>
     )
