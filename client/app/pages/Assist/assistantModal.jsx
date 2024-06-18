@@ -1,5 +1,5 @@
 import { StyleSheet, View, Text,ScrollView,Image,TouchableOpacity,Dimensions } from "react-native";
-import { NavBar_AssistantModal } from "../../components/ProfilePage/assistancePanel/navbarAssistantModal";
+import { NavBar_AssistantModal } from "../../components/Assist/navbarAssistantModal";
 import { useRef,useState } from "react";
 import { Rating } from 'react-native-stock-star-rating'
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"

@@ -2,14 +2,14 @@
 import { View, ScrollView,Pressable, Keyboard,TouchableOpacity } from "react-native"
 import { NavBar_AssistantModal } from "./navbarAssistantModal"
 import { useRef, useState,useEffect } from "react"
-import { ChatLogView } from "../../ChatPage/chatLogView"
-import { ChatInput } from "../../ChatPage/chatLogView"
+import { ChatLogView } from "../ChatPage/chatLogView"
+import { ChatInput } from "../ChatPage/chatLogView"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useAuth } from "../../../context/UserAuthContext"
-import { realTimeUpdateChat } from "../../../services/server"
-import { messageStateChange } from "../../../utils/assist/messageStateChanger"
+import { useAuth } from "../../context/UserAuthContext"
+import { realTimeUpdateChat } from "../../services/server"
+import { messageStateChange } from "../../utils/assist/messageStateChanger"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
-import { styles_shadow } from "../../../styles/shadow_styles"
+import { styles_shadow } from "../../styles/shadow_styles"
 
 
 export const ChatSessionModal = ({
@@ -46,7 +46,7 @@ export const ChatSessionModal = ({
         const { layoutMeasurement, contentOffset, contentSize } = event.nativeEvent;
         const isBottom = layoutMeasurement.height + contentOffset.y >= contentSize.height;
         setIsAtBottom(isBottom);
-      };
+    };
     
 
     const scrollToBottom = () => {
@@ -80,8 +80,8 @@ export const ChatSessionModal = ({
                     scrollRef={scrollRef}
                     bgColor={"black"}
                     title={selectedChat.length != 0 ? selectedChat.purchase.type : ""}
-                    profileUrl={selectedChat.length != 0 ? selectedChat.assistantData.profileUrl : ""}
                     id={selectedChat.length != 0 ? selectedChat.id : ""}
+                    right_icon={{type:"image",name:selectedChat.length != 0 ? selectedChat.assistantData.profileUrl : ""}}
                 />
                 
                 <ChatLogView 

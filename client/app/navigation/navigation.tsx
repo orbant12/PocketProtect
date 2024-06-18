@@ -118,3 +118,12 @@ export const Navigation_AssistCenter = ({
         navigation.navigate("AssistCenter")
     }
 }
+
+export const Navigation_AI_Assistant = ({
+    navigation
+}:AssistanceNavigationParams) => {
+    if ( navigation != undefined ) {
+        navigation.navigate("AI_Assistant")
+    }
+}
+

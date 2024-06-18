@@ -1,8 +1,8 @@
 import { View, Text, TouchableOpacity, Image, StyleSheet,Modal} from "react-native"
 import { AssistPanel_style } from "../../../styles/assistance_style"
-import { SessionBar } from "../../../components/ProfilePage/assistancePanel/sessionBar"
+import { SessionBar } from "../../../components/Assist/sessionBar"
 import { useEffect, useState } from "react"
-import { ChatSessionModal } from "../../../components/ProfilePage/assistancePanel/chatSessionModal"
+import { ChatSessionModal } from "../../../components/Assist/chatSessionModal"
 import { fetchAssistantSessions } from "../../../services/server"
 import { useAuth } from "../../../context/UserAuthContext"
 

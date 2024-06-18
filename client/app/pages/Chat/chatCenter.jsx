@@ -1,19 +1,34 @@
 import { View,Text,TouchableOpacity,Image,SafeAreaView,Modal,ScrollView,RefreshControl } from "react-native"
-import { SessionBar } from "../../components/ProfilePage/assistancePanel/sessionBar"
+import { SessionBar } from "../../components/Assist/sessionBar"
 import { AssistPanel_style } from "../../styles/assistance_style"
-import { ChatSessionModal } from "../../components/ProfilePage/assistancePanel/chatSessionModal"
+import { ChatSessionModal } from "../../components/Assist/chatSessionModal"
 import { useAuth } from "../../context/UserAuthContext"
 import { useState, useEffect, useCallback } from "react"
 import { fetchAssistantSessions } from "../../services/server"
 import { NavBar_TwoOption } from "../../components/Common/navBars"
+import { ChatBotBar } from "../../components/Assist/Bots/chatBotBar.js"
+import { Navigation_AI_Assistant } from "../../navigation/navigation"
+import robotAi from "../../assets/assist/robotAI.png"
 
-const ChatCenter = () => {
+const ChatCenter = ({navigation}) => {
 
     const [ selectedChat, setSelectedChat] = useState([])
     const {currentuser} = useAuth();
     const [assistSessions, setAssistSessions] = useState([])
     const [ activeBubble, setActiveBubble] = useState("assist")
     const [refreshing, setRefreshing] = useState(false);
+
+    const AI_Doctors_Data = [
+        {
+            name:"AI Medical Assistant",
+            profileUrl:robotAi,
+            desc:"",
+            tags:[
+                {icon_name:"brain",text:"AI can see your Medical Data like: Blood Work, BMI or additional vital medical information you've provided ..."},
+            ],
+            action:() => Navigation_AI_Assistant({navigation})
+        }
+    ]
 
     const fetchAllAssistantSession = async () => {
         const response = await fetchAssistantSessions({
@@ -75,6 +90,14 @@ const ChatCenter = () => {
                             data={data}
                             index={index}
                             setSelectedChat={setSelectedChat}
+                        />
+                    ))
+                }
+                {activeBubble == "ai" &&
+                    AI_Doctors_Data.map((data,index) => (
+                        <ChatBotBar 
+                            data={data}
+                            index={index}
                         />
                     ))
                 }

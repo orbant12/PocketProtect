@@ -1,6 +1,6 @@
 import { View, TouchableOpacity, Text, Image} from "react-native"
-import { AssistPanel_style } from "../../../styles/assistance_style"
-import { timeDistanceFromToday } from "../../../utils/date_manipulations"
+import { AssistPanel_style } from "../../styles/assistance_style"
+import { timeDistanceFromToday } from "../../utils/date_manipulations"
 
 export const SessionBar = ({data,index,setSelectedChat}) => {
     return(

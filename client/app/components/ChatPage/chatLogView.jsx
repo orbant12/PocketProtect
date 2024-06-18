@@ -36,7 +36,7 @@ return(
         (
         !message.inline_answer ?
         <Image
-            source={{uri:profileUrl}}
+            source={message.user == "gpt" ? profileUrl : {uri:profileUrl}}
             style={{width:40,height:40,borderRadius:10,marginRight:5}}
         />
         :

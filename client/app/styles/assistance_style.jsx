@@ -5,7 +5,7 @@ export const AssistPanel_style = StyleSheet.create({
         width:"100%",
         padding:15,
         borderRadius:0,
-        borderBottomWidth:0,
+        borderBottomWidth:0.3,
         flexDirection:"row",
         alignItems:"center",
         justifyContent:"space-between",
