@@ -119,7 +119,7 @@ const FeatureBox = ({
                         size={icon.size}
                         color={"white"}
                     />
-                    <Text style={{fontWeight:"700",fontSize:"18",color:"white",marginLeft:10}}>{title}</Text>
+                    <Text style={{fontWeight:"700",fontSize:18,color:"white",marginLeft:10}}>{title}</Text>
                 </View>
                 <TagContainer 
                     labels={labels}

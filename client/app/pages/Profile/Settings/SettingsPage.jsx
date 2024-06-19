@@ -49,7 +49,7 @@ return(
                 color='black'
                 size={20} 
             />
-            <Text style={{marginRight:120,fontWeight:600,fontSize:15}}>Account</Text>
+            <Text style={{marginRight:120,fontWeight:"600",fontSize:15}}>Account</Text>
             <Icon
                 name='arrow-forward-ios'
                 type='material'
@@ -66,7 +66,7 @@ return(
                 color='black'
                 size={20} 
             />
-            <Text style={{marginRight:80,fontWeight:600,fontSize:15}}>Creator Panel</Text>
+            <Text style={{marginRight:80,fontWeight:"600",fontSize:15}}>Creator Panel</Text>
             <Icon
                 name='arrow-forward-ios'
                 type='material'
@@ -83,7 +83,7 @@ return(
                 color='black'
                 size={20} 
             />
-            <Text style={{marginRight:122,fontWeight:600,fontSize:15}}>Privacy</Text>
+            <Text style={{marginRight:122,fontWeight:"600",fontSize:15}}>Privacy</Text>
             <Icon
                 name='arrow-forward-ios'
                 type='material'
@@ -100,7 +100,7 @@ return(
                 color='black'
                 size={20} 
             />
-            <Text style={{marginRight:120,fontWeight:600,fontSize:15}}>Security</Text>
+            <Text style={{marginRight:120,fontWeight:"600",fontSize:15}}>Security</Text>
             <Icon
                 name='arrow-forward-ios'
                 type='material'
@@ -117,7 +117,7 @@ return(
                 color='black'
                 size={20} 
             />
-            <Text style={{marginRight:130,fontWeight:600,fontSize:15}}>Logout</Text>
+            <Text style={{marginRight:130,fontWeight:"600",fontSize:15}}>Logout</Text>
             <Icon
                 name='arrow-forward-ios'
                 type='material'
@@ -138,7 +138,7 @@ return(
                 color='black'
                 size={20} 
             />
-            <Text style={{marginRight:70,fontWeight:600,fontSize:15}}>Send feedback</Text>
+            <Text style={{marginRight:70,fontWeight:"600",fontSize:15}}>Send feedback</Text>
             <Icon
                 name='arrow-forward-ios'
                 type='material'
@@ -155,7 +155,7 @@ return(
                 color='black'
                 size={20} 
             />
-            <Text style={{marginRight:50,fontWeight:600,fontSize:15}}>Report a problem</Text>
+            <Text style={{marginRight:50,fontWeight:"600",fontSize:15}}>Report a problem</Text>
             <Icon
                 name='arrow-forward-ios'
                 type='material'
@@ -172,7 +172,7 @@ return(
                 color='black'
                 size={20} 
             />
-            <Text style={{marginRight:100,fontWeight:600,fontSize:15}}>Support</Text>
+            <Text style={{marginRight:100,fontWeight:"600",fontSize:15}}>Support</Text>
             <Icon
                 name='arrow-forward-ios'
                 type='material'
@@ -193,7 +193,7 @@ return(
                 color='black'
                 size={20} 
             />
-            <Text style={{marginRight:40,fontWeight:600,fontSize:15}}>Terms & Services</Text>
+            <Text style={{marginRight:40,fontWeight:"600",fontSize:15}}>Terms & Services</Text>
             <Icon
                 name='arrow-forward-ios'
                 type='material'
@@ -210,7 +210,7 @@ return(
                 color='black'
                 size={20} 
             />
-            <Text style={{marginRight:40,fontWeight:600,fontSize:15}}>Creator Program</Text>
+            <Text style={{marginRight:40,fontWeight:"600",fontSize:15}}>Creator Program</Text>
             <Icon
                 name='arrow-forward-ios'
                 type='material'

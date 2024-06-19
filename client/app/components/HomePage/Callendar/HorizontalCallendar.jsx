@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 20,
         marginRight: 5,
-        fontWeight: 'bold',
+        fontWeight: "bold",
     },
     dateSection: {
         width: '100%',

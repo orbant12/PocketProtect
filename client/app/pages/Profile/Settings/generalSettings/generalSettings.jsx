@@ -37,7 +37,7 @@ const GeneralSettings = ({ route, navigation }) => {
             {settingsData === "Account" ? (
                 <View style={styles.colContainer}>
                     <TouchableOpacity style={styles.topicRow}>
-                        <Text style={{ marginRight: 120, fontWeight: 600, fontSize: 15 }}>User Information</Text>
+                        <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>User Information</Text>
                         <Icon
                             name='arrow-forward-ios'
                             type='material'
@@ -48,7 +48,7 @@ const GeneralSettings = ({ route, navigation }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={openBottomSheet} style={styles.topicRow}>
-                        <Text style={{ marginRight: 120, fontWeight: 600, fontSize: 15 }}>Password</Text>
+                        <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>Password</Text>
                         <Icon
                             name='arrow-forward-ios'
                             type='material'
@@ -59,7 +59,7 @@ const GeneralSettings = ({ route, navigation }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.topicRow}>
-                        <Text style={{ marginRight: 120, fontWeight: 600, fontSize: 15 }}>Delete Account</Text>
+                        <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>Delete Account</Text>
                         <Icon
                             name='arrow-forward-ios'
                             type='material'
@@ -74,7 +74,7 @@ const GeneralSettings = ({ route, navigation }) => {
             {settingsData === "Creator Panel" ? (
                 <View style={styles.colContainer}>
                     <TouchableOpacity onPress={handleEpisodeEditNavigation} style={styles.topicRow}>
-                        <Text style={{ marginRight: 120, fontWeight: 600, fontSize: 15 }}>Episodes</Text>
+                        <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>Episodes</Text>
                         <Icon
                             name='arrow-forward-ios'
                             type='material'
@@ -85,7 +85,7 @@ const GeneralSettings = ({ route, navigation }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={openBottomSheet} style={styles.topicRow}>
-                        <Text style={{ marginRight: 120, fontWeight: 600, fontSize: 15 }}>Analitics</Text>
+                        <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>Analitics</Text>
                         <Icon
                             name='arrow-forward-ios'
                             type='material'
@@ -96,7 +96,7 @@ const GeneralSettings = ({ route, navigation }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.topicRow}>
-                        <Text style={{ marginRight: 120, fontWeight: 600, fontSize: 15 }}>Channel Details</Text>
+                        <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>Channel Details</Text>
                         <Icon
                             name='arrow-forward-ios'
                             type='material'
@@ -107,7 +107,7 @@ const GeneralSettings = ({ route, navigation }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.topicRow}>
-                        <Text style={{ marginRight: 120, fontWeight: 600, fontSize: 15 }}>Income</Text>
+                        <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>Income</Text>
                         <Icon
                             name='arrow-forward-ios'
                             type='material'
@@ -118,7 +118,7 @@ const GeneralSettings = ({ route, navigation }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.topicRow}>
-                        <Text style={{ marginRight: 120, fontWeight: 600, fontSize: 15 }}>Contract</Text>
+                        <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>Contract</Text>
                         <Icon
                             name='arrow-forward-ios'
                             type='material'
@@ -133,7 +133,7 @@ const GeneralSettings = ({ route, navigation }) => {
             {settingsData === "Privacy" ? (
                 <View style={styles.colContainer}>
                     <TouchableOpacity style={styles.topicRow}>
-                        <Text style={{ marginRight: 120, fontWeight: 600, fontSize: 15 }}>User Information</Text>
+                        <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>User Information</Text>
                         <Icon
                             name='arrow-forward-ios'
                             type='material'
@@ -144,7 +144,7 @@ const GeneralSettings = ({ route, navigation }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={openBottomSheet} style={styles.topicRow}>
-                        <Text style={{ marginRight: 120, fontWeight: 600, fontSize: 15 }}>Password</Text>
+                        <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>Password</Text>
                         <Icon
                             name='arrow-forward-ios'
                             type='material'
@@ -155,7 +155,7 @@ const GeneralSettings = ({ route, navigation }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.topicRow}>
-                        <Text style={{ marginRight: 120, fontWeight: 600, fontSize: 15 }}>Delete Account</Text>
+                        <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>Delete Account</Text>
                         <Icon
                             name='arrow-forward-ios'
                             type='material'
@@ -170,7 +170,7 @@ const GeneralSettings = ({ route, navigation }) => {
             {settingsData === "Security" ? (
                 <View style={styles.colContainer}>
                     <TouchableOpacity style={styles.topicRow}>
-                        <Text style={{ marginRight: 120, fontWeight: 600, fontSize: 15 }}>User Information</Text>
+                        <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>User Information</Text>
                         <Icon
                             name='arrow-forward-ios'
                             type='material'
@@ -181,7 +181,7 @@ const GeneralSettings = ({ route, navigation }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={openBottomSheet} style={styles.topicRow}>
-                        <Text style={{ marginRight: 120, fontWeight: 600, fontSize: 15 }}>Password</Text>
+                        <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>Password</Text>
                         <Icon
                             name='arrow-forward-ios'
                             type='material'
@@ -192,7 +192,7 @@ const GeneralSettings = ({ route, navigation }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.topicRow}>
-                        <Text style={{ marginRight: 120, fontWeight: 600, fontSize: 15 }}>Delete Account</Text>
+                        <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>Delete Account</Text>
                         <Icon
                             name='arrow-forward-ios'
                             type='material'

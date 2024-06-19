@@ -285,7 +285,7 @@ const BloodCenter = ({navigation}) => {
                         style={{padding:5}}
                     />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={() => {scrollRef.current.scrollTo({x:0, y:600, animated:true})}} style={{backgroundColor:"white",borderRadius:30,position:"absolute",right:10,bottom:-50}}>
+                <TouchableOpacity onPress={() => {scrollRef.current.scrollTo({x:0, y:"600", animated:true})}} style={{backgroundColor:"white",borderRadius:30,position:"absolute",right:10,bottom:-50}}>
                     <MaterialCommunityIcons 
                         name="folder"
                         size={30}
@@ -300,8 +300,8 @@ const BloodCenter = ({navigation}) => {
                 style={{width:"100%",alignItems:"center"}}
             >
                 <View style={styles.scoreCircle}>
-                    <Text style={[{fontSize:50,fontWeight:'bold'},{opacity:0.5}]}>17%</Text>
-                    <Text style={[{fontSize:15,fontWeight:700},{opacity:0.8}]}>Accuracy</Text>
+                    <Text style={[{fontSize:50,fontWeight:"700"},{opacity:0.5}]}>17%</Text>
+                    <Text style={[{fontSize:15,fontWeight:"700"},{opacity:0.8}]}>Accuracy</Text>
                 </View>
                 <View style={{width:"100%",flexDirection:"row",justifyContent:"space-between",padding:20,paddingBottom:100,marginTop:20}}>
                     <View>
@@ -581,7 +581,7 @@ const styles = StyleSheet.create({
         alignItems:"center"
     },
     dataBox2:{
-        width:300,
+        width:"300",
         height:150,
         borderWidth:0.3,
         borderRadius:20,

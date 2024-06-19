@@ -30,7 +30,7 @@ const AssistPanel = ({
     
     return(
         <View style={AssistPanel_style.container}>
-            <Text style={{fontWeight:700,fontSize:25,opacity:0.8,marginVertical:30}}>Your Assistant Sessions</Text>
+            <Text style={{fontWeight:"700",fontSize:25,opacity:0.8,marginVertical:30}}>Your Assistant Sessions</Text>
             {assistSessions.map((data,index) => (
                 <SessionBar 
                     data={data}

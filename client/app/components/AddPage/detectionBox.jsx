@@ -10,8 +10,8 @@ export function DetectionBox({
                 <FontAwesome6 name={item.icon} size={24} color="black" />
             </View>
             <View>
-                <Text style={{marginLeft:10,fontWeight:600}} >{item.title}</Text>
-                <Text style={{marginLeft:10,fontWeight:300,fontSize:10,maxWidth:"90%",marginTop:3}} >{item.desc}</Text>
+                <Text style={{marginLeft:10,fontWeight:"600"}} >{item.title}</Text>
+                <Text style={{marginLeft:10,fontWeight:"300",fontSize:10,maxWidth:"90%",marginTop:3}} >{item.desc}</Text>
             </View>
         </Pressable> 
     )

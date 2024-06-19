@@ -46,20 +46,20 @@ export const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-        fontWeight: 700,
+        fontWeight: "700",
         color:"white",
         margin: 10,
     },
     titleLeft: {
         fontSize: 11,
         opacity: 0.5,
-        fontWeight: 100,
+        fontWeight: "100",
         margin: 10,
         color:"white",
     },
     TaskTitle: {
         fontSize: 16,
-        fontWeight: 700,
+        fontWeight: "700",
         color:"#f2f2f2"
     },
     TaskSubTitle: {

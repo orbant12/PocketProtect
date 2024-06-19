@@ -57,20 +57,20 @@ const navigation = useNavigation();
                             name="apple"
                             size={20}
                         />
-                        <Text style={{fontWeight:600,fontSize:15,marginLeft:10}}>Continue with Apple</Text>
+                        <Text style={{fontWeight:"600",fontSize:15,marginLeft:10}}>Continue with Apple</Text>
                     </Pressable>
                     <Pressable onPress={() => promptAsync()} style={[styles.Button,{ backgroundColor:"magenta" }]}>
                         <MaterialCommunityIcons 
                             name="google"
                             size={20}
                         />
-                        <Text style={{fontWeight:700,fontSize:15,color:"white",marginLeft:10}}>Continue with Google</Text>
+                        <Text style={{fontWeight:"700",fontSize:15,color:"white",marginLeft:10}}>Continue with Google</Text>
                     </Pressable>
                     <Pressable onPress={() => handleNavigation("Login")} style={[styles.Button,{backgroundColor:"black",borderWidth:1,borderColor:"white"}]}>
-                        <Text style={{fontWeight:600,fontSize:15,color:"white"}}>Log in</Text>
+                        <Text style={{fontWeight:"600",fontSize:15,color:"white"}}>Log in</Text>
                     </Pressable>
                     <Pressable onPress={() => handleNavigation("Register")} style={[styles.Button,{backgroundColor:"black",borderWidth:1,borderColor:"white"}]}>
-                        <Text style={{fontWeight:600,fontSize:15,color:"white"}}>Register</Text>
+                        <Text style={{fontWeight:"600",fontSize:15,color:"white"}}>Register</Text>
                     </Pressable>
                 </View>
             </View>            

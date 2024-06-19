@@ -81,7 +81,7 @@ const dotSelectOnPart = (bodyPart,userData,melanomaData) => {
                                     :
                                     bodyPart.slug == "left-leg(back)" ? `translate(-550 -750)`
                                     :
-                                    bodyPart.slug == "right-leg(back)" ? `translate(-700 -750)`
+                                    bodyPart.slug == "right-leg(back)" ? `translate(-"700" -750)`
                                     :
                                     bodyPart.slug == "left-feet(back)" ? `translate(-840 -1230)`
                                     :
@@ -138,7 +138,7 @@ const dotSelectOnPart = (bodyPart,userData,melanomaData) => {
                                     :
                                     bodyPart.slug == "left-leg(back)" ? `translate(-600 -750)`
                                     :
-                                    bodyPart.slug == "right-leg(back)" ? `translate(-700 -750)`
+                                    bodyPart.slug == "right-leg(back)" ? `translate(-"700" -750)`
                                     :
                                     bodyPart.slug == "left-feet(back)" ? `translate(-940 -1330)`
                                     :
@@ -291,14 +291,14 @@ export const SlugCard = ({
 
     return(
         <View style={[Mstyles.melanomaBox,styles_shadow.hightShadowContainer,!completedParts.includes(bodyPart.slug) ? {borderColor:"red"} : {borderColor:"lightgreen"}]} key={`box_${bodyPart.slug}_${index}`}>
-        <Text style={{fontSize:20,fontWeight:700,color:"white"}}>{bodyPart.slug}</Text>
-        <Text style={{fontSize:15,fontWeight:500,opacity:0.7,color:"white",marginBottom:10}}>Birthmarks: {getSlugCount(bodyPart.slug,numberOfMolesOnSlugs)}</Text>
+        <Text style={{fontSize:20,fontWeight:"700",color:"white"}}>{bodyPart.slug}</Text>
+        <Text style={{fontSize:15,fontWeight:"500",opacity:0.7,color:"white",marginBottom:10}}>Birthmarks: {getSlugCount(bodyPart.slug,numberOfMolesOnSlugs)}</Text>
         
         <View style={styles_shadow.hightShadowContainer}>
             {dotSelectOnPart(bodyPart,userData,melanomaData)}
         </View>
         <TouchableOpacity style={[Mstyles.showMoreBtn,styles_shadow.shadowContainer]} onPress={() => handleNavigation("SlugAnalasis",bodyPart)}>
-            <Text style={{fontSize:15,fontWeight:500,opacity:0.7,color:"white"}}>See More</Text>
+            <Text style={{fontSize:15,fontWeight:"500",opacity:0.7,color:"white"}}>See More</Text>
         </TouchableOpacity>
         {completedParts.includes(bodyPart.slug) ? <Text style={{color:"lightgreen",fontWeight:"500",opacity:0.5,fontSize:10,position:"absolute",bottom:10}}>Marked as complete</Text> : <Text style={{color:"red",fontWeight:"500",opacity:0.5,fontSize:10,position:"absolute",bottom:10}}>Not marked as complete</Text>}
         <View style={[Mstyles.redDotLabel,!completedParts.includes(bodyPart.slug) ? {backgroundColor:"red"} : {backgroundColor:"lightgreen"}]} />

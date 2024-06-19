@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
         flexDirection: 'column',
         alignItems: 'center',
         fontSize: 10,
-        fontWeight: 500,
+        fontWeight: "500",
         color: 'black',
         borderWidth: 1,
         width: "57%",
@@ -65,7 +65,7 @@ export const styles = StyleSheet.create({
     },
     ResultsScoreTitle: {
         fontSize: 20,
-        fontWeight: 700,
+        fontWeight: "700",
     },
     ResultBox: {
         flexDirection: 'column',
@@ -79,11 +79,11 @@ export const styles = StyleSheet.create({
     },
     BoxTitle: {
         fontSize: 15,
-        fontWeight: 700,
+        fontWeight: "700",
     },
     BoxPoint: {
         fontSize: 12,
-        fontWeight: 700,
+        fontWeight: "700",
         marginBottom:10
     },
     //DETECTION
@@ -173,7 +173,7 @@ export const Mstyles = StyleSheet.create({
         alignItems: 'center',
         textAlign:"center",
         fontSize: 10,
-        fontWeight: 500,
+        fontWeight: "500",
         color: 'black',
         borderWidth: 1,
         width: "57%",
@@ -230,7 +230,7 @@ export const Mstyles = StyleSheet.create({
         textAlign:"center",
         alignItems: 'center',
         fontSize: 10,
-        fontWeight: 500,
+        fontWeight: "500",
         color: 'black',
         borderWidth: 0.6,
         opacity:0.6,

@@ -66,7 +66,7 @@ export const SelectionPage: React.FC<SelectionPageProps> = ({
 }) => {
   return (
     <View style={[styles.startScreen, pageStyle]}>
-      <Text style={{ marginBottom: 10, fontWeight: '800', fontSize: 20, marginTop: 60 }}>{pageTitle}</Text>
+      <Text style={{ marginBottom: 10, fontWeight: "800", fontSize: 20, marginTop: 60 }}>{pageTitle}</Text>
       {selectableOption === 'box' && (
         <OptionsBoxes
           items={selectableData}
@@ -95,11 +95,11 @@ export const SelectionPage: React.FC<SelectionPageProps> = ({
             }}
             style={[styles.startButton, { position: 'relative', marginBottom: 20 }]}
           >
-            <Text style={{ padding: 15, fontWeight: '600', color: 'white' }}>Next</Text>
+            <Text style={{ padding: 15, fontWeight: "600", color: 'white' }}>Next</Text>
           </Pressable>
         ) : (
           <Pressable style={styles.startButtonNA}>
-            <Text style={{ padding: 15, fontWeight: '600' }}>Not Selected Yet</Text>
+            <Text style={{ padding: 15, fontWeight: "600" }}>Not Selected Yet</Text>
           </Pressable>
         )}
       </View>

@@ -21,7 +21,7 @@ const Date = ({ date, onSelectDate, selected,today,affectedDays }) => {
       <Text
         style={[
           styles.medium,
-          selected === fullDate && { color: "#fff", fontWeight: 'bold', fontSize: 15 },
+          selected === fullDate && { color: "#fff", fontWeight: "bold", fontSize: 15 },
         ]}
       >
         {dayNumber}
@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   big: {
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color:"white"
   },
   medium: {

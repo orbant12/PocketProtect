@@ -162,12 +162,12 @@ const ColorLabels = () => {
         <View style={[spotUploadStyle.colorExplain,{top:100}]}>
         <View style={spotUploadStyle.colorExplainRow} >
         <View style={spotUploadStyle.redDot} />
-            <Text style={{position:"relative",marginLeft:10,fontWeight:500,opacity:0.8}}>Empty</Text>
+            <Text style={{position:"relative",marginLeft:10,fontWeight:"500",opacity:0.8}}>Empty</Text>
         </View>
 
         <View style={spotUploadStyle.colorExplainRow}>
             <View style={spotUploadStyle.greenDot} />
-            <Text style={{position:"relative",marginLeft:10,fontWeight:500,opacity:0.8}}>Complete</Text>
+            <Text style={{position:"relative",marginLeft:10,fontWeight:"500",opacity:0.8}}>Complete</Text>
         </View>
     </View>
     )

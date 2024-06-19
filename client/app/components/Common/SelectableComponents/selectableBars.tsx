@@ -116,7 +116,7 @@ const SelectableBar: React.FC<SelectableBarProps> = ({
           ]}
         />
       )}
-      <Text style={{ marginLeft: 20, fontWeight: '700', fontSize: 17, opacity: 0.7 }}>
+      <Text style={{ marginLeft: 20, fontWeight: "700", fontSize: 17, opacity: 0.7 }}>
         {title}
       </Text>
     </TouchableOpacity>

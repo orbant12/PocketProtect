@@ -49,8 +49,8 @@ export const MoleTab = ({
                                 style={{width:80,height:80,borderWidth:1,borderRadius:10}}
                             />
                             <View style={SingleSlugStyle.melanomaBoxL}>                            
-                                <Text style={{fontSize:16,fontWeight:600,color:"white"}}>{selectedMelanoma.melanomaId}</Text>
-                                <Text style={{fontSize:13,fontWeight:500,color:"white",opacity:0.6}}>{formatTimestampToString(selectedMelanoma.created_at)}</Text>
+                                <Text style={{fontSize:16,fontWeight:"600",color:"white"}}>{selectedMelanoma.melanomaId}</Text>
+                                <Text style={{fontSize:13,fontWeight:"500",color:"white",opacity:0.6}}>{formatTimestampToString(selectedMelanoma.created_at)}</Text>
                             </View>
                             <TouchableOpacity onPress={() => {setDeleteModal(!deleteModal);setMoleToDelete(selectedMelanoma)}} style={{width:"30%",flexDirection:"row",alignItems:"center",borderWidth:1.5,borderColor:"red",padding:10,borderRadius:10,opacity:0.8}}>
                                 <MaterialCommunityIcons 
@@ -103,8 +103,8 @@ export const MoleTab = ({
                                 style={{width:80,height:80,borderWidth:1,borderRadius:10}}
                             />
                             <View style={SingleSlugStyle.melanomaBoxL}>                            
-                                <Text style={{fontSize:16,fontWeight:600,color:"white"}}>{formatTimestampToString(bodyPart.created_at)}</Text>
-                                <Text style={{fontSize:13,fontWeight:500,color:"white",opacity:0.6}}>Risk: {bodyPart.risk}</Text>
+                                <Text style={{fontSize:16,fontWeight:"600",color:"white"}}>{formatTimestampToString(bodyPart.created_at)}</Text>
+                                <Text style={{fontSize:13,fontWeight:"500",color:"white",opacity:0.6}}>Risk: {bodyPart.risk}</Text>
                             </View>              
                             <View  style={SingleSlugStyle.melanomaBoxR}>
                                 <Text style={{color:"white",marginRight:10,fontWeight:"700",opacity:0.8}}>Data</Text>
@@ -112,7 +112,7 @@ export const MoleTab = ({
                                     name="arrow-right"
                                     size={25}
                                     color={"white"}
-                                    opacity={"0.8"}
+                                    opacity={0.8}
                                 />
                             </View>
                             </TouchableOpacity>
@@ -124,8 +124,8 @@ export const MoleTab = ({
                                         style={{width:80,height:80,borderWidth:1,borderRadius:10}}
                                     />
                                     <View style={SingleSlugStyle.melanomaBoxL}>                            
-                                        <Text style={{fontSize:16,fontWeight:600,color:"white"}}>{formatTimestampToString(data.created_at)}</Text>
-                                        <Text style={{fontSize:13,fontWeight:500,color:"white",opacity:0.6}}>Risk: {data.risk}</Text>
+                                        <Text style={{fontSize:16,fontWeight:"600",color:"white"}}>{formatTimestampToString(data.created_at)}</Text>
+                                        <Text style={{fontSize:13,fontWeight:"500",color:"white",opacity:0.6}}>Risk: {data.risk}</Text>
                                     </View>              
                                     <View  style={SingleSlugStyle.melanomaBoxR}>
                                         <Text style={{color:"white",marginRight:10,fontWeight:"700",opacity:0.8}}>Data</Text>
@@ -133,7 +133,7 @@ export const MoleTab = ({
                                             name="arrow-right"
                                             size={25}
                                             color={"white"}
-                                            opacity={"0.8"}
+                                            opacity={0.8}
                                         />
                                     </View>
                                     </TouchableOpacity>
@@ -167,16 +167,16 @@ const MalignantOrBeningDisplay = ({
         <View style={[{marginTop:20,alignItems:"center",width:"100%"}]}>                             
             <Text style={{color:"red",fontWeight:"800",marginTop:0,fontSize:30}}>Malignant</Text>
             <View style={[SingleSlugStyle.scoreCircle,{borderColor:"red"}]}>
-                <Text style={[{fontSize:50,fontWeight:'bold'},{color:"red",opacity:0.5}]}>{selectedMelanoma.risk * 100}%</Text>
-                <Text style={[{fontSize:9,fontWeight:700,maxWidth:"100%"},{color:"red",opacity:0.8}]}>Chance to be malignant</Text>
+                <Text style={[{fontSize:50,fontWeight:"700"},{color:"red",opacity:0.5}]}>{selectedMelanoma.risk * 100}%</Text>
+                <Text style={[{fontSize:9,fontWeight:"700",maxWidth:"100%"},{color:"red",opacity:0.8}]}>Chance to be malignant</Text>
             </View>
         </View>
         :
         <View style={[{marginTop:20,alignItems:"center",width:"100%"}]}>                             
             <Text style={{color:"lightgreen",fontWeight:"800",marginTop:0,fontSize:30}}>Bening</Text>
             <View style={[SingleSlugStyle.scoreCircle,{borderColor:"lightgreen"}]}>
-                <Text style={[{fontSize:50,fontWeight:'bold'},{color:"lightgreen",opacity:0.5}]}>{100 - selectedMelanoma.risk * 100}%</Text>
-                <Text style={[{fontSize:9,fontWeight:700,maxWidth:"100%"},{color:"lightgreen",opacity:0.2}]}>Chance to be bening</Text>
+                <Text style={[{fontSize:50,fontWeight:"700"},{color:"lightgreen",opacity:0.5}]}>{100 - selectedMelanoma.risk * 100}%</Text>
+                <Text style={[{fontSize:9,fontWeight:"700",maxWidth:"100%"},{color:"lightgreen",opacity:0.2}]}>Chance to be bening</Text>
             </View>
         </View>
         }

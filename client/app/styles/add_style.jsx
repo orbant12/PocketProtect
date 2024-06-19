@@ -16,7 +16,7 @@ export const styles = StyleSheet.create({
         margin:10
     },
     FlatTitleStyleText:{
-        fontWeight:600,
+        fontWeight:"600",
         fontSize:20,
         margin:5,
         marginTop:20,

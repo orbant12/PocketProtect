@@ -396,11 +396,11 @@ const MelanomaFullProcess = ({navigation,route}) => {
                                         />
                                         <View style={styles.positionSwitch}>
                                             <Pressable onPress={() => setSelectedBurnSide("front")}>
-                                                <Text style={selectedBurnSide == "front" ? {fontWeight:600}:{opacity:0.5}}>Front</Text>
+                                                <Text style={selectedBurnSide == "front" ? {fontWeight:"600"}:{opacity:0.5}}>Front</Text>
                                             </Pressable>
                                             <Text>|</Text>
                                             <Pressable onPress={() => setSelectedBurnSide("back")}>
-                                                <Text style={selectedBurnSide == "back" ? {fontWeight:600}:{opacity:0.5}}>Back</Text>
+                                                <Text style={selectedBurnSide == "back" ? {fontWeight:"600"}:{opacity:0.5}}>Back</Text>
                                             </Pressable>
                                         </View>
                                 </View>                  
@@ -503,7 +503,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
                         handleIndicatorStyle={{backgroundColor:"white"}}
                     >
                         <View style={{width:"100%",alignItems:"center",flexDirection:"column",backgroundColor:"#fff",padding:10,marginTop:30}}>
-                            <Text style={{fontWeight:700,textAlign:"center",fontSize:20}}>Please select whom from your family had been diagnosed ...</Text>
+                            <Text style={{fontWeight:"700",textAlign:"center",fontSize:20}}>Please select whom from your family had been diagnosed ...</Text>
                             <ScrollView horizontal style={{width:"100%",marginTop:50}} showsHorizontalScrollIndicator={false}>
                                 {familyMemberOptions.map((data) => (
                                     <Pressable key={data.member} onPress={() => handleMelanomaDataChange("detected_relative",data.member)} style={melanomaMetaData.detected_relative == data.member ? styles.selectableBubbleA : styles.selectableBubble} >
@@ -593,12 +593,12 @@ const MelanomaFullProcess = ({navigation,route}) => {
                                 <View style={styles.colorExplain}>
                                     <View style={styles.colorExplainRow} >
                                     <View style={styles.redDot} />
-                                        <Text style={{position:"relative",marginLeft:10,fontWeight:500,opacity:0.8}}>Empty</Text>
+                                        <Text style={{position:"relative",marginLeft:10,fontWeight:"500",opacity:0.8}}>Empty</Text>
                                     </View>
 
                                     <View style={styles.colorExplainRow}>
                                         <View style={styles.greenDot} />
-                                        <Text style={{position:"relative",marginLeft:10,fontWeight:500,opacity:0.8}}>Complete</Text>
+                                        <Text style={{position:"relative",marginLeft:10,fontWeight:"500",opacity:0.8}}>Complete</Text>
                                     </View>
                                 </View>
                         </View>
@@ -647,12 +647,12 @@ const MelanomaFullProcess = ({navigation,route}) => {
                 <View style={styles.colorExplain}>
                     <View style={styles.colorExplainRow} >
                         <View style={styles.redDot} />
-                            <Text style={{position:"relative",marginLeft:10,fontWeight:500,opacity:0.8}}>Empty</Text>
+                            <Text style={{position:"relative",marginLeft:10,fontWeight:"500",opacity:0.8}}>Empty</Text>
                         </View>
 
                         <View style={styles.colorExplainRow}>
                             <View style={styles.greenDot} />
-                            <Text style={{position:"relative",marginLeft:10,fontWeight:500,opacity:0.8}}>Complete</Text>
+                            <Text style={{position:"relative",marginLeft:10,fontWeight:"500",opacity:0.8}}>Complete</Text>
                         </View>
                     </View>
                 </View>

@@ -29,14 +29,14 @@ export const SelectionPage_Binary: React.FC<SelectionPageProps> = ({
                     onPress={() => handlePress(true)}
                     style={[styles.startButton, { marginBottom: 20 }]}
                 >
-                    <Text style={{ padding: 15, fontWeight: '600', color: 'white' }}>Yes</Text>
+                    <Text style={{ padding: 15, fontWeight: "600", color: 'white' }}>Yes</Text>
                 </Pressable>
                 
                 <Pressable
                     onPress={() => handlePress(false)}
                     style={[styles.startButton, { marginBottom: 20,backgroundColor:"white" }]}
                 >
-                    <Text style={{ padding: 15, fontWeight: '600',color:"black" }}>No</Text>
+                    <Text style={{ padding: 15, fontWeight: "600",color:"black" }}>No</Text>
                 </Pressable>
             </View>       
         </View>

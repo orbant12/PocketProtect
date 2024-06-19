@@ -121,8 +121,8 @@ const MelanomaAdd = ({ route , navigation }) => {
 
             <View style={{width:"100%",alignItems:"center",marginBottom:10,marginTop:0}}>
                 <View style={{flexDirection:"column",width:"90%",marginTop:30}}>
-                    <Text>Final Step <Text style={uploadedSpotPicture == null ? {opacity:0.3}:{color:"green",fontWeight:600}}>3/3</Text></Text>
-                    <Text style={{fontSize:20,fontWeight:600}}>Take a picture of your spot</Text>
+                    <Text>Final Step <Text style={uploadedSpotPicture == null ? {opacity:0.3}:{color:"green",fontWeight:"600"}}>3/3</Text></Text>
+                    <Text style={{fontSize:20,fontWeight:"600"}}>Take a picture of your spot</Text>
                     {uploadedSpotPicture == null ? (
                         <>
                             <View style={{flexDirection:"row",width:"100%",justifyContent:"space-between",maxWidth:"100%",alignItems:"center",marginTop:20}}>
@@ -132,10 +132,10 @@ const MelanomaAdd = ({ route , navigation }) => {
                             />
     
                             <View style={{width:"50%",height:120,justifyContent:"space-between"}}>
-                                <Text style={{fontWeight:600,fontSize:13}}>Make sure your Image ...</Text>
-                                <Text style={{fontWeight:400,fontSize:10}}>• As clean as possible - remove all noise</Text>
-                                <Text style={{fontWeight:400,fontSize:10}} >• Lighting is simular to this image</Text>
-                                <Text style={{fontWeight:400,fontSize:10}}>• Birthmark is on the spotlight with the same ration as in this image</Text>
+                                <Text style={{fontWeight:"600",fontSize:13}}>Make sure your Image ...</Text>
+                                <Text style={{fontWeight:"400",fontSize:10}}>• As clean as possible - remove all noise</Text>
+                                <Text style={{fontWeight:"400",fontSize:10}} >• Lighting is simular to this image</Text>
+                                <Text style={{fontWeight:"400",fontSize:10}}>• Birthmark is on the spotlight with the same ration as in this image</Text>
                             </View>
                             </View>
                             <TouchableOpacity style={spotUpdateStyle.uploadButton} onPress={handlePictureUpload}>
@@ -177,9 +177,9 @@ const MelanomaAdd = ({ route , navigation }) => {
                     <Text style={{color:"white"}}>Save</Text>
                 </TouchableOpacity>
                 {firstSelectedPart != "" && redDotLocation.x != -100 && uploadedSpotPicture != null ? (
-                    <Text style={{color:"green",fontWeight:300,fontSize:10}}>3/3 - All Steps Completed</Text> 
+                    <Text style={{color:"green",fontWeight:"300",fontSize:10}}>3/3 - All Steps Completed</Text> 
                 ):(
-                    <Text style={{fontWeight:300,opacity:0.5,fontSize:10}}>Not All Steps Completed</Text>
+                    <Text style={{fontWeight:"300",opacity:0.5,fontSize:10}}>Not All Steps Completed</Text>
                 )}
             </View>
             </View>
@@ -243,7 +243,7 @@ const PickerSection  = ({
                                         :
                                         bodyPart.slug == "left-arm" ? `translate(120 -420)`
                                         :
-                                        bodyPart.slug == "right-arm" ? `translate(-300 -230)`
+                                        bodyPart.slug == "right-arm" ? `translate(-"300" -230)`
                                         :
                                         bodyPart.slug == "upper-leg-left" ? `translate(0 -650)`
                                         :
@@ -300,7 +300,7 @@ const PickerSection  = ({
                                         :
                                         bodyPart.slug == "left-arm" ? `translate(180 -420)`
                                         :
-                                        bodyPart.slug == "right-arm" ? `translate(-300 -230)`
+                                        bodyPart.slug == "right-arm" ? `translate(-"300" -230)`
                                         :
                                         bodyPart.slug == "upper-leg-left" ? `translate(0 -650)`
                                         :
@@ -467,8 +467,8 @@ const PickerSection  = ({
     return(
         <View style={{width:"100%",alignItems:"center",marginBottom:30}}>
         <View style={{flexDirection:"column",width:"90%",marginTop:30}}>
-            <Text>First Step <Text style={redDotLocation.x == -100 ? {opacity:0.3}:{color:"green",fontWeight:600}}>1/2</Text></Text>
-            <Text style={{fontSize:20,fontWeight:600}}>{spotId.id}</Text>
+            <Text>First Step <Text style={redDotLocation.x == -100 ? {opacity:0.3}:{color:"green",fontWeight:"600"}}>1/2</Text></Text>
+            <Text style={{fontSize:20,fontWeight:"600"}}>{spotId.id}</Text>
         </View>
             <View style={{position:"relative",alignItems:"center",justifyContent:"center",width:"500px",height:"500px",marginTop:20}}>
                 {dotSelectOnPart() }

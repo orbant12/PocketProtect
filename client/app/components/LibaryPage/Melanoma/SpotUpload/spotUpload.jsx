@@ -12,8 +12,8 @@ export function SpotUpload({
     return(
         <View style={[{width:"100%",alignItems:"center",marginBottom:10,paddingTop:10,marginTop:10,borderTopWidth:2},highlighted != "" && {paddingTop:100}]}>
         <View style={{flexDirection:"column",width:"90%",marginTop:30}}>
-            <Text>Final Step <Text style={uploadedSpotPicture == null ? {opacity:0.3}:{color:"green",fontWeight:600}}>2/2</Text></Text>
-            <Text style={{fontSize:20,fontWeight:600}}>Take a picture of your spot</Text>
+            <Text>Final Step <Text style={uploadedSpotPicture == null ? {opacity:0.3}:{color:"green",fontWeight:"600"}}>2/2</Text></Text>
+            <Text style={{fontSize:20,fontWeight:"600"}}>Take a picture of your spot</Text>
             {uploadedSpotPicture == null ? (
                 <>
                     <View style={{flexDirection:"row",width:"100%",justifyContent:"space-between",maxWidth:"100%",alignItems:"center",marginTop:20}}>
@@ -23,10 +23,10 @@ export function SpotUpload({
                     />
 
                     <View style={{width:"52%",height:120,justifyContent:"space-between",borderLeftWidth:0.3,paddingLeft:10}}>
-                        <Text style={{fontWeight:600,fontSize:12}}>Make sure your Image ...</Text>
-                        <Text style={{fontWeight:400,fontSize:10}}>As clean as possible - remove all noise</Text>
-                        <Text style={{fontWeight:400,fontSize:10}} >Lighting is simular to this image</Text>
-                        <Text style={{fontWeight:400,fontSize:10}}>Birthmark is on the spotlight with the same ration as in this image</Text>
+                        <Text style={{fontWeight:"600",fontSize:12}}>Make sure your Image ...</Text>
+                        <Text style={{fontWeight:"400",fontSize:10}}>As clean as possible - remove all noise</Text>
+                        <Text style={{fontWeight:"400",fontSize:10}} >Lighting is simular to this image</Text>
+                        <Text style={{fontWeight:"400",fontSize:10}}>Birthmark is on the spotlight with the same ration as in this image</Text>
                     </View>
                     </View>
                     <TouchableOpacity 
@@ -85,7 +85,7 @@ export const AlreadyUploadedSpots = ({
         {currentSlugMemory.length != 0 &&
             currentSlugMemory.map((data,index) => (
                 <View key={index}>
-                    <View style={[{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:300,borderWidth:0.8,borderColor:"lightgray",padding:10,marginTop:10,borderRadius:20},highlighted == data.id && {position:"absolute",top:-460,backgroundColor:"white",zIndex:100,left:-150}]}>
+                    <View style={[{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:"300",borderWidth:0.8,borderColor:"lightgray",padding:10,marginTop:10,borderRadius:20},highlighted == data.id && {position:"absolute",top:-460,backgroundColor:"white",zIndex:100,left:-150}]}>
                         <Image
                             source={{uri: data.picture }}
                             style={{width:75,height:75,borderWidth:1,borderRadius:10,}}
@@ -134,9 +134,9 @@ export const UploadButtons = ({
         </Pressable>
 
         {redDotLocation.x != -100 && uploadedSpotPicture != null ? (
-            <Text style={{color:"green",fontWeight:300,fontSize:10,marginBottom:20}}>2/2 - All Steps Completed</Text> 
+            <Text style={{color:"green",fontWeight:"300",fontSize:10,marginBottom:20}}>2/2 - All Steps Completed</Text> 
         ):(
-            <Text style={{fontWeight:800,opacity:0.5,fontSize:10,marginBottom:20,color:"red"}}>Not All Steps Completed</Text>
+            <Text style={{fontWeight:"800",opacity:0.5,fontSize:10,marginBottom:20,color:"red"}}>Not All Steps Completed</Text>
         )}
     
         <View style={{width:"100%",borderWidth:0.5,marginBottom:20}} />

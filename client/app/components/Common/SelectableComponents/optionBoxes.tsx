@@ -114,7 +114,7 @@ const SelectableBox: React.FC<SelectableBoxProps> = ({
           style={[{ position: 'relative', width: icon.metaData.size !== undefined ? icon.metaData.size : 30, height: icon.metaData.size !== undefined ? icon.metaData.size : 30 }, icon.metaData.style]}
         />
       )}
-      <Text style={{ fontWeight: '600', fontSize: 17 }}>{title}</Text>
+      <Text style={{ fontWeight: "600", fontSize: 17 }}>{title}</Text>
     </Pressable>
   );
 };

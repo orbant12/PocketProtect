@@ -211,8 +211,8 @@ const MoleBar = ({
             style={{width:80,height:80,borderWidth:1,borderRadius:10}}
         />
         <View style={SlugStyles.melanomaBoxL}>                            
-            <Text style={{fontSize:16,fontWeight:600,color:"white"}}>{data.melanomaId}</Text>
-            <Text style={{fontSize:13,fontWeight:500,color:"white",opacity:0.6}}>Risk: {data.risk}</Text>
+            <Text style={{fontSize:16,fontWeight:"600",color:"white"}}>{data.melanomaId}</Text>
+            <Text style={{fontSize:13,fontWeight:"500",color:"white",opacity:0.6}}>Risk: {data.risk}</Text>
         </View>
         <Pressable onPress={() => showSpot(data.melanomaId)} style={highlighted != data.melanomaId ? SlugStyles.melanomaShowBoxI : SlugStyles.melanomaShowBoxA}>
             <MaterialCommunityIcons 

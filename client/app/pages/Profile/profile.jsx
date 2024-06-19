@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     },
     userNameStyle: {
         fontSize: 20,
-        fontWeight: 700,
+        fontWeight: "700",
         color: 'black',
         marginTop: 10,
 
@@ -123,12 +123,12 @@ const styles = StyleSheet.create({
     },
     numberHighlight: {
         fontSize: 15,
-        fontWeight: 800,
+        fontWeight: "800",
         color: '#000',
     },
     titleNumberHighlight: {
         fontSize: 12,
-        fontWeight: 500,
+        fontWeight: "500",
         color: '#000',
     },
     followBTN:{

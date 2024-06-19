@@ -12,6 +12,7 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import { saveDiagnosisProgress } from "../../../services/server";
 
 
+
 const DiagnosisCenter = ({navigation,route}) => {
 
 //<==================<[ Variables ]>====================>
@@ -183,7 +184,7 @@ const DiagnosisCenter = ({navigation,route}) => {
                         style={{width:"100%",alignItems:"center"}}
                     >
                         <View style={styles.scoreCircle}>                     
-                            <Text style={[{fontSize:50,fontWeight:'bold'},{opacity:0.5}]}>{diagnosisData.diagnosis}</Text>                    
+                            <Text style={[{fontSize:50,fontWeight:"700"},{opacity:0.5}]}>{diagnosisData.diagnosis}</Text>                    
                         </View>
                         <View style={{width:"100%",flexDirection:"row",justifyContent:"space-between",padding:20,paddingBottom:100,marginTop:20,alignItems:"center"}}>
                             <View style={{marginTop:25}}>
@@ -191,7 +192,7 @@ const DiagnosisCenter = ({navigation,route}) => {
                                 <Text style={{fontWeight:"500",opacity:0.5}}>{diagnosisData.created_at}</Text>
                             </View>
                             <View style={{maxWidth:"60%",alignItems:"center"}}>
-                                <Text style={[{fontSize:10,fontWeight:'bold'},{opacity:0.4,color:"#111"}]}>Current chance: <Text style={{fontSize:20,color:"black"}}>{diagnosisData.stages.stage_two.chance}</Text></Text> 
+                                <Text style={[{fontSize:10,fontWeight:"700"},{opacity:0.4,color:"#111"}]}>Current chance: <Text style={{fontSize:20,color:"black"}}>{diagnosisData.stages.stage_two.chance}</Text></Text> 
                                 <View style={{padding:10,backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,marginTop:5}}>                        
                                     <Text style={{fontWeight:"500",opacity:0.7,maxWidth:"100%"}}>Next {diagnosisData.stages.stage_three.assistance_frequency} task: <Text style={{fontWeight:"700"}}>READY</Text></Text>
                                 </View>
@@ -533,7 +534,7 @@ const styles = StyleSheet.create({
         alignItems:"center"
     },
     dataBox2:{
-        width:300,
+        width:"300",
         height:190,
         borderWidth:0.3,
         borderRadius:20,

@@ -11,6 +11,10 @@ import { getDiagnosisData,getDiagnosis, getReDiagnosis, getSurvey } from "../../
 
 const SurveyScreeen = ({route,navigation}) => {
 
+
+
+
+  
 //<=============> VARIABLE <===============>
 
     const {currentuser} = useAuth()
@@ -439,7 +443,7 @@ const SurveyScreeen = ({route,navigation}) => {
                 {fullDiagnosis.symphtoms.map((data)=>(
                     <View style={{width:200,alignItems:"center",borderRightWidth:0,justifyContent:"center",marginLeft:20,marginTop:0}}>
                     <Text style={{paddingVertical:10,borderWidth:1,paddingHorizontal:15,borderRadius:20,fontWeight:"800",borderColor:"magenta",opacity:0.5}}>{data.numbering}</Text>
-                    <Text style={{padding:0,fontWeight:600,marginTop:20,textAlign:"center"}}>{data.content}</Text>
+                    <Text style={{padding:0,fontWeight:"600",marginTop:20,textAlign:"center"}}>{data.content}</Text>
                     </View>
                 ))}
                 </ScrollView>
@@ -451,7 +455,7 @@ const SurveyScreeen = ({route,navigation}) => {
                 {fullDiagnosis.symphtoms.map((data)=>(
                     <View style={{width:200,alignItems:"center",borderRightWidth:0,justifyContent:"center",marginLeft:20,marginTop:0}}>
                     <Text style={{paddingVertical:10,borderWidth:1,paddingHorizontal:15,borderRadius:20,fontWeight:"800",borderColor:"magenta",opacity:0.5}}>{data.numbering}</Text>
-                    <Text style={{padding:0,fontWeight:600,marginTop:20,textAlign:"center"}}>{data.content}</Text>
+                    <Text style={{padding:0,fontWeight:"600",marginTop:20,textAlign:"center"}}>{data.content}</Text>
                     </View>
                 ))}
                 </ScrollView>
@@ -491,7 +495,7 @@ const SurveyScreeen = ({route,navigation}) => {
 
                 <View style={styles.scoreCircle}>
                     <Text style={{color:"back",fontSize:20,fontWeight:"800"}}>{fullDiagnosis.chance}</Text>     
-                    <Text style={[{fontSize:16,fontWeight:700},{color:"black",opacity:0.8}]}>Chance</Text>
+                    <Text style={[{fontSize:16,fontWeight:"700"},{color:"black",opacity:0.8}]}>Chance</Text>
                 </View>
 
                 <View style={{width:"100%",backgroundColor:"white",marginBottom:0,borderBottomWidth:5,padding:30,}}>
@@ -507,7 +511,7 @@ const SurveyScreeen = ({route,navigation}) => {
                 {fullDiagnosis.help.map((data)=>(
                     <View style={{width:200,alignItems:"center",borderRightWidth:0,justifyContent:"center",marginLeft:20,marginTop:0}}>
                         <Text style={{paddingVertical:10,borderWidth:1,paddingHorizontal:15,borderRadius:20,fontWeight:"800",borderColor:"magenta",opacity:0.5}}>{data.numbering}</Text>
-                        <Text style={{padding:0,fontWeight:600,marginTop:20,textAlign:"center"}}>{data.content}</Text>
+                        <Text style={{padding:0,fontWeight:"600",marginTop:20,textAlign:"center"}}>{data.content}</Text>
                     </View>
                 ))}
                 </ScrollView>
@@ -519,7 +523,7 @@ const SurveyScreeen = ({route,navigation}) => {
                 {fullDiagnosis.symphtoms.map((data)=>(
                     <View style={{width:200,alignItems:"center",borderRightWidth:0,justifyContent:"center",marginLeft:20,marginTop:0}}>
                     <Text style={{paddingVertical:10,borderWidth:1,paddingHorizontal:15,borderRadius:20,fontWeight:"800",borderColor:"magenta",opacity:0.5}}>{data.numbering}</Text>
-                    <Text style={{padding:0,fontWeight:600,marginTop:20,textAlign:"center"}}>{data.content}</Text>
+                    <Text style={{padding:0,fontWeight:"600",marginTop:20,textAlign:"center"}}>{data.content}</Text>
                     </View>
                 ))}
                 </ScrollView>
@@ -531,7 +535,7 @@ const SurveyScreeen = ({route,navigation}) => {
                 {fullDiagnosis.recovery.map((data)=>(
                     <View style={{width:200,alignItems:"center",borderRightWidth:0,justifyContent:"center",marginLeft:20,marginTop:0}}>
                     <Text style={{paddingVertical:10,borderWidth:1,paddingHorizontal:15,borderRadius:20,fontWeight:"800",borderColor:"magenta",opacity:0.5}}>{data.numbering}</Text>
-                    <Text style={{padding:0,fontWeight:600,marginTop:20,textAlign:"center"}}>{data.content}</Text>
+                    <Text style={{padding:0,fontWeight:"600",marginTop:20,textAlign:"center"}}>{data.content}</Text>
                     </View>
                 ))}
                 </ScrollView>

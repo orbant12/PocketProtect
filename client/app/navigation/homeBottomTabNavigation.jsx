@@ -117,7 +117,7 @@ return (
           header:() => HeaderContainer({
             outerBg:"white",
             content:() => <View style={{justifyContent:'center',height:60,backgroundColor: "white",alignItems: 'center'}}>
-                            <Text style={{fontSize: 20,fontWeight: 'bold'}}>Chats</Text>
+                            <Text style={{fontSize: 20,fontWeight: "700"}}>Chats</Text>
                           </View>
           }) 
         }}
@@ -168,6 +168,6 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: "700",
   },
 });

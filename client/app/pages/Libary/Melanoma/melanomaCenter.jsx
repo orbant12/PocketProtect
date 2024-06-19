@@ -236,7 +236,7 @@ const SingleFeature = ({route,navigation}) => {
                     <View style={Mstyles.melanomaTitle}>
                         <View style={Mstyles.melanomaTitleLeft}>
                             <Text style={Mstyles.melanomaTag}>Computer Vision</Text>
-                            <Text style={{fontSize:20,fontWeight:'bold'}}>Melanoma Monitoring</Text>
+                            <Text style={{fontSize:20,fontWeight:"700"}}>Melanoma Monitoring</Text>
                             <Text style={{fontSize:12,maxWidth:"100%",opacity:0.4,marginTop:5,fontWeight:"500"}}>Click on the body part for part analasis</Text>   
                         </View>       
                     </View>
@@ -254,22 +254,22 @@ const SingleFeature = ({route,navigation}) => {
                     <View style={[Mstyles.colorExplain,{top:300}]}>
                         <View style={Mstyles.colorExplainRow} >
                             <View style={Mstyles.redDot} />
-                            <Text style={{position:"relative",marginLeft:10,fontWeight:500,opacity:0.8}}>Higher risk</Text>
+                            <Text style={{position:"relative",marginLeft:10,fontWeight:"500",opacity:0.8}}>Higher risk</Text>
                         </View>
         
                         <View style={Mstyles.colorExplainRow}>
                             <View style={Mstyles.greenDot} />
-                            <Text style={{position:"relative",marginLeft:10,fontWeight:500,opacity:0.8}}>No risk</Text>
+                            <Text style={{position:"relative",marginLeft:10,fontWeight:"500",opacity:0.8}}>No risk</Text>
                         </View>
                     </View>
         
                     <View style={[Mstyles.positionSwitch,styles_shadow.shadowContainer]}>
                         <Pressable onPress={() => setSelectedSide("front")}>
-                            <Text style={selectedSide == "front" ? {fontWeight:600}:{opacity:0.5}}>Front</Text>
+                            <Text style={selectedSide == "front" ? {fontWeight:"600"}:{opacity:0.5}}>Front</Text>
                         </Pressable>
                         <Text>|</Text>
                         <Pressable onPress={() => setSelectedSide("back")}>
-                            <Text style={selectedSide == "back" ? {fontWeight:600}:{opacity:0.5}}>Back</Text>
+                            <Text style={selectedSide == "back" ? {fontWeight:"600"}:{opacity:0.5}}>Back</Text>
                         </Pressable>
                     </View>                      
                     </LinearGradient>                    
@@ -286,7 +286,7 @@ const SingleFeature = ({route,navigation}) => {
                         <View style={[Mstyles.melanomaTitle,{marginTop:50,marginBottom:30}]}>
                             <View style={Mstyles.melanomaTitleLeft}>
                                 <Text style={{fontSize:12,opacity:0.5,fontWeight:"500"}}>Open them for analasis results</Text>   
-                                <Text style={{fontSize:20,fontWeight:'bold'}}>Your Moles</Text>                                    
+                                <Text style={{fontSize:20,fontWeight:"700"}}>Your Moles</Text>                                    
                             </View>
 
                         </View>

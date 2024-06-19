@@ -59,7 +59,7 @@ const DailyReport = ({navigation}) => {
     }
 
 
-     // <===> Child Component <====> 
+     // <===> Child Component <====>  
 
     function FirstScreen(){
         return(
