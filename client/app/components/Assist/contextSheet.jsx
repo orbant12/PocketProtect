@@ -63,6 +63,7 @@ export const ContextSheet = ({
                     data={data}
                     index={index}
                     handleSwitch={handleSwitch}
+                    key={index}
                 />
             ))
             }     

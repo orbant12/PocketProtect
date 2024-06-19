@@ -10,11 +10,12 @@ export const NavBar_AssistantModal = ({
     id,
     right_icon,
     bgColor,
-    right_action
+    right_action,
+    outerBg
 }) => {
     return(
         HeaderContainer({
-            outerBg:"black",
+            outerBg:outerBg != undefined ? outerBg : "black",
             content:() => 
                 <View style={{
                     width:"100%",

@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 32,
         alignSelf: 'center',
-        fontWeight:'500',
+        fontWeight:500,
     },
     //INPUT FIELDS
     inputArea:{
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
     buttonTitle: {
         fontSize: 20,
         color: 'white',
-        fontWeight: '600',
+        fontWeight: 600,
         alignSelf: 'center',
     },
     inputFieldContainer:{
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
         borderRadius:10,
         padding:20,
         fontSize:20,
-        fontWeight:'500'
+        fontWeight:500
     },
     inputField:{
         alignSelf:'center',
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
         borderRadius:50,
         padding:0,
         fontSize:20,
-        fontWeight:'500',
+        fontWeight:500,
         marginLeft:13
     },
         bottomText:{

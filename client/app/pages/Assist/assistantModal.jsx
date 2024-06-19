@@ -46,7 +46,9 @@ export const AssistModal = ({
                 <NavBar_AssistantModal 
                     scrollRef={scrollRef}
                     goBack={setSelectedAssistant}
-                    bgColor={"transparent"}
+                    bgColor={"white"}
+                    outerBg={"white"}
+                    right_icon={{type:"image",name:assistantData != undefined && assistantData.profileUrl}}
                 />
                 <ProfileSection 
                     assistantData={assistantData}
@@ -86,7 +88,7 @@ export const AssistModal = ({
 const styles = StyleSheet.create({
     container:{
         flex:1,
-        paddingTop:100,
+        paddingTop:0,
         alignItems:"center"
     }
 }) 

@@ -217,12 +217,13 @@ const ShopItem = ({
                 <View style={{width:"100%",marginVertical:20,flexDirection:"row",alignItems:"center",justifyContent:"center",backgroundColor:"rgba(255,255,255,0.08)",padding:10,borderRadius:10,marginTop:30}}>
                     <View style={{marginLeft:0,width:"60%"}}>
                         <Text style={{fontWeight:"600",color:"white",fontSize:16,marginBottom:10}}>What you'll get:</Text>
-                        {serviceBars.map((data) => (
-                            <View style={{flexDirection:"row",alignItems:"center",opacity:0.6,marginVertical:6}}>
+                        {serviceBars.map((data,index) => (
+                            <View key={index} style={{flexDirection:"row",alignItems:"center",opacity:0.6,marginVertical:6}}>
                                 <MaterialCommunityIcons 
                                     name={data.icon.name}
                                     color={"white"}
                                     size={15}
+                                    
                                 />
                                 <Text style={{color:"white",marginLeft:10,fontSize:12,width:"80%"}}>{data.text}</Text>
                             </View>

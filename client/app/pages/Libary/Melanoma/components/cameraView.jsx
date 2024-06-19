@@ -18,9 +18,7 @@ export default function CameraScreenView({navigation,onClose,onPictureTaken}) {
     const [loading, setLoading] = useState(false);
     const cameraRef = useRef(null)
     const [ show, setShow ] = useState(false)
-    const [ overlayVisible, setOverlayVisible] = useState(true)
-    //PAGER
-    
+    const [ overlayVisible, setOverlayVisible] = useState(true)    
 
     if (!permission) {
         return <View />;
@@ -98,7 +96,7 @@ export default function CameraScreenView({navigation,onClose,onPictureTaken}) {
                     <Slider
                       style={{width: 200, height: 40,marginTop:50}}
                       minimumValue={0}
-                      maximumValue={0.5}
+                      maximumValue={0.05}
                       minimumTrackTintColor="magenta"
                       maximumTrackTintColor="#000000"
                       value={zoomValue}
@@ -134,8 +132,8 @@ export default function CameraScreenView({navigation,onClose,onPictureTaken}) {
           <Overlay_1 
             visible={overlayVisible}
             pages={[
-              {text:"Center your mole inside the rectangle and zoom while keeping quality",image:zoomMoleImage},
-              {text:"Try to make your photo look simular to the images above ",image:molesImage}
+              {text:"Center your mole inside the rectangle and wait to focus your camera",image:zoomMoleImage},
+              {text:"Then zoom in and try to make your photo look simular to the images above ",image:molesImage}
             ]}
             setOverlayVisible={setOverlayVisible}
           />

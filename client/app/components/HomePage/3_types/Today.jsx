@@ -35,9 +35,10 @@ export const TodayScreen = ({
                     <Text style={{color:"white",fontWeight:"700",opacity:0.4,margin:10,alignSelf:"left"}}>Outdated Moles</Text>
                     <View style={{width:"95%",marginTop:10,alignItems:"center"}}>
                         {outdatedMelanomaData.length != 0 ?
-                            outdatedMelanomaData.map((data) => (                    
+                            outdatedMelanomaData.map((data,index) => (                    
                                 <OutdatedMelanomaBox 
                                     type={""}
+                                    key={index}
                                     data={data}
                                     handleNavigation={handleNavigation}
                                 />
@@ -54,11 +55,12 @@ export const TodayScreen = ({
                     <Text style={{color:"white",fontWeight:"700",opacity:0.4,margin:10,alignSelf:"left"}}>Action Required</Text>
                     <View style={{width:"95%",marginTop:10,alignItems:"center"}}>
                         
-                            {riskyMelanomaData.map((data) => (
+                            {riskyMelanomaData.map((data,index) => (
                                 data.risk >= 0 &&
                                 <OutdatedMelanomaBox 
                                     type={"risk"}
                                     data={data}
+                                    key={index}
                                     handleNavigation={handleNavigation}
                                 />
                             ))                    
@@ -70,10 +72,11 @@ export const TodayScreen = ({
                 <View style={{margin:0,width:"90%",borderBottomWidth:0,borderColor:"white",paddingBottom:10,alignItems:"center",marginRight:"auto",marginLeft:"auto"}}>
                     <Text style={{color:"white",fontWeight:"700",opacity:0.4,margin:10,alignSelf:"left"}}>Unfinished Moles</Text>
                     <View style={{width:"95%",marginTop:10,alignItems:"center"}}>
-                    {unfinishedMelanomaData.map((data) => (                    
+                    {unfinishedMelanomaData.map((data,index) => (                    
                         <OutdatedMelanomaBox 
                             type={"unfinished"}
                             data={data}
+                            key={index}
                             handleNavigation={handleNavigation}
                         />
                     ))}

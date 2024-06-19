@@ -82,10 +82,10 @@ export const AlreadyUploadedSpots = ({
     return(
         <>
         {currentSlugMemory.length != 0 ? <View style={{width:"100%",borderWidth:0.4,marginBottom:10,opacity:0.2}} />:null}
-        {currentSlugMemory.length != 0 ?
-            currentSlugMemory.map((data) => (
-                <>
-                    <View style={[{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:300,borderWidth:0.8,borderColor:"lightgray",padding:10,marginTop:10,borderRadius:20},highlighted == data.id && {position:"absolute",top:300,backgroundColor:"white"}]}>
+        {currentSlugMemory.length != 0 &&
+            currentSlugMemory.map((data,index) => (
+                <View key={index}>
+                    <View style={[{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:300,borderWidth:0.8,borderColor:"lightgray",padding:10,marginTop:10,borderRadius:20},highlighted == data.id && {position:"absolute",top:-460,backgroundColor:"white",zIndex:100,left:-150}]}>
                         <Image
                             source={{uri: data.picture }}
                             style={{width:75,height:75,borderWidth:1,borderRadius:10,}}
@@ -110,9 +110,9 @@ export const AlreadyUploadedSpots = ({
                             </TouchableOpacity>                                       
                         </View>
                     </View>
-                </>
+                </View>
             ))
-            :null
+            
         }
         </>
     )

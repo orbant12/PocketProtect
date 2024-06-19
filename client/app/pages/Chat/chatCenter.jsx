@@ -1,4 +1,4 @@
-import { View,Text,TouchableOpacity,Image,SafeAreaView,Modal,ScrollView,RefreshControl } from "react-native"
+import { View,Text,TouchableOpacity,Modal,ScrollView,RefreshControl } from "react-native"
 import { SessionBar } from "../../components/Assist/sessionBar"
 import { AssistPanel_style } from "../../styles/assistance_style"
 import { ChatSessionModal } from "../../components/Assist/chatSessionModal"
@@ -9,6 +9,7 @@ import { NavBar_TwoOption } from "../../components/Common/navBars"
 import { ChatBotBar } from "../../components/Assist/Bots/chatBotBar.js"
 import { Navigation_AI_Assistant } from "../../navigation/navigation"
 import robotAi from "../../assets/assist/robotAI.png"
+import { AssistantAdvertBox } from "../../components/LibaryPage/Melanoma/Assistance/assistantAdvert"
 
 const ChatCenter = ({navigation}) => {
 
@@ -42,7 +43,7 @@ const ChatCenter = ({navigation}) => {
         fetchAllAssistantSession()
         setTimeout(() => {
             setRefreshing(false);
-        }, 2000); // Example: setTimeout for simulating a delay
+        }, 2000); 
     }, []);
 
 
@@ -57,22 +58,13 @@ const ChatCenter = ({navigation}) => {
                 icon_left={{name:"arrow-left",size:25}}
                 icon_right={{name:"image",size:25}}
             />
-            <View style={{width:"70%",flexDirection:"row",justifyContent:"space-between",marginTop:20,marginBottom:20}}>
-                <Bubble 
-                    setValue={setActiveBubble}
-                    value={"assist"}
-                    title={"Assistants"}
-                    activeValue={activeBubble}
-                />
-
-                <Bubble 
-                    setValue={setActiveBubble}
-                    value={"ai"}
-                    title={"AI Doctors"}
-                    activeValue={activeBubble}
-                />
-
-            </View>
+            <AssistantAdvertBox 
+                navigation={navigation}
+            />
+            <Bubble_NavBar 
+                setActiveBubble={setActiveBubble}
+                activeBubble={activeBubble}
+            />
             <ScrollView 
                 style={{width:"100%",height:"100%"}}
                 refreshControl={
@@ -84,31 +76,22 @@ const ChatCenter = ({navigation}) => {
                     />
                 }
             >
-                {activeBubble == "assist" &&
-                    assistSessions.map((data,index) => (
-                        <SessionBar 
-                            data={data}
-                            index={index}
-                            setSelectedChat={setSelectedChat}
-                        />
-                    ))
-                }
-                {activeBubble == "ai" &&
-                    AI_Doctors_Data.map((data,index) => (
-                        <ChatBotBar 
-                            data={data}
-                            index={index}
-                        />
-                    ))
-                }
+                <AssistantChatLogs 
+                    activeBubble={activeBubble}
+                    assistSessions={assistSessions}
+                    setSelectedChat={setSelectedChat}
+                />
+                <AiChatLogs 
+                    activeBubble={activeBubble}
+                    AI_Doctors_Data={AI_Doctors_Data}
+                />
             </ScrollView>
-
-        <Modal animationType="slide" visible={selectedChat.length != 0} >
-            <ChatSessionModal 
-                selectedChat={selectedChat}
-                setSelectedChat={setSelectedChat}
-            />    
-        </Modal>            
+            <Modal animationType="slide" visible={selectedChat.length != 0} >
+                <ChatSessionModal 
+                    selectedChat={selectedChat}
+                    setSelectedChat={setSelectedChat}
+                />    
+            </Modal>            
     </View>
     )
 }
@@ -120,6 +103,79 @@ const Bubble = ({value,setValue,activeValue,title}) => {
         <TouchableOpacity onPress={() => setValue(value)} style={activeValue == value ? AssistPanel_style.activeBubble : AssistPanel_style.disabledBubble}>
         <Text style={activeValue == value ? {fontWeight:"700"} : {fontWeight:"700",opacity:0.3}}>{title}</Text>
         </TouchableOpacity>
+    )
+}
+
+const Bubble_NavBar = ({
+    setActiveBubble,
+    activeBubble
+}) => {
+    return(
+        <View style={{width:"70%",flexDirection:"row",justifyContent:"space-between",marginTop:20,marginBottom:20}}>
+        <Bubble 
+            setValue={setActiveBubble}
+            value={"assist"}
+            title={"Assistants"}
+            activeValue={activeBubble}
+        />
+
+        <Bubble 
+            setValue={setActiveBubble}
+            value={"ai"}
+            title={"AI Doctors"}
+            activeValue={activeBubble}
+        />
+
+    </View>
+    )
+}
+
+const AssistantChatLogs = ({
+    activeBubble,
+    assistSessions,
+    setSelectedChat
+}) => {
+    return(
+        <>
+        {activeBubble == "assist" &&
+            <View style={{width:"100%",alignItems:"center"}}>
+                
+                {assistSessions.length != 0 ?
+                    assistSessions.map((data,index) => (
+                        <SessionBar 
+                            data={data}
+                            index={index}
+                            key={index}
+                            setSelectedChat={setSelectedChat}
+                        />
+                    ))
+                    :
+                    <View style={{width:"80%",padding:20,alignItems:"center",justifyContent:"center",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:20,marginVertical:50}}>
+                        <Text style={{fontWeight:"700",fontSize:17,opacity:0.5}}>No chat started yet</Text>
+                    </View>
+                }
+            </View>
+        }
+        </>
+    )
+}
+
+const AiChatLogs = ({
+    activeBubble,
+    AI_Doctors_Data
+}) => {
+    return(
+        <>
+            {activeBubble == "ai" &&
+                AI_Doctors_Data.map((data,index) => (
+                    <ChatBotBar 
+                        data={data}
+                        index={index}
+                        key={index}
+                    />
+                ))
+            }
+        </>
     )
 }
 

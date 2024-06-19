@@ -7,8 +7,8 @@ export const TagContainer = ({
 }) => {
     return(
             <View style={[{width:"95%",flexDirection:"row",flexWrap:"wrap",justifyContent:"center",backgroundColor:"rgba(0,0,0,0.2)",padding:5,borderRadius:5},style]}>
-            {labels.map((data) => (
-                <TagLabel label={data.text} icon={data.icon_name} />
+            {labels.map((data,index) => (
+                <TagLabel key={index} label={data.text} icon={data.icon_name} />
             ))}                    
         </View>
     )

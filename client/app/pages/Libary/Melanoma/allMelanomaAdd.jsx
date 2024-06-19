@@ -54,9 +54,11 @@ const AllMelanomaAdd = ({route,navigation}) => {
             const response = await fetchCompletedParts({
                 userId: currentuser.uid,
             });
-            const completedSlugs = response.map(part => part.slug); 
-            const decoded = decodeParts(completedSlugs)
-            setCompletedParts(decoded)  
+            if(response != undefined){
+                const completedSlugs = response.map(part => part.slug); 
+                const decoded = decodeParts(completedSlugs)
+                setCompletedParts(decoded)  
+            }
         }
     }
 
@@ -91,7 +93,7 @@ const AllMelanomaAdd = ({route,navigation}) => {
     }
 
     const handleSlugMemoryChange = async () => {
-        if ( completedParts.length != 0 && completedParts != null ){
+        if (completedParts != null){
             const response = await completedArea(completedParts)
             updateCompletedSlug(response)
         } else if (completedParts != null) {
@@ -157,7 +159,7 @@ export default AllMelanomaAdd
 
 const ColorLabels = () => {
     return(
-        <View style={spotUploadStyle.colorExplain}>
+        <View style={[spotUploadStyle.colorExplain,{top:100}]}>
         <View style={spotUploadStyle.colorExplainRow} >
         <View style={spotUploadStyle.redDot} />
             <Text style={{position:"relative",marginLeft:10,fontWeight:500,opacity:0.8}}>Empty</Text>

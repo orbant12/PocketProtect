@@ -1,7 +1,7 @@
 
 
-import Svg, { Circle, Path,TextPath,Text } from '/Users/tamas/Programming Projects/DetectionApp/client/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
-
+import Svg, { Circle, Path,TextPath,Text,G } from '/Users/tamas/Programming Projects/DetectionApp/client/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
+import { View } from 'react-native';
 export const dotsSelectOnPart = ({
     bodyPart,
     melanomaData,
@@ -265,26 +265,26 @@ export const dotsSelectOnPart = ({
                         />
                 ))
             }
-            {melanomaData.map((data) => (
-                    data.melanomaDoc.spot[0].slug == bodyPart.slug && gender == data.gender ? (
+            {melanomaData.map((data,index) => (
+                    data.melanomaDoc.spot[0].slug == bodyPart.slug && gender == data.gender && (
                         highlighted == data.melanomaId ? (
-                            <>
+                            <G key={index}>
                             <Circle cx={data.melanomaDoc.location.x} cy={data.melanomaDoc.location.y} r="5" fill="red" />
                             <Text fill="red" x={data.melanomaDoc.location.x+5}  y={data.melanomaDoc.location.y-5}>
                                 {data.melanomaId}
                             </Text>
                             
-                        </>
+                            </G>
                         ):(
-                            <>
+                            <G key={index}>
                             <Circle cx={data.melanomaDoc.location.x} cy={data.melanomaDoc.location.y} r="5" fill="black" />
                             <Text fill="black" x={data.melanomaDoc.location.x+5}  y={data.melanomaDoc.location.y-5}>
                                 {data.melanomaId}
                             </Text>
                             
-                        </>
+                            </G>
                         )
-                    ):null
+                    )
                 ))
             }
         </Svg>

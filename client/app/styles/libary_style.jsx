@@ -65,7 +65,7 @@ export const styles = StyleSheet.create({
     },
     ResultsScoreTitle: {
         fontSize: 20,
-        fontWeight: 'bold',
+        fontWeight: 700,
     },
     ResultBox: {
         flexDirection: 'column',
@@ -79,11 +79,11 @@ export const styles = StyleSheet.create({
     },
     BoxTitle: {
         fontSize: 15,
-        fontWeight: 'bold',
+        fontWeight: 700,
     },
     BoxPoint: {
         fontSize: 12,
-        fontWeight: 'bold',
+        fontWeight: 700,
         marginBottom:10
     },
     //DETECTION
@@ -1034,8 +1034,8 @@ export const spotUpload_2_styles = StyleSheet.create({
         flex:1,
         alignItems:"center",
         width:"100%",
+        justifyContent:"space-between",
         height:"100%",
-        justifyContent:"center",
         backgroundColor:"white"
     },
     startScreen:{
@@ -1069,7 +1069,7 @@ export const spotUpload_2_styles = StyleSheet.create({
         alignItems:"center",
         borderWidth:0,
         padding:10,
-        position:"absolute",
+        position:"relative",
         top:0,
         backgroundColor:"transparent",
         borderBottomWidth:0.3,

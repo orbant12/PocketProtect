@@ -90,7 +90,7 @@ titleSection:{
 title: {
     fontSize: 32,
     alignSelf: 'center',
-    fontWeight:'700',
+    fontWeight:700,
 },
 //INPUT FIELDS
 inputArea:{
@@ -117,7 +117,7 @@ button: {
 buttonTitle: {
     fontSize: 20,
     color: 'white',
-    fontWeight: '600',
+    fontWeight: 600,
     alignSelf: 'center',
 },
 inputFieldContainer:{
@@ -132,7 +132,7 @@ inputFieldContainer:{
     borderRadius:10,
     padding:20,
     fontSize:20,
-    fontWeight:'500'
+    fontWeight:500
 },
 inputField:{
     alignSelf:'center',
@@ -142,7 +142,7 @@ inputField:{
     borderRadius:50,
     padding:0,
     fontSize:20,
-    fontWeight:'500',
+    fontWeight:500,
     marginLeft:13
 },
 //FORGOT PASSWORD

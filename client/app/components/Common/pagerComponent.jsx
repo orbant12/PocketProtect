@@ -17,13 +17,15 @@ export const PagerComponent = ({
     return(
         <>
             <PagerView onPageScroll={(e) => handlePagerScroll(e)} initialPage={0} style={[{height:"100%",width:"100%",marginTop:0},pagerStyle]}>
-                {pages.map((data) => (
-                    data.pageComponent()
+                {pages.map((data,index) => (
+                    <View key={index}>
+                        {data.pageComponent()}
+                    </View>
                 ))}
             </PagerView>
             <View style={[pager_style.IndicatorContainer,indicator_position]}>   
                 {pages.map((data,index) => (
-                    <View style={[pager_style.Indicator,{backgroundColor:dotColor}, { opacity: currentPage === index ? 1 : 0.3 }]} />      
+                    <View key={index} style={[pager_style.Indicator,{backgroundColor:dotColor}, { opacity: currentPage === index ? 1 : 0.3 }]} />      
                 ))}                                                                             
             </View>  
         </>

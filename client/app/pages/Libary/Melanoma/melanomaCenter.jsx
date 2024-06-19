@@ -81,9 +81,10 @@ const SingleFeature = ({route,navigation}) => {
             const response = await fetchCompletedParts({
                 userId: currentuser.uid,
             });
-            const completedSlugs = response.map(part => part.slug);     
-            setCompletedParts(completedSlugs)
-            console.log(response)
+            if(response != undefined){
+                const completedSlugs = response.map(part => part.slug);     
+                setCompletedParts(completedSlugs)
+            }
         }
     }
 
@@ -93,7 +94,6 @@ const SingleFeature = ({route,navigation}) => {
                 userId: currentuser.uid,
             });
             setNumberOfMolesOnSlugs(response)
-            console.log(response)
         }
     }
 
@@ -117,7 +117,6 @@ const SingleFeature = ({route,navigation}) => {
                 return { slug: spotSlug, intensity, key: index }; // Adding a unique key
             });
             setAffectedSlugs(affectedSlug);
-            console.log(affectedSlug[0])
         }
     }
 
@@ -247,14 +246,12 @@ const SingleFeature = ({route,navigation}) => {
                             gender={userData.gender}
                             side={selectedSide}
                             scale={1.1}
-                            //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
                             colors={['#FF0000', '#A6FF9B','#FFA8A8']}
                             onBodyPartPress={(slug) => navigation.navigate("SlugAnalasis", { data: slug,userData:userData, skin_type: melanomaMetaData.skin_type })}
-                            zoomOnPress={true}
                         />
                     </View>
         
-                    <View style={Mstyles.colorExplain}>
+                    <View style={[Mstyles.colorExplain,{top:300}]}>
                         <View style={Mstyles.colorExplainRow} >
                             <View style={Mstyles.redDot} />
                             <Text style={{position:"relative",marginLeft:10,fontWeight:500,opacity:0.8}}>Higher risk</Text>
@@ -304,6 +301,7 @@ const SingleFeature = ({route,navigation}) => {
                                         userData={userData}
                                         melanomaData={melanomaData}
                                         index={index}
+                                        key={index}
                                     />
                                 ))
                             ):null}

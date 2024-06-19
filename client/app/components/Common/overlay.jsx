@@ -17,7 +17,7 @@ export const Overlay_1 = ({visible,pages,setOverlayVisible}) => {
                 <MaterialCommunityIcons 
                     name="close"
                     size={25}
-                    style={{position:"absolute",right:20,top:20}}
+                    style={{position:"absolute",right:20,top:20,zIndex:100}}
                     onPress={() => setOverlayVisible(!visible)}
                 />
                 <PagerComponent 
@@ -42,17 +42,18 @@ const PagerComponent = ({
 }) => {
     return(
         <>
-            <PagerView onPageScroll={(e) => handlePagerScroll(e)} initialPage={0} style={{height:"78%",width:"100%",marginTop:30}}>
-                {pages.map((data) => (
+            <PagerView onPageScroll={(e) => handlePagerScroll(e)} initialPage={0} style={{height:"80%",width:"100%",marginTop:0}}>
+                {pages.map((data,index) => (
                     <Page 
                         text={data.text}
                         image={data.image}
+                        key={index}
                     />
                 ))}
             </PagerView>
             <View style={[pager_style.IndicatorContainer]}>   
                 {pages.map((data,index) => (
-                    <View style={[pager_style.Indicator, { opacity: currentPage === index ? 1 : 0.3 }]} />      
+                    <View key={index} style={[pager_style.Indicator, { opacity: currentPage === index ? 1 : 0.3 }]} />      
                 ))}                                                                             
             </View>  
         </>

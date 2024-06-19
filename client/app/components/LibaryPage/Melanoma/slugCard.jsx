@@ -266,11 +266,11 @@ const dotSelectOnPart = (bodyPart,userData,melanomaData) => {
                 ))
             ):null}
             {melanomaData.map((data,index) => (
-                    data.melanomaDoc.spot[0].slug == bodyPart.slug && data.gender == userData.gender  ? (
-                        <>
+                    data.melanomaDoc.spot[0].slug == bodyPart.slug && data.gender == userData.gender  && (
+                        
                             <Circle cx={data.melanomaDoc.location.x} cy={data.melanomaDoc.location.y} r="5" fill="red" key={`${"circle"}_${index}`} />
-                        </>
-                    ):null
+                        
+                    )
                 ))
             }
         </Svg>

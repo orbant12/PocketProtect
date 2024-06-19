@@ -123,7 +123,7 @@ const Body = ({
   return renderBodySvg(side === "front" ? bodyFront : bodyBack);
 };
 
-Body.defaultProps = {
+Body.default = {
   scale: 1,
   colors: ["#0984e3", "#74b9ff"],
   zoomOnPress: false,

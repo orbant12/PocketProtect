@@ -44,6 +44,7 @@ export const AssistTab = ({
                         {text:"Fast and accurate work",icon_name:"calendar"},
                     ]}
                     setSelectedAssistant={setSelectedAssistant}
+                    key={index}
                 />
             ))}
             <Modal animationType="slide" visible={selectedAssistant.length != 0}>

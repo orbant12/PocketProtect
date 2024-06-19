@@ -10,6 +10,8 @@ import { SpotUpload, AlreadyUploadedSpots,UploadButtons } from "../../../../comp
 import { spotUpload_2_styles } from "../../../../styles/libary_style.jsx";
 import { updateCompletedParts } from "../../../../services/server.js";
 import { useAuth } from "../../../../context/UserAuthContext.jsx";
+import { NavBar_OneOption } from "../../../../components/Common/navBars.jsx";
+
 
 const MelanomaSingleSlug = ({route,navigation}) => {
 
@@ -141,8 +143,10 @@ const MelanomaSingleSlug = ({route,navigation}) => {
     }
 
     const isThisPartCompleted = async (sessionMemory) => {
-        const isCompleted = sessionMemory.some((session) => session.slug === bodyPart.slug);
-        setMarkedAsComplete(!isCompleted);
+        if( sessionMemory != null ){
+            const isCompleted = sessionMemory.some((session) => session.slug === bodyPart.slug);
+            setMarkedAsComplete(!isCompleted);
+        }
     }
 
     function generateNumericalUID(length) {
@@ -187,18 +191,18 @@ const MelanomaSingleSlug = ({route,navigation}) => {
 
     return(
         <View style={spotUpload_2_styles.container}>
-            {progress != null &&
+            <View style={spotUpload_2_styles.startScreen}>
+                <ScrollView ref={scrollViewRef} style={progress != null && {marginTop:30}} showsVerticalScrollIndicator={false}>  
+                <NavBar_OneOption 
+                    icon_left={{name:"arrow-left",size:25, action:() => navigation.goBack()}}
+                    title={bodyPart.slug}
+                />
+                {progress != null &&
                 <View style={spotUpload_2_styles.ProgressBar}>
                     <ProgressBar progress={progress} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
                 </View>
-            }
-            <View style={spotUpload_2_styles.startScreen}>
-                <ScrollView ref={scrollViewRef} style={progress != null && {marginTop:30}} showsVerticalScrollIndicator={false}>  
-                    <View style={{width:"100%",alignItems:"center",marginBottom:30}} >
-                        <PartLabelBox 
-                            bodyPart={bodyPart}
-                        /> 
-
+                }
+                    <View style={{width:"100%",alignItems:"center",marginBottom:30,marginTop:35}} >
                         <SpotPicker 
                             redDotLocation={redDotLocation}
                             setRedDotLocation={setRedDotLocation}

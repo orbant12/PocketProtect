@@ -250,10 +250,11 @@ return(
                 {/*DIAGNOSIS*/}
                 <View ref={diagnosisRef}  style={{width:"100%"}}>
                     <Text style={{fontWeight:"800",fontSize:24,margin:15,marginTop:40}}>Custom Diagnosis</Text>
-                    {diagnosisData.map((data) => (
+                    {diagnosisData.map((data,index) => (
                         <MainDiagnosisBox 
                             navigation={navigation}
                             data={data}
+                            key={index}
                         />
                     ))}
                     <View style={styles.selectBox}>

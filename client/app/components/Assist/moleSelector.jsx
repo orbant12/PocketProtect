@@ -80,13 +80,14 @@ const MolesSelectContainerScreen = ({
         <View style={{width:"100%",alignItems:"center"}}>
             <Text style={{alignSelf:"left",fontWeight:"700",margin:10,fontSize:20}}>Highly Recommended</Text>
             {riskyMelanomaData.length != 0 ? (
-                riskyMelanomaData.map((data) =>(
+                riskyMelanomaData.map((data,index) =>(
                     <SelectableMole_Bar 
                         selectedMoles={selectedMoles}
                         data={data}
                         handleSelect={handleSelect}
                         setOverlayHihghlightedSpot={setOverlayHihghlightedSpot}
                         setOverlayVisible={setOverlayVisible}
+                        key={index}
                     />
                 ))
             ) : (
@@ -98,13 +99,14 @@ const MolesSelectContainerScreen = ({
         <View style={{width:"100%",alignItems:"center",marginTop:40}}>
             <Text style={{alignSelf:"left",fontWeight:"700",margin:10,fontSize:20}}>Other Moles</Text>
             {melanomaData.length != 0 ? (
-                melanomaData.map((data) =>(
+                melanomaData.map((data,index) =>(
                     <SelectableMole_Bar 
                         selectedMoles={selectedMoles}
                         data={data}
                         handleSelect={handleSelect}
                         setOverlayHihghlightedSpot={setOverlayHihghlightedSpot}
                         setOverlayVisible={setOverlayVisible}
+                        key={index}
                     />
                 ))
             ) : (
@@ -116,13 +118,14 @@ const MolesSelectContainerScreen = ({
         <View style={{width:"100%",alignItems:"center",marginTop:40}}>
             <Text style={{alignSelf:"left",fontWeight:"700",margin:10,fontSize:20}}>AI - Risk Analasis Missing</Text>
             {unfinishedMelanomaData.length != 0 ? (
-                unfinishedMelanomaData.map((data) =>(
+                unfinishedMelanomaData.map((data,index) =>(
                     <SelectableMole_Bar 
                         selectedMoles={selectedMoles}
                         data={data}
                         handleSelect={handleSelect}
                         setOverlayHihghlightedSpot={setOverlayHihghlightedSpot}
                         setOverlayVisible={setOverlayVisible}
+                        key={index}
                     />
                 ))
             ) : (
@@ -449,13 +452,13 @@ const BodyPartOverlay = ({
                 {melanomaData.map((data,index) => (
                         data.melanomaDoc.spot[0].slug == bodyPart.slug && data.gender == userData.gender  && (
                             data.melanomaId == highlighted ? (
-                                <>
+                                
                                     <Circle cx={data.melanomaDoc.location.x} cy={data.melanomaDoc.location.y} r="5" fill="red" key={`${"circle"}_${index}`} />
-                                </>
+
                             ):(
-                                <>
+                                
                                     <Circle cx={data.melanomaDoc.location.x} cy={data.melanomaDoc.location.y} r="5" fill="black" key={`${"circle"}_${index}`} />
-                                </>
+                                
                             )
                         )
                     ))

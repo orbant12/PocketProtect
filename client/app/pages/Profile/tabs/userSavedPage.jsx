@@ -48,20 +48,20 @@ return (
         <View style={[Cstyles.cardRight, !data.stateName && {}]}>
         <View>
             {!data.stateName ? 
-                <Text style={{color:"magenta",fontWeight:"500",fontSize:10}}>Not added yet</Text>
+                <Text style={{color:"magenta",fontWeight:500,fontSize:10}}>Not added yet</Text>
             :
-                <Text style={{color:"lightgreen",fontWeight:"500",fontSize:10}}>Already Provided</Text>
+                <Text style={{color:"lightgreen",fontWeight:500,fontSize:10}}>Already Provided</Text>
             }      
-            <Text style={{color:"white",fontWeight:"700",fontSize:20}}>
+            <Text style={{color:"white",fontWeight:700,fontSize:20}}>
                 {data.title}
             </Text>
         </View>
 
         <Pressable style={[{flexDirection:"row",alignItems:"center",borderWidth:0,borderColor:"magenta",borderRadius:20,padding:8,justifyContent:"center",backgroundColor:"white"}, !data.stateName ? {borderColor:"magenta"} : {borderColor:"lightgreen"}]}>
         {data.stateName ?
-            <Text style={{color:"black",marginRight:10,fontWeight:"600"}}>See Data</Text>
+            <Text style={{color:"black",marginRight:10,fontWeight:600}}>See Data</Text>
             :
-            <Text style={{color:"black",marginRight:10,fontWeight:"600"}}>Add now </Text>
+            <Text style={{color:"black",marginRight:10,fontWeight:600}}>Add now </Text>
         }
             <MaterialCommunityIcons 
                 name='arrow-right'
@@ -73,7 +73,7 @@ return (
         <View style={[Cstyles.cardLeft,  !data.stateName && {}]}>
             {data.stateName && 
             <>
-                <Text style={{color:"white",fontSize:9,maxWidth:80,fontWeight:"800",opacity:0.7}}>Last updated:</Text>
+                <Text style={{color:"white",fontSize:9,maxWidth:80,fontWeight:800,opacity:0.7}}>Last updated:</Text>
                 <Text style={{color:"white",fontSize:10,maxWidth:70,marginTop:5,opacity:0.5}}>2003.11.17</Text>
             </>
             }        

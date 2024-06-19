@@ -46,7 +46,7 @@ export const styles = StyleSheet.create({
     },
     title: {
         fontSize: 20,
-        fontWeight: 'bold',
+        fontWeight: 700,
         color:"white",
         margin: 10,
     },
@@ -59,7 +59,7 @@ export const styles = StyleSheet.create({
     },
     TaskTitle: {
         fontSize: 16,
-        fontWeight: 'bold',
+        fontWeight: 700,
         color:"#f2f2f2"
     },
     TaskSubTitle: {

@@ -1,16 +1,16 @@
 import React,{ useState,useCallback } from "react";
-import { View, StyleSheet,ScrollView,Text, Pressable,TouchableOpacity,RefreshControl,Image } from "react-native";
+import { View, ScrollView,Text, Pressable,TouchableOpacity,RefreshControl,Image } from "react-native";
 import { useAuth } from "../../../context/UserAuthContext";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {fetchSlugMelanomaData,updateCompletedParts,fetchCompletedParts } from "../../../services/server";
 import { dotsSelectOnPart } from "./components/selectedSlugDots";
-import { Navigation_SingleSpotAnalysis, Navigation_AddSlugSpot } from "../../../navigation/navigation"
+import { Navigation_SingleSpotAnalysis, Navigation_AddSlugSpot,Navigation_MoleUpload_2 } from "../../../navigation/navigation"
 import { useFocusEffect } from '@react-navigation/native';
 import { NavBar_Slug } from "../../../components/LibaryPage/Melanoma/navBarRow";
 import { SlugStyles } from "../../../styles/libary_style";
 import { decodeParts } from "../../../utils/melanoma/decodeParts";
 import { styles_shadow } from "../../../styles/shadow_styles";
-import { NavBar_TwoOption } from "../../../components/Common/navBars";
+
 
 const SlugAnalasis = ({ route,navigation }) => {
 
@@ -25,7 +25,7 @@ const SlugAnalasis = ({ route,navigation }) => {
     const skin_type = route.params.skin_type;
     const userData = route.params.userData;
     const gender = userData.gender
-    const isCompleted = route.params.isCompleted
+
 
 //<==================<[ Functions ]>====================>
 
@@ -37,9 +37,10 @@ const SlugAnalasis = ({ route,navigation }) => {
                 slug: bodyPart.slug
             });
             const melanomaData = response;
-            setMelanomaData(melanomaData);
-            setHighlighted(melanomaData[0].melanomaId);
-            console.log(melanomaData)            
+            if(melanomaData != undefined){
+                setMelanomaData(melanomaData);
+                setHighlighted(melanomaData[0] != undefined && melanomaData[0].melanomaId);
+            }
         }
     }
 
@@ -48,8 +49,10 @@ const SlugAnalasis = ({ route,navigation }) => {
             const response = await fetchCompletedParts({
                 userId: currentuser.uid,
             });
-            const completedSlugs = response.map(part => part.slug);     
-            setCompletedParts(completedSlugs)            
+            if(response != undefined){
+                const completedSlugs = response.map(part => part.slug);     
+                setCompletedParts(completedSlugs)       
+            }     
         }
     }
 
@@ -73,7 +76,6 @@ const SlugAnalasis = ({ route,navigation }) => {
         const response = updatedCompletedParts.map(slug => {                
             return { slug: slug };
         });
-        console.log(response)
         await updateCompletedParts({
             userId: currentuser.uid,
             completedArray: response
@@ -93,7 +95,14 @@ const SlugAnalasis = ({ route,navigation }) => {
     }
 
     const handleAddMelanoma = () => {
-        navigation.navigate("MelanomaProcessSingleSlug", { data: bodyPart, gender:userData.gender, userId: currentuser.uid, sessionMemory: decodeParts(completedParts), progress:null,skinColor: skin_type })
+        Navigation_MoleUpload_2({
+            bodyPart:bodyPart,
+            gender:userData.gender,
+            skin_type: skin_type,
+            navigation,
+            completedArray:decodeParts(completedParts),
+            progress:null
+        })
     }
 
     useFocusEffect(
@@ -154,6 +163,7 @@ return(
                                 handleSpotOpen={handleSpotOpen}
                                 highlighted={highlighted}
                                 showSpot={showSpot}
+                                key={index}
                             />
                         ):null
                     ))}

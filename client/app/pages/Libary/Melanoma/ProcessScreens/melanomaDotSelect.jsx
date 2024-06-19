@@ -1,4 +1,4 @@
-import Svg, { Circle, Path,Text } from '/Users/tamas/Programming Projects/DetectionApp/client/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
+import Svg, { Circle, Path,Text,G } from '/Users/tamas/Programming Projects/DetectionApp/client/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
 
 export const dotSelectOnPart = ({
     bodyPart,
@@ -266,17 +266,17 @@ export const dotSelectOnPart = ({
                 ))}
     
                 <Circle cx={redDotLocation.x} cy={redDotLocation.y} r="5" fill="red" />
-                {currentSlugMemory.map((data) =>
+                {currentSlugMemory.map((data,index) =>
                     highlighted != data.id ?
-                    <>
+                    <G key={index}>
                         <Circle cx={data.location.x} cy={data.location.y} r="5" fill="black" />
                         <Text fill="black" x={data.location.x+5}  y={data.location.y-5}>{data.id}</Text>
-                    </>
+                    </G>
                     :
-                    <>
+                    <G key={index}>
                         <Circle cx={data.location.x} cy={data.location.y} r="5" fill="red" />
                         <Text fill="red" x={data.location.x+5}  y={data.location.y-5}>{data.id}</Text>
-                    </>
+                    </G>
                 )}
             
         </Svg>

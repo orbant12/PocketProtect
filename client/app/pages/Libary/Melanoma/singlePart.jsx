@@ -13,7 +13,6 @@ import { MoleTab } from "../../../components/LibaryPage/Melanoma/SingleMole/tabs
 import { AssistTab } from "../../../components/LibaryPage/Melanoma/SingleMole/tabs/assistTab";
 import { useFocusEffect } from '@react-navigation/native';
 import { Navigation_AddSlugSpot } from "../../../navigation/navigation";
-import { styles_shadow } from "../../../styles/shadow_styles";
 import { NavBar_OneOption } from "../../../components/Common/navBars";
 
 const SinglePartAnalasis = ({ route,navigation }) => {

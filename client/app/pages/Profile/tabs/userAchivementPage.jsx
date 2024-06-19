@@ -10,7 +10,7 @@ return(
 
     {/* ACHIVEMENT 1 */}
     <View style={styles.achivementContainer}>
-        <Text style={{marginBottom:20,marginTop:30,fontWeight:"600"}}>Achivement Name</Text>
+        <Text style={{marginBottom:20,marginTop:30,fontWeight:600}}>Achivement Name</Text>
         <View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-evenly",width:"100%",marginBottom:10}}>
             <View style={{justifyContent:"space-between",height:90}}>
                 <Text>Todo 1</Text>
@@ -29,7 +29,7 @@ return(
     </View>
     {/* ACHIVEMENT 2 */}
     <View style={styles.achivementContainer}>
-        <Text style={{marginBottom:20,marginTop:30,fontWeight:"600"}}>Achivement Name</Text>
+        <Text style={{marginBottom:20,marginTop:30,fontWeight:600}}>Achivement Name</Text>
         <View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-evenly",width:"100%",marginBottom:10}}>
             <View style={{justifyContent:"space-between",height:90}}>
                 <Text>Todo 1</Text>
@@ -48,7 +48,7 @@ return(
     </View>
     {/* ACHIVEMENT 3 */}
     <View style={styles.achivementContainer}>
-        <Text style={{marginBottom:20,marginTop:30,fontWeight:"600"}}>Achivement Name</Text>
+        <Text style={{marginBottom:20,marginTop:30,fontWeight:600}}>Achivement Name</Text>
         <View style={{flexDirection:"row",alignItems:"center",justifyContent:"space-evenly",width:"100%",marginBottom:10}}>
             <View style={{justifyContent:"space-between",height:90}}>
                 <Text>Todo 1</Text>
