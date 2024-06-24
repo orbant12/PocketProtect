@@ -1,16 +1,18 @@
 
-
-
-import { View,Text,TouchableOpacity,StyleSheet,Pressable,ScrollView,TextInput } from "react-native"
-import React,{useState} from "react"
+import { View,Text,TouchableOpacity,StyleSheet,Pressable,ScrollView,TextInput,Keyboard } from "react-native"
+import React,{useEffect, useState,useRef} from "react"
 import ProgressBar from 'react-native-progress/Bar';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useAuth } from "../../../context/UserAuthContext";
-import { saveBloodWork,updateBloodWork } from '../../../services/server';
+import { saveBloodWork,fetchBloodWork, updateBloodWork } from "../../../services/server"
+import { SelectableBars } from "../../../components/Common/SelectableComponents/selectableBars";
 import moment from 'moment'
+import { BloodWorkData_Default } from "../../../utils/initialValues";
+import { BloodWorkData } from "../../../services/server";
+import { Timestamp } from "../../../utils/date_manipulations";
 
-const AssesmentScreen = ({navigation,route}) => {
+const BloodWorkPage = ({navigation,route}) => {
 
 //<==================<[ Variables ]>====================>
 
@@ -21,97 +23,14 @@ const AssesmentScreen = ({navigation,route}) => {
     const [ saveCardModalActive, setSaveCardModalActive] = useState(false)
     const [ focused,setFocused] = useState(false)
     const [ creationDate,setCreationDate] = useState("2001-08-25T23:15:00.000Z")
-    const [ methodSelected, setMethodSelected] = useState("")    
-    const [ bloodWorkData2, setBloodWorkData2] = useState([
-        {
-            title:"Basic Health Indicators",
-            data:[
-                {type:"Hemoglobin (Hgb)",number:0},
-                {type:"Hematocrit (Hct)",number:0},
-                {type:"Red Blood Cell Count (RBC)",number:0},     
-                {type:"White Blood Cell Count (WBC)",number:0},   
-                {type:"Platelet Count",number:0},               
-            ]
-        },
-        {
-            title:"Lipid Panel",
-            data:[
-                {type:"Total Cholesterol",number:0},
-                {type:"High Density Lipoprotein",number:0},
-                {type:"Low Density Lipoprotein",number:0},     
-                {type:"Triglycerides",number:0},                               
-            ]
-        },
-        {
-            title:"Metabolic Panel",
-            data:[
-                {type:"Glucose",number:0},
-                {type:"Blood Urea Nitrogen",number:0},
-                {type:"Creatinine",number:0},     
-                {type:"Sodium",number:0},
-                {type:"Potassium",number:0},  
-                {type:"Chloride",number:0},  
-                {type:"Carbon Dioxide",number:0},
-                {type:"Calcium",number:0}, 
-            ]
-        },
-        {
-            title:"Liver Function Tests:",
-            data:[
-                {type:"Alanine Aminotransferase",number:0},
-                {type:"Aspartate Aminotransferase",number:0},
-                {type:"Alkaline Phosphatase",number:0},     
-                {type:"Bilirubin",number:0},
-                {type:"Albumin",number:0},  
-                {type:"Total Protein",number:0},    
-            ]
-        },
-        {
-            title:"Thyroid Panel:",
-            data:[
-                {type:"Thyroid Stimulating Hormone",number:0},
-                {type:"Free Thyroxine",number:0},
-                {type:"Free Triiodothyronine",number:0},     
-            ]
-        },
-        {
-            title:"Iron Studies:",
-            data:[
-                {type:"Serum Iron",number:0},
-                {type:"Ferritin",number:0},
-                {type:"Total Iron Binding Capacity",number:0},     
-                {type:"Transferrin Saturation",number:0}, 
-            ]
-        }, 
-        {
-            title:"Vitamins and Minerals:",
-            data:[
-                {type:"Vitamin D",number:0},
-                {type:"Vitamin B12",number:0},
-                {type:"Folate",number:0},                     
-            ]
-        }, 
-        {
-            title:"Inflammatory Markers:",
-            data:[
-                {type:"C Reactive Protein",number:0},
-                {type:"Erythrocyte Sedimentation Rate",number:0},                                    
-            ]
-        },  
-        {
-            title:"Hormonal Panel:",
-            data:[
-                {type:"Testosterone",number:0},
-                {type:"Estrogen",number:0},    
-                {type:"Progesterone",number:0},                                  
-            ]
-        },
-    ])
+    const [ methodSelected, setMethodSelected] = useState("")
+    const [ isUploadStage, setIsUploadStage] = useState(false)  
+    const [bloodWorkData, setBloodWorkData] = useState<BloodWorkData>(BloodWorkData_Default);
     
     const dataFixed = [
             {
                 q: "Select a method to upload your blood work",
-                component: <Methods handleMethodSelect={handleMethodSelect} methodSelected={methodSelected} />
+                component: <Methods setMethodSelected={setMethodSelected} methodSelected={methodSelected} />
             },
             {
                 q: "When did you receive your blood work results",
@@ -121,18 +40,65 @@ const AssesmentScreen = ({navigation,route}) => {
                 q: "Why did you decide to make your blood work",
                 component: <Why />
             }
+        ]
+
+    const manual = [
+        {
+            q:"Basic Health Indicators",
+            component:BloodWorkComponent(0)
+        },
+        {
+            q:"Lipid Panel",
+            component:BloodWorkComponent(1)
+        },
+        {
+            q:"Metabolic Panel",
+            component:BloodWorkComponent(2)
+        },
+        {
+            q:"Liver Function Tests",
+            component:BloodWorkComponent(3)
+        },
+        {
+            q:"Thyroid Panel",
+            component:BloodWorkComponent(4)
+        },
+        {
+            q:"Iron Studies",
+            component:BloodWorkComponent(5)
+        },
+        {
+            q:"Vitamins and Minerals",
+            component:BloodWorkComponent(6)
+        },
+        {
+            q:"Inflammatory Markers",
+            component:BloodWorkComponent(7)
+        },
+        {
+            q:"Hormonal Panel",
+            component:BloodWorkComponent(8)
+        },
+        {
+            q:"We are all done !",
+            component:FinishPage()
+        }
     ]
 
+    const scan = []
+
+    const gallery = []
+
+    const pdf = []
 
 
 //<==================<[ Functions ]>====================>
 
-    const onDateChange = (event, date) => {
-        console.log(date)
+    const onDateChange = (even:any, date:Date) => {
         setCreationDate(String(date))
     };
 
-    function formattedDate(timestampRaw) {    
+    function formattedDate(timestampRaw:Timestamp | "Not provided yet") {    
         if(timestampRaw == "Not provided yet"){
             return timestampRaw
         } else{
@@ -141,8 +107,8 @@ const AssesmentScreen = ({navigation,route}) => {
         }    
     };
     
-    const handleDataChange2 = (title,type,e) => {
-        setBloodWorkData2((prevData) => 
+    const handleDataChange2 = (title:string,type:string,e:any) => {
+        setBloodWorkData((prevData) => 
             prevData.map((section) => 
                 section.title === title 
                     ? {
@@ -158,7 +124,7 @@ const AssesmentScreen = ({navigation,route}) => {
         );  
     }
     
-    function generateUID(length) {
+    function generateUID(length:number) {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let uid = '';
         for (let i = 0; i < length; i++) {
@@ -167,12 +133,12 @@ const AssesmentScreen = ({navigation,route}) => {
         return uid;
     }
     
-    const handleSaveProgress = async (type) => {
+    const handleSaveProgress = async (type:"first" | "update") => {
         const UID = generateUID(16)
         if(type == "first"){
             const response = await saveBloodWork({
                 userId: currentuser.uid,
-                data: bloodWorkData2,
+                data: bloodWorkData,
                 Create_Date: creationDate,        
                 id: `Blood_${UID}`,
                 higherRisk: false
@@ -185,7 +151,7 @@ const AssesmentScreen = ({navigation,route}) => {
         } else if (type == "update"){
             const response = await updateBloodWork({
                 userId: currentuser.uid,
-                data: bloodWorkData2,
+                data: bloodWorkData,
                 Create_Date: creationDate,        
                 id: `Blood_${UID}`,
                 higherRisk: false
@@ -198,60 +164,40 @@ const AssesmentScreen = ({navigation,route}) => {
         }    
     }
     
-    const handleBack = (permission) => {
+    const handleBack = (permission:boolean) => {
         if (progress == 0 || permission == true){
             navigation.goBack()
         } else {
             setProgress(progress - 1)
         }
     }
-        
-    const handleMethodSelect = (input) => {
-        setMethodSelected(input);    
-    };
-
-    const handleUpload = () => {        
+    
+    const handleUpload = () => {
+        setIsUploadStage(true)
         setProgress(1)
     }
 
 
 //<==================<[ Components ]>====================>
 
-    function Methods(){
+    function Methods({
+        setMethodSelected,
+        methodSelected
+    }:{
+        setMethodSelected:(type:string) => void;
+        methodSelected: string;
+    }){
         return(
-            <View style={{width:"100%",height:"70%",alignItems:"center",marginTop:10}}>
-                <SelectableBar 
-                    methodSelected={methodSelected}
-                    handleMethodSelect={handleMethodSelect}
-                    type={"gallery"}
-                    title={"Upload from gallery"}
-                    icon_name={"image"}
-                />
-
-                <SelectableBar 
-                    methodSelected={methodSelected}
-                    handleMethodSelect={handleMethodSelect}
-                    type={"manual"}
-                    title={"Add in manually"}
-                    icon_name={"fingerprint"}
-                />
-
-                <SelectableBar 
-                    methodSelected={methodSelected}
-                    handleMethodSelect={handleMethodSelect}
-                    type={"pdf"}
-                    title={"Upload from PDF"}
-                    icon_name={"file-upload"}
-                />
-
-                <SelectableBar 
-                    methodSelected={methodSelected}
-                    handleMethodSelect={handleMethodSelect}
-                    type={"scan"}
-                    title={"Scan with your camera"}
-                    icon_name={"data-matrix-scan"}
-                />              
-            </View>    
+            <SelectableBars 
+                setOptionValue={setMethodSelected}
+                optionValue={methodSelected}
+                items={[
+                    {type:"gallery", icon:{type:"icon",metaData:{name:"image",size:30}}, title:"Upload from gallery"},
+                    {type:"manual", icon:{type:"icon",metaData:{name:"fingerprint",size:30}}, title:"Add in manually"},
+                    {type:"pdf", icon:{type:"icon",metaData:{name:"file-upload",size:30}}, title:"Upload from PDF"},
+                    {type:"scan", icon:{type:"icon",metaData:{name:"data-matrix-scan",size:30}}, title:"Scan with your camera"}
+                ]}
+            />
         )
     }
     
@@ -278,7 +224,7 @@ const AssesmentScreen = ({navigation,route}) => {
         return(
             <ScrollView style={{width:"100%",paddingTop:10}}>
                 <View style={{width:"100%",alignItems:"center",marginBottom:30}}>
-                    {bloodWorkData2[index].data.map((dataFrom) =>(
+                    {bloodWorkData[index].data.map((dataFrom) =>(
                         <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginTop:20,borderWidth:2,padding:20,borderRadius:20}}>
                             <Text style={{fontWeight:"600",width:"70%"}}>{dataFrom.type}</Text>
                             <View style={{borderLeftWidth:2}}>        
@@ -286,7 +232,7 @@ const AssesmentScreen = ({navigation,route}) => {
                                     keyboardType="numeric"
                                     style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10,marginLeft:20}}                   
                                     value={`${dataFrom.number}`}
-                                    onChangeText={(e) => handleDataChange2(bloodWorkData2[index].title,dataFrom.type,e)}
+                                    onChangeText={(e) => handleDataChange2(bloodWorkData[index].title,dataFrom.type,e)}
                                     textAlign="center"      
                                     onFocus={() => setFocused(true)}      
                                 />                   
@@ -359,38 +305,6 @@ const AssesmentScreen = ({navigation,route}) => {
             </View>
         )
     }
-
-
-    function FactScreen(){
-        return(
-            <View style={[styles.startScreen,{justifyContent:"space-between",height:"90%",marginTop:30}]}>
-                    <View style={{width:"100%",alignItems:"center",marginBottom:50,height:"70%",justifyContent:"space-between"}}>
-                        <View style={{width:"100%",alignItems:"center"}}>
-                            <Image 
-                                source={""} 
-                                style={{width:230,height:230,borderRadius:"120%",borderWidth:0.5,borderColor:"lightgray",marginTop:0}}                                               
-                            />
-                            <Text style={{fontWeight:"700",fontSize:20,maxWidth:"80%",textAlign:"center",marginTop:10}}>Deep Learning Neural Network</Text>
-                            <Text style={{fontWeight:"700",fontSize:20,maxWidth:"80%",textAlign:"center",marginTop:0}}>+ Dermotologist</Text>
-                        </View>     
-                        <View>
-                            <Text style={{fontWeight:"550",fontSize:12,maxWidth:"90%",textAlign:"center",marginTop:5,opacity:0.7,marginTop:20,textAlign:"justify"}}>Our AI model can detect malignant moles with a <Text style={{color:"magenta",fontWeight:"600"}}>95%</Text> accuracy which is <Text style={{color:"magenta",fontWeight:"600"}}>+20% </Text>better then the accuracy of dermotologists</Text> 
-                            <Text style={{fontWeight:"550",fontSize:12,maxWidth:"90%",textAlign:"center",marginTop:5,opacity:0.7,marginTop:30,textAlign:"justify"}}>Your moles can be supervised by both <Text style={{color:"magenta",fontWeight:800}}>AI & Dermotologist</Text> to be as protected as possible and alert you to consult a possible removal with your dermotologist</Text> 
-                        </View> 
-                    </View>                   
-                    <TouchableOpacity onPress={() => setProgress(progress + 0.1)} style={{width:"80%",padding:5,flexDirection:"row",alignItems:"center",borderWidth:0,backgroundColor:"black",borderRadius:40,position:"absolute",bottom:20}}>
-                        <View style={{backgroundColor:"white",padding:10,borderRadius:30}}>
-                            <MaterialCommunityIcons 
-                                name="check-all"
-                                size={25}
-                                color={"black"}
-                            />
-                        </View>         
-                        <Text style={{marginLeft:20,fontSize:15,color:"white",fontWeight:"700",opacity:0.9,textAlign:"center",justifyContent:"center"}}>Next</Text>
-                    </TouchableOpacity>
-            </View>
-        )
-    }
     
     const SaveModal = ({saveCardModalActive}) => {
         return(
@@ -452,30 +366,74 @@ const AssesmentScreen = ({navigation,route}) => {
                 <ProgressRow 
                     handleBack={handleBack}
                     progress={progress} 
-                    dataFixed={dataFixed}                     
+                    dataFixed={dataFixed} 
+                    manual={manual} 
                     setIsSaveModalActive={setIsSaveModalActive} 
-                    isSaveModalActive={isSaveModalActive}                     
+                    isSaveModalActive={isSaveModalActive} 
+                    isUploadStage={isUploadStage}
                     ProgressBar={ProgressBar}
                 />
                 {progress == 0 ?
                     FirstScreen()                
-                :                
-                    <View style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
-                        <View style={{width:"90%",alignItems:"center",backgroundColor:"#eee",justifyContent:"center",padding:20,borderRadius:20,marginTop:10}}>                      
-                            <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>                                                             
-                        </View>                                                 
-                        {dataFixed[progress-1].component}
-                        {progress == dataFixed.length ?
-                            <Pressable onPress={() => handleUpload(methodSelected)} style={[styles.startButton,{marginBottom:10}]}>                        
+                :
+                    focused ?
+                        <Pressable onPress={() => {Keyboard.dismiss();setFocused(false)}} style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
+                            <View style={{width:"90%",alignItems:"center",backgroundColor:"#eee",justifyContent:"center",padding:20,borderRadius:20,marginTop:10}}>
+                                <Text style={{fontWeight:"700",fontSize:20,width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>            
+                            </View> 
+                            {!isUploadStage && 
+                                <>
+                                    {dataFixed[progress-1].component}
+                                    {progress == dataFixed.length ?
+                                        <Pressable onPress={() => {/*handleUpload(methodSelected)*/{handleUpload()}}} style={[styles.startButton,{marginBottom:10}]}>                        
+                                            <Text style={{padding:14,fontWeight:"600",color:"white"}}>Upload</Text>
+                                        </Pressable>
+                                        :
+                                        <Pressable onPress={() => setProgress(progress + 1)} style={[styles.startButton,{marginBottom:10}]}>                        
+                                            <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
+                                        </Pressable>
+                                    } 
+                                </>
+                            }                   
+                        </Pressable>
+                        :
+                        <View style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
+                        <View style={{width:"90%",alignItems:"center",backgroundColor:"#eee",justifyContent:"center",padding:20,borderRadius:20,marginTop:10}}>
+                            {!isUploadStage ? 
+                            <Text style={{fontWeight:"700",fontSize:20,width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>            
+                            :
+                            <Text style={{fontWeight:"700",fontSize:20,width:"100%",textAlign:"center"}}>{manual[progress - 1].q}</Text>            
+                            }
+                        </View> 
+                        {!isUploadStage ? 
+                        <>
+                            {dataFixed[progress-1].component}
+                            {progress == dataFixed.length ?
+                                <Pressable onPress={() => {/*handleUpload(methodSelected)*/{handleUpload()}}} style={[styles.startButton,{marginBottom:10}]}>                        
+                                    <Text style={{padding:14,fontWeight:"600",color:"white"}}>Upload</Text>
+                                </Pressable>
+                                :
+                                <Pressable onPress={() => setProgress(progress + 1)} style={[styles.startButton,{marginBottom:10}]}>                        
+                                    <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
+                                </Pressable>
+                            } 
+                        </>
+                        :
+                        <>
+                        {manual[progress-1].component}
+                        {progress == manual.length ?
+                            <Pressable onPress={() => {/*handleUpload(methodSelected)*/{handleUpload()}}} style={[styles.startButton,{marginBottom:10}]}>                        
                                 <Text style={{padding:14,fontWeight:"600",color:"white"}}>Upload</Text>
                             </Pressable>
                             :
                             <Pressable onPress={() => setProgress(progress + 1)} style={[styles.startButton,{marginBottom:10}]}>                        
                                 <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
                             </Pressable>
-                        }                                                                   
+                        } 
+                        </>
+                        }
                         <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:10,position:"absolute",right:10,bottom:20,opacity:0.3}}>{progress} / {dataFixed.length}</Text>
-                    </View>
+                        </View>
                 }                                  
             </View>
         </>
@@ -501,7 +459,6 @@ const styles = StyleSheet.create({
         alignItems:"center",
         width:"100%",
         height:"100%",
-        justifyContent:"center",
         backgroundColor:"white",
         justifyContent:"space-between"
     },
@@ -555,7 +512,6 @@ const styles = StyleSheet.create({
     },
     startScreen:{
         borderWidth:0,
-        marginBottom:0,
         padding:5,
         width:"100%",
         alignItems:"center",
@@ -583,12 +539,12 @@ const styles = StyleSheet.create({
 })
 
 
-export default AssesmentScreen 
+export default BloodWorkPage
 
 
 
 
-const ProgressRow = ({progress,dataFixed,setIsSaveModalActive,isSaveModalActive,ProgressBar}) => {
+const ProgressRow = ({handleBack,progress,dataFixed,manual,setIsSaveModalActive,isSaveModalActive,isUploadStage,ProgressBar}) => {
     return(
         <View style={styles.ProgressBar}>
         <TouchableOpacity onPress={handleBack} style={{backgroundColor:"#eee",borderRadius:30}}>
@@ -597,8 +553,13 @@ const ProgressRow = ({progress,dataFixed,setIsSaveModalActive,isSaveModalActive,
                 size={20}
                 style={{padding:5}}
             />
-        </TouchableOpacity>        
-            <ProgressBar progress={progress / dataFixed.length} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />                                        
+        </TouchableOpacity>
+        {!isUploadStage ?
+            <ProgressBar progress={progress / dataFixed.length} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
+            :
+            <ProgressBar progress={progress / manual.length} width={250} height={5} color={"red"} backgroundColor={"white"} borderColor={"magenta"} />
+        }
+        
         <TouchableOpacity onPress={() => setIsSaveModalActive(!isSaveModalActive)} style={{backgroundColor:"#eee",borderRadius:30}}>
             <MaterialCommunityIcons 
                 name="close"
@@ -611,7 +572,6 @@ const ProgressRow = ({progress,dataFixed,setIsSaveModalActive,isSaveModalActive,
 }
 
 
-
 const SelectableBar = ({
     handleMethodSelect,
     methodSelected,
@@ -620,7 +580,7 @@ const SelectableBar = ({
     icon_name
 }) => {
     return(
-        <TouchableOpacity onPress={() => handleMethodSelect(type)} style={[{width:"95%",padding:0,flexDirection:"row",alignItems:"center",borderWidth:2,borderRadius:10}, methodSelected == type && {borderColor:"magenta"}]}>
+        <TouchableOpacity onPress={() => handleMethodSelect(type)} style={[{width:"95%",padding:0,flexDirection:"row",alignItems:"center",borderWidth:2,borderRadius:10,marginTop:20,alignSelf:"center"}, methodSelected == type && {borderColor:"magenta"}]}>
             <View style={[{borderWidth:0,padding:15,borderRightWidth:2,borderRadius:10,borderTopRightRadius:0,borderBottomRightRadius:0},methodSelected == type && {borderColor:"magenta"}]}>
                 <MaterialCommunityIcons 
                     name={icon_name}

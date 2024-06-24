@@ -10,9 +10,121 @@ import {
 } from "firebase/firestore"
 import { db,storage } from './firebase.js';
 import { ref,  getDownloadURL, uploadBytes,deleteObject} from "firebase/storage";
-import { dateDistanceFromToday } from "../utils/date_manipulations.js";
+import { dateDistanceFromToday, Timestamp } from "../utils/date_manipulations";
 import { generateNumericalUID } from "../utils/uid_generator.js";
 import { WelcomeTexts } from "../../assets/welcome_scripts/welcomeTexts.js";
+import { Gender, SkinType, SpotData } from "../navigation/navigation.js";
+import { Slug } from "../components/LibaryPage/Melanoma/BodyParts/index.js";
+import { UserData } from "../navigation/navigation.js";
+
+type SpotDeleteTypes = "history" | "latest"
+
+type userFields = "gender" | "birth_date"
+
+export type BloodWorkTypes = 
+    | "Basic Health Indicators" 
+    | "Lipid Panel"
+    | "Metabolic Panel"
+    | "Liver Function Tests"
+    | "Thyroid Panel"
+    | "Iron Studies"
+    | "Vitamins and Minerals"
+    | "Inflammatory Markers"
+    | "Hormonal Panel"
+    | "Hormonal Panel";
+
+export type DiagnosisData = {
+    id:string,
+        diagnosis: string,
+        clientSymphtoms:string,
+        created_at: string,
+        possibleOutcomes: string;
+        stages:{
+            stage_one:[{a:string,q:string,type:"binary" | "feedback"}]
+            stage_two:{
+                chance:string;
+                survey:[{a:string,q:string,type:"binary" | "feedback"}]
+            }
+            stage_three:{
+                assistance_frequency:string
+            }
+            stage_four:any
+        }
+        title:string;
+}
+
+
+
+export type BloodWorkCategory = {
+    title: string;
+    data: {
+        type: string;
+        number: number;
+    }[];
+};
+
+export type BloodWorkData = BloodWorkCategory[];
+
+export type BloodWorkDoc = {
+    created_at:string;
+    data:BloodWorkData;
+    id: string;
+    risk: boolean;
+}
+
+
+
+
+interface API_Melanoma {
+    userId:string;
+    melanomaDocument?: {
+        spot:[
+            slug:string,
+            pathArray: any[],
+            color:string
+        ]
+    };
+    spotId?:string;
+    gender?: Gender;
+    melanomaPictureUrl?:string;
+    storageLocation?:string;
+    risk?:number;
+    storage_name?:string;
+    created_at?: Date;
+    riskToUpdate?: {
+        risk:number
+    };
+    metaData?:{
+        completedArray?:any[],
+        detected_relative: string,
+        skin_type: SkinType,
+        sunburn?: any[]
+    };
+    melanomaPicFile?: Blob;
+    slug?:Slug;
+    data?: SpotData;
+    deleteType?: SpotDeleteTypes;
+    completedArray?: [{slug:string}]
+}
+
+interface API_User {
+    userId:string;
+    fieldNameToChange: userFields;
+    dataToChange: any
+}
+
+interface API_Diagnosis {
+    userId:string;
+    data?:DiagnosisData;
+}
+
+interface API_BloodWork {
+    userId: string;
+    higherRisk?: boolean;
+    data?: BloodWorkData;
+    Create_Date?: string;
+    id?:string;
+}
 
 //<===> Melanoma <====>
 
@@ -20,17 +132,17 @@ export const melanomaSpotUpload = async ({
     userId,
     melanomaDocument,
     gender,
-    birthmarkId,
+    spotId,
     melanomaPictureUrl,
     storageLocation,
     risk,
     storage_name,
-    created_at
-}) => {
+    created_at,
+}:API_Melanoma) => {
     try{
-        const ref = doc(db, "users", userId, "Melanoma", birthmarkId);
+        const ref = doc(db, "users", userId, "Melanoma", spotId);
         await setDoc(ref, {
-            melanomaId: birthmarkId,
+            melanomaId: spotId,
             melanomaDoc:melanomaDocument,
             gender: gender,
             melanomaPictureUrl: melanomaPictureUrl,
@@ -45,14 +157,14 @@ export const melanomaSpotUpload = async ({
     }
 }
 
-export const updateSpotData = async ({
+export const updateSpotRisk = async ({
     userId,
     spotId,
-    dataToUpdate
-}) => {
+    riskToUpdate
+}:API_Melanoma) => {
     try{
         const ref = doc(db, "users", userId, "Melanoma", spotId)
-        await updateDoc(ref,{risk: dataToUpdate.risk})
+        await updateDoc(ref,{risk: riskToUpdate.risk})
         return true
     } catch(err) {
         console.error(err)
@@ -63,7 +175,7 @@ export const updateSpotData = async ({
 export const melanomaMetaDataUpload = async ({
     userId,
     metaData
-}) => {
+}:API_Melanoma) => {
     try{
         const ref = doc(db, "users", userId, "Medical_Data", "skin_data");
         await setDoc(ref,metaData);
@@ -76,7 +188,7 @@ export const melanomaMetaDataUpload = async ({
 export const melanomaUploadToStorage = async ({
     melanomaPicFile,
     storageLocation,
-}) => {
+}:API_Melanoma) => {
     try{ 
         const base64TypeMetaData = "data:image/jpeg;base64,";
         const storageRef = ref(storage, storageLocation);
@@ -88,28 +200,10 @@ export const melanomaUploadToStorage = async ({
     }
 }
 
-export const fetchMelanomaSpotData = async ({
-    userId,
-    melanomaId,
-}) => {
-    try{
-        const ref = doc(db, "users", userId, "Medical_Data", melanomaId);
-        const docSnap = await getDoc(ref);
-        if (docSnap.exists()) {
-            console.log("Melanoma data:", docSnap.data());
-            return docSnap.data();
-        } else {
-            console.log("No such document!");
-        }
-    } catch (error) {
-        console.log(error);
-    }
-}
-
 export const fetchSelectedMole = async ({
     userId,
     spotId,
-}) => {
+}:API_Melanoma) => {
     try{
         const ref = doc(db, "users", userId, "Melanoma", spotId);
         const docSnap = await getDoc(ref);
@@ -127,7 +221,7 @@ export const fetchSelectedMole = async ({
 export const fetchAllMelanomaSpotData = async ({
     userId,
     gender,
-}) => {
+}:API_Melanoma) => {
     try{
         const ref = collection(db, "users", userId, "Melanoma");
         const snapshot = await getDocs(ref);
@@ -151,7 +245,7 @@ export const fetchSlugMelanomaData = async ({
     userId,
     gender,
     slug,
-}) => {
+}:API_Melanoma) => {
     try{
         const ref = collection(db, "users", userId, "Melanoma");
         const snapshot = await getDocs(ref);
@@ -169,7 +263,7 @@ export const fetchSlugMelanomaData = async ({
     }
 }
 
-export const fetchSpotHistory = async ({ userId, spotId }) => {
+export const fetchSpotHistory = async ({ userId, spotId }:API_Melanoma) => {
     try {
         const ref = collection(db, "users", userId, "Melanoma", spotId, "History");
         const snapshot = await getDocs(ref);
@@ -198,7 +292,7 @@ export const updateSpot = async ({
     userId,
     spotId,
     data,    
-}) => {
+}:API_Melanoma) => {
     const saveCurrentToHistory = async () => {
         const ref = doc(db, "users", userId, "Melanoma", spotId);
         const docSnap = await getDoc(ref);
@@ -224,7 +318,7 @@ export const updateSpot = async ({
 export const deleteSpot = async ({
     userId,
     spotId
-}) => {
+}:API_Melanoma) => {
     const deleteFromFirestore = async () => {
         try {
             const ref = doc(db, "users", userId, "Melanoma", spotId);            
@@ -261,16 +355,16 @@ export const deleteSpot = async ({
 export const deleteSpotWithHistoryReset = async ({
     userId,
     spotId,
-    type,
+    deleteType,
     storage_name
-}) => {
+}:API_Melanoma) => {
     const deleteFromFirestore = async () => {
         try {
-            if(type == "history"){
+            if(deleteType == "history"){
                 const ref = doc(db, "users", userId, "Melanoma", spotId, "History",storage_name);            
                 await deleteDoc(ref);
                 return { success: true, message: "Deleted from Firestore" };
-            } else {
+            } else if ( deleteType == "latest" ) {
                 const ref = doc(db, "users", userId, "Melanoma", spotId);                                    
                 const closest = collection(db, "users", userId, "Melanoma", spotId, "History");
                 const snapshot = await getDocs(closest)
@@ -325,8 +419,8 @@ export const deleteSpotWithHistoryReset = async ({
 export const fetchNumberOfMoles = async ({
     userId,
     gender
-})=>{
-    const distanceFromToday = (timestamp) => {
+}:API_Melanoma)=>{
+    const distanceFromToday = (timestamp:Timestamp) => {
         const today = new Date();
         const givenDate = new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1e6);                
         const timeDifference = today.getTime() - givenDate.getTime();                
@@ -338,10 +432,10 @@ export const fetchNumberOfMoles = async ({
         const completedRef = doc(db, "users", userId, "Medical_Data","skin_data");
         const docSnap = await getDoc(completedRef);
         const snapshot = await getDocs(ref);        
-        let melanomaDataCount = 0;
-        let beningDataCount = 0;
-        let malignantDataCount = 0;
-        let outdatedDataCount = 0;
+        let melanomaDataCount : number = 0;
+        let beningDataCount : number = 0;
+        let malignantDataCount : number = 0;
+        let outdatedDataCount : number = 0;
         snapshot.forEach((doc) => {
             const data = doc.data();                        
             if (data.gender === gender) {
@@ -384,7 +478,7 @@ export const fetchNumberOfMoles = async ({
 
 export const fetchNumberOfMolesOnSlugs = async ({
     userId, 
-})=>{
+}:API_Melanoma)=>{
     try{
         const ref = collection(db, "users", userId, "Melanoma");                
         const snapshot = await getDocs(ref);        
@@ -412,7 +506,7 @@ export const fetchNumberOfMolesOnSlugs = async ({
 export const updateCompletedParts = async ({
     userId,
     completedArray
-}) => {
+}:API_Melanoma) => {
     try{
         const ref = doc(db, "users", userId, "Medical_Data", "skin_data")
         await updateDoc(ref,{completedArray})
@@ -425,7 +519,7 @@ export const updateCompletedParts = async ({
 
 export const fetchCompletedParts = async ({
     userId
-}) => {
+}:API_Melanoma) => {
     try{
         const ref = doc(db, "users", userId, "Medical_Data", "skin_data")    
         const snapshot = await getDoc(ref);
@@ -440,7 +534,7 @@ export const fetchCompletedParts = async ({
 
 export const fetchOutDatedSpots = async ({
     userId
-}) => {
+}:API_Melanoma) => {
     try{
         const ref = collection(db, "users", userId, "Melanoma");
         const snapshot = await getDocs(ref);
@@ -453,13 +547,13 @@ export const fetchOutDatedSpots = async ({
         );
         return melanomaData;
     } catch (error) {
-        return false
+        return []
     }
 }
 
 export const fetchRiskySpots = async ({
     userId
-}) => {
+}:API_Melanoma) => {
     try{
         const ref = collection(db, "users", userId, "Melanoma");
         const snapshot = await getDocs(ref);
@@ -478,7 +572,7 @@ export const fetchRiskySpots = async ({
 
 export const fetchUnfinishedSpots = async ({
     userId
-}) => {
+}:API_Melanoma) => {
     try{
         const ref = collection(db, "users", userId, "Melanoma");
         const snapshot = await getDocs(ref);
@@ -497,9 +591,9 @@ export const fetchUnfinishedSpots = async ({
 
 export const fetchSkinType = async ({
     userId
-}) => {
+}:API_Melanoma) => {
     try{
-        const ref = collection(db, "users", userId, "Medical_Data","skin_data");
+        const ref = doc(db, "users", userId, "Medical_Data", "skin_data");
         const docSnap = await getDoc(ref);
         if (docSnap.exists()) {
             return docSnap.data().skin_type;
@@ -515,37 +609,41 @@ export const fetchSkinType = async ({
 //<===> USER <====>
 
 export const fetchUserData = async ({
-    userId,
-}) => {
-    try{
+    userId
+}: { userId: string }): Promise<UserData | null> => { 
+    try {
         const ref = doc(db, "users", userId);
         const docSnap = await getDoc(ref);
+
         if (docSnap.exists()) {
-            return docSnap
+            const data = docSnap.data() as UserData;
+            return data;
         } else {
             console.log("No such document!");
+            return null; 
         }
     } catch (error) {
         console.log(error);
+        return null;
     }
-}
+};
 
 export const changePersonalData = async ({
-    type,
-    toChange,
+    fieldNameToChange,
+    dataToChange,
     userId,
-}) => {
-    const changeData = (field) => {
-        const data = { [field]: toChange }; 
+}:API_User) => {
+    const changeData = (field: userFields) => {
+        const data = { [field]: dataToChange }; 
         const ref = doc(db, "users", userId);
         updateDoc(ref, data);
     };
     try{
-        if (type == "gender"){
-            changeData(type)
+        if (fieldNameToChange == "gender"){
+            changeData(fieldNameToChange)
         }
-        if (type == "birth_date"){
-            changeData(type)
+        if (fieldNameToChange == "birth_date"){
+            changeData(fieldNameToChange)
         }
         return true
     } catch {
@@ -558,7 +656,7 @@ export const changePersonalData = async ({
 
 export const fetchAllDiagnosis = async ({
     userId
-}) => {
+}:API_Diagnosis) => {
     try{
         const ref = collection(db, "users", userId , "Diagnosis")
         const snapshot = await getDocs(ref);
@@ -579,7 +677,7 @@ export const fetchAllDiagnosis = async ({
 export const saveDiagnosisProgress = async ({
     userId,
     data
-}) => {
+}:API_Diagnosis) => {
     try{
         const ref = doc(db, "users", userId, "Diagnosis", data.id);
         await setDoc(ref,data);
@@ -599,8 +697,8 @@ export const saveBloodWork = async ({
     data,
     Create_Date,
     id
-}) => {
-    const formatDate = (dateString) => {
+}:API_BloodWork) => {
+    const formatDate = (dateString:string) => {
         const date = new Date(dateString);
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
@@ -616,7 +714,7 @@ export const saveBloodWork = async ({
             id: id,
             risk: higherRisk
         });        
-        const splited = formatDate(data.Created_Date)
+        const splited = formatDate(Create_Date)
         if(higherRisk == true){
             if(Number(splited.month) + 6 <= 12){
                 const reminderDate = {expires:`${splited.year}-${Number(splited.month) + 6}-${splited.day}`,id:"blood_work"}
@@ -642,7 +740,7 @@ export const updateBloodWork = async ({
     Create_Date,
     id,
     higherRisk  
-}) => {
+}:API_BloodWork) => {
     const saveCurrentToHistory = async () => {
         const ref = doc(db, "users", userId, "Medical_Data", "blood_work");
         const docSnap = await getDoc(ref);   
@@ -672,23 +770,33 @@ export const updateBloodWork = async ({
 
 export const fetchBloodWork = async ({
     userId,
-}) => {
+}:{userId:string}): Promise<BloodWorkDoc | null> => {
     try{
         const ref = doc(db, "users", userId, "Medical_Data", "blood_work");
         const snapshot = await getDoc(ref);
         if(snapshot.exists()){
-            return snapshot.data()
+            return {
+                    created_at:snapshot.data().created_at,
+                    data: snapshot.data().data,
+                    id: snapshot.data().id,
+                    risk: snapshot.data().risk
+                }
         } else {
-            return "NoBloodWork"
+            return {
+                    created_at:"Not provided yet",
+                    data:[],
+                    id:"",
+                    risk:false
+                }
         }
     } catch {
-        return false
+        return null
     }
 }
 
 export const fetchBloodWorkHistory = async ({
     userId,
-}) => {
+}:API_BloodWork) => {
     try{
         const ref = collection(db, "users", userId, "Medical_Data", "blood_work","History");
         const snapshot = await getDocs(ref)
@@ -698,7 +806,7 @@ export const fetchBloodWorkHistory = async ({
                 historyData.push(doc.data());
             });
             historyData.sort((a, b) => {
-                return new Date(b.created_at) - new Date (a.created_at);
+                return new Date(b.created_at).getTime() - new Date (a.created_at).getTime();
             });
             return historyData
         } else {
@@ -716,8 +824,8 @@ export const fetchMonthTasks = async ({
     month,
     userId,
     year
-}) => {
-    function splitDate(date){
+}:{userId:string,year:number,month:number}) => {
+    function splitDate(date:string){
         const [year, month, day] = date.split('-').map(Number);
         return {year,month,day}
     }
@@ -785,7 +893,14 @@ export const fetchReminders = async ({
 
 export const handleSuccesfullPayment = async ({
     checkOutData
-}) => {
+}:{
+    checkOutData:
+        {
+            client:string,
+            assistantData:{id:string},
+            item:{type:string,data:any}
+        }
+    }) => {
     try {
         const session_UID = "session_" + generateNumericalUID(12)
         const assistRef = doc(db,"assistants", checkOutData.assistantData.id, "Requests",session_UID)
@@ -793,7 +908,7 @@ export const handleSuccesfullPayment = async ({
             userId: checkOutData.client
         })
         const request = {
-            fullname: userData.data().fullname,
+            fullname: userData.fullname,
             sessionId: session_UID,
             type: "spot_check"
         }

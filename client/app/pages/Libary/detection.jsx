@@ -65,7 +65,6 @@ const fetchDiagnosis = async () => {
 }
 
 const fetchMoles = async (gender) => {
-    console.log(userData)
     if(currentuser){
         const response = await fetchNumberOfMoles({
             userId:currentuser.uid,
@@ -85,7 +84,7 @@ const fetchAllUserData = async () => {
             userId:currentuser.uid,
         })
         setUserData(response)
-        fetchMoles(response.data().gender)        
+        fetchMoles(response.gender)        
     }
 }
 

@@ -1,28 +1,57 @@
 
+
 //<========> MELANOMA <=========>
 
-type Gender = "female" | "male";
-type SkinType = 0 | 1 | 2 | 3;
+export type Gender = "female" | "male" | string;
+export type SkinType = 0 | 1 | 2 | 3;
 type UpdateMethod = {} | "new";
 type Progress = Number | null;
 
+export type UserData = {
+    id:string;
+    fullname:string;
+    gender: Gender;
+    birth_date: Date;
+    email:string;
+    profilePictureUrl:string;
+    user_since:string;
+}
+
+export type SpotData = {
+    melanomaId:`Birthmark#${number}`;
+    melanomaDoc:{
+        location:{x:number,y:number},
+        spot:[
+            slug:string,
+            pathArray: any[],
+            color:string,
+        ]
+    },
+    risk:number;
+    gender:Gender;
+    created_at: Date;
+    storage_name:string;
+    storage_location:string;
+    melanomaPictureUrl:string;
+}
+
 interface MelanomaNavigationParams {
-    melanomaId: string;
-    bodyPart: any[];
+    melanomaId?: string;
+    bodyPart?: SpotData;
     gender?: Gender;
     skin_type?: SkinType;
-    userData?: any[];
+    userData?: UserData;
     navigation: any;
-    type: UpdateMethod;
-    completedArray: any[];
-    progress: Progress
+    type?: UpdateMethod;
+    completedArray?: any[];
+    progress?: Progress
 }
 
 export const Navigation_SingleSpotAnalysis = ({
     melanomaId,
-    gender = "female",
-    skin_type = 0,
-    userData = [],
+    gender,
+    skin_type,
+    userData,
     navigation
 }: MelanomaNavigationParams) => {
 
@@ -39,8 +68,8 @@ export const Navigation_SingleSpotAnalysis = ({
 };
 
 export const Navigation_AddSlugSpot = ({
-    userData = [],
-    bodyPart = [],
+    userData,
+    bodyPart,
     skin_type = 0,   
     type = {},
     navigation

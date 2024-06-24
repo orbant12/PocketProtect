@@ -1,14 +1,14 @@
 import { View,Text,ScrollView} from "react-native"
 import React, {useState,useEffect,useRef} from "react";
 import ProgressBar from 'react-native-progress/Bar';
-import { fetchSlugMelanomaData ,melanomaSpotUpload,melanomaUploadToStorage ,deleteSpot} from '../../../../services/server.js';
+import { fetchSlugMelanomaData ,melanomaSpotUpload,melanomaUploadToStorage ,deleteSpot} from '../../../../services/server.ts';
 import LoadingOverlay from "../../../../components/Common/Loading/processing.jsx"
 import { SureModal_MoleUpload } from "../../../../components/LibaryPage/Melanoma/modals.jsx";
 import { CameraViewModal } from "../components/cameraModal.jsx";
 import { SpotPicker } from "../../../../components/LibaryPage/Melanoma/SpotUpload/spotPicker.jsx";
 import { SpotUpload, AlreadyUploadedSpots,UploadButtons } from "../../../../components/LibaryPage/Melanoma/SpotUpload/spotUpload.jsx";
 import { spotUpload_2_styles } from "../../../../styles/libary_style.jsx";
-import { updateCompletedParts } from "../../../../services/server.js";
+import { updateCompletedParts } from "../../../../services/server.ts";
 import { useAuth } from "../../../../context/UserAuthContext.jsx";
 import { NavBar_OneOption } from "../../../../components/Common/navBars.jsx";
 
@@ -80,7 +80,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                 melanomaDocument: {"spot": [bodyPart], "location": redDotLocation},
                 gender: gender,
                 melanomaPictureUrl: pictureUrl,
-                birthmarkId: ID,
+                spotId: ID,
                 storageLocation: storageLocation,
                 risk:null,
                 storage_name: ID,

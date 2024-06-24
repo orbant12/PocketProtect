@@ -13,7 +13,7 @@ import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { melanomaMetaDataUpload, updateCompletedParts, fetchCompletedParts } from "../../../../services/server.js"
+import { melanomaMetaDataUpload, updateCompletedParts, fetchCompletedParts } from "../../../../services/server.ts"
 import { SelectionPage } from "../../../../components/Common/SelectableComponents/selectPage";
 import { SelectionPage_Binary } from "../../../../components/Common/SelectableComponents/selectPage_Binary";
 import { FactScreenType_1 } from "../../../../components/Common/FactScreenComponents/factScreenType1.jsx";

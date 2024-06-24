@@ -2,7 +2,7 @@
 import React, {useEffect, useState} from 'react';
 import { Text, View,Pressable ,ScrollView,Image,TouchableOpacity} from 'react-native';
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/client/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
-import {melanomaUploadToStorage,updateSpot} from '../../../services/server.js';
+import {melanomaUploadToStorage,updateSpot} from '../../../services/server.ts';
 import { useAuth } from '../../../context/UserAuthContext.jsx';
 import * as ImagePicker from 'expo-image-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';

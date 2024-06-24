@@ -22,13 +22,13 @@ const RegOnBoarding = ({navigation}) => {
     
     const handleFinishOnboarding = async () => {
         const response = await changePersonalData({
-            type: "gender",
-            toChange: gender,
+            fieldNameToChange: "gender",
+            dataToChange: gender,
             userId: currentuser.uid,
         })
         const response2 = await changePersonalData({
-            type: "birth_date",
-            toChange: birthDate,
+            fieldNameToChange: "birth_date",
+            dataToChange: birthDate,
             userId: currentuser.uid,
         })
         if (response == true && response2 == true){

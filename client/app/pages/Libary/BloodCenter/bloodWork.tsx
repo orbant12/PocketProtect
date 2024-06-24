@@ -8,6 +8,9 @@ import { useAuth } from "../../../context/UserAuthContext";
 import { saveBloodWork,fetchBloodWork, updateBloodWork } from "../../../services/server"
 import { SelectableBars } from "../../../components/Common/SelectableComponents/selectableBars";
 import moment from 'moment'
+import { BloodWorkData_Default } from "../../../utils/initialValues";
+import { BloodWorkData } from "../../../services/server";
+import { Timestamp } from "../../../utils/date_manipulations";
 
 const BloodWorkPage = ({navigation,route}) => {
 
@@ -22,96 +25,12 @@ const BloodWorkPage = ({navigation,route}) => {
     const [ creationDate,setCreationDate] = useState("2001-08-25T23:15:00.000Z")
     const [ methodSelected, setMethodSelected] = useState("")
     const [ isUploadStage, setIsUploadStage] = useState(false)  
-    const [ bloodWorkData2, setBloodWorkData2] = useState([
-        {
-            title:"Basic Health Indicators",
-            data:[
-                {type:"Hemoglobin (Hgb)",number:0},
-                {type:"Hematocrit (Hct)",number:0},
-                {type:"Red Blood Cell Count (RBC)",number:0},     
-                {type:"White Blood Cell Count (WBC)",number:0},   
-                {type:"Platelet Count",number:0},               
-            ]
-        },
-        {
-            title:"Lipid Panel",
-            data:[
-                {type:"Total Cholesterol",number:0},
-                {type:"High Density Lipoprotein",number:0},
-                {type:"Low Density Lipoprotein",number:0},     
-                {type:"Triglycerides",number:0},                               
-            ]
-        },
-        {
-            title:"Metabolic Panel",
-            data:[
-                {type:"Glucose",number:0},
-                {type:"Blood Urea Nitrogen",number:0},
-                {type:"Creatinine",number:0},     
-                {type:"Sodium",number:0},
-                {type:"Potassium",number:0},  
-                {type:"Chloride",number:0},  
-                {type:"Carbon Dioxide",number:0},
-                {type:"Calcium",number:0}, 
-            ]
-        },
-        {
-            title:"Liver Function Tests:",
-            data:[
-                {type:"Alanine Aminotransferase",number:0},
-                {type:"Aspartate Aminotransferase",number:0},
-                {type:"Alkaline Phosphatase",number:0},     
-                {type:"Bilirubin",number:0},
-                {type:"Albumin",number:0},  
-                {type:"Total Protein",number:0},    
-            ]
-        },
-        {
-            title:"Thyroid Panel:",
-            data:[
-                {type:"Thyroid Stimulating Hormone",number:0},
-                {type:"Free Thyroxine",number:0},
-                {type:"Free Triiodothyronine",number:0},     
-            ]
-        },
-        {
-            title:"Iron Studies:",
-            data:[
-                {type:"Serum Iron",number:0},
-                {type:"Ferritin",number:0},
-                {type:"Total Iron Binding Capacity",number:0},     
-                {type:"Transferrin Saturation",number:0}, 
-            ]
-        }, 
-        {
-            title:"Vitamins and Minerals:",
-            data:[
-                {type:"Vitamin D",number:0},
-                {type:"Vitamin B12",number:0},
-                {type:"Folate",number:0},                     
-            ]
-        }, 
-        {
-            title:"Inflammatory Markers:",
-            data:[
-                {type:"C Reactive Protein",number:0},
-                {type:"Erythrocyte Sedimentation Rate",number:0},                                    
-            ]
-        },  
-        {
-            title:"Hormonal Panel:",
-            data:[
-                {type:"Testosterone",number:0},
-                {type:"Estrogen",number:0},    
-                {type:"Progesterone",number:0},                                  
-            ]
-        },
-    ])
+    const [bloodWorkData, setBloodWorkData] = useState<BloodWorkData>(BloodWorkData_Default);
     
     const dataFixed = [
             {
                 q: "Select a method to upload your blood work",
-                component: <Methods setOptionValue={setMethodSelected} optionValue={methodSelected} />
+                component: <Methods setMethodSelected={setMethodSelected} methodSelected={methodSelected} />
             },
             {
                 q: "When did you receive your blood work results",
@@ -175,12 +94,11 @@ const BloodWorkPage = ({navigation,route}) => {
 
 //<==================<[ Functions ]>====================>
 
-    const onDateChange = (event, date) => {
-        console.log(date)
+    const onDateChange = (even:any, date:Date) => {
         setCreationDate(String(date))
     };
 
-    function formattedDate(timestampRaw) {    
+    function formattedDate(timestampRaw:Timestamp | "Not provided yet") {    
         if(timestampRaw == "Not provided yet"){
             return timestampRaw
         } else{
@@ -189,8 +107,8 @@ const BloodWorkPage = ({navigation,route}) => {
         }    
     };
     
-    const handleDataChange2 = (title,type,e) => {
-        setBloodWorkData2((prevData) => 
+    const handleDataChange2 = (title:string,type:string,e:any) => {
+        setBloodWorkData((prevData) => 
             prevData.map((section) => 
                 section.title === title 
                     ? {
@@ -206,7 +124,7 @@ const BloodWorkPage = ({navigation,route}) => {
         );  
     }
     
-    function generateUID(length) {
+    function generateUID(length:number) {
         const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
         let uid = '';
         for (let i = 0; i < length; i++) {
@@ -215,12 +133,12 @@ const BloodWorkPage = ({navigation,route}) => {
         return uid;
     }
     
-    const handleSaveProgress = async (type) => {
+    const handleSaveProgress = async (type:"first" | "update") => {
         const UID = generateUID(16)
         if(type == "first"){
             const response = await saveBloodWork({
                 userId: currentuser.uid,
-                data: bloodWorkData2,
+                data: bloodWorkData,
                 Create_Date: creationDate,        
                 id: `Blood_${UID}`,
                 higherRisk: false
@@ -233,7 +151,7 @@ const BloodWorkPage = ({navigation,route}) => {
         } else if (type == "update"){
             const response = await updateBloodWork({
                 userId: currentuser.uid,
-                data: bloodWorkData2,
+                data: bloodWorkData,
                 Create_Date: creationDate,        
                 id: `Blood_${UID}`,
                 higherRisk: false
@@ -246,7 +164,7 @@ const BloodWorkPage = ({navigation,route}) => {
         }    
     }
     
-    const handleBack = (permission) => {
+    const handleBack = (permission:boolean) => {
         if (progress == 0 || permission == true){
             navigation.goBack()
         } else {
@@ -262,7 +180,13 @@ const BloodWorkPage = ({navigation,route}) => {
 
 //<==================<[ Components ]>====================>
 
-    function Methods(){
+    function Methods({
+        setMethodSelected,
+        methodSelected
+    }:{
+        setMethodSelected:(type:string) => void;
+        methodSelected: string;
+    }){
         return(
             <SelectableBars 
                 setOptionValue={setMethodSelected}
@@ -300,7 +224,7 @@ const BloodWorkPage = ({navigation,route}) => {
         return(
             <ScrollView style={{width:"100%",paddingTop:10}}>
                 <View style={{width:"100%",alignItems:"center",marginBottom:30}}>
-                    {bloodWorkData2[index].data.map((dataFrom) =>(
+                    {bloodWorkData[index].data.map((dataFrom) =>(
                         <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginTop:20,borderWidth:2,padding:20,borderRadius:20}}>
                             <Text style={{fontWeight:"600",width:"70%"}}>{dataFrom.type}</Text>
                             <View style={{borderLeftWidth:2}}>        
@@ -308,7 +232,7 @@ const BloodWorkPage = ({navigation,route}) => {
                                     keyboardType="numeric"
                                     style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10,marginLeft:20}}                   
                                     value={`${dataFrom.number}`}
-                                    onChangeText={(e) => handleDataChange2(bloodWorkData2[index].title,dataFrom.type,e)}
+                                    onChangeText={(e) => handleDataChange2(bloodWorkData[index].title,dataFrom.type,e)}
                                     textAlign="center"      
                                     onFocus={() => setFocused(true)}      
                                 />                   
@@ -455,13 +379,13 @@ const BloodWorkPage = ({navigation,route}) => {
                     focused ?
                         <Pressable onPress={() => {Keyboard.dismiss();setFocused(false)}} style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
                             <View style={{width:"90%",alignItems:"center",backgroundColor:"#eee",justifyContent:"center",padding:20,borderRadius:20,marginTop:10}}>
-                                <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>            
+                                <Text style={{fontWeight:"700",fontSize:20,width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>            
                             </View> 
                             {!isUploadStage && 
                                 <>
                                     {dataFixed[progress-1].component}
                                     {progress == dataFixed.length ?
-                                        <Pressable onPress={() => handleUpload(methodSelected)} style={[styles.startButton,{marginBottom:10}]}>                        
+                                        <Pressable onPress={() => {/*handleUpload(methodSelected)*/{handleUpload()}}} style={[styles.startButton,{marginBottom:10}]}>                        
                                             <Text style={{padding:14,fontWeight:"600",color:"white"}}>Upload</Text>
                                         </Pressable>
                                         :
@@ -476,16 +400,16 @@ const BloodWorkPage = ({navigation,route}) => {
                         <View style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:55,borderWidth:0}}>
                         <View style={{width:"90%",alignItems:"center",backgroundColor:"#eee",justifyContent:"center",padding:20,borderRadius:20,marginTop:10}}>
                             {!isUploadStage ? 
-                            <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>            
+                            <Text style={{fontWeight:"700",fontSize:20,width:"100%",textAlign:"center"}}>{dataFixed[progress - 1].q}</Text>            
                             :
-                            <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{manual[progress - 1].q}</Text>            
+                            <Text style={{fontWeight:"700",fontSize:20,width:"100%",textAlign:"center"}}>{manual[progress - 1].q}</Text>            
                             }
                         </View> 
                         {!isUploadStage ? 
                         <>
                             {dataFixed[progress-1].component}
                             {progress == dataFixed.length ?
-                                <Pressable onPress={() => handleUpload(methodSelected)} style={[styles.startButton,{marginBottom:10}]}>                        
+                                <Pressable onPress={() => {/*handleUpload(methodSelected)*/{handleUpload()}}} style={[styles.startButton,{marginBottom:10}]}>                        
                                     <Text style={{padding:14,fontWeight:"600",color:"white"}}>Upload</Text>
                                 </Pressable>
                                 :
@@ -498,7 +422,7 @@ const BloodWorkPage = ({navigation,route}) => {
                         <>
                         {manual[progress-1].component}
                         {progress == manual.length ?
-                            <Pressable onPress={() => handleUpload(methodSelected)} style={[styles.startButton,{marginBottom:10}]}>                        
+                            <Pressable onPress={() => {/*handleUpload(methodSelected)*/{handleUpload()}}} style={[styles.startButton,{marginBottom:10}]}>                        
                                 <Text style={{padding:14,fontWeight:"600",color:"white"}}>Upload</Text>
                             </Pressable>
                             :
@@ -535,7 +459,6 @@ const styles = StyleSheet.create({
         alignItems:"center",
         width:"100%",
         height:"100%",
-        justifyContent:"center",
         backgroundColor:"white",
         justifyContent:"space-between"
     },

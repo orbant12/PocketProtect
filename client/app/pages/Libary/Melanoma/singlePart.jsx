@@ -4,7 +4,7 @@ import { useAuth } from "../../../context/UserAuthContext";
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/client/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
 import { Tabs} from 'react-native-collapsible-tab-view'
 import Entypo from 'react-native-vector-icons/Entypo';
-import { fetchSpotHistory, deleteSpotWithHistoryReset, updateSpotData,fetchSelectedMole } from "../../../services/server";
+import { fetchSpotHistory, deleteSpotWithHistoryReset, updateSpotRisk,fetchSelectedMole } from "../../../services/server";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import {app} from "../../../services/firebase"
 import { SingleSlugStyle } from "../../../styles/libary_style";
@@ -74,7 +74,7 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
             const response = await deleteSpotWithHistoryReset({
                 userId:currentuser.uid,
                 spotId: data.melanomaId,
-                type:"change",
+                deleteType:"latest",
                 storage_name:data.storage_name
             })
             if( response.firestore.success == true && response.storage.success == true){
@@ -87,7 +87,7 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
             const response = await deleteSpotWithHistoryReset({
                 userId:currentuser.uid,
                 spotId: data.melanomaId,
-                type:"history",
+                deleteType:"history",
                 storage_name:data.storage_name
             })
             if( response.firestore.success == true && response.storage.success == true){
@@ -125,10 +125,10 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
         };
         try{            
             const prediction = await evaluate(pictureURL)      
-            const response = await updateSpotData({
+            const response = await updateSpotRisk({
                 userId: currentuser.uid,
                 spotId: selectedMelanoma.melanomaId,
-                dataToUpdate: {risk: prediction.prediction["0"].toFixed(2)}
+                riskToUpdate: {risk: prediction.prediction["0"].toFixed(2)}
             })
             if(response == true){
                 fetchAllSpotHistory() 

@@ -1,6 +1,6 @@
 
 import { useCallback, useEffect, useState } from 'react';
-import { ScrollView,Dimensions,RefreshControl } from 'react-native';
+import { ScrollView,Dimensions,RefreshControl,NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../../context/UserAuthContext';
 import Calendar from '../../components/HomePage/Callendar/HorizontalCallendar';
@@ -12,39 +12,48 @@ import { DateToString, splitDate, parseDateToMidnight } from '../../utils/date_m
 import { FutureScreen } from '../../components/HomePage/3_types/Future';
 import { PastScreen } from '../../components/HomePage/3_types/Past';
 import { Navigation_SingleSpotAnalysis } from '../../navigation/navigation';
+import { SpotData, UserData } from '../../navigation/navigation';
+import { UserData_Default } from '../../utils/initialValues';
+
+
+type CustomScrollEvent = {
+    nativeEvent: {
+        position: number;
+    };
+};
 
 
 export default function TabOneScreen({navigation}) {
 
 //<==================<[ Variables ]>====================>
 
-const { currentuser } = useAuth()
+const { currentuser } = useAuth();
 //DATE
-const today = new Date();
-const format = DateToString(today)
-const [selectedDate, setSelectedDate] = useState(format);
+const today: Date = new Date();
+const format = DateToString(today);
+const [selectedDate, setSelectedDate] = useState<string>(format);
 //COUNTDOWN
-const [ dateCountdown, setDateCountdown] = useState(10)
-const [historyShown, setHistoryShown ] = useState(true)
-const displayCounter = useTimer(dateCountdown);
+const [dateCountdown, setDateCountdown] = useState<number>(10);
+const [historyShown, setHistoryShown] = useState<boolean>(true);
+const displayCounter = useTimer(dateCountdown,()=>{});
 //DATA
-const [thisMonthTasks, setThisMonthTasks] = useState([])
-const [affectedDays,setAffectedDays] = useState([])
-const [allReminders, setAllReminders] = useState([])
+const [thisMonthTasks, setThisMonthTasks] = useState<any[]>([]);
+const [affectedDays, setAffectedDays] = useState<any[]>([]);
+const [allReminders, setAllReminders] = useState<any[]>([]);
 //H-SCROLL
-const [currentPage, setCurrentPage] = useState(0);
-const [currentPageReminder, setCurrentPageReminder] = useState(0);
+const [currentPage, setCurrentPage] = useState<number>(0);
+const [currentPageReminder, setCurrentPageReminder] = useState<number>(0);
 //REFRESH
-const [refreshing, setRefreshing] = useState(false);
-const [ outdatedMelanomaData, setOutdatedMelanomaData ] = useState([])
-const [ riskyMelanomaData, setRiskyMelanomaData ] = useState([])
-const [ unfinishedMelanomaData, setUnfinishedMelanomaData ] = useState([])
-const [ userData, setUserData] = useState([])
+const [refreshing, setRefreshing] = useState<boolean>(false);
+const [outdatedMelanomaData, setOutdatedMelanomaData] = useState<any[]>([]);
+const [riskyMelanomaData, setRiskyMelanomaData] = useState<any[]>([]);
+const [unfinishedMelanomaData, setUnfinishedMelanomaData] = useState<any[]>([]);
+const [userData, setUserData] = useState<UserData>(UserData_Default);
 
 
 //<==================<[ Functions ]>====================>
 
-    const handleNavigation  = (path,data) => {
+    const handleNavigation  = ({path,data}:{path:string; data: SpotData}) => {
         if (path == "dasdas"){
             navigation.navigate(path,{data:[{q:"valami",type:"binary"}], outcomes:""}) // DAILY REPORT
         } else if ( path == "risk" || path == ""  || path == "unfinished" ){
@@ -58,20 +67,26 @@ const [ userData, setUserData] = useState([])
         } 
     }
 
-    const handleScroll = (e) => {
+    const handleScroll = (e:CustomScrollEvent) => {
         const page = Math.round(e.nativeEvent.position);
         setCurrentPageReminder(page);
     }
 
-    const handleScrollReminder = (e) => {
+    const handleScrollReminder = (e: CustomScrollEvent) => {
         const page = Math.round(e.nativeEvent.position);
         setCurrentPage(page);
     }
 
     const ThisDayCounter = () => { 
-        const selectedDateStr = String(selectedDate)
-        const selectedDateF = parseDateToMidnight(selectedDateStr);    
-        const calc = Math.floor((selectedDateF - today) / 1000);
+        const selectedDateStr:string = String(selectedDate)
+        const selectedDateF:Date = parseDateToMidnight(selectedDateStr);    
+
+        // Convert dates to milliseconds
+        const selectedDateMillis: number = selectedDateF.getTime();
+        const todayMillis: number = today.getTime();
+        const dateDiffMillis: number = selectedDateMillis - todayMillis;
+
+        const calc = Math.floor(dateDiffMillis / 1000);
         if (calc > 0) { 
             setDateCountdown(calc);
             setHistoryShown(false)
@@ -110,30 +125,17 @@ const [ userData, setUserData] = useState([])
             const response = await fetchOutDatedSpots({
                 userId: currentuser.uid,            
             });
-            const melanomaData = response;
-            if(melanomaData != false){
-                setOutdatedMelanomaData(melanomaData);
-            } else {
-                setOutdatedMelanomaData([])
-            }
+            setOutdatedMelanomaData(response);
+            
             const responseRisk = await fetchRiskySpots({
                 userId: currentuser.uid,            
             });
-            const melanomaDataRisk = responseRisk;
-            if(melanomaDataRisk != false){
-                setRiskyMelanomaData(melanomaDataRisk);
-            } else {
-                setRiskyMelanomaData([])
-            }
+            setRiskyMelanomaData(responseRisk);
+
             const responseUnf = await fetchUnfinishedSpots({
                 userId: currentuser.uid,            
             });
-            const melanomaDataUnf = responseUnf;
-            if(melanomaDataUnf != false){
-                setUnfinishedMelanomaData(melanomaDataUnf);
-            } else {
-                setUnfinishedMelanomaData([])
-            }
+            setUnfinishedMelanomaData(responseUnf);
         }
     }
 

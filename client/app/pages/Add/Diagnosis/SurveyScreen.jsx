@@ -6,7 +6,7 @@ import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAuth } from "../../../context/UserAuthContext.jsx";
-import { saveDiagnosisProgress,saveTask } from "../../../services/server.js"
+import { saveDiagnosisProgress,saveTask } from "../../../services/server.ts"
 import { getDiagnosisData,getDiagnosis, getReDiagnosis, getSurvey } from "../../../services/prompt.jsx"
 
 const SurveyScreeen = ({route,navigation}) => {

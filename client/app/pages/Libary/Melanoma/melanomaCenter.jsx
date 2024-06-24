@@ -8,7 +8,7 @@ import {bodyFemaleBack} from "../../../components/LibaryPage/Melanoma/BodyParts/
 import {bodyFront} from "../../../components/LibaryPage/Melanoma/BodyParts/bodyFront"
 import {bodyBack} from "../../../components/LibaryPage/Melanoma/BodyParts/bodyBack"
 import { useAuth } from '../../../context/UserAuthContext.jsx';
-import { fetchAllMelanomaSpotData, fetchUserData,fetchCompletedParts, fetchNumberOfMolesOnSlugs } from '../../../services/server.js';
+import { fetchAllMelanomaSpotData, fetchUserData,fetchCompletedParts, fetchNumberOfMolesOnSlugs } from '../../../services/server.ts';
 import { useFocusEffect } from '@react-navigation/native';
 import { SkinModal } from "../../../components/LibaryPage/Melanoma/modals";
 import { Mstyles } from "../../../styles/libary_style";
@@ -68,11 +68,9 @@ const SingleFeature = ({route,navigation}) => {
         if(currentuser){
             const response = await fetchUserData({
                 userId: currentuser.uid,
-            });
-            const docSnapshot = response;
-            const elementData = docSnapshot.data();
-            setUserData(elementData);
-            fetchAllMelanomaData(elementData.gender)
+            });           
+            setUserData(response);
+            fetchAllMelanomaData(response.gender)
         }
     }
 

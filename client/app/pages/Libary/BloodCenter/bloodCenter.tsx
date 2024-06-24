@@ -9,40 +9,38 @@ import { useAuth } from "../../../context/UserAuthContext";
 import { fetchBloodWork,fetchBloodWorkHistory } from "../../../services/server"
 import moment from 'moment'
 import PagerView from 'react-native-pager-view';
+import { BloodWorkDoc } from "../../../services/server";
+import { BloodWork_Document_Deafault } from "../../../utils/initialValues";
+import { Timestamp } from "../../../utils/date_manipulations";
 
 const BloodCenter = ({navigation}) => {
 
     //<==================<[ Variables ]>====================>
     
     const scrollRef = useRef(null)
-
     const { currentuser } = useAuth()
-
     const [refreshing, setRefreshing] = useState(false);
     const [ currentPageFeature, setCurrentPageFeature] = useState(0)
-    //SHEET SHOW
     const [bloodSelected, setBloodSelected] = useState(
         {data:[],created_at:"Sun Aug 05 2001 01:15:00 GMT+0200"}
     )
     const snapPoints = ["100%"]
     const sheetRef = useRef(null)
-    //H-SWIPE
+    
     const { width } = Dimensions.get('window');
     const [currentPage, setCurrentPage] = useState(0);
     const [ bottomSheetSelected, setBottomSheetSelected ] = useState("")
-    //Latest & History BW-DATA
+    
     const [bloodWorkHistoryData, setBloodWorkHistoryData] = useState([])
-    const [latestBloodWork, setLatestBloodWork] = useState({
-        created_at: "Not provided yet",
-    })
+    const [latestBloodWork, setLatestBloodWork] = useState<BloodWorkDoc>(BloodWork_Document_Deafault)
 
     //<==================<[ Functions ]>====================>
 
-    const handleBack = (permission) => {    
+    const handleBack = (permission:boolean | undefined) => {    
         navigation.goBack()   
     };
 
-    const handleOpenSheet = (action) => {
+    const handleOpenSheet = (action:"open" | "close") => {
         if(action == "open"){
             sheetRef.current.present()            
         } else if ( action == "close"){
@@ -56,13 +54,13 @@ const BloodCenter = ({navigation}) => {
             userId: currentuser.uid,            
         })
 
-        if (response != false && response != "NoBloodWork"){
+        if (response != null) {
             setLatestBloodWork(response)
             setBloodSelected(response)
-        } else if ( response == false) {
+        } else if ( response == null ) {
             alert("Something went wrong ....")
-        } else if (response == "NoBloodWork"){
-            setLatestBloodWork({ created_at: "Not provided yet"})
+        } else if ( response.created_at == "Not provided yet"){
+            setLatestBloodWork(response)
         }
     };
 
@@ -80,7 +78,7 @@ const BloodCenter = ({navigation}) => {
         }
     };
 
-    const handleScrollReminder = (e) => {
+    const handleScrollReminder = (e:any) => {
         const page = Math.round(e.nativeEvent.position);
         setCurrentPage(page);
     };
@@ -90,7 +88,7 @@ const BloodCenter = ({navigation}) => {
         fetchAllBloodWorkHistory()
     },[])
 
-    function dateFormat(timestampRaw) {    
+    function dateFormat(timestampRaw:Timestamp | "Not provided yet" | string) {    
         if(timestampRaw == "Not provided yet"){
             return timestampRaw
         } else{
@@ -99,7 +97,7 @@ const BloodCenter = ({navigation}) => {
         }    
     };
 
-    const handleScroll = (e) => {
+    const handleScroll = (e:any) => {
         const offsetX = e.nativeEvent.contentOffset.x;
         const pageWidth = width; 
         const currentPage = Math.floor((offsetX + pageWidth / 2) / pageWidth);
@@ -131,11 +129,11 @@ const BloodCenter = ({navigation}) => {
                     <PagerView style={{marginTop:0,width:"100%",height:2000}} onPageScroll={(e) => handleScrollReminder(e)} initialPage={0}>
                     {bloodSelected.data.map((dataFrom,index) =>(
                         <View key={index + 1} style={{width:"100%",alignItems:"center",borderBottomWidth:2,borderTopWidth:0,backgroundColor:"rgba(0,0,0,0)"}}>                    
-                            <View style={{width:"100%",alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",justifyContent:"center",padding:15,borderRadius:0,marginTop:0,borderBottomWidth:0.5,marginTop:-15}}>
-                                <Text style={{fontWeight:"700",fontSize:"18",width:"100%",textAlign:"center"}}>{dataFrom.title}</Text>            
+                            <View style={{width:"100%",alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",justifyContent:"center",padding:15,borderRadius:0,borderBottomWidth:0.5,marginTop:-15}}>
+                                <Text style={{fontWeight:"700",fontSize:18,width:"100%",textAlign:"center"}}>{dataFrom.title}</Text>            
                             </View>                             
                             <View style={{width:"100%",alignItems:"center",marginBottom:30}}>
-                                {dataFrom.data.map((dataFrom2) =>(
+                                {dataFrom.data.map((dataFrom2:{type:string,number:number}) =>(
                                     <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginTop:0,borderBottomWidth:0.5,padding:20,borderRadius:20,backgroundColor:"white"}}>
                                         <Text style={{fontWeight:"600",width:"70%"}}>{dataFrom2.type}</Text>
                                         <View style={{borderLeftWidth:2}}>        
@@ -153,8 +151,8 @@ const BloodCenter = ({navigation}) => {
                             </View>                            
                         </View>   
                     ))}          
-                              <View style={{width:"100%",alignItems:"center",flexDirection:"row",marginRight:"auto",marginLeft:"auto"}}>
-                            <View style={{height:40,borderWidth:0,alignItems:"center",justifyContent:"space-between",width:"85%",flexDirection:"row",alignItems:"center",marginRight:"auto",marginLeft:"auto"}}>
+                        <View style={{width:"100%",alignItems:"center",flexDirection:"row",marginRight:"auto",marginLeft:"auto"}}>
+                            <View style={{height:40,borderWidth:0,justifyContent:"space-between",width:"85%",flexDirection:"row",alignItems:"center",marginRight:"auto",marginLeft:"auto"}}>
                                 <TouchableOpacity style={{width:150,borderWidth:2,flexDirection:"row",alignItems:"center",padding:0,borderRadius:10,marginTop:0}}>
                                     <View style={{padding:5,borderRightWidth:2,borderLeftWidth:0,borderTopWidth:0,borderBottomWidth:0, borderRadius:0}}>
                                         <MaterialCommunityIcons
@@ -192,7 +190,7 @@ const BloodCenter = ({navigation}) => {
                     {bloodSelected.data.map((dataFrom,index) =>(
                         <View key={index + 1} style={{width:"100%",alignItems:"center",height:"100%",borderBottomWidth:2,borderTopWidth:0.5,backgroundColor:"rgba(0,0,0,0)"}}>                    
                             <View style={{width:"100%",alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",justifyContent:"center",padding:15,borderRadius:0,marginTop:0,borderBottomWidth:0.5}}>
-                                <Text style={{fontWeight:"700",fontSize:"18",width:"100%",textAlign:"center"}}>{dataFrom.title}</Text>            
+                                <Text style={{fontWeight:"700",fontSize:18,width:"100%",textAlign:"center"}}>{dataFrom.title}</Text>            
                             </View> 
                             <ScrollView style={{width:"100%",marginTop:10}}>
                             <View style={{width:"100%",alignItems:"center",marginBottom:30}}>
@@ -223,7 +221,7 @@ const BloodCenter = ({navigation}) => {
                         }                                                                        
                     </View>  
                     <View style={{width:"100%",alignItems:"center",flexDirection:"row",marginRight:"auto",marginLeft:"auto",height:"8%"}}>
-                    <View style={{height:150,borderWidth:0,alignItems:"center",justifyContent:"space-between",width:"85%",flexDirection:"row",alignItems:"center",marginRight:"auto",marginLeft:"auto"}}>
+                    <View style={{height:150,borderWidth:0,justifyContent:"space-between",width:"85%",flexDirection:"row",alignItems:"center",marginRight:"auto",marginLeft:"auto"}}>
                         <TouchableOpacity style={{width:150,borderWidth:2,flexDirection:"row",alignItems:"center",padding:0,borderRadius:10,marginTop:0}}>
                             <View style={{padding:5,borderRightWidth:2,borderLeftWidth:0,borderTopWidth:0,borderBottomWidth:0, borderRadius:0}}>
                                 <MaterialCommunityIcons
@@ -270,7 +268,7 @@ const BloodCenter = ({navigation}) => {
         style={{width:"100%",height:"100%",backgroundColor:"white",flex:1}}>
         <View style={styles.container}>            
             <View style={styles.ProgressBar}>
-                <TouchableOpacity onPress={handleBack} style={{backgroundColor:"white",borderRadius:30}}>
+                <TouchableOpacity onPress={ () => handleBack(true)} style={{backgroundColor:"white",borderRadius:30}}>
                     <MaterialCommunityIcons 
                         name="arrow-left"
                         size={25}
@@ -324,17 +322,17 @@ const BloodCenter = ({navigation}) => {
                                 <MaterialCommunityIcons 
                                     name="pencil"
                                     size={20}
-                                    opacity={"0.3"}
+                                    style={{opacity:0.3}}    
                                 />
                                 <MaterialCommunityIcons 
                                     name="delete"
                                     size={20}
-                                    opacity={"0.3"}
+                                    style={{opacity:0.3}}    
                                 />  
                                 <MaterialCommunityIcons 
                                     name="eye"
                                     size={20}
-                                    opacity={"0.3"}
+                                    style={{opacity:0.3}} 
                                 />  
                             </View>                     
                             <TouchableOpacity onPress={() => {handleOpenSheet("open");setBloodSelected(latestBloodWork)}} style={{borderWidth:0.3,width:"100%",backgroundColor:"white",padding:10,paddingVertical:10,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
@@ -354,12 +352,12 @@ const BloodCenter = ({navigation}) => {
                                 <MaterialCommunityIcons 
                                     name="folder-eye-outline"
                                     size={20}
-                                    opacity={"0.3"}
+                                    style={{opacity:0.3}}    
                                 />
                                 <MaterialCommunityIcons 
                                     name="google-analytics"
                                     size={20}
-                                    opacity={"0.3"}
+                                    style={{opacity:0.3}}    
                                 />                       
                             </View>                     
                             <TouchableOpacity onPress={() => {handleOpenSheet("open");setBloodSelected(latestBloodWork)}} style={{borderWidth:0.3,width:"100%",backgroundColor:"white",padding:10,paddingVertical:10,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
@@ -380,17 +378,17 @@ const BloodCenter = ({navigation}) => {
                                 <MaterialCommunityIcons 
                                     name="pencil"
                                     size={20}
-                                    opacity={"0.3"}
+                                    style={{opacity:0.3}}    
                                 />
                                 <MaterialCommunityIcons 
                                     name="delete"
                                     size={20}
-                                    opacity={"0.3"}
+                                    style={{opacity:0.3}}    
                                 />  
                                 <MaterialCommunityIcons 
                                     name="eye"
                                     size={20}
-                                    opacity={"0.3"}
+                                    style={{opacity:0.3}}    
                                 />  
                             </View>                     
                             <TouchableOpacity onPress={() => {handleOpenSheet("open");setBloodSelected(latestBloodWork);setBottomSheetSelected("open")}} style={{borderWidth:0.3,width:"100%",backgroundColor:"white",padding:10,paddingVertical:10,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
@@ -506,7 +504,7 @@ const BloodCenter = ({navigation}) => {
                         ref={sheetRef}
                         snapPoints={snapPoints}
                         enablePanDownToClose={true}                        
-                        handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:30,color:"white"}}
+                        handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:30}}
                         handleIndicatorStyle={{backgroundColor:"white"}}                                              
                         handleComponent={() => 
                         <View style={{width:"100%",height:80,backgroundColor:"black",justifyContent:"center",alignItems:"center",borderRadius:0}}>
@@ -538,8 +536,6 @@ const styles = StyleSheet.create({
         alignItems:"center",
         borderWidth:0,
         padding:10,
-        position:"absolute",
-        top:0,
         backgroundColor:"transparent",
         flexDirection:"row",
         justifyContent:"space-between",
@@ -559,7 +555,6 @@ const styles = StyleSheet.create({
         borderRightColor:"gray",      
         borderTopColor:"black", 
         borderBottomColor:"gray",
-        marginTop: 20,  
         marginTop:110      
     },
     container:{
@@ -581,7 +576,7 @@ const styles = StyleSheet.create({
         alignItems:"center"
     },
     dataBox2:{
-        width:"300",
+        width: 300,
         height:150,
         borderWidth:0.3,
         borderRadius:20,

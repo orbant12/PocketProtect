@@ -4,7 +4,7 @@ import React, {useState,useEffect,useCallback} from "react";
 import { useAuth } from "../../../context/UserAuthContext.jsx";
 import Body from "../../../components/LibaryPage/Melanoma/BodyParts/index";
 import ProgressBar from 'react-native-progress/Bar';
-import {updateCompletedParts, fetchCompletedParts, fetchUserData,fetchSkinType } from '../../../services/server.js';
+import {updateCompletedParts, fetchCompletedParts, fetchUserData,fetchSkinType } from '../../../services/server.ts';
 import { spotUploadStyle } from "../../../styles/libary_style.jsx";
 import { SideSwitch } from "../../../components/LibaryPage/Melanoma/sideSwitch.jsx";
 import { NavBar_Upload_1 } from "../../../components/LibaryPage/Melanoma/navBarRow.jsx";
