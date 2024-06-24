@@ -1,10 +1,10 @@
 import { BloodWorkData, BloodWorkDoc } from "../services/server";
-
+import { Gender } from "../navigation/navigation";
 
 export const UserData_Default = {
         id:"default",
         birth_date: new Date(),
-        gender: 'male',
+        gender: "male" as Gender,
         profilePictureUrl:"",
         user_since:"",
         email:"",

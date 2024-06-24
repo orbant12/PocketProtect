@@ -44,7 +44,7 @@ export const NavBar_Main  = ({
                     style={{padding:9}}
                 />
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => setSkinModal(!skinModal)} style={{backgroundColor:melanomaMetaData.skin_type == 0 ? "#fde3ce" : melanomaMetaData.skin_type == 1 ? "#fbc79d" : melanomaMetaData.skin_type == 2 ? "#934506" : melanomaMetaData.skin_type == 3 ? "#311702":null,borderRadius:"100%",padding:15,borderWidth:2,position:"absolute",right:14,top:70}} />
+            <TouchableOpacity onPress={() => setSkinModal(!skinModal)} style={{backgroundColor:melanomaMetaData.skin_type == 0 ? "#fde3ce" : melanomaMetaData.skin_type == 1 ? "#fbc79d" : melanomaMetaData.skin_type == 2 ? "#934506" : melanomaMetaData.skin_type == 3 ? "#311702":null,borderRadius:100,padding:15,borderWidth:2,position:"absolute",right:14,top:70}} />
             
             
             </View>  

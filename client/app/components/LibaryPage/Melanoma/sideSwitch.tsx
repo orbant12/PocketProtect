@@ -4,7 +4,7 @@ import { spotUploadStyle } from "../../../styles/libary_style"
 export const SideSwitch = ({
     selectedSide,
     setSelectedSide,
-}) => {
+}:{selectedSide:"front" | "back"; setSelectedSide:(selectedSide:"front" | "back") => void }) => {
     return(
         <View style={spotUploadStyle.positionSwitch}>
         <Pressable onPress={() => setSelectedSide("front")}>

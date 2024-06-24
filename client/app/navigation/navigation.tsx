@@ -2,7 +2,10 @@
 
 //<========> MELANOMA <=========>
 
-export type Gender = "female" | "male" | string;
+import { BodyPart, Slug } from "../components/LibaryPage/Melanoma/BodyParts";
+
+
+export type Gender = "female" | "male";
 export type SkinType = 0 | 1 | 2 | 3;
 type UpdateMethod = {} | "new";
 type Progress = Number | null;
@@ -18,16 +21,16 @@ export type UserData = {
 }
 
 export type SpotData = {
-    melanomaId:`Birthmark#${number}`;
+    melanomaId:string;
     melanomaDoc:{
         location:{x:number,y:number},
         spot:[
-            slug:string,
+            {slug:Slug,
             pathArray: any[],
-            color:string,
+            color:string,}
         ]
     },
-    risk:number;
+    risk:number | null;
     gender:Gender;
     created_at: Date;
     storage_name:string;
@@ -35,8 +38,15 @@ export type SpotData = {
     melanomaPictureUrl:string;
 }
 
+export type SpotArrayData = {
+    slug:Slug,
+    pathArray: any[],
+    color:string
+}
+
 interface MelanomaNavigationParams {
     melanomaId?: string;
+    bodyPartSlug?: BodyPart;
     bodyPart?: SpotData;
     gender?: Gender;
     skin_type?: SkinType;
@@ -44,7 +54,8 @@ interface MelanomaNavigationParams {
     navigation: any;
     type?: UpdateMethod;
     completedArray?: any[];
-    progress?: Progress
+    progress?: Progress;
+    bodyPartSpotArray?: SpotArrayData;
 }
 
 export const Navigation_SingleSpotAnalysis = ({
@@ -69,17 +80,17 @@ export const Navigation_SingleSpotAnalysis = ({
 
 export const Navigation_AddSlugSpot = ({
     userData,
-    bodyPart,
+    bodyPartSlug,
     skin_type = 0,   
     type = {},
     navigation
 }: MelanomaNavigationParams) => {
 
-    if (userData && bodyPart && skin_type !== undefined && type) {
+    if (userData && bodyPartSlug && skin_type !== undefined && type) {
         navigation.navigate("MelanomaAdd",{ 
             userData: userData,
             skin_type: skin_type,
-            bodyPart:bodyPart,
+            bodyPartSlug:bodyPartSlug,
             type:type
         });      
     } else {
@@ -116,7 +127,7 @@ export const Navigation_MelanomaFullsetup = ({
 
 export const Navigation_MoleUpload_2 = ({
     navigation,
-    bodyPart,
+    bodyPartSlug,
     gender,
     completedArray = [],
     progress,
@@ -124,7 +135,7 @@ export const Navigation_MoleUpload_2 = ({
 }:MelanomaNavigationParams) => {
     if ( navigation != undefined ){
         navigation.navigate("MelanomaProcessSingleSlug",{
-            bodyPart:bodyPart,
+            bodyPartSlug:bodyPartSlug,
             gender: gender,
             completedArray: completedArray,
             progress: progress,

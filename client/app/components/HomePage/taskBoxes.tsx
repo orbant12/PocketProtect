@@ -10,7 +10,19 @@ export const TaskBox_2 = ({
     icon4, 
     buttonText,
     nav_page,
-    index
+    index,
+    handleNavigation
+}:
+{
+    title:string;
+    icon1:string;
+    icon2:string;
+    icon3:string;
+    icon4:string;
+    buttonText:string;
+    nav_page:string;
+    index:number;
+    handleNavigation:(path:string,data?:any) => void;
 }) => {
     return(
         <View key={index} style={styles.DataBox}>
@@ -59,7 +71,7 @@ export const TaskBox_2 = ({
             We schedule reminders for outdated blood work and recommended update.
             </Text>
         </View>
-        <Pressable onPress={() => navigation.navigate(nav_page, {type:"first"})} style={styles.StartButton}>
+        <Pressable onPress={() => handleNavigation(nav_page, {type:"first"})} style={styles.StartButton}>
             <Text>{buttonText}</Text>
             <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{ marginLeft: 10 }} />
         </Pressable>
@@ -67,7 +79,7 @@ export const TaskBox_2 = ({
     )
 }
 
-export const TaskBox_1 = () => {
+export const TaskBox_1 = ({handleNavigation}:{handleNavigation:(path:string,data?:any) => void}) => {
     return(
         <View style={styles.TaskBox}>
         <Text style={styles.TaskTitle}>Daily Health Report</Text>

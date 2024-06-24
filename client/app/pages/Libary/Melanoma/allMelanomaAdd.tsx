@@ -2,34 +2,35 @@
 import { View,Text,PixelRatio,Dimensions} from "react-native"
 import React, {useState,useEffect,useCallback} from "react";
 import { useAuth } from "../../../context/UserAuthContext.jsx";
-import Body from "../../../components/LibaryPage/Melanoma/BodyParts/index";
+import Body, { Slug } from "../../../components/LibaryPage/Melanoma/BodyParts/index";
 import ProgressBar from 'react-native-progress/Bar';
-import {updateCompletedParts, fetchCompletedParts, fetchUserData,fetchSkinType } from '../../../services/server.ts';
+import {updateCompletedParts, fetchCompletedParts, fetchUserData,fetchSkinType } from '../../../services/server.js';
 import { spotUploadStyle } from "../../../styles/libary_style.jsx";
 import { SideSwitch } from "../../../components/LibaryPage/Melanoma/sideSwitch.jsx";
 import { NavBar_Upload_1 } from "../../../components/LibaryPage/Melanoma/navBarRow.jsx";
 import { decodeParts } from "../../../utils/melanoma/decodeParts.js";
 import { useFocusEffect } from '@react-navigation/native';
-import { Navigation_MoleUpload_2 } from "../../../navigation/navigation.tsx";
+import { Navigation_MoleUpload_2, SkinType, UserData } from "../../../navigation/navigation.js";
 import { NavBar_OneOption } from "../../../components/Common/navBars.jsx";
 import { styles_shadow } from "../../../styles/shadow_styles.jsx";
+import { UserData_Default } from "../../../utils/initialValues.js";
 
 const { width, height } = Dimensions.get('window');
 const scaleFactor = width < 380 ? 1.1 : 1.4;
 
 const AllMelanomaAdd = ({route,navigation}) => {
 
-    const [selectedSide, setSelectedSide] = useState("front");
+    const [selectedSide, setSelectedSide] = useState<"back" | "front">("front");
     const {currentuser} = useAuth()
-    const [completedParts, setCompletedParts] = useState(null)
+    const [completedParts, setCompletedParts] = useState<{slug:Slug}[]>([])
     const [completedAreaMarker, setCompletedAreaMarker] = useState([])
     const [bodyProgress, setBodyProgress] = useState(0)
-    const [userData, setUserData] = useState([])
-    const [skinType, setSkinType] = useState(0)
+    const [userData, setUserData] = useState<UserData>(UserData_Default)
+    const [skinType, setSkinType] = useState<SkinType>(0)
 
-    const completedArea = async (sessionMemory) => {
+    const completedArea = async (sessionMemory:{slug:Slug}[]) => {
         setCompletedAreaMarker([])
-        const response = await sessionMemory.map((data,index) =>{
+        const response = sessionMemory.map((data,index) =>{
                 return { slug: data.slug, intensity: 0, key: index }
         })
         setCompletedAreaMarker(response)        
@@ -37,7 +38,7 @@ const AllMelanomaAdd = ({route,navigation}) => {
         return sessionMemory   
     }
 
-    const updateCompletedSlug = async (completedArray) => {
+    const updateCompletedSlug = async (completedArray:{slug:Slug}[]) => {
         if(currentuser){
             const response = await updateCompletedParts({
                 userId:currentuser.uid,
@@ -54,7 +55,7 @@ const AllMelanomaAdd = ({route,navigation}) => {
             const response = await fetchCompletedParts({
                 userId: currentuser.uid,
             });
-            if(response != undefined){
+            if(response != null){
                 const completedSlugs = response.map(part => part.slug); 
                 const decoded = decodeParts(completedSlugs)
                 setCompletedParts(decoded)  
@@ -66,7 +67,7 @@ const AllMelanomaAdd = ({route,navigation}) => {
         const response = await fetchUserData({
             userId:currentuser.uid
         })
-        setUserData(response.data())
+        setUserData(response)
     }
 
     const fetchUserSkinType = async () => {
@@ -85,7 +86,10 @@ const AllMelanomaAdd = ({route,navigation}) => {
 
         if (route.params.gender != undefined){
             setUserData(
-                {gender:route.params.gender}
+                {
+                    ...userData,
+                    gender:route.params.gender
+                }
             )
         } else {
             fetchAllUserData()
@@ -124,28 +128,25 @@ const AllMelanomaAdd = ({route,navigation}) => {
                 <ProgressBar progress={bodyProgress} width={150} height={10} color={"lightgreen"}backgroundColor={"white"} />
                 <View style={styles_shadow.shadowContainer}>
                 <Body
-                        data={completedAreaMarker}
-                        gender={userData.gender}
-                        side={selectedSide}
-                        scale={scaleFactor}
-                        //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
-                        colors={['#A6FF9B']}
-                        onBodyPartPress={(slug) => Navigation_MoleUpload_2({
-                            bodyPart: slug,
-                            gender: userData.gender,
-                            completedArray:completedParts,
-                            progress:null,
-                            skin_type: skinType,
-                            navigation: navigation
-                        })}
-                        zoomOnPress={true}
-                    />
+                    data={completedAreaMarker}
+                    gender={userData.gender}
+                    side={selectedSide}
+                    scale={scaleFactor}
+                    colors={['#A6FF9B']}
+                    onBodyPartPress={(slug) => Navigation_MoleUpload_2({
+                        bodyPartSlug: slug,
+                        gender: userData.gender,
+                        completedArray:completedParts,
+                        progress:null,
+                        skin_type: skinType,
+                        navigation: navigation
+                    })}
+                />
                 </View>
                     <ColorLabels />
                     <SideSwitch 
                         selectedSide={selectedSide}
                         setSelectedSide={setSelectedSide}
-                        spotUploadStyle={spotUploadStyle}
                     />
             </View>
         </View>

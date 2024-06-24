@@ -1,5 +1,5 @@
-export const fileUriConverterToBlob = async ({uri}) => {
-    const blob = await new Promise((resolve, reject) => {
+export const fileUriConverterToBlob = async ({uri}:{uri:string}) => {
+    const blob: Blob = await new Promise((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         xhr.onload = function () {
             resolve(xhr.response);

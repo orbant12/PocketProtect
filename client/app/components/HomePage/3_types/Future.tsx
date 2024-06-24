@@ -2,6 +2,7 @@ import { styles } from "../../../styles/home_style"
 import { View,Text,Pressable,TouchableOpacity,Image } from "react-native"
 
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
+import { MonthlyTasksData } from "../../../pages/Home/home"
 
 
 
@@ -21,7 +22,7 @@ export function FutureScreen({
             </Text>
         </View>
         <View>
-        {thisMonthTasks.map((data)=>(
+        {thisMonthTasks.map((data:MonthlyTasksData)=>(
             data.date == selectedDate &&
             
             <View style={styles.TodaySection}>

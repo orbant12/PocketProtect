@@ -47,8 +47,8 @@ type Props = {
   colors: ReadonlyArray<string>;
   data: ReadonlyArray<BodyPart>;
   scale: number;
-  frontOnly: boolean;
-  backOnly: boolean;
+  frontOnly?: boolean;
+  backOnly?: boolean;
   side: "front" | "back";
   gender?: "male" | "female";
   onBodyPartPress: (b: BodyPart) => void;

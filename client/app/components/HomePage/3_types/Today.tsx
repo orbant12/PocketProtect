@@ -5,6 +5,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import PagerView from 'react-native-pager-view';
 import { formatTimestampToString, splitDate } from "../../../utils/date_manipulations";
 import { styles_shadow } from "../../../styles/shadow_styles";
+import { SpotData } from "../../../navigation/navigation";
 
 export const TodayScreen = ({
     allReminders,
@@ -32,10 +33,10 @@ export const TodayScreen = ({
                     </View>
                 </View>
                 <View style={{margin:0,width:"90%",borderBottomWidth:0,borderColor:"white",paddingBottom:10,alignItems:"center",marginRight:"auto",marginLeft:"auto"}}>
-                    <Text style={{color:"white",fontWeight:"700",opacity:0.4,margin:10,alignSelf:"left"}}>Outdated Moles</Text>
+                    <Text style={{color:"white",fontWeight:"700",opacity:0.4,margin:10,alignSelf:"flex-start"}}>Outdated Moles</Text>
                     <View style={{width:"95%",marginTop:10,alignItems:"center"}}>
                         {outdatedMelanomaData.length != 0 ?
-                            outdatedMelanomaData.map((data,index) => (                    
+                            outdatedMelanomaData.map((data:SpotData,index:number) => (                    
                                 <OutdatedMelanomaBox 
                                     type={""}
                                     key={index}
@@ -52,10 +53,10 @@ export const TodayScreen = ({
                 </View>
                 {riskyMelanomaData.length != 0 &&
                 <View style={{margin:0,width:"90%",borderBottomWidth:0,borderColor:"white",paddingBottom:10,alignItems:"center",marginRight:"auto",marginLeft:"auto"}}>
-                    <Text style={{color:"white",fontWeight:"700",opacity:0.4,margin:10,alignSelf:"left"}}>Action Required</Text>
+                    <Text style={{color:"white",fontWeight:"700",opacity:0.4,margin:10,alignSelf:"flex-start"}}>Action Required</Text>
                     <View style={{width:"95%",marginTop:10,alignItems:"center"}}>
                         
-                            {riskyMelanomaData.map((data,index) => (
+                            {riskyMelanomaData.map((data:SpotData,index:number) => (
                                 data.risk >= 0 &&
                                 <OutdatedMelanomaBox 
                                     type={"risk"}
@@ -70,9 +71,9 @@ export const TodayScreen = ({
                 }
                 {unfinishedMelanomaData.length != 0 &&
                 <View style={{margin:0,width:"90%",borderBottomWidth:0,borderColor:"white",paddingBottom:10,alignItems:"center",marginRight:"auto",marginLeft:"auto"}}>
-                    <Text style={{color:"white",fontWeight:"700",opacity:0.4,margin:10,alignSelf:"left"}}>Unfinished Moles</Text>
+                    <Text style={{color:"white",fontWeight:"700",opacity:0.4,margin:10,alignSelf:"flex-start"}}>Unfinished Moles</Text>
                     <View style={{width:"95%",marginTop:10,alignItems:"center"}}>
-                    {unfinishedMelanomaData.map((data,index) => (                    
+                    {unfinishedMelanomaData.map((data:SpotData,index:number) => (                    
                         <OutdatedMelanomaBox 
                             type={"unfinished"}
                             data={data}
@@ -85,7 +86,7 @@ export const TodayScreen = ({
                 }
 
             </View>
-            {allReminders.map((data,index) => (
+            {allReminders.map((data:any,index:number) => (
                 <View key={index} style={styles.TodaySection}>
                     <View style={styles.titleRow}>
                         <Text style={styles.title}>Blood Work</Text>
@@ -108,7 +109,7 @@ export const TodayScreen = ({
                         <ReminderBox data={data} format={format} handleNavigation={handleNavigation} />
                     }               
                     {data.id == "blood_work" && 
-                        ReminderBox({data,index:4,format}) 
+                        <ReminderBox data={data} format={format} handleNavigation={handleNavigation} />
                     }   
                     </PagerView>                                                  
                         <View style={styles.IndicatorContainer}>               
@@ -125,7 +126,9 @@ export const TodayScreen = ({
                     <Text style={styles.title}>Today's Tasks</Text>
                     <Text style={styles.titleLeft}>0/1</Text>
                 </View>
-                <TaskBox_1 />
+                <TaskBox_1 
+                    handleNavigation={handleNavigation}
+                />
 
                 <View style={styles.TaskBox}>
                     <Text style={styles.TaskTitle}>Jaudance Diagnosis</Text>
@@ -145,23 +148,28 @@ export const TodayScreen = ({
 
                 <PagerView style={{marginTop:10,height:365 }} onPageScroll={(e) => handleScrollReminder(e)}   initialPage={0}>
                     <TaskBox_2 
-                    title="Blood Work" 
-                    icon1="robot" 
-                    icon2="magnify" 
-                    icon3="doctor" 
-                    icon4="calendar" 
-                    buttonText="Add Now"
-                    nav_page="Add_BloodWork"
-                    key={1}                        
+                        title="Blood Work" 
+                        icon1="robot" 
+                        icon2="magnify" 
+                        icon3="doctor" 
+                        icon4="calendar" 
+                        buttonText="Add Now"
+                        nav_page="Add_BloodWork"
+                        handleNavigation={handleNavigation}
+                        key={1}  
+                        index={1}                      
                     />
                     <TaskBox_2
-                    title="Lifestyle Assesment" 
-                    icon1="robot" 
-                    icon2="magnify" 
-                    icon3="doctor" 
-                    icon4="calendar" 
-                    buttonText="Add Now" 
-                    key={2}   
+                        title="Lifestyle Assesment" 
+                        icon1="robot" 
+                        icon2="magnify" 
+                        icon3="doctor" 
+                        icon4="calendar" 
+                        buttonText="Add Now" 
+                        nav_page="Add_BloodWork"
+                        key={2}   
+                        handleNavigation={handleNavigation}
+                        index={2}   
                     />
                     <TaskBox_2
                     title="Personal Assesment" 
@@ -169,17 +177,23 @@ export const TodayScreen = ({
                     icon2="magnify" 
                     icon3="doctor" 
                     icon4="calendar" 
+                    handleNavigation={handleNavigation}
                     buttonText="Add Now" 
+                    nav_page="Add_BloodWork"
                     key={3}   
+                    index={3}   
                     />
                     <TaskBox_2
                     title="Medical Assesment" 
                     icon1="robot" 
                     icon2="magnify" 
+                    nav_page="Add_BloodWork"
                     icon3="doctor" 
                     icon4="calendar" 
                     buttonText="Add Now" 
                     key={4}   
+                    handleNavigation={handleNavigation}
+                    index={4}   
                     />    
                 </PagerView>                                 
 
@@ -205,7 +219,7 @@ export const TodayScreen = ({
         )
 }
 
-const ReminderBox = ({data,format,handleNavigation}) =>{
+const ReminderBox = ({data,format,handleNavigation}:{data:any;format:string; handleNavigation:(path:string,data?:any) => void}) =>{
     return(
         <>
         {splitDate(data.expires).year > splitDate(format).year || (splitDate(data.expires).year == splitDate(format).year && splitDate(data.expires).month > splitDate(format).month) || 

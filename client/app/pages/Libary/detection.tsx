@@ -7,8 +7,9 @@ import { fetchAllDiagnosis, fetchUserData,fetchNumberOfMoles } from '../../servi
 import { MainBloodBox, MainMelanomaBox, MainDiagnosisBox } from '../../components/LibaryPage/mainBoxes';
 import { styles } from '../../styles/libary_style';
 import { Horizontal_Navbar} from '../../components/LibaryPage/mainNav';
-import { Navigation_MelanomaCenter, Navigation_MelanomaFullsetup } from '../../navigation/navigation';
+import { Gender, Navigation_MelanomaCenter, Navigation_MelanomaFullsetup } from '../../navigation/navigation';
 import { styles_shadow } from '../../styles/shadow_styles';
+import { UserData_Default } from '../../utils/initialValues';
 
 
 const DetectionLibary = ({navigation}) => {
@@ -20,7 +21,6 @@ const { currentuser } = useAuth();
 const [isSelected, setIsSelected ] = useState("Melanoma")
 //DATA
 const [ diagnosisData, setDiagnosisData] = useState([])
-const [userData, setUserData] = useState([])
 //REFS
 const scrollViewRef = useRef(null);
 const skinCancerRef = useRef(null);
@@ -38,6 +38,7 @@ const { width } = Dimensions.get('window');
 const [currentPage, setCurrentPage] = useState(0);
 //REFRESH
 const [refreshing, setRefreshing] = useState(false);
+const [userData, setUserData] = useState(UserData_Default)
 //SkinCancer
 const [skinCancerProgress, setSkinCancerProgress] = useState(0)
 const [ skinCancerData, setSkinCancerData] = useState({
@@ -64,7 +65,7 @@ const fetchDiagnosis = async () => {
     }
 }
 
-const fetchMoles = async (gender) => {
+const fetchMoles = async (gender:Gender) => {
     if(currentuser){
         const response = await fetchNumberOfMoles({
             userId:currentuser.uid,
@@ -119,7 +120,7 @@ const onRefresh = useCallback(() => {
     setRefreshing(true);
     //
     fetchDiagnosis()
-    fetchMoles()
+    fetchMoles(userData.gender)
     fetchAllUserData()
     setTimeout(() => {
         setRefreshing(false);

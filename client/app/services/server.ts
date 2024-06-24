@@ -75,8 +75,9 @@ export type BloodWorkDoc = {
 
 
 
+
 interface API_Melanoma {
-    userId:string;
+    userId?:string;
     melanomaDocument?: {
         spot:[
             slug:string,
@@ -104,7 +105,7 @@ interface API_Melanoma {
     slug?:Slug;
     data?: SpotData;
     deleteType?: SpotDeleteTypes;
-    completedArray?: [{slug:string}]
+    completedArray?: {slug:Slug}[]
 }
 
 interface API_User {
@@ -229,8 +230,6 @@ export const fetchAllMelanomaSpotData = async ({
         let melanomaData = [];
         snapshot.forEach((doc) => {
             if(doc.data().gender == gender){
-                melanomaData.push(doc.data());
-            } else if ( gender == ""){
                 melanomaData.push(doc.data());
             }
         }
@@ -519,16 +518,15 @@ export const updateCompletedParts = async ({
 
 export const fetchCompletedParts = async ({
     userId
-}:API_Melanoma) => {
+}:API_Melanoma): Promise<{slug:Slug}[] | null> => {
     try{
         const ref = doc(db, "users", userId, "Medical_Data", "skin_data")    
         const snapshot = await getDoc(ref);
         if( snapshot.exists()){
-            return snapshot.data().completedArray
+            return [...snapshot.data().completedArray]
         }        
     } catch(err) {
-        console.log(err)
-        return false
+        return null
     }
 }
 
@@ -842,7 +840,7 @@ export const fetchMonthTasks = async ({
         return taskData;
         
     } catch {   
-        return false
+        return []
     }
 }
 

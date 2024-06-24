@@ -22,6 +22,11 @@ type CustomScrollEvent = {
     };
 };
 
+export type MonthlyTasksData = {
+    date:Date,
+    data:any
+}
+
 
 export default function TabOneScreen({navigation}) {
 
@@ -37,7 +42,7 @@ const [dateCountdown, setDateCountdown] = useState<number>(10);
 const [historyShown, setHistoryShown] = useState<boolean>(true);
 const displayCounter = useTimer(dateCountdown,()=>{});
 //DATA
-const [thisMonthTasks, setThisMonthTasks] = useState<any[]>([]);
+const [thisMonthTasks, setThisMonthTasks] = useState<MonthlyTasksData[]>([]);
 const [affectedDays, setAffectedDays] = useState<any[]>([]);
 const [allReminders, setAllReminders] = useState<any[]>([]);
 //H-SCROLL
@@ -45,7 +50,7 @@ const [currentPage, setCurrentPage] = useState<number>(0);
 const [currentPageReminder, setCurrentPageReminder] = useState<number>(0);
 //REFRESH
 const [refreshing, setRefreshing] = useState<boolean>(false);
-const [outdatedMelanomaData, setOutdatedMelanomaData] = useState<any[]>([]);
+const [outdatedMelanomaData, setOutdatedMelanomaData] = useState<SpotData[]>([]);
 const [riskyMelanomaData, setRiskyMelanomaData] = useState<any[]>([]);
 const [unfinishedMelanomaData, setUnfinishedMelanomaData] = useState<any[]>([]);
 const [userData, setUserData] = useState<UserData>(UserData_Default);
@@ -103,7 +108,7 @@ const [userData, setUserData] = useState<UserData>(UserData_Default);
                 month: date.month,
                 year: date.year
             })
-            if(response != false){
+            if(response.length != 0){
                 setThisMonthTasks(response)
                 setAffectedDays(response.map(singleDate => singleDate.date));
                 console.log(response)

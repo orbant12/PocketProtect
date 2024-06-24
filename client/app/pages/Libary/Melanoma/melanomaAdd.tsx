@@ -2,13 +2,15 @@
 import React, {useEffect, useState} from 'react';
 import { Text, View,Pressable ,ScrollView,Image,TouchableOpacity} from 'react-native';
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/client/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
-import {melanomaUploadToStorage,updateSpot} from '../../../services/server.ts';
+import {melanomaUploadToStorage,updateSpot} from '../../../services/server';
 import { useAuth } from '../../../context/UserAuthContext.jsx';
 import * as ImagePicker from 'expo-image-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { NavBar_SpotAdd } from '../../../components/LibaryPage/Melanoma/navBarRow';
-import { spotUpdateStyle } from '../../../styles/libary_style';
-import { fileUriConverterToBlob } from '../../../utils/melanoma/fileUriConverter';
+import { NavBar_SpotAdd } from '../../../components/LibaryPage/Melanoma/navBarRow.jsx';
+import { spotUpdateStyle } from '../../../styles/libary_style.jsx';
+import { fileUriConverterToBlob } from '../../../utils/melanoma/fileUriConverter.js';
+import { SpotArrayData, SpotData } from '../../../navigation/navigation';
+import { BodyPart, Slug } from '../../../components/LibaryPage/Melanoma/BodyParts';
 
 
 const MelanomaAdd = ({ route , navigation }) => {    
@@ -18,8 +20,8 @@ const MelanomaAdd = ({ route , navigation }) => {
     const skin_type = route.params.skin_type;
     const spotId = route.params.type; 
     const userData = route.params.userData    
-    const bodyPart = route.params.bodyPart
-    const firstSelectedPart = bodyPart.slug
+    const bodyPartSpotArray: SpotArrayData = route.params.bodyPartSpotArray
+    const firstSelectedPart = bodyPartSpotArray.slug
 
     const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
     const [uploadedSpotPicture, setUploadedSpotPicture] = useState(null);
@@ -47,7 +49,7 @@ const MelanomaAdd = ({ route , navigation }) => {
         const ID = generateNumericalUID(4)
         const storageLocation = `users/${userData.id}/melanomaImages/${spotId.id}_updated#${ID}`;
 
-        const uploadToStorage = async(uri) => {
+        const uploadToStorage = async(uri:string) => {
             const blob = await fileUriConverterToBlob({uri})
             const response = await melanomaUploadToStorage({
                 melanomaPicFile: blob,                           
@@ -57,8 +59,8 @@ const MelanomaAdd = ({ route , navigation }) => {
         }
         const pictureUrl = await uploadToStorage(uploadedSpotPicture);
 
-        const data = {
-            melanomaDoc: {"spot": [bodyPart], "location": redDotLocation},
+        const data: SpotData = {
+            melanomaDoc: {spot: [bodyPartSpotArray], location: redDotLocation},
             gender: userData.gender,        
             melanomaId: spotId.id,
             melanomaPictureUrl: pictureUrl,
@@ -106,14 +108,13 @@ const MelanomaAdd = ({ route , navigation }) => {
         <ScrollView style={{width:"100%",height:"100%"}}>
             <NavBar_SpotAdd 
                 navigation={navigation}
-                type={spotId}
             />
             <View style={spotUpdateStyle.section}>
             <PickerSection 
                 redDotLocation={redDotLocation}
                 spotId={spotId}
                 userData={userData}
-                bodyPart={bodyPart}y
+                bodyPart={bodyPartSpotArray}
                 skin_type={skin_type}
             />
 
@@ -127,7 +128,7 @@ const MelanomaAdd = ({ route , navigation }) => {
                         <>
                             <View style={{flexDirection:"row",width:"100%",justifyContent:"space-between",maxWidth:"100%",alignItems:"center",marginTop:20}}>
                             <Image
-                                source={"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/melanoma/melanoma-skin-cancer-what-is-melanoma.jpg"}
+                                source={{uri:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/melanoma/melanoma-skin-cancer-what-is-melanoma.jpg"}}
                                 style={{width:150,height:150,borderWidth:1,borderRadius:10}}
                             />
     
@@ -159,9 +160,6 @@ const MelanomaAdd = ({ route , navigation }) => {
                             </View>
                         )
                     }
-                
-
-             
                 </View>
             </View>
 
@@ -170,13 +168,13 @@ const MelanomaAdd = ({ route , navigation }) => {
             <View style={{width:"100%",alignItems:"center",marginBottom:20,marginTop:10}}>
                 <TouchableOpacity
                     style={
-                        firstSelectedPart != "" && redDotLocation.x != -100 && uploadedSpotPicture != null ?
+                        redDotLocation.x != -100 && uploadedSpotPicture != null ?
                         spotUpdateStyle.saveButtonActive : spotUpdateStyle.saveButtonInActive
                     } onPress={handleMoreBirthmark}>
 
                     <Text style={{color:"white"}}>Save</Text>
                 </TouchableOpacity>
-                {firstSelectedPart != "" && redDotLocation.x != -100 && uploadedSpotPicture != null ? (
+                {redDotLocation.x != -100 && uploadedSpotPicture != null ? (
                     <Text style={{color:"green",fontWeight:"300",fontSize:10}}>3/3 - All Steps Completed</Text> 
                 ):(
                     <Text style={{fontWeight:"300",opacity:0.5,fontSize:10}}>Not All Steps Completed</Text>
@@ -470,7 +468,7 @@ const PickerSection  = ({
             <Text>First Step <Text style={redDotLocation.x == -100 ? {opacity:0.3}:{color:"green",fontWeight:"600"}}>1/2</Text></Text>
             <Text style={{fontSize:20,fontWeight:"600"}}>{spotId.id}</Text>
         </View>
-            <View style={{position:"relative",alignItems:"center",justifyContent:"center",width:"500px",height:"500px",marginTop:20}}>
+            <View style={{position:"relative",alignItems:"center",justifyContent:"center",width:500,height:500,marginTop:20}}>
                 {dotSelectOnPart() }
             </View>
     </View>
