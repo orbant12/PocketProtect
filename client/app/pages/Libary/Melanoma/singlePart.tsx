@@ -14,27 +14,28 @@ import { AssistTab } from "../../../components/LibaryPage/Melanoma/SingleMole/ta
 import { useFocusEffect } from '@react-navigation/native';
 import { Navigation_AddSlugSpot } from "../../../navigation/navigation";
 import { NavBar_OneOption } from "../../../components/Common/navBars";
-import { SpotData } from "../../../components/LibaryPage/Melanoma/BodyParts";
+import { Gender, SkinType, SpotData, UserData } from "../../../utils/types";
+
 
 const SinglePartAnalasis = ({ route,navigation }) => {
 
 //<==================<[ Variables ]>====================>
 
 //Route Params
-const bodyPartID = route.params.melanomaId;
-const gender = route.params.gender
-const skin_type = route.params.skin_type
-const userData = route.params.userData
+const bodyPartID:string = route.params.melanomaId;
+const gender:Gender = route.params.gender
+const skin_type:SkinType = route.params.skin_type
+const userData:UserData = route.params.userData
 
 const functions = getFunctions(app);
 const moleDataRef = useRef(null)
 const {currentuser} = useAuth()
 const [melanomaHistory, setMelanomaHistory] = useState([])
-const [bodyPart , setBodyPart ] = useState(null)
-const [selectedMelanoma, setSelectedMelanoma] = useState(null)
-const [highlight, setHighlighted ]= useState("")
-const [deleteModal,setDeleteModal] = useState(false)
-const [moleToDelete,setMoleToDelete] = useState("")
+const [bodyPart , setBodyPart ] = useState<SpotData | null>(null)
+const [selectedMelanoma, setSelectedMelanoma] = useState<SpotData | null>(null)
+const [highlight, setHighlighted ]= useState<string | null>(null)
+const [deleteModal,setDeleteModal] = useState<boolean>(false)
+const [moleToDelete,setMoleToDelete] = useState<SpotData | null>(null)
 const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
 
 
@@ -60,7 +61,7 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
     }
 
     const fetchDataSelectedMole = async () => {
-        const response = await fetchSelectedMole({
+        const response: SpotData = await fetchSelectedMole({
             userId:currentuser.uid,
             spotId: bodyPartID
         })
@@ -146,7 +147,7 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
         Navigation_AddSlugSpot({
             userData:userData,
             skin_type:skin_type,
-            bodyPart:bodyPart.melanomaDoc.spot[0],
+            bodyPartSlug:bodyPart.melanomaDoc.spot[0],
             type:{id:bodyPart.melanomaId,locationX:bodyPart.melanomaDoc.location.x,locationY:bodyPart.melanomaDoc.location.y},
             navigation
         })

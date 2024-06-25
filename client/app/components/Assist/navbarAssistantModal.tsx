@@ -4,7 +4,6 @@ import { HeaderContainer } from "../Common/headerContainer"
 
 
 export const NavBar_AssistantModal = ({
-    scrollRef,
     goBack,
     title,
     id,
@@ -12,6 +11,14 @@ export const NavBar_AssistantModal = ({
     bgColor,
     right_action,
     outerBg
+}:{
+    goBack?:(e:[]) => void;
+    title:string;
+    id?:string;
+    right_icon?:{name:string,type:"icon" | "static_image" | "image" | undefined};
+    bgColor?:string;
+    right_action?:(e:any) => void;
+    outerBg?:string;
 }) => {
     return(
         HeaderContainer({
@@ -23,11 +30,10 @@ export const NavBar_AssistantModal = ({
                     borderWidth:0,
                     padding:10,
                     position:"relative",
-                    backgroundColor:"transparent",
                     flexDirection:"row",
                     justifyContent:"space-between",
                     zIndex:5,
-                    backgroundColor:bgColor
+                    backgroundColor: bgColor != undefined ? bgColor : "transparent"
                 }}>
                 <TouchableOpacity onPress={() => goBack([])}  style={{backgroundColor:"black",borderRadius:30,borderColor:"white",borderWidth:2}}>
                     <MaterialCommunityIcons 
@@ -43,7 +49,7 @@ export const NavBar_AssistantModal = ({
                     <Text style={{color:"white",opacity:0.3,fontSize:10}}>{id}</Text>
                 </View>
                 
-                <TouchableOpacity onPress={right_action != undefined ? right_action : {}} style={{backgroundColor:"black",borderRadius:30,borderColor:"white",borderWidth:2}}>
+                <TouchableOpacity onPress={right_action != undefined ? right_action : () => {}} style={{backgroundColor:"black",borderRadius:30,borderColor:"white",borderWidth:2}}>
                     {right_icon.type == "icon" ?
                         <MaterialCommunityIcons
                             name={right_icon.name}
@@ -52,7 +58,7 @@ export const NavBar_AssistantModal = ({
                         />
                     :
                     <Image
-                        source={right_icon.type == "static_image" ? right_icon.name : {uri: right_icon.name}}
+                        source={{uri:right_icon.name}}
                         style={{width:50,height:50,borderWidth:1,borderColor:"white",borderRadius:100}}
                     />
                     }

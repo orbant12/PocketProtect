@@ -14,15 +14,16 @@ import { SkinModal } from "../../../components/LibaryPage/Melanoma/modals";
 import { Mstyles } from "../../../styles/libary_style";
 import { NavBar_Main } from "../../../components/LibaryPage/Melanoma/navBarRow";
 import { SlugCard } from "../../../components/LibaryPage/Melanoma/slugCard";
-import { Navigation_MoleUpload_1, SkinType, UserData,Navigation_SlugAnalysis } from "../../../navigation/navigation";
+import { Navigation_MoleUpload_1,Navigation_SlugAnalysis } from "../../../navigation/navigation";
 import { AssistantAdvertBox } from "../../../components/LibaryPage/Melanoma/Assistance/assistantAdvert";
 import { styles_shadow } from "../../../styles/shadow_styles";
 import { NavBar_TwoOption } from "../../../components/Common/navBars";
 import { UserData_Default } from "../../../utils/initialValues";
+import { Gender, SkinType, UserData } from "../../../utils/types";
 
 
 
-const SingleFeature = ({route,navigation}) => {
+const SingleFeature = ({navigation}) => {
 
 //<==================<[ Variables ]>====================>
 
@@ -50,7 +51,7 @@ const SingleFeature = ({route,navigation}) => {
 
 //<==================<[ Functions ]>====================>
 
-    const fetchAllMelanomaData = async (gender) => {
+    const fetchAllMelanomaData = async (gender:Gender) => {
         if(currentuser){
             const response = await fetchAllMelanomaSpotData({
                 userId: currentuser.uid,

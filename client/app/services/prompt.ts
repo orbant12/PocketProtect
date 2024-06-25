@@ -1,13 +1,14 @@
+import { PromptResponseFormat } from "../pages/Chat/Personal_Assistant";
 import { app } from "./firebase"
 import { getFunctions, httpsCallable } from "firebase/functions";
 
 const functions = getFunctions(app);
 
 
-const  generateDiagnosisFromPrompt = async (request) => {
+const  generateDiagnosisFromPrompt = async (request:string) => {
     const generateTextFunction = httpsCallable(functions, 'openAIHttpFunctionSec');
     try {
-        const result = await generateTextFunction({name: request});             
+        const result = await generateTextFunction({name: request}) as PromptResponseFormat;             
         return `${result.data.data.choices[0].message.content}`
     } catch (error) {
         console.error('Firebase function invocation failed:', error);

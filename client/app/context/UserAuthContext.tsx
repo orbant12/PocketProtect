@@ -14,9 +14,28 @@ import { AuthErrorCodes, createUserWithEmailAndPassword, onAuthStateChanged,sign
 //FIREBASE
 import { auth,db} from "../services/firebase";
 import { collection, doc, setDoc,getDoc} from "firebase/firestore";
+import { UserData } from "../utils/types";
+import { RootStackNavigationProp } from "../../App";
+
+
+type FirebaseUser = {
+  displayName: string | null;
+  email: string | null;
+  phoneNumber: string | null;
+  photoURL: string | null;
+  providerId: string;
+  uid: string;
+}
+
+export interface AuthContextType {
+  currentuser: FirebaseUser| null;
+  Login: (email: string, password: string) => Promise<void>;
+  SignUp: (email: string, password: string,FullName:string) => Promise<void>;
+  error:any;
+}
 
 //CREATE CONTEXT
-const userContext = createContext();
+const userContext = createContext<AuthContextType | undefined>(undefined);
 
 //REFERENC TO ACCESS CODE
 export const useAuth = () => { return useContext(userContext) }
@@ -25,16 +44,16 @@ const UserAuthContext = ({ children }) => {
 
 //<********************VARIABLES************************>
 
-const [currentuser, setuser] = useState()
+const [currentuser, setuser] = useState<FirebaseUser| null>(null)
 const [error, setError] = useState("")
-const navigation = useNavigation();
+const navigation = useNavigation<RootStackNavigationProp>();
+
 
 //<********************FUNCTIONS************************>
 
 // <====> Auth State Listener <====>
 
 onAuthStateChanged(auth, user => {
-  console.log(user)
     if (user) {
       setuser(user)
       console.log("u are logged in")
@@ -48,7 +67,7 @@ onAuthStateChanged(auth, user => {
 
 // <====> LOGIN HANDLER <====>
 
-const Login = async (email,password) => {
+const Login = async (email:string,password:string) => {
   const logEmail = email;
   const logPass = password
   try {
@@ -67,7 +86,7 @@ const Login = async (email,password) => {
 
 // <====> GOOGLE HANDLER <====>
 
-const GoogleLogin = async (result) => {
+const GoogleLogin = async (result:any) => {
   const user = result.user;
   console.log(user)
 }
@@ -91,13 +110,13 @@ const RegisterUserData = async ({
       birth_date: null,
     });
     console.log("Document successfully added!");
-    await sendEmailVerification(signeduser)
+    await sendEmailVerification(regEmail)
   } catch (error) {
     console.error("Error adding document: ", error);
   };
 }
 
-const SignUp = async (email, password, FullName) => {
+const SignUp = async (email:string, password:string, FullName:string) => {
 
   const userFullName = FullName;
   const regEmail = email;

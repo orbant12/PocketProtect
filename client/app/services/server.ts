@@ -13,9 +13,8 @@ import { ref,  getDownloadURL, uploadBytes,deleteObject} from "firebase/storage"
 import { dateDistanceFromToday, Timestamp } from "../utils/date_manipulations";
 import { generateNumericalUID } from "../utils/uid_generator.js";
 import { WelcomeTexts } from "../../assets/welcome_scripts/welcomeTexts.js";
-import { Gender, SkinType } from "../navigation/navigation.js";
-import { BodyPart, Slug,SpotData } from "../components/LibaryPage/Melanoma/BodyParts/index.js";
-import { UserData } from "../navigation/navigation.js";
+import { Gender, SkinType, Slug, SpotData, UserData } from "../utils/types.js";
+
 
 type SpotDeleteTypes = "history" | "latest"
 

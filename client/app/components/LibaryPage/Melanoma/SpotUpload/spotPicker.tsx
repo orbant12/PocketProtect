@@ -1,5 +1,6 @@
-import { View, Text, Pressable } from "react-native";
+import { View, Text, Pressable,GestureResponderEvent} from "react-native";
 import { dotSelectOnPart } from '../../../../pages/Libary/Melanoma/ProcessScreens/melanomaDotSelect'
+import { Gender, SkinType, SpotArrayData } from "../../../../utils/types";
 
 export function SpotPicker({
     redDotLocation,
@@ -9,8 +10,16 @@ export function SpotPicker({
     gender,
     highlighted,
     skinColor
+}:{
+    redDotLocation:{x:number,y:number};
+    setRedDotLocation:(arg:{x:number,y:number}) => void;
+    bodyPart: SpotArrayData;
+    currentSlugMemory:string;
+    gender:Gender;
+    highlighted:string;
+    skinColor:SkinType;
 }){
-    const handlePartClick = (e) => {
+    const handlePartClick = (e:GestureResponderEvent) => {
         const { locationX, locationY } = e.nativeEvent;
         setRedDotLocation({ x: locationX, y: locationY })    
     }
@@ -23,7 +32,7 @@ export function SpotPicker({
                 <Text style={{fontSize:20,fontWeight:"600"}}>Where is your spot ?</Text>
             </View>
 
-            <Pressable style={{position:"relative",alignItems:"center",justifyContent:"center",width:"500px",height:"500px",marginTop:20}} onPress={(e) => handlePartClick(e)}>
+            <Pressable style={{position:"relative",alignItems:"center",justifyContent:"center",width:500,height:500,marginTop:20}} onPress={(e) => handlePartClick(e)}>
                     {dotSelectOnPart({
                         bodyPart,
                         redDotLocation,

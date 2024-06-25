@@ -9,23 +9,22 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { NavBar_SpotAdd } from '../../../components/LibaryPage/Melanoma/navBarRow';
 import { spotUpdateStyle } from '../../../styles/libary_style';
 import { fileUriConverterToBlob } from '../../../utils/melanoma/fileUriConverter';
-import { SpotArrayData, SpotData } from '../../../navigation/navigation';
-import { BodyPart, Slug } from '../../../components/LibaryPage/Melanoma/BodyParts';
+import { SkinType, SpotArrayData, SpotData, UserData } from '../../../utils/types';
+import { UpdateMethod } from '../../../navigation/navigation';
 
+type location = {x:number,y:number}
 
 const MelanomaAdd = ({ route , navigation }) => {    
     
     //<==========> VARIABLE <============>
 
-    const skin_type = route.params.skin_type;
-    const spotId = route.params.type; 
-    const userData = route.params.userData    
-    const bodyPartSpotArray: SpotArrayData = route.params.bodyPartSpotArray
-    const firstSelectedPart = bodyPartSpotArray.slug
-
-    const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
-    const [uploadedSpotPicture, setUploadedSpotPicture] = useState(null);
-    const [isScreenLoading,setIsScreenLoading ]  = useState(false)
+    const skin_type:SkinType = route.params.skin_type;
+    const spotId:UpdateMethod = route.params.type; 
+    const userData:UserData = route.params.userData    
+    const bodyPartSlug: SpotArrayData = route.params.bodyPartSlug
+    
+    const [redDotLocation, setRedDotLocation] = useState<location>({ x: -100, y: 10 });
+    const [uploadedSpotPicture, setUploadedSpotPicture] = useState<string | null>(null);
     const { currentuser } = useAuth()    
 
 
@@ -45,7 +44,6 @@ const MelanomaAdd = ({ route , navigation }) => {
     };
 
     const handleMoreBirthmark = async () => {    
-        setIsScreenLoading(true)
         const ID = generateNumericalUID(4)
         const storageLocation = `users/${userData.id}/melanomaImages/${spotId.id}_updated#${ID}`;
 
@@ -60,7 +58,7 @@ const MelanomaAdd = ({ route , navigation }) => {
         const pictureUrl = await uploadToStorage(uploadedSpotPicture);
 
         const data: SpotData = {
-            melanomaDoc: {spot: [bodyPartSpotArray], location: redDotLocation},
+            melanomaDoc: {spot: [bodyPartSlug], location: redDotLocation},
             gender: userData.gender,        
             melanomaId: spotId.id,
             melanomaPictureUrl: pictureUrl,
@@ -75,7 +73,6 @@ const MelanomaAdd = ({ route , navigation }) => {
             data: data,                
         })
         if (res == true){
-            setIsScreenLoading(false)
             setRedDotLocation({ x: -100, y: 10 });                             
             setUploadedSpotPicture(null)     
             navigation.goBack()   
@@ -84,7 +81,7 @@ const MelanomaAdd = ({ route , navigation }) => {
         }
     }
     
-    function generateNumericalUID(length) {
+    function generateNumericalUID(length:number) {
         if (length <= 0) {
             throw new Error("Length must be a positive integer.");
         }
@@ -114,7 +111,7 @@ const MelanomaAdd = ({ route , navigation }) => {
                 redDotLocation={redDotLocation}
                 spotId={spotId}
                 userData={userData}
-                bodyPart={bodyPartSpotArray}
+                bodyPart={bodyPartSlug}
                 skin_type={skin_type}
             />
 

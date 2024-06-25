@@ -1,21 +1,27 @@
 
 import { View,ScrollView,Text,Image,TextInput } from "react-native";
 import { getFunctions, httpsCallable } from "firebase/functions";
-import {app} from "../../services/firebase"
+import {app} from "../../../services/firebase"
 import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Tabs} from 'react-native-collapsible-tab-view'
 import Entypo from 'react-native-vector-icons/Entypo';
+import { useState,useRef,useEffect } from "react";
 
 
-function AiDiagnosis({sympthomInput}){
+function AiDiagnosis(){
     const functions = getFunctions(app);
     //DETECTION
     const snapPoints = ['80%'];
     const bottomSheetRef = useRef(null);
     const [isContextPanelOpen,setIsContextPanelOpen] = useState(false)
     const [isAddTriggered, setIsAddTriggered] = useState(false)
+
+    const [ contextToggles , setContextToggles ] = useState({
+        useBloodWork:false,
+        useWeatherEffect:false,
+    })
     const ContextOptions = [
         {
           title:"Blood Work",
@@ -38,12 +44,9 @@ function AiDiagnosis({sympthomInput}){
           stateID:"useWeatherEffect"
         },
     ]
-    const [ contextToggles , setContextToggles ] = useState({
-        useBloodWork:false,
-        useWeatherEffect:false,
-    })
     const [sympthomInput, setSympthomInput] = useState('')
     const [addedSymptoms, setAddedSymptoms] = useState([])
+    const [progress, setProgress] = useState(0)
     const [ isDiagnosisLoading, setIsDiagnosisLoading] = useState(false)
     const addingInput = useRef(null);
 
@@ -65,7 +68,7 @@ function AiDiagnosis({sympthomInput}){
         setAddedSymptoms(updatedSymptoms);
     };
     
-    const handleOpenBottomSheet = (state) => {
+    const handleOpenBottomSheet = (state:"open" | "hide") => {
         if(state == "open"){
             bottomSheetRef.current.present();      
         } else if (state == "hide"){

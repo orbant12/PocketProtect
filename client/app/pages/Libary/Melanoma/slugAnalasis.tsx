@@ -10,7 +10,7 @@ import { NavBar_Slug } from "../../../components/LibaryPage/Melanoma/navBarRow";
 import { SlugStyles } from "../../../styles/libary_style";
 import { decodeParts } from "../../../utils/melanoma/decodeParts";
 import { styles_shadow } from "../../../styles/shadow_styles";
-import { Slug, SpotData } from "../../../components/LibaryPage/Melanoma/BodyParts";
+import { BodyPart, Gender, SkinType, UserData,Slug, SpotData  } from "../../../utils/types";
 
 
 const SlugAnalasis = ({ route,navigation }) => {
@@ -20,12 +20,13 @@ const SlugAnalasis = ({ route,navigation }) => {
     const [melanomaData, setMelanomaData] = useState<SpotData[]>([]);
     const [highlighted, setHighlighted] = useState(null);
     const [completedParts, setCompletedParts] = useState<Slug[]>([])
-    const [refreshing, setRefreshing] = useState(false);
+    const [refreshing, setRefreshing] = useState<boolean>(false);
     const { currentuser } = useAuth();   
-    const bodyPartSlug = route.params.bodyPartSlug;
-    const skin_type = route.params.skin_type;
-    const userData = route.params.userData;
-    const gender = userData.gender
+
+    const bodyPartSlug: BodyPart = route.params.bodyPartSlug;
+    const skin_type: SkinType = route.params.skin_type;
+    const userData: UserData = route.params.userData;
+    const gender:Gender = userData.gender
 
 
 //<==================<[ Functions ]>====================>
@@ -97,7 +98,7 @@ const SlugAnalasis = ({ route,navigation }) => {
 
     const handleAddMelanoma = () => {
         Navigation_MoleUpload_2({
-            bodyPart:bodyPartSlug,
+            bodyPartSlug:bodyPartSlug,
             gender:userData.gender,
             skin_type: skin_type,
             navigation,

@@ -4,6 +4,7 @@ import { formatTimestampToString , dateDistanceFromToday} from "../../../../../u
 import LoadingOverlay from "../../../../Common/Loading/processing"
 import { View, Text, Image, TouchableOpacity } from "react-native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { SpotData } from "../../../../../utils/types";
 
 
 export const MoleTab = ({
@@ -20,6 +21,21 @@ export const MoleTab = ({
     melanomaHistory,
     handleUpdateMole,
     handleCallNeuralNetwork
+}:
+{
+    moleDataRef: any;
+    bodyPart: SpotData | null;
+    selectedMelanoma: SpotData | null;
+    diagnosisLoading: boolean;
+    setDeleteModal:(deleteModal:boolean) => void;
+    setMoleToDelete:(moleToDelete:SpotData) => void;
+    deleteModal: boolean;
+    setHighlighted:(highlight:string) => void;
+    highlight: string | null;
+    setSelectedMelanoma:(selectedMelanoma:SpotData) => void;
+    melanomaHistory: SpotData[];
+    handleUpdateMole:(moleId:string) => void;
+    handleCallNeuralNetwork:(molePictureUrl:string) => void;
 }) => {
 
     return(
@@ -112,7 +128,7 @@ export const MoleTab = ({
                                     name="arrow-right"
                                     size={25}
                                     color={"white"}
-                                    opacity={0.8}
+                                    style={{opacity:0.8}}
                                 />
                             </View>
                             </TouchableOpacity>
@@ -133,7 +149,7 @@ export const MoleTab = ({
                                             name="arrow-right"
                                             size={25}
                                             color={"white"}
-                                            opacity={0.8}
+                                            style={{opacity:0.8}} 
                                         />
                                     </View>
                                     </TouchableOpacity>

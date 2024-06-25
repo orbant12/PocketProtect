@@ -2,15 +2,23 @@ import { View,Text,Pressable,TouchableOpacity, Image } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import SampleImage from "../../../../assets/IMG_0626.jpg"
 import { spotUpload_2_styles } from "../../../../styles/libary_style";
+import { ScrollView } from "react-native-gesture-handler";
 
 export function SpotUpload({
     uploadedSpotPicture,
     highlighted,
     toggleCameraOverlay,
     setUploadedSpotPicture,
+}:
+{
+    uploadedSpotPicture:string | null;
+    highlighted:string | null;
+    toggleCameraOverlay:() => void;
+    setUploadedSpotPicture:(arg:string | null) => void;
+
 }){
     return(
-        <View style={[{width:"100%",alignItems:"center",marginBottom:10,paddingTop:10,marginTop:10,borderTopWidth:2},highlighted != "" && {paddingTop:100}]}>
+        <View style={[{width:"100%",alignItems:"center",marginBottom:10,paddingTop:10,marginTop:10,borderTopWidth:2},highlighted != null && {paddingTop:100}]}>
         <View style={{flexDirection:"column",width:"90%",marginTop:30}}>
             <Text>Final Step <Text style={uploadedSpotPicture == null ? {opacity:0.3}:{color:"green",fontWeight:"600"}}>2/2</Text></Text>
             <Text style={{fontSize:20,fontWeight:"600"}}>Take a picture of your spot</Text>
@@ -18,7 +26,7 @@ export function SpotUpload({
                 <>
                     <View style={{flexDirection:"row",width:"100%",justifyContent:"space-between",maxWidth:"100%",alignItems:"center",marginTop:20}}>
                     <Image
-                        source={SampleImage}
+                        source={{uri: SampleImage}}
                         style={{width:140,height:140,borderWidth:0.3,borderRadius:10}}
                     />
 
@@ -78,6 +86,15 @@ export const AlreadyUploadedSpots = ({
     setIsModalUp,
     isModalUp,
     setMoleToDeleteId
+}:{
+    currentSlugMemory:{id:string,picture:string}[];
+    highlighted:string;
+    setHighlighted:(arg:string) => void;
+    scrollViewRef:React.RefObject<ScrollView>;
+    setIsModalUp:(arg:boolean) => void;
+    isModalUp:boolean;
+    setMoleToDeleteId:(arg:string) => void;
+
 }) => {
     return(
         <>
@@ -85,7 +102,7 @@ export const AlreadyUploadedSpots = ({
         {currentSlugMemory.length != 0 &&
             currentSlugMemory.map((data,index) => (
                 <View key={index}>
-                    <View style={[{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:"300",borderWidth:0.8,borderColor:"lightgray",padding:10,marginTop:10,borderRadius:20},highlighted == data.id && {position:"absolute",top:-460,backgroundColor:"white",zIndex:100,left:-150}]}>
+                    <View style={[{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:300,borderWidth:0.8,borderColor:"lightgray",padding:10,marginTop:10,borderRadius:20},highlighted == data.id && {position:"absolute",top:-460,backgroundColor:"white",zIndex:100,left:-150}]}>
                         <Image
                             source={{uri: data.picture }}
                             style={{width:75,height:75,borderWidth:1,borderRadius:10,}}
@@ -104,8 +121,7 @@ export const AlreadyUploadedSpots = ({
                                     name="delete"
                                     size={30}
                                     color="red"
-                                    style={{padding:2,marginLeft:10}}
-                                    opacity="0.6"                                                         
+                                    style={{padding:2,marginLeft:10,opacity:0.4}}
                                 />
                             </TouchableOpacity>                                       
                         </View>

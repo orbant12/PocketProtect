@@ -1,11 +1,19 @@
 import { Mstyles, SingleSlugStyle,spotUpload_2_styles } from "../../../styles/libary_style"
 import {View, Text,Pressable,TouchableOpacity} from "react-native"
+import { SpotData } from "../../../utils/types"
 
 export const SkinModal = ({
     visible,
     melanomaMetaData,
     handleMelanomaDataChange,
     setSkinModal
+}:{
+    visible:boolean,
+    melanomaMetaData:{
+        skin_type:0 | 1 | 2 | 3
+    },
+    handleMelanomaDataChange:(key:string,value:any) => void,
+    setSkinModal:(arg:boolean) => void
 }) => {
     return(
         <>
@@ -39,6 +47,12 @@ export function SureModal({
     handleSpotDelete,
     setDeleteModal,
     visible
+}:{
+    moleToDelete:SpotData,
+    handleSpotDelete:(moleToDelete:SpotData) => void,
+    setDeleteModal:(arg:boolean) => void,
+    visible:boolean
+
 }){
     return(
         <>
@@ -51,7 +65,7 @@ export function SureModal({
             </View>
             <View style={{flexDirection:"row-reverse",width:"100%",borderTopWidth:1,padding:10,paddingRight:20}}>
 
-                <TouchableOpacity onPress={() => {moleToDelete != "" && handleSpotDelete(moleToDelete)}} style={SingleSlugStyle.modalNoBtn}>
+                <TouchableOpacity onPress={() => {moleToDelete != null && handleSpotDelete(moleToDelete)}} style={SingleSlugStyle.modalNoBtn}>
                     <Text style={{fontWeight:"700",color:"white"}}>Yes</Text>
                 </TouchableOpacity>
 

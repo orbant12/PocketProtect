@@ -1,9 +1,10 @@
 import { View,TouchableOpacity,Text } from "react-native"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import { HeaderContainer } from "./headerContainer"
+import { ReactNode } from "react";
 
 
-export const NavBar_TwoOption = ({title,icon_right,icon_left,titleComponent}) => {
+export const NavBar_TwoOption = ({title,icon_right,icon_left,titleComponent}:{title?:string;icon_right:{name:string,size?:number,action?:() => void};icon_left:{name:string,size?:number,action?:() => void};titleComponent?:() => ReactNode}) => {
     return(
     HeaderContainer({
     outerBg:"transparent",

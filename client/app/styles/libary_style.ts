@@ -51,8 +51,8 @@ export const styles = StyleSheet.create({
     //RESULTS
     ResultsScoreSection: {
         flexDirection: 'column',
-        alignItems: 'left',
-        justifyContent:'left',
+        alignItems: 'flex-start',
+        justifyContent:'flex-start',
         width: '100%',
         marginTop: 20,
     },
@@ -209,7 +209,7 @@ export const Mstyles = StyleSheet.create({
     },
     colorExplain: {
         flexDirection: 'column',
-        alignItems: 'left',
+        alignItems: 'flex-start',
         position: 'absolute',
         marginTop: 10,
         top: 450,
@@ -448,8 +448,6 @@ export const SlugStyles = StyleSheet.create({
         alignItems:"center",
         borderWidth:0,
         padding:10,
-        position:"absolute",
-        top:0,
         backgroundColor:"transparent",
         flexDirection:"row",
         justifyContent:"space-between",
@@ -576,8 +574,6 @@ export const SingleSlugStyle = StyleSheet.create({
     melanomaBoxR: {
 
         justifyContent: "center",
-        alignItems: "center",
-        borderWidth: 0,
         borderRadius: 10,
         marginLeft: 10,
         paddingVertical:10,
@@ -741,20 +737,6 @@ export const spotUploadStyle = StyleSheet.create({
         marginBottom:10,
         backgroundColor:"black"
     },
-    ProgressBar:{
-        width:"100%",
-        alignItems:"center",
-        borderWidth:0,
-        padding:10,
-        position:"absolute",
-        top:0,
-        backgroundColor:"transparent",
-        flexDirection:"row",
-        justifyContent:"space-between",
-        position:"absolute",
-        top:50,
-        zIndex:5   
-    },
     startButtonNA:{
         borderWidth:1,
         alignItems:"center",
@@ -774,17 +756,6 @@ export const spotUploadStyle = StyleSheet.create({
         backgroundColor: '#333',
         borderRadius: 10,
         },
-    ProgressBar:{
-        width:"100%",
-        alignItems:"center",
-        borderWidth:0,
-        padding:10,
-        position:"absolute",
-        top:0,
-        backgroundColor:"transparent",
-        flexDirection:"row",
-        justifyContent:"space-between"
-    },
     saveButtonActive: {
         backgroundColor: 'blue',
         padding: 15,
@@ -879,7 +850,7 @@ export const spotUploadStyle = StyleSheet.create({
     },
     colorExplain: {
         flexDirection: 'column',
-        alignItems: 'left',
+        alignItems: 'flex-start',
         position: 'absolute',
         marginTop: 10,
         top: 200,
@@ -998,7 +969,6 @@ export const spotUploadStyle = StyleSheet.create({
         alignItems:"center",
         flexDirection:"column",
         justifyContent:"center",
-        borderRadius:20,
         marginLeft:20,
         marginRight:20,
         borderWidth:2,
@@ -1017,9 +987,7 @@ export const spotUploadStyle = StyleSheet.create({
         width:"100%",
         alignItems:"center",
         borderWidth:0,
-        padding:10,
-        position:"absolute",
-        top:0,
+        padding:10,                
         backgroundColor:"transparent",
         flexDirection:"row",
         justifyContent:"space-between",

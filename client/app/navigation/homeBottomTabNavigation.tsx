@@ -35,18 +35,14 @@ const handleSettingsNavigation = () => {
   navigation.navigate("SettingsPage")
 }
 
-//<**********************VARIABLES******************************>
-const [isExplore,setIsExplore] = useState(true);
-
 
 return (
   <Tab.Navigator
     screenOptions={{
-      tabStyle: {
+      tabBarActiveTintColor: "magenta",
+      tabBarStyle:{
         backgroundColor: '#ffffff',
-      },
-      tabBarActiveTintColor: "magenta"
-      
+      }
     }}>
       {/* HOME NAVIGATION */}
       <Tab.Screen

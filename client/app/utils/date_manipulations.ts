@@ -19,7 +19,10 @@ export function DateToString(date:Date){
 }
 
 
-export function formatTimestampToString(timestamp:Timestamp) {        
+export function formatTimestampToString(timestamp:Timestamp | Date) {
+    if (timestamp instanceof Date) {
+        return timestamp.toISOString();
+    }        
     const milliseconds = (timestamp.seconds * 1000) + (timestamp.nanoseconds / 1000000);    
     const date = new Date(milliseconds);    
     const year = date.getUTCFullYear();
@@ -29,7 +32,7 @@ export function formatTimestampToString(timestamp:Timestamp) {
     return formattedDate;
 }
 
-export function dateDistanceFromToday(date1:Timestamp) {
+export function dateDistanceFromToday(date1:Timestamp | Date) {
     const d1 = new Date(formatTimestampToString(date1))
     const d2 = new Date
     const diffTime = d2.getTime() - d1.getTime();

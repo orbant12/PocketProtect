@@ -10,6 +10,10 @@ export function MainMelanomaBox({
     skinCancerData,
     skinCancerProgress,
     handleNavigation,
+}:{
+    skinCancerData:any,
+    skinCancerProgress:number,
+    handleNavigation:Function
 }){
     return ( 
         <View style={[styles.selectBox,styles_shadow.hightShadowContainer]}> 
@@ -28,7 +32,7 @@ export function MainMelanomaBox({
                     name='bell'
                     size={20}
                     color={"black"}
-                    opacity={0.4}
+                    style={{opacity:0.4}}
                 />
             </View>                                                                                                                          
             <View style={{flexDirection:"column",alignItems:"center",justifyContent:"center",width:300}}>
@@ -69,7 +73,7 @@ export function MainBloodBox({
     navigation,
     handleScrollReminder
 }){
-    function SingleBloodBox(isLatest){
+    function SingleBloodBox(isLatest:boolean){
         return(
             <View style={{flexDirection:"column",alignItems:"center",width:300,height:315,justifyContent:"space-between"}}>
             <View style={{marginTop:20,width:"90%",borderLeftWidth:0.3,borderColor:"magenta",paddingLeft:10,opacity:0.6}}>
@@ -110,12 +114,12 @@ export function MainBloodBox({
                 name='bell'
                 size={20}
                 color={"black"}
-                opacity={0.4}
+                style={{opacity:0.4}}
             />
         </View>                          
         <PagerView style={{marginTop:0,height:315,width:"100%", alignItems:"center",justifyContent:"center" }} onPageScroll={(e) => handleScrollReminder(e)} initialPage={0}>
-        {SingleBloodBox(isLatest=true) }
-        {SingleBloodBox(isLatest=false) }  
+        {SingleBloodBox(true) }
+        {SingleBloodBox(false) }  
         </PagerView>
         <View style={styles.IndicatorContainer}>               
             <View style={[styles.Indicator, { opacity: currentPage === 0 ? 1 : 0.3 }]} />   

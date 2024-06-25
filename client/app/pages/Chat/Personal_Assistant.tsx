@@ -15,6 +15,9 @@ import { styles } from '../../styles/chatBot_style';
 import { Chat_InputField } from '../../components/Assist/Bots/chatInputField';
 import { ContextSheet } from '../../components/Assist/contextSheet';
 
+export type PromptResponseFormat = {data:{data:{choices:{message:{content:string}}[]}}}
+
+
 
 const AssistantPage = ({navigation}) => {
 
@@ -22,12 +25,6 @@ const AssistantPage = ({navigation}) => {
 //<==================<[ Variables ]>====================>
 
 const { currentuser } = useAuth()
-
-const [isInputActive,setIsInputActive] = useState(false);
-
-const [headerSelect, setHeaderSelect] = useState(false)
-
-const [assistantType, setAssistantType] = useState("")
 
 const [inputText,setInputText] = useState('');
 
@@ -37,7 +34,6 @@ const [questionLoading,setQuestionLoading] = useState(false);
 
 const [isContextPanelOpen,setIsContextPanelOpen] = useState(false)
 
-
 const contextSheet = useRef(null);
 const chatScrollRef = useRef(null);
 const functions = getFunctions(app);
@@ -45,11 +41,11 @@ const functions = getFunctions(app);
 
 //<==================<[ Functions ]>====================>
 
-const generateTextFromPrompt = async (request) => {
+const generateTextFromPrompt = async (request:string) => {
   const generateTextFunction = httpsCallable(functions, 'openAIHttpFunctionSec');
   let chatLogNew = [...chatLog, {user:`${currentuser.uid}`,message:`${request}`,sent:true,inline_answer: false} ]
   try {
-      const result = await generateTextFunction({name: request});
+      const result = await generateTextFunction({name: request}) as PromptResponseFormat;
       setChatLog([...chatLogNew, {user:`gpt`,message:`${result.data.data.choices[0].message.content}`, sent:true, inline_answer: false}])
       setQuestionLoading(false)
   } catch (error) {
@@ -59,7 +55,6 @@ const generateTextFromPrompt = async (request) => {
 
 const handlePromptTrigger = () => { 
   if (questionLoading == false){
-      setIsInputActive(false)
       setQuestionLoading(true)
       const  question =  inputText;
       let chatLogNew = [...chatLog, {user:`${currentuser.uid}`,message:`${question}`,sent:true,inline_answer: false}];
@@ -72,20 +67,17 @@ const handlePromptTrigger = () => {
     }
 };
 
-const handleOpenBottomSheet = (state) => {
+const handleOpenBottomSheet = (state:"open" | "hide") => {
   if(state == "open"){
       contextSheet.current.present();
     
   } else if (state == "hide"){
       contextSheet.current.close();
-      setProgress(progress + 0.1)
   }
 }
 
 const handleKeyboardDismiss = () => {
-  setIsInputActive(false)
   Keyboard.dismiss()
-
 }
 
 
@@ -105,7 +97,7 @@ return (
           right_action={() => handleOpenBottomSheet("open")}
         />
         :
-        <Pressable onPress={() => {handleKeyboardDismiss()}} style={[{width:"100%",backgroundColor:"rgba(0,0,0,1)",padding:10,textAlign:"center",position:"relative",height:"20%",justifyContent:"center",alignItems:"center",paddingTop:30},]}>
+        <Pressable onPress={() => {handleKeyboardDismiss()}} style={[{width:"100%",backgroundColor:"rgba(0,0,0,1)",padding:10,position:"relative",height:"20%",justifyContent:"center",alignItems:"center",paddingTop:30},]}>
         <View style={{paddingTop:30, width:"100%"}}>
           <Text style={{fontWeight:"700",fontSize:20,width:"100%",color:"white",textAlign:"center",position:"relative"}}>
             <Text style={{color:"gray",fontWeight:"800",}}> Pick the data </Text>
@@ -119,9 +111,6 @@ return (
           setInputText={setInputText}
           inputText={inputText}                    
           handleKeyboardDismiss={handleKeyboardDismiss}
-          isInputActive={isInputActive}
-          setAssistantType={setAssistantType}
-          setIsInputActive={setIsInputActive}
           handlePromptTrigger={handlePromptTrigger}
           handleOpenBottomSheet={handleOpenBottomSheet}
           />      
@@ -156,9 +145,14 @@ export default AssistantPage
       setInputText,
       inputText,
       handleKeyboardDismiss,
-      setAssistantType,
       handlePromptTrigger,
       handleOpenBottomSheet
+  }:{
+    setInputText:(e:string) => void;
+    inputText:string;
+    handleKeyboardDismiss:(e:any) => void;
+    handlePromptTrigger:() => void;
+    handleOpenBottomSheet:(state:"open" | "hide") => void;
   }) => {
     return(
       <>
@@ -211,11 +205,15 @@ export default AssistantPage
     )
   }
 
-  const PreWritten_Box = ({}) => {
+  const PreWritten_Box = ({
+    
+  }:{
+    
+  }) => {
     return(
       <View style={{borderWidth:2,padding:10,width:"40%",marginTop:20,borderRadius:10,marginRight:20,opacity:0.7}}>
       <Text style={{fontWeight:"800",fontSize:12,marginTop:3}}>Ask anything</Text>
-      <Pressable onPress={() => setAssistantType("chat")} style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
+      <Pressable style={[{flexDirection:"row",alignItems:"center",borderWidth:0.3,borderColor:"black",borderRadius:20,padding:0,justifyContent:"center",backgroundColor:"white",marginTop:8}]}>
           <Text style={{color:"black",marginRight:10,fontWeight:"600",fontSize:12,padding:4}}>Ask</Text>
           <MaterialCommunityIcons 
             name='arrow-right'

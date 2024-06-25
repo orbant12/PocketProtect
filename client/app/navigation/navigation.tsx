@@ -2,29 +2,15 @@
 
 //<========> MELANOMA <=========>
 
-import { BodyPart, Slug, SpotArrayData, SpotData } from "../components/LibaryPage/Melanoma/BodyParts";
+import { SpotData,BodyPart,Gender,SkinType,SpotArrayData,UserData } from "../utils/types";
 
 
-export type Gender = "female" | "male";
-export type SkinType = 0 | 1 | 2 | 3;
-type UpdateMethod = {} | "new";
+
+export type UpdateMethod = {id:string,locationX:number,locationY:number};
+
 type Progress = Number | null;
 
-export type UserData = {
-    id:string;
-    fullname:string;
-    gender: Gender;
-    birth_date: Date;
-    email:string;
-    profilePictureUrl:string;
-    user_since:string;
-}
-
-
-
-
-
-interface MelanomaNavigationParams {
+export interface MelanomaNavigationParams {
     melanomaId?: string;
     bodyPartSlug?: BodyPart;
     bodyPart?: SpotData;
@@ -37,6 +23,11 @@ interface MelanomaNavigationParams {
     progress?: Progress;
     bodyPartSpotArray?: SpotArrayData;
 }
+
+interface AssistanceNavigationParams {
+    navigation: any;
+}
+
 
 export const Navigation_SingleSpotAnalysis = ({
     melanomaId,
@@ -77,7 +68,7 @@ export const Navigation_AddSlugSpot = ({
     userData,
     bodyPartSlug,
     skin_type = 0,   
-    type = {},
+    type,
     navigation
 }: MelanomaNavigationParams) => {
 
@@ -141,10 +132,6 @@ export const Navigation_MoleUpload_2 = ({
 
 
 //<========> Assistance <=========>
-
-interface AssistanceNavigationParams {
-    navigation: any;
-}
 
 export const Navigation_AssistCenter = ({
     navigation
