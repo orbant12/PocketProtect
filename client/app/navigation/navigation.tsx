@@ -8,7 +8,7 @@ import { SpotData,BodyPart,Gender,SkinType,SpotArrayData,UserData } from "../uti
 
 export type UpdateMethod = {id:string,locationX:number,locationY:number};
 
-type Progress = Number | null;
+export type Progress = number | null;
 
 export interface MelanomaNavigationParams {
     melanomaId?: string;

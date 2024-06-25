@@ -95,7 +95,7 @@ export type AssistantData = {
     field:AssistanceFields;
 }
 
-export type Products = "mole_check" | "full_melanoma_check";
+export type Product_Types = "mole_check" | "full_melanoma_check";
 
 export type Success_Purchase_Client_Checkout_Data = {
     answered:boolean;
@@ -117,28 +117,39 @@ export type Success_Purchase_Client_Checkout_Data = {
     chat:{date:Timestamp | Date, message:string, inline_answer:boolean,sent:boolean,user:string}[];
     id:string;
     purchase:{
-        type:Products;
+        type:Product_Types;
         item:any[];
     }
 }
 
-export type Success_Purchase_Assistant_Checkout_Data = {
-    answered:boolean;
-    clientData:{
-        fullname:string;
-        id:string;
-        profileUrl:string;
-        email:string;
-    };
-    assistantData:{
-        fullname:string;
-        id:string;
-        profileUrl:string;
-    };
-    chat:{date:Timestamp | Date, message:string, inline_answer:boolean,sent:boolean,user:string}[];
+
+
+export type PromptEngineering_Feedback_Type = "binary" | "feedback";
+
+export type DiagnosisData = {
+    title:string;
+    clientSymphtoms:string;
+    created_at:Timestamp | Date | string;
+    diagnosis:string;
     id:string;
-    purchase:{
-        type:Products;
-        item:any[];
+    possibleOutcomes:string;
+    stages:{
+        stage_one:{
+            a: string;
+            q: string;
+            type: PromptEngineering_Feedback_Type
+        }[],
+        stage_two:{
+            chance: string
+            survey: {
+                a: string;
+                q: string;
+                type: PromptEngineering_Feedback_Type
+            }[]
+        },
+        stage_three:{
+            assistance_frequency: string;
+        },
+        stage_four:null
     }
 }

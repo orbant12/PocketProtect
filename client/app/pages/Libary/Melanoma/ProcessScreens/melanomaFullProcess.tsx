@@ -1,8 +1,8 @@
 import { View,Text,StyleSheet,Pressable,Image,ScrollView,TouchableOpacity,PixelRatio,Dimensions } from "react-native"
 import React, {useState,useEffect,useRef,useCallback} from "react";
 import ProgressBar from 'react-native-progress/Bar';
-import { useAuth } from "../../../../context/UserAuthContext.jsx";
-import Body, { Slug } from "../../../../components/LibaryPage/Melanoma/BodyParts/index";
+import { useAuth } from "../../../../context/UserAuthContext";
+import Body from "../../../../components/LibaryPage/Melanoma/BodyParts/index";
 import doctorImage from "../../../../assets/doc.jpg"
 import Stage1SVG from "../../../../assets/skinburn/3.png"
 import stage2SVG from "../../../../assets/skinburn/2.png"
@@ -14,21 +14,26 @@ import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { melanomaMetaDataUpload, updateCompletedParts, fetchCompletedParts } from "../../../../services/server"
-import { SelectionPage } from "../../../../components/Common/SelectableComponents/selectPage.js";
+import { SelectionPage } from "../../../../components/Common/SelectableComponents/selectPage";
 import { SelectionPage_Binary } from "../../../../components/Common/SelectableComponents/selectPage_Binary";
 import { FactScreenType_1 } from "../../../../components/Common/FactScreenComponents/factScreenType1";
 import { FactScreenType_2 } from "../../../../components/Common/FactScreenComponents/factScreenType2";
 import { useFocusEffect } from '@react-navigation/native';
-import { decodeParts } from "../../../../utils/melanoma/decodeParts.js";
+import { decodeParts } from "../../../../utils/melanoma/decodeParts";
 import { Navigation_MoleUpload_2 } from "../../../../navigation/navigation";
+import { BodyPart, Slug } from "../../../../utils/types";
+import { MelanomaMetaData } from "../melanomaCenter";
 
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const scaleFactor = width < 380 ? 1 : 1.2;
-const responsiveFontSize = (size) => {
+
+type CompletedParts_Array = {slug:Slug}[]
+
+const responsiveFontSize = (size:number) => {
     return size * PixelRatio.getFontScale();
 };
 
-const MelanomaFullProcess = ({navigation,route}) => {
+const MelanomaFullProcess = ({navigation}) => {
 
     //<===============> Variables  <===============> 
 
@@ -41,10 +46,9 @@ const MelanomaFullProcess = ({navigation,route}) => {
     const [currentSide, setCurrentSide] = useState<"front" | "back">("front")
     const [gender, setGender]= useState(null)
     const [completedAreaMarker, setCompletedAreaMarker] = useState([])
-    const [completedParts, setCompletedParts] = useState([])
-    //Modal toggle
-    const [isModalUp, setIsModalUp] = useState(false)
-    const [ melanomaMetaData, setMelanomaMetaData] = useState({
+    const [completedParts, setCompletedParts] = useState<CompletedParts_Array>([])
+    const [isModalUp, setIsModalUp] = useState<boolean>(false)
+    const [ melanomaMetaData, setMelanomaMetaData] = useState<MelanomaMetaData>({
         sunburn:[{
             stage:0,
             slug:"" as Slug
@@ -85,7 +89,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
 
 //<===============> Functions  <===============> 
 
-    const completedArea = async (sessionMemory) => {
+    const completedArea = async (sessionMemory:CompletedParts_Array) => {
         setCompletedAreaMarker([])
         const response = sessionMemory.map((data,index) =>{
                 return { slug: data.slug, intensity: 0, key: index }
@@ -99,7 +103,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
         return sessionMemory   
     }
 
-    const updateCompletedSlug = async (completedArray) => {
+    const updateCompletedSlug = async (completedArray:CompletedParts_Array) => {
         if(currentuser){
             const response = await updateCompletedParts({
                 userId:currentuser.uid,
@@ -122,7 +126,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
         }
     }
     
-    const handleOpenBottomSheet = (state) => {
+    const handleOpenBottomSheet = (state:"open" | "hide") => {
         if(state == "open"){
             bottomSheetRef.current.present();
         } else if (state == "hide"){
@@ -131,7 +135,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
         }
     }
 
-    const handleMelanomaDataChange = (type:"slug" | "stage" | "skin_type" | "detected_relative", data) => {
+    const handleMelanomaDataChange = (type:"slug" | "stage" | "skin_type" | "detected_relative", data:any) => {
         setMelanomaMetaData((prevState) => {
           let newSunburn = [...prevState.sunburn]; // Create a shallow copy of the sunburn array              
             if (newSunburn.length === 0) {
@@ -193,7 +197,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
         } 
     };
 
-    const uploadMetaData = async (metaDataPass) => {   
+    const uploadMetaData = async (metaDataPass:MelanomaMetaData) => {   
         const res = await melanomaMetaDataUpload({
             userId: currentuser.uid,
             metaData: metaDataPass
@@ -389,11 +393,10 @@ const MelanomaFullProcess = ({navigation,route}) => {
                                 </View>
                                 <View style={{flexDirection:"column",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:-10}}>
                                         <Body 
-                                            data={[{slug: melanomaMetaData.sunburn[0].slug, color:"lightgreen"}]}
+                                            data={[{slug: melanomaMetaData.sunburn[0].slug, color:"lightgreen",pathArray:[]}]}
                                             side={selectedBurnSide}
                                             gender={gender}
                                             scale={0.8}
-                                            
                                             onBodyPartPress={(slug) => handleMelanomaDataChange("slug",slug.slug)}
                                         />
                                         <View style={styles.positionSwitch}>

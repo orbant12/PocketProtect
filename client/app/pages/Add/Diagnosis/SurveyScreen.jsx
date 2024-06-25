@@ -5,9 +5,9 @@ import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useAuth } from "../../../context/UserAuthContext.jsx";
-import { saveDiagnosisProgress,saveTask } from "../../../services/server.ts"
-import { getDiagnosisData,getDiagnosis, getReDiagnosis, getSurvey } from "../../../services/prompt.jsx"
+import { useAuth } from "../../../context/UserAuthContext";
+import { saveDiagnosisProgress,saveTask } from "../../../services/server"
+import { getDiagnosisData,getDiagnosis, getReDiagnosis, getSurvey } from "../../../services/prompt"
 
 const SurveyScreeen = ({route,navigation}) => {
 

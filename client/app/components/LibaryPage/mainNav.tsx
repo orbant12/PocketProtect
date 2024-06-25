@@ -7,8 +7,8 @@ export function Horizontal_Navbar({
     scrollViewRef,
 }:{
     isSelected:string,
-    setIsSelected:(arg:string) => void,
-    options:{title:string,value:string,scroll?:number}[],
+    setIsSelected:(arg:"ai_vision" | "blood_work" | "diagnosis" | "soon") => void,
+    options:{title:string,value:"ai_vision" | "blood_work" | "diagnosis" | "soon",scroll?:{x:number,y:number,animated:boolean}}[],
     scrollViewRef?:React.RefObject<ScrollView>
 }){
     return(

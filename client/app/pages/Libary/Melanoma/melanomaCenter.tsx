@@ -7,7 +7,7 @@ import {bodyFemaleFront} from "../../../components/LibaryPage/Melanoma/BodyParts
 import {bodyFemaleBack} from "../../../components/LibaryPage/Melanoma/BodyParts/bodyFemaleBack"
 import {bodyFront} from "../../../components/LibaryPage/Melanoma/BodyParts/bodyFront"
 import {bodyBack} from "../../../components/LibaryPage/Melanoma/BodyParts/bodyBack"
-import { useAuth } from '../../../context/UserAuthContext.jsx';
+import { useAuth } from '../../../context/UserAuthContext';
 import { fetchAllMelanomaSpotData, fetchUserData,fetchCompletedParts, fetchNumberOfMolesOnSlugs } from '../../../services/server';
 import { useFocusEffect } from '@react-navigation/native';
 import { SkinModal } from "../../../components/LibaryPage/Melanoma/modals";
@@ -19,7 +19,14 @@ import { AssistantAdvertBox } from "../../../components/LibaryPage/Melanoma/Assi
 import { styles_shadow } from "../../../styles/shadow_styles";
 import { NavBar_TwoOption } from "../../../components/Common/navBars";
 import { UserData_Default } from "../../../utils/initialValues";
-import { Gender, SkinType, UserData } from "../../../utils/types";
+import { Gender, SkinType, Slug, UserData } from "../../../utils/types";
+
+
+export type MelanomaMetaData = {
+    sunburn: { stage: number; slug: Slug }[];
+    skin_type: SkinType;
+    detected_relative: string;
+};
 
 
 
@@ -35,7 +42,7 @@ const SingleFeature = ({navigation}) => {
     const [melanomaData, setMelanomaData] = useState([])
     const [ completedParts, setCompletedParts] = useState([])
     const [numberOfMolesOnSlugs,setNumberOfMolesOnSlugs] = useState([])
-    const [ melanomaMetaData, setMelanomaMetaData] = useState({
+    const [ melanomaMetaData, setMelanomaMetaData] = useState<MelanomaMetaData>({
         sunburn:[{
             stage:0,
             slug:""

@@ -8,12 +8,11 @@ import {
     deleteDoc,
     addDoc
 } from "firebase/firestore"
-import { db,storage } from './firebase.js';
+import { db,storage } from './firebase';
 import { ref,  getDownloadURL, uploadBytes,deleteObject} from "firebase/storage";
 import { dateDistanceFromToday, Timestamp } from "../utils/date_manipulations";
-import { generateNumericalUID } from "../utils/uid_generator.js";
-import { WelcomeTexts } from "../../assets/welcome_scripts/welcomeTexts.js";
-import { Gender, SkinType, Slug, SpotData, Success_Purchase_Client_Checkout_Data, UserData,AssistanceFields } from "../utils/types.js";
+import { Gender, SkinType, Slug, SpotData, Success_Purchase_Client_Checkout_Data, UserData,AssistanceFields } from "../utils/types";
+import { MelanomaMetaData } from "../pages/Libary/Melanoma/melanomaCenter";
 
 
 type SpotDeleteTypes = "history" | "latest"
@@ -97,12 +96,7 @@ interface API_Melanoma {
     riskToUpdate?: {
         risk:string
     };
-    metaData?:{
-        completedArray?:any[],
-        detected_relative: string,
-        skin_type: SkinType,
-        sunburn?: any[]
-    };
+    metaData?:MelanomaMetaData;
     melanomaPicFile?: Blob;
     slug?:Slug;
     data?: SpotData;

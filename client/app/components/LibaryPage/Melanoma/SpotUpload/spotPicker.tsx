@@ -1,6 +1,7 @@
 import { View, Text, Pressable,GestureResponderEvent} from "react-native";
 import { dotSelectOnPart } from '../../../../pages/Libary/Melanoma/ProcessScreens/melanomaDotSelect'
 import { Gender, SkinType, SpotArrayData } from "../../../../utils/types";
+import { ClientMemory_Spots } from "../../../../pages/Libary/Melanoma/ProcessScreens/melanomaSingleSlug";
 
 export function SpotPicker({
     redDotLocation,
@@ -14,7 +15,7 @@ export function SpotPicker({
     redDotLocation:{x:number,y:number};
     setRedDotLocation:(arg:{x:number,y:number}) => void;
     bodyPart: SpotArrayData;
-    currentSlugMemory:string;
+    currentSlugMemory:ClientMemory_Spots[];
     gender:Gender;
     highlighted:string;
     skinColor:SkinType;

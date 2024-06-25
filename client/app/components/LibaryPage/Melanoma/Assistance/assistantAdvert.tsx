@@ -1,6 +1,6 @@
 
 import { View, Text, Image,TouchableOpacity} from "react-native"
-import medic from "../../../../assets/assist/medic.png"
+const medic = require('../../../../assets/assist/medic.png');
 import { Navigation_AssistCenter } from "../../../../navigation/navigation"
 import { styles_shadow } from "../../../../styles/shadow_styles"
 
@@ -16,7 +16,7 @@ export const AssistantAdvertBox = ({navigation}) => {
             </TouchableOpacity>
         </View>
         <Image 
-            source={{uri:medic}}
+            source={medic}
             style={{width:210,height:190,position:"absolute",right:0,zIndex:-1}}
         />
     </View>

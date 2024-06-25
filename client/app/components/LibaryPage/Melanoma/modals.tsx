@@ -1,6 +1,7 @@
 import { Mstyles, SingleSlugStyle,spotUpload_2_styles } from "../../../styles/libary_style"
 import {View, Text,Pressable,TouchableOpacity} from "react-native"
 import { SpotData } from "../../../utils/types"
+import { MelanomaMetaData } from "../../../pages/Libary/Melanoma/melanomaCenter"
 
 export const SkinModal = ({
     visible,
@@ -9,9 +10,7 @@ export const SkinModal = ({
     setSkinModal
 }:{
     visible:boolean,
-    melanomaMetaData:{
-        skin_type:0 | 1 | 2 | 3
-    },
+    melanomaMetaData:MelanomaMetaData,
     handleMelanomaDataChange:(key:string,value:any) => void,
     setSkinModal:(arg:boolean) => void
 }) => {

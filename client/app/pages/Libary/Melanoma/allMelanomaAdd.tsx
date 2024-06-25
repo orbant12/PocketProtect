@@ -2,18 +2,18 @@
 import { View,Text,PixelRatio,Dimensions} from "react-native"
 import React, {useState,useEffect,useCallback} from "react";
 import { useAuth } from "../../../context/UserAuthContext";
-import Body, { Slug } from "../../../components/LibaryPage/Melanoma/BodyParts/index";
+import Body from "../../../components/LibaryPage/Melanoma/BodyParts/index";
 import ProgressBar from 'react-native-progress/Bar';
 import {updateCompletedParts, fetchCompletedParts, fetchUserData,fetchSkinType } from '../../../services/server';
 import { spotUploadStyle } from "../../../styles/libary_style";
 import { SideSwitch } from "../../../components/LibaryPage/Melanoma/sideSwitch";
-import { NavBar_Upload_1 } from "../../../components/LibaryPage/Melanoma/navBarRow";
 import { decodeParts } from "../../../utils/melanoma/decodeParts";
 import { useFocusEffect } from '@react-navigation/native';
-import { Navigation_MoleUpload_2, SkinType, UserData } from "../../../navigation/navigation";
+import { Navigation_MoleUpload_2 } from "../../../navigation/navigation";
 import { NavBar_OneOption } from "../../../components/Common/navBars";
 import { styles_shadow } from "../../../styles/shadow_styles";
 import { UserData_Default } from "../../../utils/initialValues";
+import { SkinType, Slug, UserData } from "../../../utils/types";
 
 const { width, height } = Dimensions.get('window');
 const scaleFactor = width < 380 ? 1.1 : 1.4;

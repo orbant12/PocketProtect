@@ -7,20 +7,22 @@ import { fetchAllDiagnosis, fetchUserData,fetchNumberOfMoles } from '../../servi
 import { MainBloodBox, MainMelanomaBox, MainDiagnosisBox } from '../../components/LibaryPage/mainBoxes';
 import { styles } from '../../styles/libary_style';
 import { Horizontal_Navbar} from '../../components/LibaryPage/mainNav';
-import { Gender, Navigation_MelanomaCenter, Navigation_MelanomaFullsetup } from '../../navigation/navigation';
+import { Navigation_MelanomaCenter, Navigation_MelanomaFullsetup } from '../../navigation/navigation';
 import { styles_shadow } from '../../styles/shadow_styles';
 import { UserData_Default } from '../../utils/initialValues';
+import { Gender } from '../../utils/types';
+import { DiagnosisData } from '../../utils/types';
 
+type NavbarValues = "ai_vision" | "blood_work" | "diagnosis" | "soon"
 
 const DetectionLibary = ({navigation}) => {
 
 //<==================<[ Variable ]>====================>     
 
 const { currentuser } = useAuth();
-//NAVBAR
-const [isSelected, setIsSelected ] = useState("Melanoma")
-//DATA
-const [ diagnosisData, setDiagnosisData] = useState([])
+
+const [isSelected, setIsSelected ] = useState<NavbarValues>("ai_vision")
+const [ diagnosisData, setDiagnosisData] = useState<DiagnosisData[]>([])
 //REFS
 const scrollViewRef = useRef(null);
 const skinCancerRef = useRef(null);

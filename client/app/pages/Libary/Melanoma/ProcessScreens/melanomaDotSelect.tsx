@@ -1,3 +1,5 @@
+import { BodyPart, Gender, SkinType, SpotData } from '../../../../utils/types';
+import { ClientMemory_Spots } from './melanomaSingleSlug';
 import Svg, { Circle, Path,Text,G } from '/Users/tamas/Programming Projects/DetectionApp/client/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
 
 export const dotSelectOnPart = ({
@@ -7,11 +9,18 @@ export const dotSelectOnPart = ({
     gender,
     highlighted,
     skinColor
+}:{
+    bodyPart: BodyPart,
+    redDotLocation: {x:number,y:number},
+    currentSlugMemory: ClientMemory_Spots[],
+    gender:Gender,
+    highlighted:string | null,
+    skinColor:SkinType
 }) => {
     return (
         <Svg preserveAspectRatio="xMidYMid meet" height={200} width={350} > 
     
-                {bodyPart.pathArray.map((path, index) => (
+                {bodyPart.pathArray.map((path:any, index:number) => (
                         <Path
                             key={`${bodyPart.slug}_${index}`} 
                             d={path}

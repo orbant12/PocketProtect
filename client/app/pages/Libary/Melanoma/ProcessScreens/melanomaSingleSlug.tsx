@@ -11,35 +11,41 @@ import { spotUpload_2_styles } from "../../../../styles/libary_style";
 import { updateCompletedParts } from "../../../../services/server";
 import { useAuth } from "../../../../context/UserAuthContext";
 import { NavBar_OneOption } from "../../../../components/Common/navBars";
-import { BodyPart, Slug, SpotArrayData, SpotData } from "../../../../components/LibaryPage/Melanoma/BodyParts";
+import { BodyPart, Gender, SkinType, Slug } from "../../../../utils/types";
+import { Progress } from "../../../../navigation/navigation";
+import { location } from "../melanomaAdd";
 
+
+
+export type ClientMemory_Spots = {
+    location: {x:number,y:number},
+    id:string,
+    picture:string
+}
 
 const MelanomaSingleSlug = ({route,navigation}) => {
 
     //<==============> VARTIABLES <=============> 
-
-    //ROUTE DATA
-    const progress = route.params.progress
-    const bodyPartSlug : BodyPart = route.params.bodyPartSlug
-    const gender = route.params.gender
-    const sessionMemory: {slug:Slug}[] = route.params.completedArray
-    const skinColor = route.params.skin_type
     const { currentuser } = useAuth()
-    //Add Melanoma Data
-    const [redDotLocation, setRedDotLocation] = useState({ x: -100, y: 10 });
-    const [uploadedSpotPicture, setUploadedSpotPicture] = useState(null);
-    //Slug Birthmark Data
-    const [currentSlugMemory, setCurrentSlugMemory ] = useState([])
-    const [highlighted, setHighlighted] = useState("")
-    //Toggles
-    const [markedAsComplete ,setMarkedAsComplete] = useState(false)
-    const [isScreenLoading,setIsScreenLoading ]  = useState(false)
-    const [isModalUp, setIsModalUp] = useState(false)
-    const [moleToDeleteId,setMoleToDeleteId] = useState("")
-    //Ref for Top Animation
-    const scrollViewRef = useRef(null);    
-    const [isCameraOverlayVisible, setIsCameraOverlayVisible] = useState(false);
+    //ROUTE DATA
+    const progress: Progress = route.params.progress
+    const bodyPartSlug : BodyPart = route.params.bodyPartSlug
+    const gender : Gender = route.params.gender
+    const sessionMemory: {slug:Slug}[] = route.params.completedArray
+    const skinColor:SkinType = route.params.skin_type
+    
+    
+    const [redDotLocation, setRedDotLocation] = useState<location>({ x: -100, y: 10 });
+    const [uploadedSpotPicture, setUploadedSpotPicture] = useState<string | null>(null);
+    const [currentSlugMemory, setCurrentSlugMemory ] = useState<ClientMemory_Spots[]>([])
+    const [highlighted, setHighlighted] = useState<string | null>(null)
+    const [markedAsComplete ,setMarkedAsComplete] = useState<boolean>(false)
+    const [isScreenLoading,setIsScreenLoading ]  = useState<boolean>(false)
+    const [isModalUp, setIsModalUp] = useState<boolean>(false)
+    const [moleToDeleteId,setMoleToDeleteId] = useState<string | "">("")
+    const [isCameraOverlayVisible, setIsCameraOverlayVisible] = useState<boolean>(false);
 
+    const scrollViewRef = useRef(null);   
 
     //<==============> Functions <=============> 
 
@@ -160,7 +166,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
         return uid;
     }
 
-    const handleSpotDelete = async (id) => {
+    const handleSpotDelete = async (id:string) => {
         const response = await deleteSpot({
             userId:currentuser.uid,
             spotId: id
@@ -262,6 +268,10 @@ export default MelanomaSingleSlug
 
 const PartLabelBox = ({
     bodyPart
+}:
+{
+    bodyPart:BodyPart
+
 }) => {
     return(
         <Text 

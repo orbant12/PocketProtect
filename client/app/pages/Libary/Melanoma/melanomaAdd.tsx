@@ -12,7 +12,7 @@ import { fileUriConverterToBlob } from '../../../utils/melanoma/fileUriConverter
 import { SkinType, SpotArrayData, SpotData, UserData } from '../../../utils/types';
 import { UpdateMethod } from '../../../navigation/navigation';
 
-type location = {x:number,y:number}
+export type location = {x:number,y:number}
 
 const MelanomaAdd = ({ route , navigation }) => {    
     
