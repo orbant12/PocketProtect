@@ -8,6 +8,9 @@ import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import CheckoutScreen from "../../components/Payment/checkOutScreen"
+import { AssistantData, SpotData, Success_Purchase_Client_Checkout_Data, UserData } from "../../utils/types";
+import { WelcomeTexts } from "../../../assets/welcome_scripts/welcomeTexts";
+import { generateNumericalUID } from "../../utils/uid_generator";
 
 
 const { width, height } = Dimensions.get('window');
@@ -17,7 +20,14 @@ export const AssistModal = ({
     assistantData,
     setSelectedAssistant,
     bodyPart,
-    navigation
+    navigation,
+    userData
+}:{
+    assistantData:AssistantData,
+    setSelectedAssistant:Function,
+    bodyPart:SpotData[],
+    navigation:any,
+    userData:UserData
 }) => {
 
     const scrollRef = useRef(null)
@@ -25,16 +35,48 @@ export const AssistModal = ({
 
     const { currentuser } = useAuth()
 
-    let checkOutData = {
-        client: currentuser.uid,
-        assistantData: assistantData,
-        item:{
-            type:"Mole Check",
-            product:{
-                [bodyPart.melanomaId]: bodyPart
+    const session_UID = "session_" + generateNumericalUID(12)
+
+    let checkOutData: Success_Purchase_Client_Checkout_Data = {
+        answered:true,
+        assistantData:{
+            fullname:assistantData.fullname,
+            id:assistantData.id,
+            profileUrl:assistantData.profileUrl,
+            email:assistantData.email,
+            field: assistantData.field
+        },
+        clientData:{
+            fullname: userData.fullname,
+            id:currentuser.uid,
+            profileUrl:userData.profilePictureUrl,
+            email:userData.email,
+            gender: userData.gender,
+            birth_date: userData.birth_date,
+        },
+        chat:[
+            {
+                date:new Date(),
+                message:WelcomeTexts({
+                    type:"spot_check",
+                    fullname:userData.fullname,
+                    sessionId:session_UID
+                
+                }),
+                inline_answer:false,
+                sent:true,
+                user:"client"
             }
+        ],
+        id:session_UID,
+        purchase:{
+            type:"mole_check",
+            item: bodyPart.map((data) => {
+                return {[data.melanomaId]:data } 
+            })
         }
     }
+
 
 
     return(
@@ -44,8 +86,8 @@ export const AssistModal = ({
         <ScrollView ref={scrollRef} style={{width:"100%",height:"100%"}}>
             <View style={styles.container}>
                 <NavBar_AssistantModal 
-                    scrollRef={scrollRef}
-                    goBack={setSelectedAssistant}
+                    goBack={() => setSelectedAssistant(null)}
+                    title={assistantData.fullname}
                     bgColor={"white"}
                     outerBg={"white"}
                     right_icon={{type:"image",name:assistantData != undefined && assistantData.profileUrl}}
@@ -66,7 +108,7 @@ export const AssistModal = ({
             ref={paymentModalRef}
             snapPoints={[scaleFactor]}
             enablePanDownToClose={true}
-            handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:10,color:"white"}}
+            handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:10}}
             handleIndicatorStyle={{backgroundColor:"white"}}
             handleComponent={() => 
                 <View style={{width:"100%",borderTopLeftRadius:5,borderTopRightRadius:10,padding:"4%",alignItems:"center",backgroundColor:"black",alignSelf:"center"}}>
@@ -174,11 +216,15 @@ const BioSection = ({
 const PaymentStartView = ({
     checkOutData,
     bodyPart
+}:{
+    checkOutData:Success_Purchase_Client_Checkout_Data,
+    bodyPart:SpotData[]
+
 }) => {
     return(
         <ScrollView>
         <View style={paymentStyles.container}>
-            <Text style={{margin:20,fontSize:25,fontWeight:"800",alignSelf:"left"}}>Confirm</Text>
+            <Text style={{margin:20,fontSize:25,fontWeight:"800",alignSelf:"flex-start"}}>Confirm</Text>
             <View style={{width:"100%",alignItems:"center",marginTop:20}}>
                 <View style={paymentStyles.innerContainer}>
                 <View>

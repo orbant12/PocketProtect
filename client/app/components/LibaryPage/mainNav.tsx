@@ -8,8 +8,8 @@ export function Horizontal_Navbar({
 }:{
     isSelected:string,
     setIsSelected:(arg:string) => void,
-    options:{title:string,value:string,scroll:number}[],
-    scrollViewRef:React.RefObject<ScrollView>
+    options:{title:string,value:string,scroll?:number}[],
+    scrollViewRef?:React.RefObject<ScrollView>
 }){
     return(
         <ScrollView horizontal style={[{paddingTop:65,paddingLeft:25,flexDirection:"row",backgroundColor:"white",paddingBottom:15,borderWidth:0.3,width:"100%"},{position:"absolute",zIndex:30 }]} showsHorizontalScrollIndicator={false}>

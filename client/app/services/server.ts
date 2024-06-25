@@ -13,12 +13,14 @@ import { ref,  getDownloadURL, uploadBytes,deleteObject} from "firebase/storage"
 import { dateDistanceFromToday, Timestamp } from "../utils/date_manipulations";
 import { generateNumericalUID } from "../utils/uid_generator.js";
 import { WelcomeTexts } from "../../assets/welcome_scripts/welcomeTexts.js";
-import { Gender, SkinType, Slug, SpotData, UserData } from "../utils/types.js";
+import { Gender, SkinType, Slug, SpotData, Success_Purchase_Client_Checkout_Data, UserData,AssistanceFields } from "../utils/types.js";
 
 
 type SpotDeleteTypes = "history" | "latest"
 
 type userFields = "gender" | "birth_date"
+
+
 
 export type BloodWorkTypes = 
     | "Basic Health Indicators" 
@@ -892,41 +894,21 @@ export const fetchReminders = async ({
 //<===> Payment <====>
 
 export const handleSuccesfullPayment = async ({
-    checkOutData
+    checkOutData,
+    session_UID
 }:{
-    checkOutData:
-        {
-            client:string,
-            assistantData:{id:string},
-            item:{type:string,data:any}
-        }
+    checkOutData:Success_Purchase_Client_Checkout_Data,
+    session_UID:string
     }) => {
     try {
-        const session_UID = "session_" + generateNumericalUID(12)
         const assistRef = doc(db,"assistants", checkOutData.assistantData.id, "Requests",session_UID)
-        const userData = await fetchUserData({
-            userId: checkOutData.client
-        })
-        const request = {
-            fullname: userData.fullname,
-            sessionId: session_UID,
-            type: "spot_check"
-        }
-        const data = {
-            answered:false,
-            assistantData: checkOutData.assistantData,
-            id: session_UID,
-            purchase:checkOutData.item,
-            chat:[
-                {message:WelcomeTexts(request), user: checkOutData.assistantData.id,date: new Date(),sent:true,inline_answer:false}
-            ]
-        }
+
         await createAssistantSession({
-            userId: checkOutData.client,
+            userId: checkOutData.clientData.id,
             session_UID:session_UID,
-            data:data
+            data:checkOutData
         })
-        await setDoc(assistRef,data)
+        await setDoc(assistRef,checkOutData)
         return true
     } catch(err) {
         console.log(err)
@@ -938,6 +920,8 @@ export const handleSuccesfullPayment = async ({
 
 export const fetchAssistantsByField = async ({
     field
+}:{
+    field:AssistanceFields
 }) => {
     try{
         const assistantRef = collection(db,"assistants")
@@ -961,6 +945,10 @@ export const createAssistantSession = async({
     userId,
     session_UID,
     data
+}:{
+    userId:string,
+    session_UID:string,
+    data:Success_Purchase_Client_Checkout_Data
 }) => {
     try{
         const clientRef = doc(db,"users",userId, "Assist_Panel",session_UID)

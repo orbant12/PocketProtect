@@ -10,7 +10,7 @@ export const NavBar_AssistantModal = ({
     right_icon,
     bgColor,
     right_action,
-    outerBg
+    outerBg,
 }:{
     goBack?:(e:[]) => void;
     title:string;

@@ -3,31 +3,47 @@ import { AssistantAdvertBox } from "../../Assistance/assistantAdvert"
 import { AssistantBioBox } from "../../Assistance/assistantBio"
 import { AssistModal } from "../../../../../pages/Assist/assistantModal"
 import { useState,useEffect } from "react"
-import { fetchAssistantsByField } from "../../../../../services/server"
+import { fetchAssistantsByField, fetchUserData } from "../../../../../services/server"
+import { AssistanceFields, AssistantData, UserData } from "../../../../../utils/types"
+import { useAuth } from "../../../../../context/UserAuthContext"
+
+
 
 export const AssistTab = ({
     bodyPart,
     navigation
 }) => {
 
-    const [ selectedAssistant, setSelectedAssistant] = useState([])
+    const [ selectedAssistant, setSelectedAssistant] = useState<AssistantData | null>(null)
+    const [ userData, setUserData] = useState<UserData | null>(null)
     const [ properAssistants, setProperAssistants] = useState([])
+    const { currentuser } = useAuth()
 
 
     const fetchAssistants = async () => {
         const response = await fetchAssistantsByField({
-            field:"dermotology"
+            field:"dermatologist"
         })
         setProperAssistants(response)
     }
 
+    const fetchAllUserData = async () => {
+        const userData = await fetchUserData({
+            userId:currentuser.uid
+        })
+        setUserData(userData)
+    }
+
     useEffect(() => {        
         fetchAssistants()
+        fetchAllUserData()
     },[])
 
     return(
         <View style={{width:"100%",height:"100%",alignItems:"center"}}>
-            <AssistantAdvertBox />
+            <AssistantAdvertBox 
+                navigation={navigation}
+            />
             {properAssistants.map((data,index) => (
                 <AssistantBioBox
                     index={index}
@@ -47,12 +63,13 @@ export const AssistTab = ({
                     key={index}
                 />
             ))}
-            <Modal animationType="slide" visible={selectedAssistant.length != 0}>
+            <Modal animationType="slide" visible={selectedAssistant != null}>
                 <AssistModal 
                     assistantData={selectedAssistant}
                     setSelectedAssistant={setSelectedAssistant}
                     bodyPart={bodyPart}
                     navigation={navigation}
+                    userData={userData}
                 />
             </Modal>
         </View>

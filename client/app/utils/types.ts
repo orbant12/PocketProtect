@@ -81,3 +81,64 @@ export type UserData = {
     profilePictureUrl:string;
     user_since:string;
 }
+
+
+//<===================== ASSISTANT ==========================>
+
+export type AssistanceFields = "dermatologist" 
+
+export type AssistantData = {
+    fullname:string;
+    email:string;
+    profileUrl:string;
+    id:string;
+    field:AssistanceFields;
+}
+
+export type Products = "mole_check" | "full_melanoma_check";
+
+export type Success_Purchase_Client_Checkout_Data = {
+    answered:boolean;
+    assistantData:{
+        fullname:string;
+        id:string;
+        profileUrl:string;
+        email:string;
+        field:AssistanceFields;
+    };
+    clientData:{
+        fullname:string;
+        id:string;
+        profileUrl:string;
+        email:string;
+        birth_date:Date | Timestamp;
+        gender:Gender;
+    };
+    chat:{date:Timestamp | Date, message:string, inline_answer:boolean,sent:boolean,user:string}[];
+    id:string;
+    purchase:{
+        type:Products;
+        item:any[];
+    }
+}
+
+export type Success_Purchase_Assistant_Checkout_Data = {
+    answered:boolean;
+    clientData:{
+        fullname:string;
+        id:string;
+        profileUrl:string;
+        email:string;
+    };
+    assistantData:{
+        fullname:string;
+        id:string;
+        profileUrl:string;
+    };
+    chat:{date:Timestamp | Date, message:string, inline_answer:boolean,sent:boolean,user:string}[];
+    id:string;
+    purchase:{
+        type:Products;
+        item:any[];
+    }
+}

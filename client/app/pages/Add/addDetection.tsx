@@ -20,7 +20,6 @@ const [selected, setSelected ] = useState([]) // IF It's empty array modal wont 
                     <Horizontal_Navbar
                         setIsSelected={setHeaderSelect}
                         isSelected={headerSelect}
-                        absolute={true}
                         options={[
                             {
                                 title:"AI Vision",

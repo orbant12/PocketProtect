@@ -2,29 +2,34 @@ import { useStripe } from "@stripe/stripe-react-native";
 import { useState, useEffect } from "react";
 import { View, TouchableOpacity, Text, Alert } from "react-native";
 import { handleSuccesfullPayment } from "../../services/server";
+import { Success_Purchase_Client_Checkout_Data } from "../../utils/types";
 
 export default function CheckoutScreen({
     checkOutData,
     price
+}:
+{
+    checkOutData:Success_Purchase_Client_Checkout_Data;
+    price:number;
 }) {
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
-    const [loading, setLoading] = useState(false);
     const API_URL = "http://localhost:3000/intents";
 
-    const handleSuccesfullSession = async (checkOutData) => {
+    const handleSuccesfullSession = async (checkOutData:Success_Purchase_Client_Checkout_Data) => {
         try{
             handleProdutctData(checkOutData) 
         } catch(ERR) {
             console.log(ERR)
         }
     }
-    const handleProdutctData = async (checkOutData) => {
+    const handleProdutctData = async (checkOutData:Success_Purchase_Client_Checkout_Data) => {
         try {
             const response = await handleSuccesfullPayment({
-                checkOutData
+                checkOutData,
+                session_UID:checkOutData.id
             });
             if (response === true) {
-                setIsPaymentSessionPending(false);
+                
             }
         } catch (error) {
             console.error("Error handling product data:", error);
@@ -71,7 +76,7 @@ export default function CheckoutScreen({
             Alert.alert(`Error code: ${error.code}`, error.message);
         } else {
             Alert.alert('Success', 'Your order is confirmed!');
-            handleSuccesfullSession()
+            handleSuccesfullSession(checkOutData)
         }
     };
 
@@ -81,7 +86,7 @@ export default function CheckoutScreen({
 
     return (
     <TouchableOpacity onPress={() => openPaymentSheet()} style={{width:"85%",padding:14,backgroundColor:"magenta",alignItems:"center",justifyContent:"center",borderRadius:10,marginBottom:30,marginTop:0}}>
-        <Text style={{fontSize:"15",fontWeight:"700", color:"white"}}>Purchase</Text>
+        <Text style={{fontSize:15,fontWeight:"700", color:"white"}}>Purchase</Text>
     </TouchableOpacity>
     );
 }
