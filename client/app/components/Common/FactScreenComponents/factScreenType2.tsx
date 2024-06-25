@@ -8,10 +8,21 @@ export const FactScreenType_2 = ({
     pageStyle = {},    
     boxText,
     title,
-    descriptionRows = [],
-    buttonAction = {type:"next" | "trigger", actionData:{progress:Number, increment_value:Number} | {triggerAction:() => Object}},
+    descriptionRows,
+    buttonAction,
     setProgress
 
+}:{
+    pageStyle?: {};
+    boxText:string;
+    buttonAction: {type:"next", actionData: {progress:number, increment_value:number} } | {type:"trigger",actionData:{triggerAction:() => void}};
+    title:string;
+    descriptionRows:{
+        icon_name:string,
+        icon_size:number,
+        text:string
+    }[];
+    setProgress:(progress:number) => void;
 }) => {
     return(
         <View style={[styles.startScreen,pageStyle]}>

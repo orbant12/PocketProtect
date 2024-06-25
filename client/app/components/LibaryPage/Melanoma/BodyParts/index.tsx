@@ -8,6 +8,7 @@ import { SvgMaleWrapper } from "./SvgMaleWrapper";
 import { bodyFemaleFront } from "./bodyFemaleFront";
 import { bodyFemaleBack } from "./bodyFemaleBack";
 import { SvgFemaleWrapper } from "./SvgFemaleWrapper";
+import { Gender } from "../../../../navigation/navigation";
 
 export type Slug =
   | "abs"
@@ -33,6 +34,10 @@ export type Slug =
   | "right-feet(back)"
   | "right-palm"
   | "left-palm"
+  | "legs"
+  | "torso"
+  | "feet"
+  | ""
   | "gluteal";
 
 
@@ -40,11 +45,35 @@ export interface BodyPart {
   intensity?: number;
   color: string;
   slug: Slug;
-  pathArray?: string[];
+  pathArray: string[];
+}
+
+export type SpotData = {
+  melanomaId:string;
+  melanomaDoc:{
+      location:{x:number,y:number},
+      spot:[
+          {slug:Slug,
+          pathArray: any[],
+          color:string,}
+      ]
+  },
+  risk:number | null;
+  gender:Gender;
+  created_at: Date;
+  storage_name:string;
+  storage_location:string;
+  melanomaPictureUrl:string;
+}
+
+export type SpotArrayData = {
+  slug:Slug,
+  pathArray: any[],
+  color:string
 }
 
 type Props = {
-  colors: ReadonlyArray<string>;
+  colors?: ReadonlyArray<string>;
   data: ReadonlyArray<BodyPart>;
   scale: number;
   frontOnly?: boolean;

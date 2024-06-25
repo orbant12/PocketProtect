@@ -1,4 +1,5 @@
 
+import { ReactNode } from "react";
 import { View,Text,Image,StyleSheet,TouchableOpacity } from "react-native"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -7,17 +8,29 @@ export const FactScreenType_1 = ({
     imageSource,
     imageStyle,
     title,
-    descriptionRows = [],
-    buttonAction = {type:"next" | "trigger", actionData:{progress:Number, increment_value:Number} | {triggerAction:() => Object}},
+    descriptionRows,
+    buttonAction,
     setProgress
+}:{
+    pageStyle?: {};
+    imageSource: string;
+    imageStyle?: {};
+    title:string;
+    descriptionRows:{
+        desc:() => ReactNode
+    }[];
+    buttonAction: 
+    | { type: "next"; actionData: { progress: number; increment_value: number } }
+    | { type: "trigger"; actionData: { triggerAction: () => void } };
+    setProgress:(progress:number) => void;
 }) => {
     return(
         <View style={[styles.startScreen,{justifyContent:"space-between",height:"90%",marginTop:30},pageStyle]}>
         <View style={{width:"100%",alignItems:"center",marginBottom:50,height:"70%",justifyContent:"space-between"}}>
             <View style={{width:"100%",alignItems:"center"}}>
                 <Image 
-                    source={imageSource} 
-                    style={[{width:230,height:230,borderRadius:"120%",borderWidth:0.5,borderColor:"lightgray",marginTop:0},{imageStyle}]}                                               
+                    source={{uri:imageSource}} 
+                    style={[{width:230,height:230,borderRadius:100,borderWidth:0.5,borderColor:"lightgray",marginTop:0},imageStyle]}                                               
                 />
                 <Text style={{fontWeight:"700",fontSize:20,maxWidth:"80%",textAlign:"center",marginTop:10}}>{title}</Text>
                 <Text style={{fontWeight:"700",fontSize:20,maxWidth:"80%",textAlign:"center",marginTop:0}}>+ Dermotologist</Text>

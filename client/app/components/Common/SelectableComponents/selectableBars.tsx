@@ -11,29 +11,29 @@ interface IconMetaData {
 
 interface SelectableDataItem {
   title: string;
-  type: string;
-  icon: {
-    type: 'image' | 'icon';
-    metaData: IconMetaData;
-  };
+  type: string | number;
+  icon: 
+    | { type: "icon", metaData:{name:string ,size?:number,color?:string,style?:{}}}
+    | { type: "image", metaData:{name:string ,size?:number,color?:string,style?:{}}};
+  
 }
 
 interface SelectableBarsProps {
   optionValue: string | null;
-  setOptionValue: (value: string) => void;
+  setOptionValue: (value: string | number) => void;
   items: SelectableDataItem[];
   style?: StyleProp<ViewStyle>;
 }
 
 interface SelectableBarProps {
-  setOptionValue: (value: string) => void;
+  setOptionValue: (value: string | number) => void;
   optionValue: string | null;
-  type: string;
+  type: string | number;
   title: string;
-  icon: {
-    type: 'image' | 'icon';
-    metaData: IconMetaData;
-  };
+  icon: 
+    | { type: "icon", metaData:{name:string ,size?:number,color?:string,style?:{}}}
+    | { type: "image", metaData:{name:string ,size?:number,color?:string,style?:{}}};
+
 }
 
 export const SelectableBars: React.FC<SelectableBarsProps> = ({

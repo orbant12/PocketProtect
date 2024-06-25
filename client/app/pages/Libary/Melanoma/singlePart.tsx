@@ -14,6 +14,7 @@ import { AssistTab } from "../../../components/LibaryPage/Melanoma/SingleMole/ta
 import { useFocusEffect } from '@react-navigation/native';
 import { Navigation_AddSlugSpot } from "../../../navigation/navigation";
 import { NavBar_OneOption } from "../../../components/Common/navBars";
+import { SpotData } from "../../../components/LibaryPage/Melanoma/BodyParts";
 
 const SinglePartAnalasis = ({ route,navigation }) => {
 
@@ -24,6 +25,7 @@ const bodyPartID = route.params.melanomaId;
 const gender = route.params.gender
 const skin_type = route.params.skin_type
 const userData = route.params.userData
+
 const functions = getFunctions(app);
 const moleDataRef = useRef(null)
 const {currentuser} = useAuth()
@@ -38,7 +40,7 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
 
 //<==================<[ Functions ]>====================>
 
-    const fetchAllSpotHistory = async (bPart) => {
+    const fetchAllSpotHistory = async (bPart:SpotData) => {
         if(currentuser){
             const res = await fetchSpotHistory({
                 userId: currentuser.uid,
@@ -62,14 +64,14 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
             userId:currentuser.uid,
             spotId: bodyPartID
         })
-        if( response != false ) {
+        if( response != null ) {
             setBodyPart(response)
             setSelectedMelanoma(response)
             fetchAllSpotHistory(response)
         }
     }
 
-    const handleSpotDelete = async (data) => {
+    const handleSpotDelete = async (data:SpotData) => {
         if(data.storage_name == bodyPart.storage_name){
             const response = await deleteSpotWithHistoryReset({
                 userId:currentuser.uid,
@@ -99,24 +101,24 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
         }
     }
 
-    const handleCallNeuralNetwork = async (pictureURL) => {
+    const handleCallNeuralNetwork = async (pictureURL:string) => {
         setDiagnosisLoading(true)
-        const blobToBase64 = (blob) => {
+        const blobToBase64 = (blob: Blob): Promise<string> => {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result.split(',')[1]); // Get only the base64 part
+                reader.onloadend = () => resolve(String(reader.result).split(',')[1]); 
                 reader.onerror = reject;
                 reader.readAsDataURL(blob);
             });
         };
-        const evaluate = async (photo) => {
+        const evaluate = async (photo:string) => {
             const generatePrediction = httpsCallable(functions, 'predict');
             try {            
                 const response = await fetch(photo);
                 if (!response.ok) throw new Error('Failed to fetch image');                                
                 const blob = await response.blob();                                
                 const base64String = await blobToBase64(blob);                                
-                const result = await generatePrediction({ input: base64String });                    
+                const result = await generatePrediction({ input: base64String }) as { data: { prediction: { "0": number } } };                 
                 console.log('Prediction result:', result.data);
                 return result.data
             } catch (error) {
@@ -130,8 +132,8 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
                 spotId: selectedMelanoma.melanomaId,
                 riskToUpdate: {risk: prediction.prediction["0"].toFixed(2)}
             })
-            if(response == true){
-                fetchAllSpotHistory() 
+            if(response == true && bodyPart != null){
+                fetchAllSpotHistory(bodyPart) 
                 fetchDataSelectedMole()
             }        
         } catch {

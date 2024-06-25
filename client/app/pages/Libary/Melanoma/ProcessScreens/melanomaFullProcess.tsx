@@ -2,25 +2,25 @@ import { View,Text,StyleSheet,Pressable,Image,ScrollView,TouchableOpacity,PixelR
 import React, {useState,useEffect,useRef,useCallback} from "react";
 import ProgressBar from 'react-native-progress/Bar';
 import { useAuth } from "../../../../context/UserAuthContext.jsx";
-import Body from "../../../../components/LibaryPage/Melanoma/BodyParts/index";
+import Body, { Slug } from "../../../../components/LibaryPage/Melanoma/BodyParts/index";
 import doctorImage from "../../../../assets/doc.jpg"
 import Stage1SVG from "../../../../assets/skinburn/3.png"
 import stage2SVG from "../../../../assets/skinburn/2.png"
 import stage3SVG from "../../../../assets/skinburn/1.png"
-import alertMelanoma from "../../../../assets/skinburn/Melanoma.png"
-import alertTeam from "../../../../assets/skinburn/5.png"
+import alertMelanoma from "../../../../assets/skinburn/Melanoma.png";
+import alertTeam from '../../../../assets/skinburn/5.png';
 import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { melanomaMetaDataUpload, updateCompletedParts, fetchCompletedParts } from "../../../../services/server.ts"
-import { SelectionPage } from "../../../../components/Common/SelectableComponents/selectPage";
+import { melanomaMetaDataUpload, updateCompletedParts, fetchCompletedParts } from "../../../../services/server"
+import { SelectionPage } from "../../../../components/Common/SelectableComponents/selectPage.js";
 import { SelectionPage_Binary } from "../../../../components/Common/SelectableComponents/selectPage_Binary";
-import { FactScreenType_1 } from "../../../../components/Common/FactScreenComponents/factScreenType1.jsx";
-import { FactScreenType_2 } from "../../../../components/Common/FactScreenComponents/factScreenType2.jsx";
+import { FactScreenType_1 } from "../../../../components/Common/FactScreenComponents/factScreenType1";
+import { FactScreenType_2 } from "../../../../components/Common/FactScreenComponents/factScreenType2";
 import { useFocusEffect } from '@react-navigation/native';
 import { decodeParts } from "../../../../utils/melanoma/decodeParts.js";
-import { Navigation_MoleUpload_2 } from "../../../../navigation/navigation.tsx";
+import { Navigation_MoleUpload_2 } from "../../../../navigation/navigation";
 
 const { width, height } = Dimensions.get('window');
 const scaleFactor = width < 380 ? 1 : 1.2;
@@ -38,7 +38,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
     const [bodyProgress, setBodyProgress] = useState(1)
     const [bodyProgressBack, setBodyProgressBack] = useState(0)
     //Body for Birthmark
-    const [currentSide, setCurrentSide] = useState("front")
+    const [currentSide, setCurrentSide] = useState<"front" | "back">("front")
     const [gender, setGender]= useState(null)
     const [completedAreaMarker, setCompletedAreaMarker] = useState([])
     const [completedParts, setCompletedParts] = useState([])
@@ -47,7 +47,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
     const [ melanomaMetaData, setMelanomaMetaData] = useState({
         sunburn:[{
             stage:0,
-            slug:""
+            slug:"" as Slug
         }],
         skin_type: null,
         detected_relative:"none",
@@ -55,7 +55,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
     })
     //SKIN BURN
     const [haveBeenBurned, setHaveBeenBurned] = useState(false)
-    const [selectedBurnSide, setSelectedBurnSide] = useState("front")
+    const [selectedBurnSide, setSelectedBurnSide] = useState<"front" | "back">("front")
 
     //PARENT DIAGNOSED
     const familyMemberOptions = [
@@ -131,7 +131,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
         }
     }
 
-    const handleMelanomaDataChange = (type, data) => {
+    const handleMelanomaDataChange = (type:"slug" | "stage" | "skin_type" | "detected_relative", data) => {
         setMelanomaMetaData((prevState) => {
           let newSunburn = [...prevState.sunburn]; // Create a shallow copy of the sunburn array              
             if (newSunburn.length === 0) {
@@ -151,11 +151,12 @@ const MelanomaFullProcess = ({navigation,route}) => {
             });
     };
 
-    function round(value, decimals) {
-        return Number(Math.round(value + 'e' + decimals) + 'e-' + decimals);
+    function round(value: number, decimals: number): number {
+        const factor = Math.pow(10, decimals);
+        return Math.round(value * factor) / factor;
     }
-
-    const handleBack = (permission) => {
+    
+    const handleBack = (permission:boolean) => {
         if (round(progress,1) == 0.1 || permission == true){
             navigation.goBack()
         } else if (haveBeenBurned != true && round(progress,1) != 0.9) {    
@@ -177,7 +178,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
         setHaveBeenBurned(false);
     };
 
-    const deleteSunburn = (index) => {
+    const deleteSunburn = (index:number) => {
         if(index != 0){
         setMelanomaMetaData((prevState) => {
             const newSunburn = [...prevState.sunburn];
@@ -265,8 +266,8 @@ const MelanomaFullProcess = ({navigation,route}) => {
                 title={"Deep Learning Neural Network"}
                 descriptionRows={
                     [
-                        {desc:() => <Text style={{fontWeight:"550",fontSize:12,maxWidth:"90%",textAlign:"center",marginTop:5,opacity:0.7,marginTop:20,textAlign:"justify"}}>Our AI model can detect malignant moles with a <Text style={{color:"magenta",fontWeight:"600"}}>95%</Text> accuracy which is <Text style={{color:"magenta",fontWeight:"600"}}>+20% </Text>better then the accuracy of dermotologists </Text>},
-                        {desc:() => <Text style={{fontWeight:"550",fontSize:12,maxWidth:"90%",textAlign:"center",marginTop:5,opacity:0.7,marginTop:30,textAlign:"justify"}}>Your moles can be supervised by both <Text style={{color:"magenta",fontWeight:"800"}}>AI & Dermotologist</Text> to be as protected as possible and alert you to consult a possible removal with your dermotologist</Text>},
+                        {desc:() => <Text style={{fontWeight:"600",fontSize:12,maxWidth:"90%",opacity:0.7,marginTop:20,textAlign:"justify"}}>Our AI model can detect malignant moles with a <Text style={{color:"magenta",fontWeight:"600"}}>95%</Text> accuracy which is <Text style={{color:"magenta",fontWeight:"600"}}>+20% </Text>better then the accuracy of dermotologists </Text>},
+                        {desc:() => <Text style={{fontWeight:"600",fontSize:12,maxWidth:"90%",opacity:0.7,marginTop:30,textAlign:"justify"}}>Your moles can be supervised by both <Text style={{color:"magenta",fontWeight:"800"}}>AI & Dermotologist</Text> to be as protected as possible and alert you to consult a possible removal with your dermotologist</Text>},
                     ]
                 }
                 imageSource={alertTeam}
@@ -388,10 +389,11 @@ const MelanomaFullProcess = ({navigation,route}) => {
                                 </View>
                                 <View style={{flexDirection:"column",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:-10}}>
                                         <Body 
-                                            data={[{slug: melanomaMetaData.sunburn[0].slug}]}
+                                            data={[{slug: melanomaMetaData.sunburn[0].slug, color:"lightgreen"}]}
                                             side={selectedBurnSide}
                                             gender={gender}
                                             scale={0.8}
+                                            
                                             onBodyPartPress={(slug) => handleMelanomaDataChange("slug",slug.slug)}
                                         />
                                         <View style={styles.positionSwitch}>
@@ -420,14 +422,14 @@ const MelanomaFullProcess = ({navigation,route}) => {
                                 name="delete"
                                 size={25}
                                 color={"red"}
-                                opacity={"0.4"}
+                                style={{opacity:0.4}}
                                 onPress={() => deleteSunburn(index)}
                             />                
                         </View>
                         </>  
                     ))}
                     <View style={{width:"100%",alignItems:"center",marginBottom:20,marginTop:50}}>
-                        {melanomaMetaData.sunburn.slug != "Not Selected" ? 
+                        {melanomaMetaData.sunburn[0].slug != "" ? 
                             <Pressable onPress={() => {setProgress(0.5)}} style={[styles.startButton,{marginBottom:0,position:"relative"}]}>
                                 <Text style={{padding:15,fontWeight:"600",color:"white"}}>Done</Text>
                             </Pressable>
@@ -499,7 +501,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
                         ref={bottomSheetRef}
                         snapPoints={snapPoints}
                         enablePanDownToClose={true}
-                        handleStyle={{backgroundColor:"black",borderTopLeftRadius:20,borderTopRightRadius:20,borderBottomWidth:2,height:30,color:"white"}}
+                        handleStyle={{backgroundColor:"black",borderTopLeftRadius:20,borderTopRightRadius:20,borderBottomWidth:2,height:30}}
                         handleIndicatorStyle={{backgroundColor:"white"}}
                     >
                         <View style={{width:"100%",alignItems:"center",flexDirection:"column",backgroundColor:"#fff",padding:10,marginTop:30}}>
@@ -530,11 +532,11 @@ const MelanomaFullProcess = ({navigation,route}) => {
             <View style={{width:"100%",alignItems:"center",marginTop:20}}>
                     <View style={{width:"100%",alignItems:"center"}}>
                     <Image 
-                        source={alertMelanoma} 
-                        style={{width:230,height:230,borderRadius:"120%",borderWidth:0.5,borderColor:"lightgray"}}                                               
+                        source={{uri:alertMelanoma}} 
+                        style={{width:230,height:230,borderRadius:120,borderWidth:0.5,borderColor:"lightgray"}}                                               
                     />
                     <Text style={{fontWeight:"700",fontSize:20,maxWidth:"80%",textAlign:"center",marginTop:20}}>Great ! Now let's build your body's mole map</Text>  
-                    <Text style={{fontWeight:"550",fontSize:12,maxWidth:"95%",textAlign:"center",marginTop:20,opacity:0.7}}>You will mark the location of your mole and upload them to Pocket Protect Cloud. Where our <Text style={{fontWeight:"700",color:"magenta"}}>AI model</Text> and <Text style={{fontWeight:"700",color:"magenta"}}>Professional Dermotologists</Text> can determine wheter your moles are malignant or beningn</Text> 
+                    <Text style={{fontWeight:"600",fontSize:12,maxWidth:"95%",textAlign:"center",marginTop:20,opacity:0.7}}>You will mark the location of your mole and upload them to Pocket Protect Cloud. Where our <Text style={{fontWeight:"700",color:"magenta"}}>AI model</Text> and <Text style={{fontWeight:"700",color:"magenta"}}>Professional Dermotologists</Text> can determine wheter your moles are malignant or beningn</Text> 
                     </View>
                         
                     <TouchableOpacity onPress={() => {setProgress(progress + 0.1);uploadMetaData(melanomaMetaData)}} style={{width:"80%",padding:5,flexDirection:"row",alignItems:"center",borderWidth:0,backgroundColor:"black",borderRadius:40,marginTop:80}}>
@@ -579,14 +581,13 @@ const MelanomaFullProcess = ({navigation,route}) => {
                                         colors={['#A6FF9B']}
                                         onBodyPartPress={(slug) => 
                                             Navigation_MoleUpload_2({
-                                                bodyPart:slug,
+                                                bodyPartSlug:slug,
                                                 gender: gender,
                                                 skin_type: melanomaMetaData.skin_type,
                                                 progress: progress,
                                                 completedArray: completedParts,
                                                 navigation: navigation
-                                            })}
-                                        zoomOnPress={true}                                
+                                            })}                             
                                     />
                             </View>        
 
@@ -633,14 +634,13 @@ const MelanomaFullProcess = ({navigation,route}) => {
                         colors={['#A6FF9B']}                       
                         onBodyPartPress={(slug) => 
                             Navigation_MoleUpload_2({
-                                bodyPart:slug,
+                                bodyPartSlug:slug,
                                 gender: gender,
                                 skin_type: melanomaMetaData.skin_type,
                                 progress: progress,
                                 completedArray: completedParts,
                                 navigation: navigation
                             })}
-                        zoomOnPress={true}
                     />
                     </View>
 
@@ -676,7 +676,7 @@ const MelanomaFullProcess = ({navigation,route}) => {
                     <View style={{marginTop:50,alignItems:"center"}}>  
                         <Text style={{marginBottom:10,fontWeight:"700",fontSize:20,backgroundColor:"white",textAlign:"center"}}>Congratulations your birtmarks are being monitored !</Text>
                         <Image 
-                            source={doctorImage}
+                            source={{uri:doctorImage}}
                             style={{width:200,height:200,marginTop:-20,zIndex:-1}}
                         />
                         <View style={{borderWidth:0.5,width:"100%",borderColor:"lightgray"}} />
@@ -867,20 +867,6 @@ const styles = StyleSheet.create({
         marginTop: 30,
         marginBottom:30,
     },
-    positionSwitch: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        position: 'relative',
-        marginTop: 10,
-        width:"45%",
-        borderWidth: 1,
-        padding: 10,
-        paddingRight: 20,
-        paddingLeft: 20,
-        borderRadius: 10,
-    
-    },
     OwnSlugAddBtn: {
         width: "80%",
         height: 50,
@@ -929,7 +915,7 @@ const styles = StyleSheet.create({
     },
     colorExplain: {
         flexDirection: 'column',
-        alignItems: 'left',
+        alignItems: 'flex-start',
         position: 'absolute',
         marginTop: 10,
         top: 100,
@@ -1043,8 +1029,7 @@ const styles = StyleSheet.create({
         paddingRight: 20,
         paddingLeft: 20,
         borderRadius: 10,
-        marginBottom:20
-    
+        marginBottom:20    
     },
     selectableBubble:{
         height:180,
@@ -1063,7 +1048,6 @@ const styles = StyleSheet.create({
         alignItems:"center",
         flexDirection:"column",
         justifyContent:"center",
-        borderRadius:20,
         marginLeft:20,
         marginRight:20,
         borderWidth:2,

@@ -3,19 +3,18 @@ import { View, Text, StyleSheet, Pressable, ScrollView, Image, StyleProp, ViewSt
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 interface IconMetaData {
-  name: string;
-  size: number;
-  color: string;
+  name: string | object;
+  size?: number;
+  color?: string;
   style?: {};
 }
 
 interface Item {
   title: string;
-  type: string;
-  icon: {
-    type: 'image' | 'icon';
-    metaData: IconMetaData;
-  };
+  type: number | string;
+  icon:
+  | {metaData:{name:string ,size?:number,color?:string,style?:{}}, type: "icon"}
+  | {metaData:{name:string ,size?:number,color?:string,style?:{}}, type: "image"};
 }
 
 interface OptionsBoxesProps {
@@ -25,16 +24,6 @@ interface OptionsBoxesProps {
   style?: StyleProp<ViewStyle>;
 }
 
-interface SelectableBoxProps {
-  title: string;
-  type: string;
-  setOptionValue: (value: string) => void;
-  optionValue: string;
-  icon: {
-    type: 'image' | 'icon';
-    metaData: IconMetaData;
-  };
-}
 
 export const OptionsBoxes: React.FC<OptionsBoxesProps> = ({
   items,
@@ -52,7 +41,7 @@ export const OptionsBoxes: React.FC<OptionsBoxesProps> = ({
             optionValue={optionValue}
             title={data.title}
             type={data.type}
-            icon={{ type: data.icon.type, metaData: data.icon.metaData }}
+            icon={{ type: data.icon.type, metaData:data.icon.metaData, }}
           />
         ))}
       </View>
@@ -89,12 +78,20 @@ const styles = StyleSheet.create({
   },
 });
 
-const SelectableBox: React.FC<SelectableBoxProps> = ({
+const SelectableBox = ({
   title,
   type,
   setOptionValue,
   optionValue,
   icon,
+}:{
+  title:string;
+  type: string | number;
+  setOptionValue:(type:string | number) => void;
+  optionValue: string | number;
+  icon:
+  | { type: "icon", metaData:{name:string ,size?:number,color?:string,style?:{}}}
+  | { type: "image", metaData:{name:string ,size?:number,color?:string,style?:{}}};
 }) => {
   return (
     <Pressable onPress={() => setOptionValue(type)} style={optionValue === type ? styles.genderOptionButtonA : styles.genderOptionButton}>
@@ -110,7 +107,7 @@ const SelectableBox: React.FC<SelectableBoxProps> = ({
       )}
       {icon.type === 'image' && (
         <Image
-          source={icon.metaData.name}
+          source={{uri:icon.metaData.name}}
           style={[{ position: 'relative', width: icon.metaData.size !== undefined ? icon.metaData.size : 30, height: icon.metaData.size !== undefined ? icon.metaData.size : 30 }, icon.metaData.style]}
         />
       )}

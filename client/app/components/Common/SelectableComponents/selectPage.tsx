@@ -7,17 +7,17 @@ import { SelectableBars } from './selectableBars';
 interface IconMetaData {
   name: string;
   size: number;
-  color: string;
+  color?: string;
   style?: {};
 }
 
 interface SelectableDataItem {
   title: string;
-  type: string;
-  icon: {
-    type: 'image' | 'icon';
-    metaData: IconMetaData;
-  };
+  type: number | string;
+  icon: 
+    | { type: "icon", metaData:{name:string ,size?:number,color?:string,style?:{}}}
+    | { type: "image", metaData:{name:string ,size?:number,color?:string,style?:{}}};
+  
 }
 
 interface ButtonActionNext {
@@ -47,9 +47,9 @@ interface SelectionPageProps {
   setOptionValue: (value: any) => void;
   optionValue: any;
   setProgress: (progress: number) => void;
-  specialValues: number[];
-  handleEvent: () => void;
- }
+  specialValues?: number[];
+  handleEvent?: () => void;
+}
 
 export const SelectionPage: React.FC<SelectionPageProps> = ({
   pageStyle = {},

@@ -10,18 +10,19 @@ import { NavBar_Slug } from "../../../components/LibaryPage/Melanoma/navBarRow";
 import { SlugStyles } from "../../../styles/libary_style";
 import { decodeParts } from "../../../utils/melanoma/decodeParts";
 import { styles_shadow } from "../../../styles/shadow_styles";
+import { Slug, SpotData } from "../../../components/LibaryPage/Melanoma/BodyParts";
 
 
 const SlugAnalasis = ({ route,navigation }) => {
 
 //<==================<[ Variables ]>====================>
 
-    const [melanomaData, setMelanomaData] = useState([]);
+    const [melanomaData, setMelanomaData] = useState<SpotData[]>([]);
     const [highlighted, setHighlighted] = useState(null);
-    const [ completedParts, setCompletedParts] = useState([])
+    const [completedParts, setCompletedParts] = useState<Slug[]>([])
     const [refreshing, setRefreshing] = useState(false);
     const { currentuser } = useAuth();   
-    const bodyPart = route.params.data;
+    const bodyPartSlug = route.params.bodyPartSlug;
     const skin_type = route.params.skin_type;
     const userData = route.params.userData;
     const gender = userData.gender
@@ -34,7 +35,7 @@ const SlugAnalasis = ({ route,navigation }) => {
             const response = await fetchSlugMelanomaData({
                 userId: currentuser.uid,
                 gender,
-                slug: bodyPart.slug
+                slug: bodyPartSlug.slug
             });
             const melanomaData = response;
             if(melanomaData != undefined){
@@ -56,7 +57,7 @@ const SlugAnalasis = ({ route,navigation }) => {
         }
     }
 
-    const showSpot = (melanomaId) => {
+    const showSpot = (melanomaId:string) => {
         if(melanomaId == highlighted){
             setHighlighted("")
         } else {
@@ -64,14 +65,14 @@ const SlugAnalasis = ({ route,navigation }) => {
         }
     }
 
-    const handleComplete = async (type) => {
+    const handleComplete = async (type:boolean) => {
 
-        let updatedCompletedParts;
+        let updatedCompletedParts: Slug[];
     
         if (type === false) {
-            updatedCompletedParts = [...completedParts, bodyPart.slug];
+            updatedCompletedParts = [...completedParts, bodyPartSlug.slug];
         } else if (type === true) {
-            updatedCompletedParts = completedParts.filter(part => part !== bodyPart.slug);
+            updatedCompletedParts = completedParts.filter(part => part !== bodyPartSlug.slug);
         }
         const response = updatedCompletedParts.map(slug => {                
             return { slug: slug };
@@ -84,7 +85,7 @@ const SlugAnalasis = ({ route,navigation }) => {
         setCompletedParts(updatedCompletedParts);
     };
     
-    const handleSpotOpen = (bodyPart) => {
+    const handleSpotOpen = (bodyPart:SpotData) => {
         Navigation_SingleSpotAnalysis({
             melanomaId: bodyPart.melanomaId,
             userData:userData,
@@ -96,7 +97,7 @@ const SlugAnalasis = ({ route,navigation }) => {
 
     const handleAddMelanoma = () => {
         Navigation_MoleUpload_2({
-            bodyPart:bodyPart,
+            bodyPart:bodyPartSlug,
             gender:userData.gender,
             skin_type: skin_type,
             navigation,
@@ -128,18 +129,18 @@ return(
             completedParts={completedParts}
             handleAddMelanoma={handleAddMelanoma}
             handleComplete={handleComplete}
-            bodyPart={bodyPart}
+            bodyPart={bodyPartSlug}
             navigation={navigation}
         />
         <View style={[SlugStyles.TopPart,styles_shadow.hightShadowContainer]}>
             {melanomaData != null ? dotsSelectOnPart({
-                bodyPart: bodyPart,
+                bodyPart: bodyPartSlug,
                 melanomaData: melanomaData,
                 gender,
                 highlighted,
                 skin_type
             }):null}
-            {!completedParts.includes(bodyPart.slug)? <Text style={{position:"absolute",top:10,right:10,fontSize:10,fontWeight:"700",color:"red",opacity:0.3}} >Not marked as complete</Text> : <Text style={{position:"absolute",top:10,right:10,fontSize:10,fontWeight:"700",color:"green",opacity:0.4}} >Marked as complete</Text>}
+            {!completedParts.includes(bodyPartSlug.slug)? <Text style={{position:"absolute",top:10,right:10,fontSize:10,fontWeight:"700",color:"red",opacity:0.3}} >Not marked as complete</Text> : <Text style={{position:"absolute",top:10,right:10,fontSize:10,fontWeight:"700",color:"green",opacity:0.4}} >Marked as complete</Text>}
         </View>
         <View style={SlugStyles.BirthmarkContainer}>
             <ScrollView
@@ -156,7 +157,7 @@ return(
                 {melanomaData.length != 0 ?
                 <View style={{width:"100%",alignItems:"center",marginBottom:250}}>                               
                     {melanomaData.map((data,index) => (
-                        data.melanomaDoc.spot[0].slug == bodyPart.slug  ? (
+                        data.melanomaDoc.spot[0].slug == bodyPartSlug.slug  ? (
                             <MoleBar
                                 index={index}
                                 data={data}
@@ -181,7 +182,7 @@ export default SlugAnalasis;
 
 
 
-const AddSection = ({handleAddMelanoma}) => {
+const AddSection = ({handleAddMelanoma}:{handleAddMelanoma:() => void}) => {
     return(        
         <View style={{alignItems:"center",marginTop:50}}>
             <MaterialCommunityIcons 
@@ -191,7 +192,7 @@ const AddSection = ({handleAddMelanoma}) => {
             />
             <Text style={{marginTop:20,fontSize:22,maxWidth:"93%",textAlign:"center",fontWeight:"700",color:"white",opacity:0.4}}>This body part does not contain registered moles</Text>
             <TouchableOpacity onPress={() => handleAddMelanoma()} style={{marginTop:20,padding:10,borderWidth:2,borderRadius:30,alignItems:"center",paddingHorizontal:20, borderColor:"black",opacity:0.3,backgroundColor:"white"}}>
-                <Text style={{fontWeight:"550",color:"black"}}>Let's fix that ...</Text>
+                <Text style={{fontWeight:"600",color:"black"}}>Let's fix that ...</Text>
             </TouchableOpacity>
         </View>           
     )
@@ -203,6 +204,12 @@ const MoleBar = ({
     index,
     highlighted,
     showSpot
+}:{
+    data:SpotData;
+    handleSpotOpen:(data:SpotData) => void;
+    index:number;
+    highlighted:string;
+    showSpot:(id:string) => void;
 }) => {
     return(
         <TouchableOpacity onPress={() => handleSpotOpen(data)} key={index} style={[SlugStyles.melanomaBox,styles_shadow.shadowContainer]}>

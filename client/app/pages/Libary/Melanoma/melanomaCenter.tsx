@@ -8,16 +8,17 @@ import {bodyFemaleBack} from "../../../components/LibaryPage/Melanoma/BodyParts/
 import {bodyFront} from "../../../components/LibaryPage/Melanoma/BodyParts/bodyFront"
 import {bodyBack} from "../../../components/LibaryPage/Melanoma/BodyParts/bodyBack"
 import { useAuth } from '../../../context/UserAuthContext.jsx';
-import { fetchAllMelanomaSpotData, fetchUserData,fetchCompletedParts, fetchNumberOfMolesOnSlugs } from '../../../services/server.ts';
+import { fetchAllMelanomaSpotData, fetchUserData,fetchCompletedParts, fetchNumberOfMolesOnSlugs } from '../../../services/server';
 import { useFocusEffect } from '@react-navigation/native';
 import { SkinModal } from "../../../components/LibaryPage/Melanoma/modals";
 import { Mstyles } from "../../../styles/libary_style";
 import { NavBar_Main } from "../../../components/LibaryPage/Melanoma/navBarRow";
 import { SlugCard } from "../../../components/LibaryPage/Melanoma/slugCard";
-import { Navigation_MoleUpload_1 } from "../../../navigation/navigation";
+import { Navigation_MoleUpload_1, SkinType, UserData,Navigation_SlugAnalysis } from "../../../navigation/navigation";
 import { AssistantAdvertBox } from "../../../components/LibaryPage/Melanoma/Assistance/assistantAdvert";
 import { styles_shadow } from "../../../styles/shadow_styles";
 import { NavBar_TwoOption } from "../../../components/Common/navBars";
+import { UserData_Default } from "../../../utils/initialValues";
 
 
 
@@ -26,10 +27,10 @@ const SingleFeature = ({route,navigation}) => {
 //<==================<[ Variables ]>====================>
 
     const { currentuser } = useAuth();
-    const [userData , setUserData] = useState([]);
+    const [userData , setUserData] = useState<UserData>(UserData_Default);
     const [bodySlugs, setBodySlugs] = useState(null)
     const [ affectedSlugs,setAffectedSlugs ] = useState([])
-    const [selectedSide, setSelectedSide] = useState("front");
+    const [selectedSide, setSelectedSide] = useState<"front" | "back">("front");
     const [melanomaData, setMelanomaData] = useState([])
     const [ completedParts, setCompletedParts] = useState([])
     const [numberOfMolesOnSlugs,setNumberOfMolesOnSlugs] = useState([])
@@ -112,7 +113,7 @@ const SingleFeature = ({route,navigation}) => {
             const affectedSlug = melanomaData.map((data, index) => {
                 const spotSlug = data.melanomaDoc.spot[0]?.slug;
                 const intensity = data.risk >= 0.3 ? (data.risk >= 0.8 ? 1 : 3) : 2;
-                return { slug: spotSlug, intensity, key: index }; // Adding a unique key
+                return { slug: spotSlug, intensity, key: index }; 
             });
             setAffectedSlugs(affectedSlug);
         }
@@ -121,14 +122,14 @@ const SingleFeature = ({route,navigation}) => {
     const handleAddMelanoma = () => {
         Navigation_MoleUpload_1({
             gender:userData.gender,
-            skin_type: melanomaMetaData.skin_type,
+            skin_type: melanomaMetaData.skin_type as SkinType,
             navigation: navigation
         })
     }
 
     const handleMelanomaDataChange = (type, data) => {
         setMelanomaMetaData((prevState) => {
-          let newSunburn = [...prevState.sunburn]; // Create a shallow copy of the sunburn array              
+        let newSunburn = [...prevState.sunburn];               
             if (newSunburn.length === 0) {
                 newSunburn.push({ stage: 0, slug: "" }); 
             }                
@@ -154,9 +155,14 @@ const SingleFeature = ({route,navigation}) => {
         fetchAllNumberOfMoleOnSlug();
     }
 
-    const handleNavigation = (path,data) => {
+    const handleNavigation = (path:string,data:any) => {
         if ( path ==  "SlugAnalasis"){
-            navigation.navigate("SlugAnalasis",{ data: data,userData: userData,skin_type:melanomaMetaData.skin_type,isCompleted:completedParts.includes(data.slug)})
+            Navigation_SlugAnalysis({
+                bodyPartSlug: data,
+                userData: userData,
+                skin_type: melanomaMetaData.skin_type as SkinType,
+                navigation
+            })
         }
     }
 

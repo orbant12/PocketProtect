@@ -2,7 +2,7 @@
 
 //<========> MELANOMA <=========>
 
-import { BodyPart, Slug } from "../components/LibaryPage/Melanoma/BodyParts";
+import { BodyPart, Slug, SpotArrayData, SpotData } from "../components/LibaryPage/Melanoma/BodyParts";
 
 
 export type Gender = "female" | "male";
@@ -20,29 +20,9 @@ export type UserData = {
     user_since:string;
 }
 
-export type SpotData = {
-    melanomaId:string;
-    melanomaDoc:{
-        location:{x:number,y:number},
-        spot:[
-            {slug:Slug,
-            pathArray: any[],
-            color:string,}
-        ]
-    },
-    risk:number | null;
-    gender:Gender;
-    created_at: Date;
-    storage_name:string;
-    storage_location:string;
-    melanomaPictureUrl:string;
-}
 
-export type SpotArrayData = {
-    slug:Slug,
-    pathArray: any[],
-    color:string
-}
+
+
 
 interface MelanomaNavigationParams {
     melanomaId?: string;
@@ -77,6 +57,21 @@ export const Navigation_SingleSpotAnalysis = ({
         alert("Something went wrong");
     }
 };
+
+export const Navigation_SlugAnalysis = ({
+    bodyPartSlug,
+    userData,
+    skin_type,
+    navigation
+}:MelanomaNavigationParams) => {
+    if ( navigation != undefined ) {
+        navigation.navigate("SlugAnalasis",{
+            bodyPartSlug: bodyPartSlug,
+            userData:userData,
+            skin_type:skin_type,
+        })
+    }
+}
 
 export const Navigation_AddSlugSpot = ({
     userData,

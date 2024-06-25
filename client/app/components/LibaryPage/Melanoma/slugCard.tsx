@@ -2,13 +2,15 @@ import { Mstyles } from "../../../styles/libary_style"
 import { View,Text,TouchableOpacity } from "react-native"
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/client/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
 import { styles_shadow } from "../../../styles/shadow_styles";
+import { BodyPart, Slug } from "./BodyParts";
+import { SpotData, UserData } from "../../../navigation/navigation";
 
 const getSlugCount = (slug,numberOfMolesOnSlugs) => {
     const slugObject = numberOfMolesOnSlugs.find(item => Object.keys(item)[0] === slug);
     return slugObject ? slugObject[slug] : 0;
 };
 
-const dotSelectOnPart = (bodyPart,userData,melanomaData) => {
+const dotSelectOnPart = (bodyPart:BodyPart,userData:UserData,melanomaData:SpotData[]) => {
     return (
         <Svg preserveAspectRatio="xMidYMid meet" height={200} width={350} > 
             {bodyPart != null ? (
@@ -265,7 +267,7 @@ const dotSelectOnPart = (bodyPart,userData,melanomaData) => {
                         />
                 ))
             ):null}
-            {melanomaData.map((data,index) => (
+            {melanomaData.map((data:SpotData,index:number) => (
                     data.melanomaDoc.spot[0].slug == bodyPart.slug && data.gender == userData.gender  && (
                         
                             <Circle cx={data.melanomaDoc.location.x} cy={data.melanomaDoc.location.y} r="5" fill="red" key={`${"circle"}_${index}`} />
@@ -286,9 +288,15 @@ export const SlugCard = ({
     userData,
     melanomaData,
     index
+}:{
+    bodyPart:BodyPart;
+    completedParts: Slug[];
+    handleNavigation:(path:string,data:any) => void;
+    numberOfMolesOnSlugs: {Slug: number}[];
+    userData: UserData;
+    melanomaData: SpotData[];
+    index:number;
 }) => {
-
-
     return(
         <View style={[Mstyles.melanomaBox,styles_shadow.hightShadowContainer,!completedParts.includes(bodyPart.slug) ? {borderColor:"red"} : {borderColor:"lightgreen"}]} key={`box_${bodyPart.slug}_${index}`}>
         <Text style={{fontSize:20,fontWeight:"700",color:"white"}}>{bodyPart.slug}</Text>

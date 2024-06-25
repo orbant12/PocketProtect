@@ -1,16 +1,17 @@
 import { View,Text,ScrollView} from "react-native"
 import React, {useState,useEffect,useRef} from "react";
 import ProgressBar from 'react-native-progress/Bar';
-import { fetchSlugMelanomaData ,melanomaSpotUpload,melanomaUploadToStorage ,deleteSpot} from '../../../../services/server.ts';
-import LoadingOverlay from "../../../../components/Common/Loading/processing.jsx"
-import { SureModal_MoleUpload } from "../../../../components/LibaryPage/Melanoma/modals.jsx";
-import { CameraViewModal } from "../components/cameraModal.jsx";
-import { SpotPicker } from "../../../../components/LibaryPage/Melanoma/SpotUpload/spotPicker.jsx";
-import { SpotUpload, AlreadyUploadedSpots,UploadButtons } from "../../../../components/LibaryPage/Melanoma/SpotUpload/spotUpload.jsx";
-import { spotUpload_2_styles } from "../../../../styles/libary_style.jsx";
-import { updateCompletedParts } from "../../../../services/server.ts";
-import { useAuth } from "../../../../context/UserAuthContext.jsx";
-import { NavBar_OneOption } from "../../../../components/Common/navBars.jsx";
+import { fetchSlugMelanomaData ,melanomaSpotUpload,melanomaUploadToStorage ,deleteSpot} from '../../../../services/server';
+import LoadingOverlay from "../../../../components/Common/Loading/processing"
+import { SureModal_MoleUpload } from "../../../../components/LibaryPage/Melanoma/modals";
+import { CameraViewModal } from "../components/cameraModal";
+import { SpotPicker } from "../../../../components/LibaryPage/Melanoma/SpotUpload/spotPicker";
+import { SpotUpload, AlreadyUploadedSpots,UploadButtons } from "../../../../components/LibaryPage/Melanoma/SpotUpload/spotUpload";
+import { spotUpload_2_styles } from "../../../../styles/libary_style";
+import { updateCompletedParts } from "../../../../services/server";
+import { useAuth } from "../../../../context/UserAuthContext";
+import { NavBar_OneOption } from "../../../../components/Common/navBars";
+import { BodyPart, Slug, SpotArrayData, SpotData } from "../../../../components/LibaryPage/Melanoma/BodyParts";
 
 
 const MelanomaSingleSlug = ({route,navigation}) => {
@@ -19,9 +20,9 @@ const MelanomaSingleSlug = ({route,navigation}) => {
 
     //ROUTE DATA
     const progress = route.params.progress
-    const bodyPart = route.params.bodyPart
+    const bodyPartSlug : BodyPart = route.params.bodyPartSlug
     const gender = route.params.gender
-    const sessionMemory = route.params.completedArray
+    const sessionMemory: {slug:Slug}[] = route.params.completedArray
     const skinColor = route.params.skin_type
     const { currentuser } = useAuth()
     //Add Melanoma Data
@@ -50,8 +51,8 @@ const MelanomaSingleSlug = ({route,navigation}) => {
         const storageLocation = `users/${currentuser.uid}/melanomaImages/${ID}`;
         setIsScreenLoading(true)
         try{
-            const uploadToStorage = async(uri) => {
-                const blob = await new Promise((resolve, reject) => {
+            const uploadToStorage = async(uri:string) => {
+                const blob: Blob = await new Promise((resolve, reject) => {
                     const xhr = new XMLHttpRequest();
                     xhr.onload = function () {
                         resolve(xhr.response);
@@ -66,8 +67,6 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                 });
                 const response = await melanomaUploadToStorage({
                     melanomaPicFile: blob,
-                    userId: currentuser.uid,
-                    birthmarkId: ID,
                     storageLocation: storageLocation,
                 })
                 return response;
@@ -77,7 +76,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
 
             const res = await melanomaSpotUpload({
                 userId: currentuser.uid,
-                melanomaDocument: {"spot": [bodyPart], "location": redDotLocation},
+                melanomaDocument: {spot: [bodyPartSlug], location: redDotLocation},
                 gender: gender,
                 melanomaPictureUrl: pictureUrl,
                 spotId: ID,
@@ -104,16 +103,16 @@ const MelanomaSingleSlug = ({route,navigation}) => {
         }
     }
 
-    const handleMarkeAsComplete = async (action) => {
-        let updatedSessionMemory;
+    const handleMarkeAsComplete = async (action:"add" | "remove") => {
+        let updatedSessionMemory: {slug:Slug}[];
 
         if (action === "add" || action === "remove") {
             updatedSessionMemory = [...sessionMemory];
 
             if (action === "add") {
-                updatedSessionMemory.push({ slug: bodyPart.slug });
+                updatedSessionMemory.push({ slug: bodyPartSlug.slug });
             } else if (action === "remove") {
-                updatedSessionMemory = updatedSessionMemory.filter(item => item.slug !== bodyPart.slug);
+                updatedSessionMemory = updatedSessionMemory.filter(item => item.slug !== bodyPartSlug.slug);
             }
             await updateCompletedParts({
                 userId:currentuser.uid,
@@ -128,7 +127,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
         const response = await fetchSlugMelanomaData({
             userId: currentuser.uid,
             gender,
-            slug: bodyPart.slug
+            slug: bodyPartSlug.slug
         })
 
         const format = response.map((data) =>{
@@ -142,14 +141,14 @@ const MelanomaSingleSlug = ({route,navigation}) => {
         setCurrentSlugMemory(format)
     }
 
-    const isThisPartCompleted = async (sessionMemory) => {
+    const isThisPartCompleted = async (sessionMemory:{slug:Slug}[]) => {
         if( sessionMemory != null ){
-            const isCompleted = sessionMemory.some((session) => session.slug === bodyPart.slug);
+            const isCompleted = sessionMemory.some((session) => session.slug === bodyPartSlug.slug);
             setMarkedAsComplete(!isCompleted);
         }
     }
 
-    function generateNumericalUID(length) {
+    function generateNumericalUID(lengt:number) {
         if (length <= 0) {
             throw new Error("Length must be a positive integer.");
         }
@@ -195,7 +194,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                 <ScrollView ref={scrollViewRef} style={progress != null && {marginTop:30}} showsVerticalScrollIndicator={false}>  
                 <NavBar_OneOption 
                     icon_left={{name:"arrow-left",size:25, action:() => navigation.goBack()}}
-                    title={bodyPart.slug}
+                    title={bodyPartSlug.slug}
                 />
                 {progress != null &&
                 <View style={spotUpload_2_styles.ProgressBar}>
@@ -206,7 +205,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                         <SpotPicker 
                             redDotLocation={redDotLocation}
                             setRedDotLocation={setRedDotLocation}
-                            bodyPart={bodyPart}
+                            bodyPart={bodyPartSlug}
                             highlighted={highlighted}
                             skinColor={skinColor}
                             gender={gender}

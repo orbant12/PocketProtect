@@ -13,8 +13,8 @@ import { ref,  getDownloadURL, uploadBytes,deleteObject} from "firebase/storage"
 import { dateDistanceFromToday, Timestamp } from "../utils/date_manipulations";
 import { generateNumericalUID } from "../utils/uid_generator.js";
 import { WelcomeTexts } from "../../assets/welcome_scripts/welcomeTexts.js";
-import { Gender, SkinType, SpotData } from "../navigation/navigation.js";
-import { Slug } from "../components/LibaryPage/Melanoma/BodyParts/index.js";
+import { Gender, SkinType } from "../navigation/navigation.js";
+import { BodyPart, Slug,SpotData } from "../components/LibaryPage/Melanoma/BodyParts/index.js";
 import { UserData } from "../navigation/navigation.js";
 
 type SpotDeleteTypes = "history" | "latest"
@@ -80,10 +80,11 @@ interface API_Melanoma {
     userId?:string;
     melanomaDocument?: {
         spot:[
-            slug:string,
+            {slug:Slug,
             pathArray: any[],
-            color:string
-        ]
+            color:string},
+        ],
+        location: {x:number,y:number}
     };
     spotId?:string;
     gender?: Gender;
@@ -93,7 +94,7 @@ interface API_Melanoma {
     storage_name?:string;
     created_at?: Date;
     riskToUpdate?: {
-        risk:number
+        risk:string
     };
     metaData?:{
         completedArray?:any[],
@@ -204,18 +205,20 @@ export const melanomaUploadToStorage = async ({
 export const fetchSelectedMole = async ({
     userId,
     spotId,
-}:API_Melanoma) => {
+}:API_Melanoma): Promise <SpotData | null> => {
     try{
         const ref = doc(db, "users", userId, "Melanoma", spotId);
         const docSnap = await getDoc(ref);
         if (docSnap.exists()) {
-            console.log("Melanoma data:", docSnap.data());
-            return docSnap.data();
+            return docSnap.data() as SpotData
+            
         } else {
             console.log("No such document!");
+            return null
         }
     } catch (error) {
         console.log(error);
+        return null
     }
 }
 
@@ -498,7 +501,7 @@ export const fetchNumberOfMolesOnSlugs = async ({
         return result;
     } catch (error) {
         console.log(error)
-        return false
+        return []
     }
 }
 
