@@ -1,4 +1,4 @@
-# Pocket Protect AI
+# Pocket Protect 
 
 (Avalible on App Store and Play Store !)
 
@@ -8,10 +8,31 @@ This is the Application <span>source code<span> for Pocket Protect. The app's pu
 
 ## Technologies Used
 
+### 📱 Mobile
 - React Native
-- TensorFlow & Tensorflow-js
-- Node
+- Expo
+- Typescript
+- Firebase Auth
+
+### ⚙️ Back End
+- Node (REST API)
+- Tensorflow-js-node (CLOUD COMPUTE for DL Model)
+- Firebase Functions (Server Provider)
+- Firebase - Firestore and Storage (Database)
+
+### 🖥️Web
+- Next.js
+- Typescript
+  
+### Machine Learning
 - Python
-- JS and TS
+- ISIC Database
+- Pandas
+- Numpy
+
+
 ---
+
+
+
 

@@ -89,10 +89,10 @@ export const ChatInput = ({
         <KeyboardAvoidingView
             
             behavior="position"
-            keyboardVerticalOffset={20} 
+            keyboardVerticalOffset={0} 
             
         >
-            <View style={{ width: '95%', padding: 5, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.1)', alignSelf: 'center', borderRadius: 30,marginVertical:10,marginBottom:20}}>
+            <View style={{ width: '95%', padding: 5, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.6)', alignSelf: 'center', borderRadius: 30,marginVertical:10,marginBottom:20}}>
 
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
               {inputValue === '' ? ( 
@@ -116,7 +116,7 @@ export const ChatInput = ({
                     placeholder="Write a message ..."
                     value={inputValue}
                     onChangeText={setInputValue}
-                    style={{ maxWidth: 240, flexWrap: 'wrap',minWidth:170 }}
+                    style={{ maxWidth: 240, flexWrap: 'wrap',minWidth:170,color:"white",alignSelf:"center",padding:0 }}
                     multiline={true}
                 />
             </View>

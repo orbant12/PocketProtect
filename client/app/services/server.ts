@@ -985,3 +985,16 @@ export const realTimeUpdateChat = async ({
      }
 }
 
+export const fetchChat = async({sessionId,clientId}:{sessionId:string,clientId:string}) => {
+    try{
+        const ref = doc(db,"users",clientId,"Assist_Panel",sessionId)
+        const snapshot = await getDoc(ref)
+        if (snapshot.exists()) {
+            return snapshot.data().chat;
+        } else {
+            return [];
+        }
+    } catch {
+        return []
+    }
+}
