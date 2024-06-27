@@ -10,10 +10,12 @@ import { ChatBotBar } from "../../components/Assist/Bots/chatBotBar.js"
 import { Navigation_AI_Assistant } from "../../navigation/navigation"
 import robotAi from "../../assets/assist/robotAI.png"
 import { AssistantAdvertBox } from "../../components/LibaryPage/Melanoma/Assistance/assistantAdvert"
+import { Success_Purchase_Client_Checkout_Data } from "../../utils/types"
+import { SessionData_Default } from "../../utils/initialValues"
 
 const ChatCenter = ({navigation}) => {
 
-    const [ selectedChat, setSelectedChat] = useState([])
+    const [ selectedChat, setSelectedChat] = useState<Success_Purchase_Client_Checkout_Data | null>(null)
     const {currentuser} = useAuth();
     const [assistSessions, setAssistSessions] = useState([])
     const [ activeBubble, setActiveBubble] = useState("assist")
@@ -86,9 +88,9 @@ const ChatCenter = ({navigation}) => {
                     AI_Doctors_Data={AI_Doctors_Data}
                 />
             </ScrollView>
-            <Modal animationType="slide" visible={selectedChat.length != 0} >
+            <Modal animationType="slide" visible={selectedChat != null} >
                 <ChatSessionModal 
-                    selectedChat={selectedChat}
+                    selectedChat={selectedChat != null ? selectedChat : SessionData_Default}
                     setSelectedChat={setSelectedChat}
                 />    
             </Modal>            

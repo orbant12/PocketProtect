@@ -1,6 +1,8 @@
 import { styles } from "../../styles/home_style"
 import { View, Text, Pressable } from "react-native"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
+import { SpotData } from "../../utils/types";
+import { Home_Navigation_Paths } from "../../pages/Home/home";
 
 export const TaskBox_2 = ({
     title,
@@ -22,7 +24,7 @@ export const TaskBox_2 = ({
     buttonText:string;
     nav_page:string;
     index:number;
-    handleNavigation:(path:string,data?:any) => void;
+    handleNavigation:({path,data}:{path:"" | "unfinished" | "risk",data:SpotData}) => void;
 }) => {
     return(
         <View key={index} style={styles.DataBox}>
@@ -71,7 +73,7 @@ export const TaskBox_2 = ({
             We schedule reminders for outdated blood work and recommended update.
             </Text>
         </View>
-        <Pressable onPress={() => handleNavigation(nav_page, {type:"first"})} style={styles.StartButton}>
+        <Pressable style={styles.StartButton}>
             <Text>{buttonText}</Text>
             <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{ marginLeft: 10 }} />
         </Pressable>
@@ -79,12 +81,12 @@ export const TaskBox_2 = ({
     )
 }
 
-export const TaskBox_1 = ({handleNavigation}:{handleNavigation:(path:string,data?:any) => void}) => {
+export const TaskBox_1 = ({handleNavigation}:{handleNavigation:({path,data}:{path:Home_Navigation_Paths, data:SpotData}) => void;}) => {
     return(
         <View style={styles.TaskBox}>
         <Text style={styles.TaskTitle}>Daily Health Report</Text>
         <Text style={styles.TaskSubTitle}>Do your daily report so our AI model can have a better accuracy in detecting your problems !</Text>
-        <Pressable onPress={() => handleNavigation("DailyReport")} style={styles.StartButton}>
+        <Pressable style={styles.StartButton}>
             <Text>Start Now</Text>
             <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
         </Pressable>

@@ -6,18 +6,22 @@ import { Success_Purchase_Client_Checkout_Data } from "../../utils/types";
 
 export default function CheckoutScreen({
     checkOutData,
-    price
+    price,
+    navigation
 }:
 {
     checkOutData:Success_Purchase_Client_Checkout_Data;
     price:number;
+    navigation:any;
 }) {
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
-    const API_URL = "http://localhost:3000/intents";
+    const API_URL = "http://localhost:3001/intents";
 
     const handleSuccesfullSession = async (checkOutData:Success_Purchase_Client_Checkout_Data) => {
         try{
-            handleProdutctData(checkOutData) 
+            await handleProdutctData(checkOutData)
+            await SuccessPage_Modal()
+            navigation.navigate("Assistant")
         } catch(ERR) {
             console.log(ERR)
         }
@@ -62,11 +66,11 @@ export default function CheckoutScreen({
             });
     
             if (paymentSheetError) {
-                Alert.alert('Something went wrong', paymentSheetError.message);
+                Alert.alert('Something went wron', paymentSheetError.message);
                 return;
             }
         } catch (error) {
-            Alert.alert('Something went wrong', error.message);
+            Alert.alert('Something went wrng', error.message);
         }
     };
     
@@ -80,13 +84,34 @@ export default function CheckoutScreen({
         }
     };
 
+    const SuccessPage_Modal = async () => {
+        //USER OK BUTTON FEEDBACK
+        return new Promise((resolve, reject) => {
+            Alert.alert(
+                "Success",
+                "Your order is confirmed!",
+                [
+                    {
+                        text: "OK",
+                        onPress: () => {
+                            resolve(true)
+                        }
+                    }
+                ]
+            )
+        })
+        
+    }
+
     useEffect(() => {
         fetchPaymentSheetParams();
     }, []);
 
     return (
-    <TouchableOpacity onPress={() => openPaymentSheet()} style={{width:"85%",padding:14,backgroundColor:"magenta",alignItems:"center",justifyContent:"center",borderRadius:10,marginBottom:30,marginTop:0}}>
-        <Text style={{fontSize:15,fontWeight:"700", color:"white"}}>Purchase</Text>
+    <TouchableOpacity onPress={() => handleSuccesfullSession(checkOutData)} style={{width:"85%",padding:14,backgroundColor:"magenta",alignItems:"center",justifyContent:"center",borderRadius:10,marginBottom:30,marginTop:0}}>
+        <Text style={{fontSize:15,fontWeight:"700", color:"white"}}>Purchase {checkOutData.assistantData.email}</Text>
     </TouchableOpacity>
     );
 }
+
+//openPaymentSheet

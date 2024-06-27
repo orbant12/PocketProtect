@@ -1,6 +1,6 @@
 import { StyleSheet, View, Text,ScrollView,Image,TouchableOpacity,Dimensions } from "react-native";
 import { NavBar_AssistantModal } from "../../components/Assist/navbarAssistantModal";
-import { useRef,useState } from "react";
+import { useRef,useState,useEffect } from "react";
 import { Rating } from 'react-native-stock-star-rating'
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import { useAuth } from "../../context/UserAuthContext";
@@ -23,7 +23,7 @@ export const AssistModal = ({
     navigation,
     userData
 }:{
-    assistantData:AssistantData,
+    assistantData: AssistantData,
     setSelectedAssistant:Function,
     bodyPart:SpotData[],
     navigation:any,
@@ -37,45 +37,81 @@ export const AssistModal = ({
 
     const session_UID = "session_" + generateNumericalUID(12)
 
-    let checkOutData: Success_Purchase_Client_Checkout_Data = {
-        answered:true,
-        assistantData:{
-            fullname:assistantData.fullname,
-            id:assistantData.id,
-            profileUrl:assistantData.profileUrl,
-            email:assistantData.email,
-            field: assistantData.field
+    const [checkOutData, setCheckOutData] = useState<Success_Purchase_Client_Checkout_Data>({
+        answered: true,
+        assistantData: {
+            fullname: '',
+            id: '',
+            profileUrl: '',
+            email: '',
+            field: 'dermatologist'
         },
-        clientData:{
-            fullname: userData.fullname,
-            id:currentuser.uid,
-            profileUrl:userData.profilePictureUrl,
-            email:userData.email,
-            gender: userData.gender,
-            birth_date: userData.birth_date,
+        clientData: {
+            fullname: '',
+            id: '',
+            profileUrl: '',
+            email: '',
+            gender: 'male',
+            birth_date: new Date()
         },
-        chat:[
+        chat: [
             {
-                date:new Date(),
-                message:WelcomeTexts({
-                    type:"spot_check",
-                    fullname:userData.fullname,
-                    sessionId:session_UID
-                
-                }),
-                inline_answer:false,
-                sent:true,
-                user:"client"
+                date: new Date(),
+                message: '',
+                inline_answer: false,
+                sent: true,
+                user: 'client'
             }
         ],
-        id:session_UID,
-        purchase:{
-            type:"mole_check",
-            item: bodyPart.map((data) => {
-                return {[data.melanomaId]:data } 
-            })
+        id: session_UID,
+        purchase: {
+            type: 'mole_check',
+            item: []
         }
-    }
+    });
+
+    useEffect(() => {
+        if (assistantData) {
+            setCheckOutData({
+                answered: true,
+                assistantData: {
+                    fullname: assistantData.fullname,
+                    id: assistantData.id,
+                    profileUrl: assistantData.profileUrl,
+                    email: assistantData.email,
+                    field: assistantData.field
+                },
+                clientData: {
+                    fullname: userData.fullname,
+                    id: currentuser.uid,
+                    profileUrl: userData.profileUrl,
+                    email: userData.email,
+                    gender: userData.gender,
+                    birth_date: userData.birth_date,
+                },
+                chat: [
+                    {
+                        date: new Date(),
+                        message: WelcomeTexts({
+                            type: 'spot_check',
+                            fullname: userData.fullname,
+                            sessionId: session_UID
+                        }),
+                        inline_answer: false,
+                        sent: true,
+                        user: assistantData.id
+                    }
+                ],
+                id: session_UID,
+                purchase: {
+                    type: 'mole_check',
+                    item: bodyPart.map((data) => {
+                        return { [data.melanomaId]: data }
+                    })
+                }
+            });
+        }
+    }, [assistantData]);
 
 
 
@@ -87,7 +123,7 @@ export const AssistModal = ({
             <View style={styles.container}>
                 <NavBar_AssistantModal 
                     goBack={() => setSelectedAssistant(null)}
-                    title={assistantData.fullname}
+                    title={assistantData?.fullname}
                     bgColor={"white"}
                     outerBg={"white"}
                     right_icon={{type:"image",name:assistantData != undefined && assistantData.profileUrl}}
@@ -119,6 +155,7 @@ export const AssistModal = ({
         <PaymentStartView 
             checkOutData={checkOutData}
             bodyPart={bodyPart}
+            navigation={navigation}
         />
        
         </BottomSheetModal>
@@ -138,13 +175,15 @@ const styles = StyleSheet.create({
 
 const ProfileSection = ({
     assistantData,
+}:{
+    assistantData:AssistantData | null
 }) => {
     return(
         <View style={{alignItems:"center",width:"70%"}}>
-        <Text style={{fontWeight:"700",fontSize:20}}>{assistantData.fullname}</Text>
+        <Text style={{fontWeight:"700",fontSize:20}}>{assistantData?.fullname}</Text>
         <Image 
             style={{width:150,height:150,borderRadius:10,marginTop:20}}
-            source={{uri:assistantData.profileUrl}}
+            source={{uri:assistantData?.profileUrl}}
         />
         <View style={{width:"100%",alignItems:"center", flexDirection:"row",justifyContent:"space-between",marginTop:30}}>
             <DataTag 
@@ -215,11 +254,12 @@ const BioSection = ({
 
 const PaymentStartView = ({
     checkOutData,
-    bodyPart
+    bodyPart,
+    navigation
 }:{
-    checkOutData:Success_Purchase_Client_Checkout_Data,
-    bodyPart:SpotData[]
-
+    checkOutData:Success_Purchase_Client_Checkout_Data;
+    bodyPart:SpotData[];
+    navigation:any
 }) => {
     return(
         <ScrollView>
@@ -255,6 +295,7 @@ const PaymentStartView = ({
                 <CheckoutScreen 
                     checkOutData={checkOutData}
                     price={bodyPart.length * 5}
+                    navigation={navigation}
                 />
             </View>
       </View>

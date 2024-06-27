@@ -1,5 +1,5 @@
 import { BloodWorkData, BloodWorkDoc } from "../services/server";
-import { Gender } from "../navigation/navigation";
+import { Gender, Success_Purchase_Client_Checkout_Data } from "./types";
 
 export const UserData_Default = {
         id:"default",
@@ -10,6 +10,37 @@ export const UserData_Default = {
         email:"",
         fullname:""
 }
+
+
+
+export const SessionData_Default: Success_Purchase_Client_Checkout_Data = {
+    answered:false,
+    assistantData:{
+        email:"",
+        field:"dermatologist",
+        fullname:"",
+        id:"",
+        profileUrl:""
+    },
+    clientData:{
+        birth_date:new Date(),
+        email:"",
+        fullname:"",
+        gender:"female" as Gender,
+        id:"",
+        profileUrl:""
+    },
+    chat:[],
+    id:"",
+    purchase:{
+        item:[],
+        type:"full_melanoma_check"
+    }
+}
+
+    
+        
+
 
 export const BloodWorkData_Default: BloodWorkData = [
     {

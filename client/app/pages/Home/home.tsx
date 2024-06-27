@@ -12,8 +12,8 @@ import { DateToString, splitDate, parseDateToMidnight } from '../../utils/date_m
 import { FutureScreen } from '../../components/HomePage/3_types/Future';
 import { PastScreen } from '../../components/HomePage/3_types/Past';
 import { Navigation_SingleSpotAnalysis } from '../../navigation/navigation';
-import { SpotData, UserData } from '../../navigation/navigation';
 import { UserData_Default } from '../../utils/initialValues';
+import { SpotData, UserData } from '../../utils/types';
 
 
 type CustomScrollEvent = {
@@ -26,6 +26,8 @@ export type MonthlyTasksData = {
     date:Date,
     data:any
 }
+
+export type Home_Navigation_Paths = "risk" | "" | "unfinished" | "other";
 
 
 export default function TabOneScreen({navigation}) {
@@ -58,8 +60,8 @@ const [userData, setUserData] = useState<UserData>(UserData_Default);
 
 //<==================<[ Functions ]>====================>
 
-    const handleNavigation  = ({path,data}:{path:string; data: SpotData}) => {
-        if (path == "dasdas"){
+    const handleNavigation  = ({path,data}:{path:Home_Navigation_Paths ; data: SpotData}) => {
+        if (path == "other"){
             navigation.navigate(path,{data:[{q:"valami",type:"binary"}], outcomes:""}) // DAILY REPORT
         } else if ( path == "risk" || path == ""  || path == "unfinished" ){
             Navigation_SingleSpotAnalysis({

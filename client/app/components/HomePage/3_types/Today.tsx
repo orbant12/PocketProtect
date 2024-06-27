@@ -5,7 +5,9 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import PagerView from 'react-native-pager-view';
 import { formatTimestampToString, splitDate } from "../../../utils/date_manipulations";
 import { styles_shadow } from "../../../styles/shadow_styles";
-import { SpotData } from "../../../navigation/navigation";
+import { BodyPart, SpotData } from "../../../utils/types";
+import { Home_Navigation_Paths } from "../../../pages/Home/home";
+
 
 export const TodayScreen = ({
     allReminders,
@@ -18,7 +20,21 @@ export const TodayScreen = ({
     outdatedMelanomaData,
     riskyMelanomaData,
     unfinishedMelanomaData,
-}) => {
+}:
+{
+    handleNavigation:({path,data}:{path:Home_Navigation_Paths,data:SpotData}) => void;
+    handleScrollReminder:(e:any) => void;
+    handleScroll:(e:any) => void;
+    currentPageReminder:number;
+    currentPage:number;
+    format:string;
+    allReminders:any[];
+    outdatedMelanomaData:SpotData[];
+    riskyMelanomaData:any[];
+    unfinishedMelanomaData:any[];
+
+}
+) => {
     return(    
         <>
             <View style={[styles.TodaySection,styles_shadow.hightShadowContainer]}>
@@ -133,7 +149,7 @@ export const TodayScreen = ({
                 <View style={styles.TaskBox}>
                     <Text style={styles.TaskTitle}>Jaudance Diagnosis</Text>
                     <Text style={styles.TaskSubTitle}>Do your daily report so our AI model can have a better accuracy in detecting your problems !</Text>
-                    <Pressable onPress={() => handleNavigation("DailyReport")} style={styles.StartButton}>
+                    <Pressable style={styles.StartButton}>
                         <Text>Start Now</Text>
                         <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
                     </Pressable>
@@ -219,7 +235,7 @@ export const TodayScreen = ({
         )
 }
 
-const ReminderBox = ({data,format,handleNavigation}:{data:any;format:string; handleNavigation:(path:string,data?:any) => void}) =>{
+const ReminderBox = ({data,format,handleNavigation}:{data:any;format:string; handleNavigation:({path,data}:{path:Home_Navigation_Paths, data:SpotData}) => void;}) =>{
     return(
         <>
         {splitDate(data.expires).year > splitDate(format).year || (splitDate(data.expires).year == splitDate(format).year && splitDate(data.expires).month > splitDate(format).month) || 
@@ -234,7 +250,7 @@ const ReminderBox = ({data,format,handleNavigation}:{data:any;format:string; han
             }
             </Text>
             <Text style={styles.TaskSubTitle}>Medical research suggest to update your blood work annually for a healthy lifestyle</Text>
-            <Pressable onPress={() => handleNavigation("DailyReport")} style={styles.StartButton}>
+            <Pressable  style={styles.StartButton}>
                 <Text>Schedule Now</Text>
                 <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
             </Pressable>
@@ -253,7 +269,7 @@ const ReminderBox = ({data,format,handleNavigation}:{data:any;format:string; han
                 }                              
             </Text>
             <Text style={styles.TaskSubTitle}>Medical research suggest to update your blood work annually for a healthy lifestyle</Text>
-            <Pressable onPress={() => handleNavigation("DailyReport")} style={[styles.StartButton,{marginTop:20}]}>
+            <Pressable  style={[styles.StartButton,{marginTop:20}]}>
                 <Text>Schedule Now</Text>
                 <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
             </Pressable>
@@ -266,6 +282,12 @@ const OutdatedMelanomaBox = ({
     type,
     data,
     handleNavigation
+}
+:
+{
+    data:SpotData;
+    type:"risk" | "" | "unfinished";
+    handleNavigation:({path,data}:{path:Home_Navigation_Paths, data:SpotData}) => void;
 }) => {
     return(
         <View style={{width:"100%",borderBottomWidth:1,borderColor:"gray",justifyContent:"space-between",alignItems:"center",flexDirection:"row",paddingBottom:20,padding:10,borderRadius:0,marginBottom:10}}>
@@ -278,7 +300,7 @@ const OutdatedMelanomaBox = ({
             {type == "risk" ? <Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:10,marginTop:5}}><Text style={{opacity:0.5}}>Risk:</Text> {data.risk}</Text> : type != "unfinished" ? <Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:10,marginTop:5}}><Text style={{opacity:0.5}}>Uploaded:</Text> {formatTimestampToString(data.created_at)}</Text>:<Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:10,marginTop:5}}><Text style={{opacity:0.5}}> Not analised: </Text>{data.melanomaDoc.spot[0].slug} </Text>}
         </View>
         
-        <TouchableOpacity onPress={() => handleNavigation(type,data)} style={{backgroundColor:"white",flexDirection:"row",alignItems:"center",padding:9,borderRadius:5,opacity:0.8}}>
+        <TouchableOpacity onPress={() => handleNavigation({path:type,data:data})} style={{backgroundColor:"white",flexDirection:"row",alignItems:"center",padding:9,borderRadius:5,opacity:0.8}}>
             {type == "risk" && <Text style={{color:"black",fontWeight:"500",fontSize:10,marginRight:5,opacity:0.8}}>Show</Text>}
             {type == "" && <Text style={{color:"black",fontWeight:"500",fontSize:10,marginRight:5,opacity:0.8}}>Update</Text>}
             {type == "unfinished" && <Text style={{color:"black",fontWeight:"500",fontSize:10,marginRight:5,opacity:0.8}}>Analise</Text>}

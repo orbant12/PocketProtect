@@ -26,7 +26,7 @@ export const ChatSessionModal = ({
     selectedChat,
     setSelectedChat
 }:{
-    selectedChat:Success_Purchase_Client_Checkout_Data | null,
+    selectedChat:Success_Purchase_Client_Checkout_Data,
     setSelectedChat:(arg:Success_Purchase_Client_Checkout_Data | null ) => void;
 }) => {
 
@@ -34,7 +34,7 @@ export const ChatSessionModal = ({
     const chatScrollRef = useRef(null);
     const { currentuser } = useAuth();
 
-    const [chatLog,setChatLog] = useState(selectedChat.chat);
+    const [chatLog,setChatLog] = useState(selectedChat != null ? selectedChat.chat : []);
     const [isInputActive, setIsInputActive] = useState(false);
     const [ inputValue, setInputValue] = useState("")
     const [isAtBottom, setIsAtBottom] = useState(true);
@@ -127,8 +127,8 @@ export const ChatSessionModal = ({
                     chatLog={chatLog}
                     me={currentuser.uid}
                     handleKeyboardDismiss={handleKeyboardDismiss}
-                    end={selectedChat != null ? selectedChat.assistantData.id : ""}
-                    profileUrl={selectedChat != null ? selectedChat.assistantData.profileUrl : ""}
+                    end={selectedChat.assistantData.id}
+                    profileUrl={selectedChat.assistantData.profileUrl}
                     chatScrollRef={chatScrollRef}
                     handleScroll={handleScroll}
                 />

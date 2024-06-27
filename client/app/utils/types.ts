@@ -78,7 +78,7 @@ export type UserData = {
     gender: Gender;
     birth_date: Date;
     email:string;
-    profilePictureUrl:string;
+    profileUrl:string;
     user_since:string;
 }
 

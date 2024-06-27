@@ -259,7 +259,12 @@ const SingleFeature = ({navigation}) => {
                             side={selectedSide}
                             scale={1.1}
                             colors={['#FF0000', '#A6FF9B','#FFA8A8']}
-                            onBodyPartPress={(slug) => navigation.navigate("SlugAnalasis", { data: slug,userData:userData, skin_type: melanomaMetaData.skin_type })}
+                            onBodyPartPress={(slug) => Navigation_SlugAnalysis({
+                                bodyPartSlug: slug,
+                                userData: userData,
+                                skin_type: melanomaMetaData.skin_type as SkinType,
+                                navigation
+                            })}
                         />
                     </View>
         

@@ -4,7 +4,7 @@ import { AssistantBioBox } from "../../Assistance/assistantBio"
 import { AssistModal } from "../../../../../pages/Assist/assistantModal"
 import { useState,useEffect } from "react"
 import { fetchAssistantsByField, fetchUserData } from "../../../../../services/server"
-import { AssistanceFields, AssistantData, UserData } from "../../../../../utils/types"
+import { AssistanceFields, AssistantData, SpotData, UserData } from "../../../../../utils/types"
 import { useAuth } from "../../../../../context/UserAuthContext"
 
 
@@ -12,6 +12,9 @@ import { useAuth } from "../../../../../context/UserAuthContext"
 export const AssistTab = ({
     bodyPart,
     navigation
+}:{
+    bodyPart:SpotData | null,
+    navigation:any
 }) => {
 
     const [ selectedAssistant, setSelectedAssistant] = useState<AssistantData | null>(null)
@@ -47,11 +50,7 @@ export const AssistTab = ({
             {properAssistants.map((data,index) => (
                 <AssistantBioBox
                     index={index}
-                    assistantData={{
-                        profileUrl:data.profileUrl,
-                        fullname:data.Fullname,
-                        id:data.id
-                    }}
+                    assistantData={data}
                     labels={[
                         {text:"Masters in Dermotology",icon_name:"information"},
                         {text:"10+ years of experience",icon_name:"brain"},            
@@ -63,15 +62,17 @@ export const AssistTab = ({
                     key={index}
                 />
             ))}
+            {selectedAssistant != null &&
             <Modal animationType="slide" visible={selectedAssistant != null}>
                 <AssistModal 
                     assistantData={selectedAssistant}
                     setSelectedAssistant={setSelectedAssistant}
-                    bodyPart={bodyPart}
+                    bodyPart={bodyPart != null ? [bodyPart] : null}
                     navigation={navigation}
                     userData={userData}
                 />
             </Modal>
+            }
         </View>
     )
 }

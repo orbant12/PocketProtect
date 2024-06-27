@@ -6,7 +6,7 @@ import {
     getDocs,
     updateDoc,
     deleteDoc,
-    addDoc
+    addDoc,
 } from "firebase/firestore"
 import { db,storage } from './firebase';
 import { ref,  getDownloadURL, uploadBytes,deleteObject} from "firebase/storage";
@@ -910,6 +910,23 @@ export const handleSuccesfullPayment = async ({
     }
 }
 
+export const createAssistantSession = async({
+    userId,
+    session_UID,
+    data
+}:{
+    userId:string,
+    session_UID:string,
+    data:Success_Purchase_Client_Checkout_Data
+}) => {
+    try{
+        const clientRef = doc(db,"users",userId, "Assist_Panel",session_UID)
+        await setDoc(clientRef,data)
+    } catch(err) {
+        
+    }
+}
+
 //<===> Asssistants <====>
 
 export const fetchAssistantsByField = async ({
@@ -935,22 +952,7 @@ export const fetchAssistantsByField = async ({
     }
 }
 
-export const createAssistantSession = async({
-    userId,
-    session_UID,
-    data
-}:{
-    userId:string,
-    session_UID:string,
-    data:Success_Purchase_Client_Checkout_Data
-}) => {
-    try{
-        const clientRef = doc(db,"users",userId, "Assist_Panel",session_UID)
-        await setDoc(clientRef,data)
-    } catch(err) {
-        
-    }
-}
+
 
 export const fetchAssistantSessions = async({
     userId
