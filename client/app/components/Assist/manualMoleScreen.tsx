@@ -4,6 +4,8 @@ import { fetchUserData, fetchAllMelanomaSpotData } from "../../services/server";
 import { useAuth } from "../../context/UserAuthContext";
 import { MoleSelectorScreen } from "./moleSelector";
 import { AssistantSelectorScreen } from "./assistantSelector";
+import { SpotData, UserData } from "../../utils/types";
+import { UserData_Default } from "../../utils/initialValues";
 
 export const ManualAdd_Moles = ({
     closeAction,
@@ -11,7 +13,7 @@ export const ManualAdd_Moles = ({
 }) => {
 
     const [ selectedSide, setSelectedSide] = useState("front")
-    const [ userData, setUserData] = useState([])
+    const [ userData, setUserData] = useState<UserData>(UserData_Default)
     const [ selectedMoles, setSelectedMoles ] = useState([])
     const [melanomaData, setMelanomaData] = useState([])
     const [riskyMelanomaData, setRiskyMelanomaData] = useState([])
@@ -32,8 +34,8 @@ export const ManualAdd_Moles = ({
         const response = await fetchUserData({
             userId:currentuser.uid
         })
-        setUserData(response.data())
-        fetchAllMelanomaData(response.data().gender)
+        setUserData(response)
+        fetchAllMelanomaData(response.gender)
     }
 
     const fetchAllMelanomaData = async (gender) => {
@@ -43,16 +45,17 @@ export const ManualAdd_Moles = ({
                     userId: currentuser.uid,
                     gender
                 });
-    
-                response.forEach((data) => {
-                    if (data.risk >= 0.5) {
-                        setRiskyMelanomaData(prevState => [...prevState, data]);
-                    } else if (data.risk < 0.5 && data.risk !== null) {
-                        setMelanomaData(prevState => [...prevState, data]);
-                    } else if (data.risk === null) {
-                        setUnfinishedMelanomaData(prevState => [...prevState, data]);
-                    }
-                });
+                if(response != false){
+                    response.forEach((data:SpotData) => {
+                        if (data.risk >= 0.5) {
+                            setRiskyMelanomaData(prevState => [...prevState, data]);
+                        } else if (data.risk < 0.5 && data.risk !== null) {
+                            setMelanomaData(prevState => [...prevState, data]);
+                        } else if (data.risk === null) {
+                            setUnfinishedMelanomaData(prevState => [...prevState, data]);
+                        }
+                    });
+                } 
             } catch (error) {
                 console.error("Error fetching melanoma data:", error);
             }

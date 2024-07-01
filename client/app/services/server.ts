@@ -101,7 +101,8 @@ interface API_Melanoma {
     slug?:Slug;
     data?: SpotData;
     deleteType?: SpotDeleteTypes;
-    completedArray?: {slug:Slug}[]
+    completedArray?: {slug:Slug}[];
+    moleId?:string;
 }
 
 interface API_User {
@@ -232,7 +233,7 @@ export const fetchAllMelanomaSpotData = async ({
             }
         }
         );
-        return melanomaData;
+        return melanomaData as SpotData[];
     } catch (error) {
         return false
     }
@@ -601,6 +602,24 @@ export const fetchSkinType = async ({
     }
 }
 
+export const fetchSingleMoleById = async ({
+    userId,
+    moleId
+}:API_Melanoma) => {
+    try{
+        const ref = doc(db, "users", userId, "Melanoma", moleId);
+        const docSnap = await getDoc(ref);
+        if (docSnap.exists()) {
+            return docSnap.data();
+        } else {
+            console.log("No such document!");
+            return null;
+        }
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
 
 //<===> USER <====>
 

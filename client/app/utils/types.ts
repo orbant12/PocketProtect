@@ -97,6 +97,44 @@ export type AssistantData = {
 
 export type Product_Types = "mole_check" | "full_melanoma_check";
 
+
+export interface Answer {
+    answer: string;
+    description: string;
+}
+
+export interface Result {
+    answer: 0 | 1 | 2 | 3 | 4 | 5;
+    description: string;
+}
+export interface MoleAnswers {
+    asymmetry: Answer;
+    border: Answer;
+    color: Answer;
+    diameter: Answer;
+    evolution: Answer;
+    id:string;
+}
+
+export interface ResultAnswers {
+    mole_malignant_chance: Result;
+    mole_evolution_chance: Result;
+    mole_advice: string;
+    id:string;
+}
+
+export interface ReportInspectType {
+    inspect: Record<string, MoleAnswers>;
+    results: Record<string, ResultAnswers>; 
+    overall_results:{
+        chance_of_cancer:{
+            answer: 0 | 1 | 2 | 3 | 4,
+            description:string
+        }
+    }
+
+}
+
 export type Success_Purchase_Client_Checkout_Data = {
     answered:boolean;
     assistantData:{
@@ -119,7 +157,9 @@ export type Success_Purchase_Client_Checkout_Data = {
     purchase:{
         type:Product_Types;
         item:any[];
-    }
+    },
+    created_at:Timestamp | Date;
+    result_documents?: ReportInspectType | null;
 }
 
 

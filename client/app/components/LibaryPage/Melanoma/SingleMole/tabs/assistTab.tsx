@@ -13,7 +13,7 @@ export const AssistTab = ({
     bodyPart,
     navigation
 }:{
-    bodyPart:SpotData | null,
+    bodyPart:SpotData[] | null,
     navigation:any
 }) => {
 
@@ -67,7 +67,7 @@ export const AssistTab = ({
                 <AssistModal 
                     assistantData={selectedAssistant}
                     setSelectedAssistant={setSelectedAssistant}
-                    bodyPart={bodyPart != null ? [bodyPart] : null}
+                    bodyPart={bodyPart != null ? bodyPart : null}
                     navigation={navigation}
                     userData={userData}
                 />

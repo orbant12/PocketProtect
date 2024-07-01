@@ -67,7 +67,9 @@ export const AssistModal = ({
         purchase: {
             type: 'mole_check',
             item: []
-        }
+        },
+        created_at: new Date(),
+        result_documents: null
     });
 
     useEffect(() => {
@@ -105,10 +107,10 @@ export const AssistModal = ({
                 id: session_UID,
                 purchase: {
                     type: 'mole_check',
-                    item: bodyPart.map((data) => {
-                        return { [data.melanomaId]: data }
-                    })
-                }
+                    item: bodyPart
+                },
+                created_at: new Date(),
+                result_documents: null
             });
         }
     }, [assistantData]);

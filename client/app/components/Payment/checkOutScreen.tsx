@@ -19,6 +19,7 @@ export default function CheckoutScreen({
 
     const handleSuccesfullSession = async (checkOutData:Success_Purchase_Client_Checkout_Data) => {
         try{
+            console.log(checkOutData)
             await handleProdutctData(checkOutData)
             await SuccessPage_Modal()
             navigation.navigate("Assistant")

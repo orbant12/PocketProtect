@@ -477,7 +477,7 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
             >
                 <Tabs.ScrollView>
                     <AssistTab
-                        bodyPart={bodyPart != null ? bodyPart : null}
+                        bodyPart={bodyPart != null ? [bodyPart] : null}
                         navigation={navigation}
                     />
                 </Tabs.ScrollView>
