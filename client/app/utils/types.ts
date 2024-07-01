@@ -131,7 +131,8 @@ export interface ReportInspectType {
             answer: 0 | 1 | 2 | 3 | 4,
             description:string
         }
-    }
+    },
+    pdf:string;
 
 }
 
