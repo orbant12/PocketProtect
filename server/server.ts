@@ -3,6 +3,8 @@ const stripe = require('stripe')("sk_test_51PRx4QGWClPUuUnFeDPV9wcBBKVkIe7H6MtW8
 const cors = require('cors');
 var admin = require("firebase-admin");
 var serviceAccount = require("./keys/serviceAccountKey.json");
+import { UserData, UserRequest, UserResponse } from './types';
+
 
 const app = express();
 app.use(cors());
@@ -17,6 +19,8 @@ app.listen(PORT, () => {
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
+
+const db = admin.firestore();
 
 
 //TEST FROM BROWSER TO RESPOND AS h1
@@ -64,4 +68,19 @@ app.get('/', (req:any, res:any) => {
 
     const melanoma = "/melanoma"
 
-    
+
+// <======> Client Data <======> 
+
+    const client = "/client"
+
+    // FECTH CLIENT DATA
+    app.post(`${client}/get/user-data`, async (req:UserRequest, res:UserResponse) => {
+    try {
+        const id = req.body.userId;
+        const user = await db.collection('users').doc(id).get();
+        const userData: UserData = user.data();
+        res.json(userData);
+    } catch (error) {
+        res.json(error);
+    }
+    });

@@ -8,6 +8,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+Object.defineProperty(exports, "__esModule", { value: true });
 const express = require('express');
 const stripe = require('stripe')("sk_test_51PRx4QGWClPUuUnFeDPV9wcBBKVkIe7H6MtW8JRBBlX960cYqbC4UaXzP0f306dVwUFRDNwlvcPuII3EWIgxLuqt00jxMRo1F6");
 const cors = require('cors');
@@ -23,6 +24,7 @@ app.listen(PORT, () => {
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
+const db = admin.firestore();
 //TEST FROM BROWSER TO RESPOND AS h1
 app.get('/', (req, res) => {
     res.send('<h1>Hello World</h1>');
@@ -47,3 +49,17 @@ app.post(`${payment}/intents`, (req, res) => __awaiter(void 0, void 0, void 0, f
 }));
 // <======> MELANOMA <======> 
 const melanoma = "/melanoma";
+// <======> Client Data <======> 
+const client = "/client";
+// FECTH CLIENT DATA
+app.post(`${client}/get/user-data`, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const id = req.body.userId;
+        const user = yield db.collection('users').doc(id).get();
+        const userData = user.data();
+        res.json(userData);
+    }
+    catch (error) {
+        res.json(error);
+    }
+}));
