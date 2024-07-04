@@ -37,7 +37,13 @@ const ChatCenter = ({navigation}) => {
         const response = await fetchAssistantSessions({
             userId: currentuser.uid
         })
-        setAssistSessions(response)
+        //sort to shortest chat time data.chat[data.chat.length - 1].date from a bunch of chats
+        const sorted = response.sort((a,b) => {
+            const lastA = a.chat[a.chat.length - 1].date
+            const lastB = b.chat[b.chat.length - 1].date
+            return lastB - lastA
+        })
+        setAssistSessions(sorted)
     }
 
     const onRefresh = useCallback(() => {
@@ -68,7 +74,7 @@ const ChatCenter = ({navigation}) => {
                 activeBubble={activeBubble}
             />
             <ScrollView 
-                style={{width:"100%",height:"100%"}}
+                style={{width:"100%",height:"100%",marginBottom:1000}}
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}

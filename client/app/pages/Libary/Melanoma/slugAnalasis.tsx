@@ -133,7 +133,7 @@ return(
             bodyPart={bodyPartSlug}
             navigation={navigation}
         />
-        <View style={[SlugStyles.TopPart,styles_shadow.hightShadowContainer]}>
+        <View style={[SlugStyles.TopPart]}>
             {melanomaData != null ? dotsSelectOnPart({
                 bodyPart: bodyPartSlug,
                 melanomaData: melanomaData,
@@ -216,11 +216,11 @@ const MoleBar = ({
         <TouchableOpacity onPress={() => handleSpotOpen(data)} key={index} style={[SlugStyles.melanomaBox,styles_shadow.shadowContainer]}>
         <Image 
             source={{ uri:data.melanomaPictureUrl}}
-            style={{width:80,height:80,borderWidth:1,borderRadius:10}}
+            style={{width:80,height:80,borderWidth:0.3,borderRadius:10}}
         />
         <View style={SlugStyles.melanomaBoxL}>                            
-            <Text style={{fontSize:16,fontWeight:"600",color:"white"}}>{data.melanomaId}</Text>
-            <Text style={{fontSize:13,fontWeight:"500",color:"white",opacity:0.6}}>Risk: {data.risk}</Text>
+            <Text style={{fontSize:14,fontWeight:"600",color:"black"}}>{data.melanomaId}</Text>
+            <Text style={{fontSize:12,fontWeight:"500",color:"black",opacity:0.6}}>Risk: {data.risk}</Text>
         </View>
         <Pressable onPress={() => showSpot(data.melanomaId)} style={highlighted != data.melanomaId ? SlugStyles.melanomaShowBoxI : SlugStyles.melanomaShowBoxA}>
             <MaterialCommunityIcons 
@@ -232,7 +232,7 @@ const MoleBar = ({
         <MaterialCommunityIcons 
                 name="arrow-right"
                 size={25}
-                color={"white"}
+                color={"black"}
             />
         </Pressable>
     </TouchableOpacity>

@@ -114,7 +114,7 @@ export const AlreadyUploadedSpots = ({
                                 size={25}
                                 color={highlighted == data.id ? "red" : "black"}
                                 style={{padding:2}}
-                                onPress={() => {if (data.id == highlighted){setHighlighted("");}else{setHighlighted(data.id);} scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });}}
+                                onPress={() => {if (data.id == highlighted){setHighlighted(null);}else{setHighlighted(data.id);} scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });}}
                             />
                             <TouchableOpacity onPress={() => {setIsModalUp(!isModalUp);setMoleToDeleteId(data.id)}} >
                                 <MaterialCommunityIcons

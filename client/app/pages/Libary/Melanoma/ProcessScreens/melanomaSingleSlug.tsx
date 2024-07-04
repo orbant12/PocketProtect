@@ -154,7 +154,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
         }
     }
 
-    function generateNumericalUID(lengt:number) {
+    function generateNumericalUID(length:number) {
         if (length <= 0) {
             throw new Error("Length must be a positive integer.");
         }
@@ -197,7 +197,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
     return(
         <View style={spotUpload_2_styles.container}>
             <View style={spotUpload_2_styles.startScreen}>
-                <ScrollView ref={scrollViewRef} style={progress != null && {marginTop:30}} showsVerticalScrollIndicator={false}>  
+                <ScrollView ref={scrollViewRef}  style={[progress != null && {marginTop:30},{width:"100%",height:"100%"}]} showsVerticalScrollIndicator={false}>  
                 <NavBar_OneOption 
                     icon_left={{name:"arrow-left",size:25, action:() => navigation.goBack()}}
                     title={bodyPartSlug.slug}

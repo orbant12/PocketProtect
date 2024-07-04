@@ -172,7 +172,7 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
                                 key={`${bodyPart.melanomaDoc.spot[0].slug}_${index}`} 
                                 d={path}
                                 fill={skin_type == 0 ? "#fde3ce" : skin_type == 1 ? "#fbc79d" : skin_type == 2 ? "#934506" : skin_type == 3 ? "#311702":null}
-                                stroke={bodyPart.melanomaDoc.spot[0].color} 
+                                stroke={"black"} 
                                 strokeWidth="2"
                                 rotation={
                                     bodyPart.melanomaDoc.spot[0].slug == "right-arm" ? "-20"
@@ -428,9 +428,11 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
 
     const Header = () => {
         return(
-            <View style={[SingleSlugStyle.TopPart]}>
-            {bodyPart != null ? dotSelectOnPart():null}
-            </View>
+            <>
+                <View style={[SingleSlugStyle.TopPart]}>
+                {bodyPart != null ? dotSelectOnPart():null}
+                </View>
+            </>
         )
     }
 
@@ -438,15 +440,17 @@ const [diagnosisLoading ,setDiagnosisLoading] = useState(false)
 
     return(
         <>
+        <NavBar_OneOption 
+            icon_left={{name:"arrow-left",size:25, action:() => navigation.goBack()}}
+            title={bodyPart != null && bodyPart.melanomaId}
+            styles={{padding:10,zIndex:100}}
+            outerBg={"black"}
+        />
         <View style={SingleSlugStyle.container}>
-            <NavBar_OneOption 
-                icon_left={{name:"arrow-left",size:25, action:() => navigation.goBack()}}
-                title={bodyPart != null && bodyPart.melanomaId}
-            />
             <Tabs.Container
                 renderHeader={Header}
-                headerContainerStyle={{backgroundColor:"black"}}
-                containerStyle={{backgroundColor:"rgba(0,0,0,0.86)"}}
+                headerContainerStyle={{backgroundColor:"black",zIndex:1}}
+                containerStyle={{backgroundColor:"rgba(0,0,0,0.86)",zIndex:-1}}
             >
             <Tabs.Tab 
                 name="A"

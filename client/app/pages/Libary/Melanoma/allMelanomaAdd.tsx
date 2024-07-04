@@ -141,6 +141,7 @@ const AllMelanomaAdd = ({route,navigation}) => {
                         skin_type: skinType,
                         navigation: navigation
                     })}
+                    skinColor={skinType}
                 />
                 </View>
                     <ColorLabels />

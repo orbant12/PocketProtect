@@ -47,33 +47,7 @@ export const ExploreView = ({navigation,setSelected}) => {
                         setSelected={setSelected}
                     />
                 </View>
-                <Text style={{fontWeight:"800",fontSize:24,margin:15,alignSelf:"left"}}>Blood Analasis</Text>
-                <View style={ExpStyle.section}>
-                    <FeatureBox 
-                        icon={{name:"water-plus",size:30}}
-                        backgroundImage={bloodBG}
-                        title={"Blood Work"}
-                        labels={[
-                            {
-                                text:"Real Dermotologis",
-                                icon_name:"doctor"
-                            },
-                            {
-                                text:"Deep Neural Network",
-                                icon_name:"brain"
-                            },
-                            {
-                                text:"Personal Reminder",
-                                icon_name:"calendar"
-                            },
-                            {
-                                text:"Personalised Advice",
-                                icon_name:"magnify"
-                            },
-                        ]}
-                        setSelected={setSelected}
-                    />
-                </View>
+        
         </View>
         
         </ScrollView>

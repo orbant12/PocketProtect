@@ -1,6 +1,6 @@
 
 import { useCallback, useEffect, useState } from 'react';
-import { ScrollView,Dimensions,RefreshControl,NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
+import { ScrollView,RefreshControl } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../../context/UserAuthContext';
 import Calendar from '../../components/HomePage/Callendar/HorizontalCallendar';
@@ -53,8 +53,8 @@ const [currentPageReminder, setCurrentPageReminder] = useState<number>(0);
 //REFRESH
 const [refreshing, setRefreshing] = useState<boolean>(false);
 const [outdatedMelanomaData, setOutdatedMelanomaData] = useState<SpotData[]>([]);
-const [riskyMelanomaData, setRiskyMelanomaData] = useState<any[]>([]);
-const [unfinishedMelanomaData, setUnfinishedMelanomaData] = useState<any[]>([]);
+const [riskyMelanomaData, setRiskyMelanomaData] = useState<SpotData[]>([]);
+const [unfinishedMelanomaData, setUnfinishedMelanomaData] = useState<SpotData[]>([]);
 const [userData, setUserData] = useState<UserData>(UserData_Default);
 
 

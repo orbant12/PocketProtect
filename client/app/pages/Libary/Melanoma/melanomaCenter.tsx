@@ -19,7 +19,8 @@ import { AssistantAdvertBox } from "../../../components/LibaryPage/Melanoma/Assi
 import { styles_shadow } from "../../../styles/shadow_styles";
 import { NavBar_TwoOption } from "../../../components/Common/navBars";
 import { UserData_Default } from "../../../utils/initialValues";
-import { Gender, SkinType, Slug, UserData } from "../../../utils/types";
+import { Gender, SkinType, Slug, SpotData, UserData } from "../../../utils/types";
+import { SkinNumber_Convert } from "../../../utils/skinConvert";
 
 
 export type MelanomaMetaData = {
@@ -39,7 +40,7 @@ const SingleFeature = ({navigation}) => {
     const [bodySlugs, setBodySlugs] = useState(null)
     const [ affectedSlugs,setAffectedSlugs ] = useState([])
     const [selectedSide, setSelectedSide] = useState<"front" | "back">("front");
-    const [melanomaData, setMelanomaData] = useState([])
+    const [melanomaData, setMelanomaData] = useState<SpotData[]>([])
     const [ completedParts, setCompletedParts] = useState([])
     const [numberOfMolesOnSlugs,setNumberOfMolesOnSlugs] = useState([])
     const [ melanomaMetaData, setMelanomaMetaData] = useState<MelanomaMetaData>({
@@ -64,9 +65,8 @@ const SingleFeature = ({navigation}) => {
                 userId: currentuser.uid,
                 gender
             });
-            const melanomaData = response;
-            if(melanomaData != false){
-                setMelanomaData(melanomaData);
+            if(response != false){
+                setMelanomaData(response);
             } else {
                 setMelanomaData([])
             }
@@ -117,14 +117,19 @@ const SingleFeature = ({navigation}) => {
     }
     
     const AffectedSlugMap = () => {
-        if(melanomaData != null){
-            const affectedSlug = melanomaData.map((data, index) => {
+        if(melanomaData != null && melanomaData.length != 0){
+            const affectedSlug = melanomaData.map((data:SpotData, index) => {
                 const spotSlug = data.melanomaDoc.spot[0]?.slug;
-                const intensity = data.risk >= 0.3 ? (data.risk >= 0.8 ? 1 : 3) : 2;
-                return { slug: spotSlug, intensity, key: index }; 
+                if( data.risk != null && data.risk != undefined){
+                    const intensity = Number(data.risk) >= 0.3 ? (Number(data.risk)  >= 0.8 ? 1 : 3) : 2;
+                    return { slug: spotSlug }; 
+                }
+                return { slug: spotSlug }; 
             });
+            console.log(affectedSlug)
             setAffectedSlugs(affectedSlug);
         }
+
     }
 
     const handleAddMelanoma = () => {
@@ -200,7 +205,7 @@ const SingleFeature = ({navigation}) => {
     return(
         <>
             <ScrollView 
-                style={{backgroundColor:"white"}}
+                style={{backgroundColor:"white",width:"100%"}}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl
@@ -213,41 +218,34 @@ const SingleFeature = ({navigation}) => {
                 scrollEventThrottle={16}
                 ref={scrollRef}
             >
-                <View style={Mstyles.container}>
-                    {/* <NavBar_Main 
-                        setSkinModal={setSkinModal}
-                        skinModal={skinModal}
-                        navigation={navigation}
-                        scrollRef={scrollRef}
-                        melanomaMetaData={melanomaMetaData}
-                    />               */}
-                    <NavBar_TwoOption 
-                        icon_left={{name:"arrow-left", size:25,action:() => navigation.goBack()}}
-                        icon_right={{name:"monitor-eye", size:25,action:() => navigation.goBack()}}
-                        title={null}
-                        titleComponent={() =>  
-                            <TouchableOpacity onPress={() =>  navigation.navigate("FullMelanomaProcess",{sessionMemory:[]})} style={[{width:"60%",height:50,borderWidth:0,justifyContent:"center",borderRadius:10,marginTop:0,marginBottom:0,flexDirection:"column",alignItems:"center",backgroundColor:"black",borderColor:"magenta",padding:10},styles_shadow.shadowContainer]}>
-                    <Text style={{color:"white",opacity:0.7,fontWeight:"500",fontSize:10}}>Click to start</Text>
-                    <View style={{width:"100%",flexDirection:"row",alignItems:"center",justifyContent:"center"}}>                     
-                    <Text style={{fontSize:14,fontWeight:"600",marginRight:10,color:"white"}}>Full Body Monitor Setup</Text>                        
-                        <MaterialCommunityIcons 
-                            name="liquid-spot"
-                            size={15}
-                            color={"white"}
-                        />   
-                    </View>                        
-                            </TouchableOpacity>
-                        }
-                    />     
-                    
+                <NavBar_TwoOption 
+                    icon_left={{name:"arrow-left", size:25,action:() => navigation.goBack()}}
+                    icon_right={{name:"monitor-eye", size:25,action:() => navigation.goBack()}}
+                    title={null}
+                    style={{borderColor:"white",borderWidth:2}}
+                    titleComponent={() =>  
+                        <TouchableOpacity onPress={() =>  navigation.navigate("FullMelanomaProcess",{sessionMemory:[]})} style={[{width:"60%",height:50,borderWidth:0,justifyContent:"center",borderRadius:10,marginTop:0,marginBottom:0,flexDirection:"column",alignItems:"center",backgroundColor:"black",borderColor:"magenta",padding:10},styles_shadow.shadowContainer]}>
+                <Text style={{color:"white",opacity:0.7,fontWeight:"500",fontSize:10}}>Click to start</Text>
+                <View style={{width:"100%",flexDirection:"row",alignItems:"center",justifyContent:"center"}}>                     
+                <Text style={{fontSize:14,fontWeight:"600",marginRight:10,color:"white"}}>Full Body Monitor Setup</Text>                        
+                    <MaterialCommunityIcons 
+                        name="liquid-spot"
+                        size={15}
+                        color={"white"}
+                    />   
+                </View>                        
+                        </TouchableOpacity>
+                    }
+                />  
+                <View style={Mstyles.container}>   
                     <LinearGradient
                         colors={['white', '#fc8bfb','white']}
-                        locations={[0.2,0.9,0.2]}        
+                        locations={[0.1,0.90,0.6]}        
                         style={{width:"100%",alignItems:"center"}}
                     >      
                     <View style={Mstyles.melanomaTitle}>
                         <View style={Mstyles.melanomaTitleLeft}>
-                            <Text style={Mstyles.melanomaTag}>Computer Vision</Text>
+                            <Text style={Mstyles.melanomaTag}>AI Vision</Text>
                             <Text style={{fontSize:20,fontWeight:"700"}}>Melanoma Monitoring</Text>
                             <Text style={{fontSize:12,maxWidth:"100%",opacity:0.4,marginTop:5,fontWeight:"500"}}>Click on the body part for part analasis</Text>   
                         </View>       
@@ -258,13 +256,14 @@ const SingleFeature = ({navigation}) => {
                             gender={userData.gender}
                             side={selectedSide}
                             scale={1.1}
-                            colors={['#FF0000', '#A6FF9B','#FFA8A8']}
+                            colors={['#FF0000','#A6FF9B','#FFA8A8']}
                             onBodyPartPress={(slug) => Navigation_SlugAnalysis({
                                 bodyPartSlug: slug,
                                 userData: userData,
                                 skin_type: melanomaMetaData.skin_type as SkinType,
                                 navigation
                             })}
+                            skinColor={melanomaMetaData.skin_type}
                         />
                     </View>
         
@@ -308,7 +307,7 @@ const SingleFeature = ({navigation}) => {
 
                         </View>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} >
-                            {bodySlugs != null && affectedSlugs.length != 0 ? (
+                            {bodySlugs != null &&  (
                                 bodySlugs.map((bodyPart,index) => (
                                     <SlugCard 
                                         handleNavigation={handleNavigation}
@@ -321,7 +320,7 @@ const SingleFeature = ({navigation}) => {
                                         key={index}
                                     />
                                 ))
-                            ):null}
+                            )}
                         </ScrollView>
                     </View>
     
@@ -329,9 +328,9 @@ const SingleFeature = ({navigation}) => {
                         <AssistantAdvertBox 
                             navigation={navigation}
                         />
-                        <View style={{width:"90%",height:100,borderWidth:1,alignItems:"center",justifyContent:"center",borderRadius:10,marginBottom:20,marginTop:20}}>
-                            <Text style={{fontSize:15,fontWeight:"600"}}>How can you detect moles ?</Text>
-                        </View>
+                        <AssistantAdvertBox 
+                            navigation={navigation}
+                        />
 
                         <View style={{width:"90%",height:100,borderWidth:1,alignItems:"center",justifyContent:"center",borderRadius:10,marginBottom:20}}>
                             <Text style={{fontSize:15,fontWeight:"600"}}>How to protect yourself ?</Text>

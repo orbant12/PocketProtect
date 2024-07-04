@@ -28,12 +28,12 @@ export function SpotPicker({
     return(
         
         <>
-            <View style={{flexDirection:"column",width:"95%",marginTop:-20}}>
+            <View style={{flexDirection:"column",width:"95%",marginTop:20}}>
                 <Text><Text style={redDotLocation.x == -100 ? {opacity:0.3}:{color:"green",fontWeight:"600"}}>1/2</Text> Tap on the screen</Text>
                 <Text style={{fontSize:20,fontWeight:"600"}}>Where is your spot ?</Text>
             </View>
 
-            <Pressable style={{position:"relative",alignItems:"center",justifyContent:"center",width:500,height:500,marginTop:20}} onPress={(e) => handlePartClick(e)}>
+            <Pressable style={{position:"relative",alignItems:"center",justifyContent:"center",width:500,height:200,marginTop:20}} onPress={(e) => handlePartClick(e)}>
                     {dotSelectOnPart({
                         bodyPart,
                         redDotLocation,

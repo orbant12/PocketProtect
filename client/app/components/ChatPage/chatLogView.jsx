@@ -1,5 +1,6 @@
-import { TextInput, ScrollView,View, Text, Image, KeyboardAvoidingView, Platform,TouchableOpacity,Pressable  } from "react-native"
+import { TextInput, ScrollView,View, Text, Image, KeyboardAvoidingView, Platform,TouchableOpacity,Pressable,Animated  } from "react-native"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
+import React, { useRef, useEffect } from "react"
 
 export const ChatLogView = ({
     chatLog,
@@ -21,6 +22,7 @@ export const ChatLogView = ({
                     end={end} 
                     isLast={index === chatLog.length - 1} 
                     profileUrl={profileUrl}
+                    animate={index === chatLog.length - 1}
                 />
             ))
         }
@@ -29,9 +31,23 @@ export const ChatLogView = ({
 }
 
 
-const ChatMessage = ({ message, me, end, isLast,profileUrl }) => {
+const ChatMessage = ({ message, me, end, isLast,profileUrl,animate }) => {
+    const opacity = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        if (animate) {
+          Animated.timing(opacity, {
+            toValue: 1,
+            duration: 500, // Duration of the fade-in animation
+            useNativeDriver: true,
+          }).start();
+        } else {
+            opacity.setValue(1);
+        }
+      }, [animate]);
+
 return(
-<Pressable onLongPress={() => alert("edit")} style={[{flexDirection:"row",width:"100%",borderWidth:0,padding:10,paddingTop:1,paddingBottom:1}, message.user == me ? {backgroundColor:"rgba(0,0,0,0)", flexDirection:"row-reverse"}:{backgroundColor:"rgba(0,0,0,0)"}, !message.inline_answer && message.sent && {marginTop:30},isLast && message.user == me && {marginBottom:20}]}>
+<Animated.View style={[{flexDirection:"row",width:"100%",borderWidth:0,padding:10,paddingTop:1,paddingBottom:1},{opacity}, message.user == me ? {backgroundColor:"rgba(0,0,0,0)", flexDirection:"row-reverse"}:{backgroundColor:"rgba(0,0,0,0)"}, !message.inline_answer && message.sent && {marginTop:30},isLast && message.user == me && {marginBottom:20}]}>
     {message.user == end &&
         (
         !message.inline_answer ?
@@ -75,7 +91,7 @@ return(
         </View>
     )
     }
-</Pressable>
+</Animated.View>
 )
 };
 

@@ -2,8 +2,9 @@ import { Mstyles } from "../../../styles/libary_style"
 import { View,Text,TouchableOpacity } from "react-native"
 import Svg, { Circle, Path } from '/Users/tamas/Programming Projects/DetectionApp/client/node_modules/react-native-body-highlighter/node_modules/react-native-svg';
 import { styles_shadow } from "../../../styles/shadow_styles";
-import { BodyPart, Slug } from "./BodyParts";
-import { SpotData, UserData } from "../../../navigation/navigation";
+import { BodyPart, Slug, SpotData, UserData } from "../../../utils/types";
+
+
 
 const getSlugCount = (slug,numberOfMolesOnSlugs) => {
     const slugObject = numberOfMolesOnSlugs.find(item => Object.keys(item)[0] === slug);
@@ -19,7 +20,7 @@ const dotSelectOnPart = (bodyPart:BodyPart,userData:UserData,melanomaData:SpotDa
                             key={`${bodyPart.slug}_${index}`} 
                             d={path}
                             fill={"white"} 
-                            stroke={bodyPart.color} 
+                            stroke="black"
                             strokeWidth="2"
                             rotation={
                                 bodyPart.slug == "right-arm" ? "-20"

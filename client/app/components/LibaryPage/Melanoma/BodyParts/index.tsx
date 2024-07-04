@@ -8,8 +8,8 @@ import { SvgMaleWrapper } from "./SvgMaleWrapper";
 import { bodyFemaleFront } from "./bodyFemaleFront";
 import { bodyFemaleBack } from "./bodyFemaleBack";
 import { SvgFemaleWrapper } from "./SvgFemaleWrapper";
-import { BodyPart } from "../../../../utils/types";
-
+import { BodyPart, SkinType } from "../../../../utils/types";
+import { SkinNumber_Convert } from "../../../../utils/skinConvert";
 
 
 
@@ -23,24 +23,24 @@ type Props = {
   side: "front" | "back";
   gender?: "male" | "female";
   onBodyPartPress: (b: BodyPart) => void;
+  skinColor: SkinType;
 };
 
 const comparison = (a: BodyPart, b: BodyPart) => a.slug === b.slug;
 
 const Body = ({
-  colors,
+  colors = ["#0984e3", "#74b9ff"], // Provide default colors
   data,
   scale,
   side,
+  skinColor,
   gender = "male",
   onBodyPartPress,
 }: Props) => {
   const mergedBodyParts = useCallback(
     (dataSource: ReadonlyArray<BodyPart>) => {
       const innerData = data
-        .map((d) => {
-          return dataSource.find((t) => t.slug === d.slug);
-        })
+        .map((d) => dataSource.find((t) => t.slug === d.slug))
         .filter(Boolean);
 
       const coloredBodyParts = innerData.map((d) => {
@@ -50,8 +50,7 @@ const Body = ({
         return { ...d, color: colors[colorIntensity - 1] };
       });
 
-      const formattedBodyParts = differenceWith(comparison, dataSource, data);
-
+      const formattedBodyParts = differenceWith(comparison, dataSource, data);    
       return [...formattedBodyParts, ...coloredBodyParts];
     },
     [data, colors]
@@ -59,8 +58,16 @@ const Body = ({
 
   const getColorToFill = (bodyPart: BodyPart) => {
     let color;
-    if (bodyPart.intensity) color = colors[bodyPart.intensity];
-    else color = bodyPart.color;
+    if (bodyPart.intensity && colors[bodyPart.intensity - 1]) {
+        color = colors[bodyPart.intensity - 1];
+    } else {
+        color = bodyPart.color;
+    }
+
+    // Fallback color if color is undefined or invalid
+    if (!color) {
+        color = '#000000'; // Default to black or any other fallback color
+    }
     return color;
   };
 
@@ -88,15 +95,15 @@ const Body = ({
   };
 
   if (gender === "female") {
-    return renderBodySvg(side === "front" ? bodyFemaleFront : bodyFemaleBack);
+    return renderBodySvg(side === "front" ? bodyFemaleFront(SkinNumber_Convert(skinColor)) : bodyFemaleBack(SkinNumber_Convert(skinColor)));
   }
 
-  return renderBodySvg(side === "front" ? bodyFront : bodyBack);
+  return renderBodySvg(side === "front" ? bodyFront(SkinNumber_Convert(skinColor)) : bodyBack(SkinNumber_Convert(skinColor)));
 };
 
-Body.default = {
+Body.defaultProps = {
   scale: 1,
-  colors: ["#0984e3", "#74b9ff"],
+  colors: ["#0984e3", "#74b9ff"], // Move default colors here
   zoomOnPress: false,
   side: "front",
 };

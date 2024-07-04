@@ -22,6 +22,7 @@ import { HeaderContainer } from '../components/Common/headerContainer';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { Icon } from 'react-native-elements';
+import SingleFeature from '../pages/Libary/Melanoma/melanomaCenter';
 
 //NAVIGATION TAB CREATION
 const Tab = createBottomTabNavigator();
@@ -59,13 +60,13 @@ return (
 
       {/* ASSISTANT NAVIGATION */}
       <Tab.Screen
-        name={'Detection'}
-        component={DetectionLibary}
+        name={'Melanoma'}
+        component={SingleFeature}
         options={{
           headerShown: false,
           headerTransparent: true,
           tabBarIcon: ({color}) => (
-            <Entypo name={'folder'} size={25} color={color} />
+            <Entypo name={'awareness-ribbon'} size={25} color={color} />
           ),
         }}
       />
@@ -121,7 +122,7 @@ return (
 
       {/* PROFILE NAVIGATION */}
       <Tab.Screen
-        name={'Profile'}
+        name={'Data'}
         component={Profile}
         options={{
           headerShown:false,
@@ -141,7 +142,7 @@ return (
             </View>
           ),
           tabBarIcon: ({color}) => (
-            <Ionicons name={'person-outline'} size={25} color={color} />
+            <Ionicons name={'folder'} size={25} color={color} />
           ),
         }}
   />

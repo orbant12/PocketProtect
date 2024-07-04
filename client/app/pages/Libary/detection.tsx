@@ -15,26 +15,24 @@ import { DiagnosisData } from '../../utils/types';
 
 type NavbarValues = "ai_vision" | "blood_work" | "diagnosis" | "soon"
 
-const DetectionLibary = ({navigation}) => {
+const DetectionLibary = ({
+    navigation,
+    scrollViewRef,
+    isSelected,
+    setIsSelected,
+    positions
+}) => {
 
 //<==================<[ Variable ]>====================>     
 
 const { currentuser } = useAuth();
-
-const [isSelected, setIsSelected ] = useState<NavbarValues>("ai_vision")
 const [ diagnosisData, setDiagnosisData] = useState<DiagnosisData[]>([])
 //REFS
-const scrollViewRef = useRef(null);
 const skinCancerRef = useRef(null);
 const bloodAnalysisRef = useRef(null);
 const diagnosisRef = useRef(null);
 const soonRef = useRef(null);
-const positions = useRef({
-    skinCancer: 0,
-    bloodAnalysis: 0,
-    diagnosis: 0,
-    soon: 0
-});
+
 //H-Swiper
 const { width } = Dimensions.get('window');
 const [currentPage, setCurrentPage] = useState(0);
@@ -50,6 +48,10 @@ const [ skinCancerData, setSkinCancerData] = useState({
     all:0,
     completed:0,
 })
+
+
+
+
 
 
 //<==================<[ Functions ]>====================>   
@@ -99,7 +101,15 @@ const handleNavigation = (path) => {
     }
 }
 
-const handleScroll = (event) => {
+
+
+const handleScrollReminder = (event) => {
+    const offsetX = event.nativeEvent.contentOffset;
+    const pageIndex = Math.floor((offsetX + width / 2) / width);
+    setCurrentPage(pageIndex);
+}
+
+const handleScroll = useCallback((event) => {
     const scrollY = event.nativeEvent.contentOffset.y;
     if (scrollY >= positions.current.skinCancer && scrollY < positions.current.bloodAnalysis) {
         setIsSelected('ai_vision');
@@ -110,13 +120,7 @@ const handleScroll = (event) => {
     } else if (scrollY >= positions.current.soon) {
         setIsSelected('soon');
     }
-};
-
-const handleScrollReminder = (event) => {
-    const offsetX = event.nativeEvent.contentOffset;
-    const pageIndex = Math.floor((offsetX + width / 2) / width);
-    setCurrentPage(pageIndex);
-}
+}, []);
 
 const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -139,11 +143,11 @@ useEffect(() => {
         });
     
         bloodAnalysisRef.current.measure((x, y, width, height, pageX, pageY) => {
-          positions.current.bloodAnalysis = pageY - 100;
+          positions.current.bloodAnalysis = pageY - 240;
         });
     
         diagnosisRef.current.measure((x, y, width, height, pageX, pageY) => {
-          positions.current.diagnosis = pageY - 100;
+          positions.current.diagnosis = pageY - 240;
         });
     
         soonRef.current.measure((x, y, width, height, pageX, pageY) => {
@@ -155,51 +159,26 @@ useEffect(() => {
 //<==================<[ Main Return ]>====================> 
 
 return(
-    <>
-        <Horizontal_Navbar 
-            scrollViewRef={scrollViewRef}
-            isSelected={isSelected}
-            setIsSelected={setIsSelected}
-            options={[
-                {
-                    title:"AI Vision",
-                    value:"ai_vision",
-                    scroll: { x: 0, y: 0, animated: true }
-                },
-                {
-                    title:"Blood Analasis",
-                    value:"blood_work",
-                    scroll: { x: 0, y: 650, animated: true }
-                },
-                {
-                    title:"Custom Diagnosis",
-                    value:"diagnosis",
-                    
-                },
-                {
-                    title:"Coming Soon",
-                    value:"soon",
-                    
+<>      
+            <ScrollView
+                style={{backgroundColor:"white",width:"100%",zIndex:100,marginTop:200}}
+                ref={scrollViewRef}
+                onScroll={handleScroll}
+                scrollEventThrottle={16}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        colors={['magenta']}
+                        tintColor={'magenta'}
+                        style={{zIndex:100}}
+                    />
                 }
-            ]}
-        />
-        <ScrollView 
-            style={{backgroundColor:"white",marginTop:100}}
-            ref={scrollViewRef} 
-            onScroll={handleScroll} 
-            scrollEventThrottle={16}
-            refreshControl={
-                <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
-                    colors={['magenta']}
-                    tintColor={'magenta'}
-                />
-            }
-        >
+            >
+      
             <View style={styles.container}>
                 {/*SKIN CANCER*/}
-                <View ref={skinCancerRef} style={{width:"100%"}}>
+                <View ref={skinCancerRef} style={{width:"100%",paddingTop:50}}>
                     <Text style={{fontWeight:"800",fontSize:24,margin:15}}>AI vision</Text>
                     <MainMelanomaBox
                         skinCancerData={skinCancerData}
@@ -357,7 +336,8 @@ return(
                     </View>
                 </View>
             </View>
-        </ScrollView>
+            </ScrollView>
+    
     </>
 )}
 

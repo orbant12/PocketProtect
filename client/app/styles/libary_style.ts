@@ -2,9 +2,10 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
     container: {
-        flex: 1,
         backgroundColor: '#fff',
         flexDirection: 'column',
+        alignItems: 'center',
+        zIndex: 0,
     },
     personalScoreSection: {
         padding: 20,
@@ -150,7 +151,6 @@ export const styles = StyleSheet.create({
 
 export const Mstyles = StyleSheet.create({
     container: {
-        flex: 1,
         backgroundColor: '#fff',
         flexDirection: 'column',
         paddingTop:10,
@@ -236,7 +236,7 @@ export const Mstyles = StyleSheet.create({
         opacity:0.6,
         padding: 3,
         borderRadius: 5,
-        width: "50%",
+        width: "30%",
         marginBottom: 5,
     },
     positionSwitch: {
@@ -338,7 +338,8 @@ export const Mstyles = StyleSheet.create({
     },
     educationSection:{
         width:"100%",
-        alignItems:"center"
+        alignItems:"center",
+        marginTop:-20,
     },
     modalBox:{
         position:"absolute",
@@ -428,20 +429,20 @@ export const SlugStyles = StyleSheet.create({
     },
     TopPart: {
         width: "100%",
-        borderWidth: 1,
+        borderWidth: 0,
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         backgroundColor:"white",
         padding:10,
-        marginTop:10,
+        marginTop:0,
         borderBottomWidth:10
     },
     BirthmarkContainer: {
         width: "100%",        
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor:"rgba(0,0,0,0.86)"
+        backgroundColor:"rgba(240,240,240,0.9)",
     },
     ProgressBar:{
         width:"100%",
@@ -462,9 +463,9 @@ export const SlugStyles = StyleSheet.create({
         padding: 20,
         justifyContent: "center",
         alignItems: "center",
-        borderWidth: 2,
-        borderColor:"magenta",
-        backgroundColor:"black",
+        borderWidth: 4,
+        borderColor:"black",
+        backgroundColor:"white",
         flexDirection: "row",
         borderRadius:10,
         marginRight:"auto",
@@ -487,7 +488,7 @@ export const SlugStyles = StyleSheet.create({
         marginLeft: 10,
         paddingVertical:10,
         paddingHorizontal:10,
-        borderColor:"white"
+        borderColor:"black"
     },
     melanomaShowBoxI: {
         justifyContent: "center",
@@ -517,6 +518,7 @@ export const SingleSlugStyle = StyleSheet.create({
         alignItems: "center",
         height:"100%",
         flexDirection: "column",
+        zIndex:-10
     },
     loadingModal:{
         alignItems:"center",
@@ -534,6 +536,7 @@ export const SingleSlugStyle = StyleSheet.create({
         justifyContent: "center",
         zIndex:-1,
         padding:10,
+        marginTop:-10,
         backgroundColor:"white"
     },
     scoreCircle: {

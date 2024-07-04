@@ -25,7 +25,7 @@ export const dotSelectOnPart = ({
                             key={`${bodyPart.slug}_${index}`} 
                             d={path}
                             fill={skinColor == 0 ? "#fde3ce" : skinColor == 1 ? "#fbc79d" : skinColor == 2 ? "#934506" : skinColor == 3 ? "#311702":null} 
-                            stroke={bodyPart.color} 
+                            stroke={"black"}
                             strokeWidth="2"
                             rotation={
                                 bodyPart.slug == "right-arm" ? "-20"

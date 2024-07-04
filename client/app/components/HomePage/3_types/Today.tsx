@@ -101,60 +101,9 @@ export const TodayScreen = ({
                 </View>
                 }
 
-            </View>
-            {allReminders.map((data:any,index:number) => (
-                <View key={index} style={styles.TodaySection}>
-                    <View style={styles.titleRow}>
-                        <Text style={styles.title}>Blood Work</Text>
-                        <View style={styles.titleLeft}>
-                            <MaterialCommunityIcons 
-                                name="water-plus"
-                                color={"white"}                            
-                                size={30}
-                            />
-                        </View>
-                    </View>    
-                    <PagerView style={{marginTop:10,height:220 }} onPageScroll={(e) => handleScroll(e)} initialPage={0}>    
-                    {data.id == "blood_work" && 
-                        <ReminderBox data={data} format={format} handleNavigation={handleNavigation} />
-                    }
-                    {data.id == "blood_work" && 
-                        <ReminderBox data={data} format={format} handleNavigation={handleNavigation} />
-                    }               
-                    {data.id == "blood_work" && 
-                        <ReminderBox data={data} format={format} handleNavigation={handleNavigation} />
-                    }               
-                    {data.id == "blood_work" && 
-                        <ReminderBox data={data} format={format} handleNavigation={handleNavigation} />
-                    }   
-                    </PagerView>                                                  
-                        <View style={styles.IndicatorContainer}>               
-                            <View style={[styles.Indicator, { opacity: currentPageReminder === 0 ? 1 : 0.3 }]} />                     
-                            <View style={[styles.Indicator, { opacity: currentPageReminder === 1 ? 1 : 0.3 }]} />
-                            <View style={[styles.Indicator, { opacity: currentPageReminder === 2 ? 1 : 0.3 }]} />
-                            <View style={[styles.Indicator, { opacity: currentPageReminder === 3 ? 1 : 0.3 }]} />                                    
-                        </View>
-                </View>
-            ))}            
+            </View>           
 
-            <View style={styles.TodaySection}>
-                <View style={styles.titleRow}>
-                    <Text style={styles.title}>Today's Tasks</Text>
-                    <Text style={styles.titleLeft}>0/1</Text>
-                </View>
-                <TaskBox_1 
-                    handleNavigation={handleNavigation}
-                />
-
-                <View style={styles.TaskBox}>
-                    <Text style={styles.TaskTitle}>Jaudance Diagnosis</Text>
-                    <Text style={styles.TaskSubTitle}>Do your daily report so our AI model can have a better accuracy in detecting your problems !</Text>
-                    <Pressable style={styles.StartButton}>
-                        <Text>Start Now</Text>
-                        <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
-                    </Pressable>
-                </View>
-            </View>
+   
 
             <View style={[styles.DataSection]}>
                 <View style={{}}>
@@ -235,48 +184,6 @@ export const TodayScreen = ({
         )
 }
 
-const ReminderBox = ({data,format,handleNavigation}:{data:any;format:string; handleNavigation:({path,data}:{path:Home_Navigation_Paths, data:SpotData}) => void;}) =>{
-    return(
-        <>
-        {splitDate(data.expires).year > splitDate(format).year || (splitDate(data.expires).year == splitDate(format).year && splitDate(data.expires).month > splitDate(format).month) || 
-        (splitDate(data.expires).year == splitDate(format).year && splitDate(data.expires).month == splitDate(format).month &&  splitDate(data.expires).day > splitDate(format).day)  ?
-        <View style={styles.DataBox}>
-            <Text style={styles.TaskTitle}>Blood work is up do date</Text>
-            <Text style={[styles.TaskSubTitle,{color:"white",opacity:0.7}]}>You should update it in
-            {((splitDate(data.expires).month - splitDate(format).month) + ((splitDate(data.expires).year - splitDate(format).year) * 12)) == 0 ?
-            <Text style={{fontWeight:"700",color:"lightgreen",opacity:0.8}}> { splitDate(data.expires).day - splitDate(format).day} days</Text>
-                :
-            <Text style={{fontWeight:"700",color:"lightgreen",opacity:0.8}}> {(splitDate(data.expires).month - splitDate(format).month) + ((splitDate(data.expires).year - splitDate(format).year) * 12)  } months</Text>
-            }
-            </Text>
-            <Text style={styles.TaskSubTitle}>Medical research suggest to update your blood work annually for a healthy lifestyle</Text>
-            <Pressable  style={styles.StartButton}>
-                <Text>Schedule Now</Text>
-                <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
-            </Pressable>
-        </View>
-        :
-        <View style={styles.DataBox}>
-            <Text style={styles.TaskTitle}>Blood Work Update</Text>
-            <Text style={[styles.TaskSubTitle,{color:"white",opacity:0.7}]}>Your blood work is outdated since
-                {(((splitDate(data.expires).month - splitDate(format).month) + ((splitDate(data.expires).year - splitDate(format).year) * 12))* -1) == 0 ?
-                    splitDate(format).day - splitDate(data.expires).day == 0 ? 
-                        <Text style={{fontWeight:"700",color:"magenta",opacity:0.8}}> Today</Text>
-                        :                                        
-                        <Text style={{fontWeight:"700",color:"magenta",opacity:0.8}}> { splitDate(format).day - splitDate(data.expires).day} days</Text>
-                :
-                <Text style={{fontWeight:"700",color:"magenta",opacity:0.8}}> {((splitDate(data.expires).month - splitDate(format).month) + ((splitDate(data.expires).year - splitDate(format).year) * 12))* -1  } months</Text>
-                }                              
-            </Text>
-            <Text style={styles.TaskSubTitle}>Medical research suggest to update your blood work annually for a healthy lifestyle</Text>
-            <Pressable  style={[styles.StartButton,{marginTop:20}]}>
-                <Text>Schedule Now</Text>
-                <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
-            </Pressable>
-        </View>}
-        </>
-    )
-}
 
 const OutdatedMelanomaBox = ({
     type,
@@ -290,17 +197,19 @@ const OutdatedMelanomaBox = ({
     handleNavigation:({path,data}:{path:Home_Navigation_Paths, data:SpotData}) => void;
 }) => {
     return(
-        <View style={{width:"100%",borderBottomWidth:1,borderColor:"gray",justifyContent:"space-between",alignItems:"center",flexDirection:"row",paddingBottom:20,padding:10,borderRadius:0,marginBottom:10}}>
-        <Image 
-            source={{uri: data.melanomaPictureUrl}}
-            style={{width:50,height:50,borderWidth:1,borderColor:"white",borderRadius:10}}
-        />
-        <View style={{marginRight:30}}>
-            <Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:13}}>{data.melanomaId}</Text>
-            {type == "risk" ? <Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:10,marginTop:5}}><Text style={{opacity:0.5}}>Risk:</Text> {data.risk}</Text> : type != "unfinished" ? <Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:10,marginTop:5}}><Text style={{opacity:0.5}}>Uploaded:</Text> {formatTimestampToString(data.created_at)}</Text>:<Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:10,marginTop:5}}><Text style={{opacity:0.5}}> Not analised: </Text>{data.melanomaDoc.spot[0].slug} </Text>}
+        <View style={{width:"100%",borderBottomWidth:1,borderColor:"gray",alignItems:"center",flexDirection:"row",paddingBottom:20,padding:10,borderRadius:0,marginBottom:10,justifyContent:"space-between"}}>
+        <View style={{width:"70%",flexDirection:"row",alignItems:"center"}}>
+            <Image 
+                source={{uri: data.melanomaPictureUrl}}
+                style={{width:50,height:50,borderWidth:1,borderColor:"white",borderRadius:10}}
+            />
+            <View style={{marginLeft:10}}>
+                <Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:13}}>{data.melanomaId}</Text>
+                {type == "risk" ? <Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:10,marginTop:5}}><Text style={{opacity:0.5}}>Risk:</Text> {data.risk}</Text> : type != "unfinished" ? <Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:10,marginTop:5}}><Text style={{opacity:0.5}}>Uploaded:</Text> {formatTimestampToString(data.created_at)}</Text>:<Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:10,marginTop:5}}><Text style={{opacity:0.5}}> Not analised: </Text>{data.melanomaDoc.spot[0].slug} </Text>}
+            </View>
         </View>
         
-        <TouchableOpacity onPress={() => handleNavigation({path:type,data:data})} style={{backgroundColor:"white",flexDirection:"row",alignItems:"center",padding:9,borderRadius:5,opacity:0.8}}>
+        <TouchableOpacity onPress={() => handleNavigation({path:type,data:data})} style={{backgroundColor:"white",flexDirection:"row",alignItems:"center",padding:9,borderRadius:5,opacity:0.8,width:"25%"}}>
             {type == "risk" && <Text style={{color:"black",fontWeight:"500",fontSize:10,marginRight:5,opacity:0.8}}>Show</Text>}
             {type == "" && <Text style={{color:"black",fontWeight:"500",fontSize:10,marginRight:5,opacity:0.8}}>Update</Text>}
             {type == "unfinished" && <Text style={{color:"black",fontWeight:"500",fontSize:10,marginRight:5,opacity:0.8}}>Analise</Text>}

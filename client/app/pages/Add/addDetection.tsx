@@ -10,7 +10,7 @@ const AddDetection = ({navigation}) => {
 //<==================<[ Variable ]>====================>  
 
 
-const [headerSelect, setHeaderSelect] = useState("melanoma")
+const [headerSelect, setHeaderSelect] = useState<"ai_vision" | "blood_work" | "diagnosis" | "soon">("ai_vision")
 const [selected, setSelected ] = useState([]) // IF It's empty array modal wont show
 
 //<==================<[ Main Return ]>====================> 
@@ -23,12 +23,8 @@ const [selected, setSelected ] = useState([]) // IF It's empty array modal wont 
                         options={[
                             {
                                 title:"AI Vision",
-                                value:"melanoma",
-                            },
-                            {
-                                title:"Blood Analasis",
-                                value:"blood_work",
-                            },
+                                value:"ai_vision",
+                            }
                         ]}
                     />       
                     <ExploreView 
