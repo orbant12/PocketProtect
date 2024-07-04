@@ -398,6 +398,7 @@ const MelanomaFullProcess = ({navigation}) => {
                                             gender={gender}
                                             scale={0.8}
                                             onBodyPartPress={(slug) => handleMelanomaDataChange("slug",slug.slug)}
+                                            skinColor={melanomaMetaData.skin_type}
                                         />
                                         <View style={styles.positionSwitch}>
                                             <Pressable onPress={() => setSelectedBurnSide("front")}>

@@ -35,9 +35,9 @@ export type Slug =
 
 export interface BodyPart {
     intensity?: number;
-    color: string;
+    color?: string;
     slug: Slug;
-    pathArray: string[];
+    pathArray?: string[];
 }
 
 export type SpotData = {

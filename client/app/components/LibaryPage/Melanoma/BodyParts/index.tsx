@@ -101,7 +101,7 @@ const Body = ({
   return renderBodySvg(side === "front" ? bodyFront(SkinNumber_Convert(skinColor)) : bodyBack(SkinNumber_Convert(skinColor)));
 };
 
-Body.defaultProps = {
+Body.default = {
   scale: 1,
   colors: ["#0984e3", "#74b9ff"], // Move default colors here
   zoomOnPress: false,

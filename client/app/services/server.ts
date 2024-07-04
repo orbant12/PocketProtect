@@ -14,6 +14,7 @@ import { dateDistanceFromToday, Timestamp } from "../utils/date_manipulations";
 import { Gender, SkinType, Slug, SpotData, Success_Purchase_Client_Checkout_Data, UserData,AssistanceFields } from "../utils/types";
 import { MelanomaMetaData } from "../pages/Libary/Melanoma/melanomaCenter";
 
+const DOMAIN = "http://localhost:3001";
 
 type SpotDeleteTypes = "history" | "latest"
 
@@ -627,16 +628,18 @@ export const fetchUserData = async ({
     userId
 }: { userId: string }): Promise<UserData | null> => { 
     try {
-        const ref = doc(db, "users", userId);
-        const docSnap = await getDoc(ref);
-
-        if (docSnap.exists()) {
-            const data = docSnap.data() as UserData;
+        const response = await fetch(`${DOMAIN}/client/get/user-data`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId }),
+        });
+        if(response.ok){
+            const data = await response.json();
             return data;
-        } else {
-            console.log("No such document!");
-            return null; 
         }
+        return null;
     } catch (error) {
         console.log(error);
         return null;
