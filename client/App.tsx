@@ -59,7 +59,7 @@ export type RootStackParamList = {
     AssistCenter: undefined;
     AI_Assistant: undefined;
 };
-
+//stack navigation props
 export type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export default function App() {
