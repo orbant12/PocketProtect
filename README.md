@@ -17,7 +17,7 @@ This is the Application <span>source code<span> for Pocket Protect. The app's pu
 ### ⚙️ Back End
 - Node (REST API)
 - Tensorflow-js-node (CLOUD COMPUTE for DL Model)
-- Firebase Functions (Server Provider)
+- Firebase Functions (Server Provider) 
 - Firebase - Firestore and Storage (Database)
 
 ### 🖥️Web
