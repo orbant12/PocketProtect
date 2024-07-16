@@ -13,6 +13,7 @@ import { ref,  getDownloadURL, uploadBytes,deleteObject} from "firebase/storage"
 import { dateDistanceFromToday, Timestamp } from "../utils/date_manipulations";
 import { Gender, SkinType, Slug, SpotData, Success_Purchase_Client_Checkout_Data, UserData,AssistanceFields } from "../utils/types";
 import { MelanomaMetaData } from "../pages/Libary/Melanoma/melanomaCenter";
+import { numberOfMolesOnSlugs } from "../components/LibaryPage/Melanoma/slugCard";
 
 const DOMAIN = "http://localhost:3001";
 
@@ -459,7 +460,14 @@ export const deleteSpotWithHistoryReset = async ({
 export const fetchNumberOfMoles = async ({
     userId,
     gender
-}:API_Melanoma)=>{
+}:API_Melanoma):
+    Promise < {
+        all: number;
+        bening: number;
+        malignant: number;
+        outdated: number;
+        completed: number;
+    } | null> =>{
     const response = await fetch(`${DOMAIN}/client/get/number-of-melanoma`, {
         method: "POST",
         headers: {
@@ -475,81 +483,69 @@ export const fetchNumberOfMoles = async ({
         const data = await response.json();
         return data;
     } else {
-        return []
-    }
-}
-
-export const fetchNumberOfMolesOnSlugs = async ({
-    userId, 
-}:API_Melanoma)=>{
-    try{
-        const ref = collection(db, "users", userId, "Melanoma");                
-        const snapshot = await getDocs(ref);        
-        let slugValues = [];
-        for (const doc of snapshot.docs) {
-            const data = doc.data();
-            if (data && data.melanomaDoc && data.melanomaDoc.spot && data.melanomaDoc.spot.length > 0) {
-                const slug = data.melanomaDoc.spot.slug;
-                slugValues.push(slug);
-            }
-        }            
-        const slugCount = slugValues.reduce((acc, slug) => {
-            acc[slug] = (acc[slug] || 0) + 1;
-            return acc;
-        }, {});    
-        const result = Object.keys(slugCount).map(key => ({ [key]: slugCount[key] }));
-
-        return result;
-    } catch (error) {
-        console.log(error)
-        return []
-    }
-}
-
-export const updateCompletedParts = async ({
-    userId,
-    completedArray
-}:API_Melanoma) => {
-    try{
-        const ref = doc(db, "users", userId, "Medical_Data", "skin_data")
-        await updateDoc(ref,{completedArray})
-        return true
-    } catch(err) {
-        console.log(err)
-        return false
-    }
-}
-
-export const fetchCompletedParts = async ({
-    userId
-}:API_Melanoma): Promise<{slug:Slug}[] | null> => {
-    try{
-        const ref = doc(db, "users", userId, "Medical_Data", "skin_data")    
-        const snapshot = await getDoc(ref);
-        if( snapshot.exists()){
-            return [...snapshot.data().completedArray]
-        }        
-    } catch(err) {
         return null
     }
 }
 
-export const fetchOutDatedSpots = async ({
-    userId
-}:API_Melanoma) => {
-    try{
-        const ref = collection(db, "users", userId, "Melanoma");
-        const snapshot = await getDocs(ref);
-        let melanomaData = [];
-        snapshot.forEach((doc) => {
-            if(dateDistanceFromToday(doc.data().created_at) >= 200){
-                melanomaData.push(doc.data());
-            }
-        }
-        );
-        return melanomaData;
-    } catch (error) {
+//DONE
+export const fetchNumberOfMolesOnSlugs = async ({
+    userId, 
+}:API_Melanoma):Promise <numberOfMolesOnSlugs | []> =>{
+    const response = await fetch(`${DOMAIN}/client/get/number-of-melanoma-on-slug`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            userId,
+        })}
+    );
+
+    if(response.ok){
+        const data = await response.json();
+        return [data] as numberOfMolesOnSlugs;
+    } else {
         return []
+    }
+}
+
+// DONE
+export const updateCompletedParts = async ({
+    userId,
+    completedArray
+}:API_Melanoma):Promise<boolean> => {
+    const response = await fetch(`${DOMAIN}/client/update/completed-parts`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, completedArray }),
+    });
+
+    if(response.ok){
+        return true;
+    } else {
+        return false
+    }
+}
+
+// DONE
+export const fetchCompletedParts = async ({
+    userId
+}:API_Melanoma): Promise<{slug:Slug}[] | null> => {
+    const response = await fetch(`${DOMAIN}/client/get/completed-parts`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+    });
+    
+    if(response.ok){
+        const data = await response.json();
+        return data;
+    } else {
+        return null
     }
 }
 
@@ -577,57 +573,44 @@ export const fetchSpecialSpots = async ({
     }
 }
 
-export const fetchUnfinishedSpots = async ({
-    userId
-}:API_Melanoma) => {
-    try{
-        const ref = collection(db, "users", userId, "Melanoma");
-        const snapshot = await getDocs(ref);
-        let melanomaData = [];
-        snapshot.forEach((doc) => {
-            if(doc.data().risk == null){
-                melanomaData.push(doc.data());
-            }
-        }
-        );
-        return melanomaData;
-    } catch (error) {
-        return []
-    }
-}
-
+//DONE
 export const fetchSkinType = async ({
     userId
-}:API_Melanoma) => {
-    try{
-        const ref = doc(db, "users", userId, "Medical_Data", "skin_data");
-        const docSnap = await getDoc(ref);
-        if (docSnap.exists()) {
-            return docSnap.data().skin_type;
-        } else {
-            console.log("No such document!");
-        }
-    } catch (error) {
-        return false
+}:API_Melanoma):Promise <SkinType | null> => {
+    const response = await fetch(`${DOMAIN}/client/get/skin-type`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+    });
+
+    if(response.ok){
+        const data = await response.json();
+        return data as SkinType;
+    } else {
+        return null
     }
 }
 
+//DONE
 export const fetchSingleMoleById = async ({
     userId,
     moleId
-}:API_Melanoma) => {
-    try{
-        const ref = doc(db, "users", userId, "Melanoma", moleId);
-        const docSnap = await getDoc(ref);
-        if (docSnap.exists()) {
-            return docSnap.data();
-        } else {
-            console.log("No such document!");
-            return null;
-        }
-    } catch (error) {
-        console.log(error);
-        return null;
+}:API_Melanoma):Promise <null | SpotData> => {
+    const response = await fetch(`${DOMAIN}/client/get/single-mole`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, moleId }),
+    });
+
+    if(response.ok){
+        const data = await response.json();
+        return data as SpotData;
+    } else {
+        return null
     }
 }
 
@@ -680,7 +663,7 @@ export const fetchUserData = async ({
     }
 };
 
-//DONE
+//DONE - Not Tested
 export const changePersonalData = async ({
     fieldNameToChange,
     dataToChange,
@@ -717,26 +700,30 @@ export const changePersonalData = async ({
 
 //<===> DIAGNOSIS <====>
 
+//DONE
 export const fetchAllDiagnosis = async ({
     userId
-}:API_Diagnosis) => {
-    try{
-        const ref = collection(db, "users", userId , "Diagnosis")
-        const snapshot = await getDocs(ref);
-        if(!snapshot.empty){
-            let diagnosisData = [];
-            snapshot.forEach((doc) => {
-                diagnosisData.push(doc.data());
-            });
-            return diagnosisData;
-        } else {
-            return "NoDiagnosis"
-        }        
-    } catch (e) {
+}:API_Diagnosis):Promise <DiagnosisData[] | false | "NoDiagnosis"> => {
+    const response = await fetch(`${DOMAIN}/client/get/diagnosis`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+    });
+
+    if(response.ok){
+        const data = await response.json();
+        if(data != "NoDiagnosis"){
+            return data as DiagnosisData[];
+        }
+        return "NoDiagnosis"
+    } else {
         return false
     }
 }
 
+//DONE
 export const saveDiagnosisProgress = async ({
     userId,
     data
@@ -754,6 +741,7 @@ export const saveDiagnosisProgress = async ({
 
 //<===>  Blood Work <====>
 
+// DONE
 export const saveBloodWork = async ({
     userId,
     higherRisk,
@@ -761,195 +749,100 @@ export const saveBloodWork = async ({
     Create_Date,
     id
 }:API_BloodWork) => {
-    const formatDate = (dateString:string) => {
-        const date = new Date(dateString);
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return {year,month,day};
-    };
-    try{
-        const ref = doc(db, "users", userId, "Medical_Data", "blood_work");
-        const ref2 = doc(db, "users", userId, "Reminders", "blood_work");        
-        await setDoc(ref,{
-            data: data,
-            created_at: Create_Date,
-            id: id,
-            risk: higherRisk
-        });        
-        const splited = formatDate(Create_Date)
-        if(higherRisk == true){
-            if(Number(splited.month) + 6 <= 12){
-                const reminderDate = {expires:`${splited.year}-${Number(splited.month) + 6}-${splited.day}`,id:"blood_work"}
-                await setDoc(ref2,reminderDate)
-            } else {
-                const leftOff = Number(splited.month) - 12
-                const reminderDate = {expires:`${Number(splited.year) + 1}-${Number(splited.month) + leftOff}-${splited.day}`,id:"blood_work"}
-                await setDoc(ref2,reminderDate)
-            }
-        } else {
-            const reminderDate = {expires:`${splited.year + 1}-${splited.month}-${splited.day}`,id:"blood_work"}
-            await setDoc(ref2,reminderDate)
-        }      
-        return true    
-    } catch (err) {
-        return err
+    const response = await fetch(`${DOMAIN}/client/upload/blood`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            userId,
+            higherRisk,
+            data,
+            Create_Date,
+            id
+        }),
+    });
+
+    if(response.ok){
+        return true;
+    } else {
+        return false
     }
 }
 
+// DONE
 export const updateBloodWork = async ({
     userId,    
     data,
     Create_Date,
     id,
     higherRisk  
-}:API_BloodWork) => {
-    const saveCurrentToHistory = async () => {
-        const ref = doc(db, "users", userId, "Medical_Data", "blood_work");
-        const docSnap = await getDoc(ref);   
-        const refSave = doc(db, "users", userId, "Medical_Data", "blood_work", "History", docSnap.data().id);
-        await setDoc(refSave, docSnap.data()); 
-    };
+}:API_BloodWork):Promise <boolean> => {
+    const response = await fetch(`${DOMAIN}/client/update/blood`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            userId,
+            data,
+            Create_Date,
+            id,
+            higherRisk
+        }),
+    });
 
-    const saveNew = async () => {
-        const ref = doc(db, "users", userId, "Medical_Data", "blood_work");
-        await setDoc(ref, {
-            data: data,
-            created_at: Create_Date,
-            id: id,
-            risk: higherRisk
-        });
-    };
-
-    try {
-        await saveCurrentToHistory();
-        await saveNew();
+    if(response.ok){
         return true;
-    } catch (error) {
-        console.error("Error updating spot and saving history: ", error);
-        return false; 
+    } else {
+        return false
     }
 };
 
+// DONE
 export const fetchBloodWork = async ({
     userId,
 }:{userId:string}): Promise<BloodWorkDoc | null> => {
-    try{
-        const ref = doc(db, "users", userId, "Medical_Data", "blood_work");
-        const snapshot = await getDoc(ref);
-        if(snapshot.exists()){
-            return {
-                    created_at:snapshot.data().created_at,
-                    data: snapshot.data().data,
-                    id: snapshot.data().id,
-                    risk: snapshot.data().risk
-                }
-        } else {
-            return {
-                    created_at:"Not provided yet",
-                    data:[],
-                    id:"",
-                    risk:false
-                }
-        }
-    } catch {
+    const response = await fetch(`${DOMAIN}/client/get/blood`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+    });
+
+    if(response.ok){
+        const data = await response.json();
+        return data as BloodWorkDoc;
+    } else {
         return null
     }
 }
 
+// DONE
 export const fetchBloodWorkHistory = async ({
     userId,
-}:API_BloodWork) => {
-    try{
-        const ref = collection(db, "users", userId, "Medical_Data", "blood_work","History");
-        const snapshot = await getDocs(ref)
-        if (!snapshot.empty) {
-            let historyData = [];
-            snapshot.forEach((doc) => {
-                historyData.push(doc.data());
-            });
-            historyData.sort((a, b) => {
-                return new Date(b.created_at).getTime() - new Date (a.created_at).getTime();
-            });
-            return historyData
+}:API_BloodWork):Promise <"NoHistory" | false | BloodWorkCategory[]> => {
+    const response = await fetch(`${DOMAIN}/client/get/blood-history`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+    });
+
+    if(response.ok){
+        const data = await response.json();
+        if(data != "NoHistory"){
+            return data as BloodWorkCategory[];
         } else {
             return "NoHistory"
         }
-    } catch {
+    } else {
         return false
     }
 }
 
-
-//<===>  Task_Manager <====>
-
-export const fetchMonthTasks = async ({
-    month,
-    userId,
-    year
-}:{userId:string,year:number,month:number}) => {
-    function splitDate(date:string){
-        const [year, month, day] = date.split('-').map(Number);
-        return {year,month,day}
-    }
-    try{
-        const ref = collection(db,"users",userId,"Task_Manager");
-        const snapshot = await getDocs(ref);
-        let taskData = [];
-        snapshot.forEach((doc) => {
-            const date = splitDate(doc.data().date)
-            if(date.year == year){
-                taskData.push(doc.data());
-            };
-        })
-        return taskData;
-        
-    } catch {   
-        return []
-    }
-}
-
-export const saveTask = async ({
-    userId,
-    data,
-    id,
-    date
-}) => {
-    try{
-        const ref = doc(db, "users", userId, "Task_Manager", id);
-        await setDoc(ref,
-            {
-                data,
-                date,
-                id
-            }
-        );
-        return true           
-    } catch (error) {
-        console.log(error);
-        return false
-    }
-}
-
-
-//<===>  Reminder <====>
-
-export const fetchReminders = async ({
-    userId
-}) => {
-    try{
-        const ref = collection(db,"users",userId,"Reminders");
-        const snapshot = await getDocs(ref);
-        let taskData = [];
-        snapshot.forEach((doc) => {
-                taskData.push(doc.data());
-        })
-        return taskData;
-        
-    } catch {   
-        return false
-    }
-}
 
 
 //<===> Payment <====>

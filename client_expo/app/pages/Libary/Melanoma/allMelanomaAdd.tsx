@@ -74,11 +74,15 @@ const AllMelanomaAdd = ({route,navigation}) => {
         const response = await fetchSkinType({
             userId: currentuser.uid
         })
-        setSkinType(response)
+        if(response != null){
+            setSkinType(response)   
+        } else {
+            setSkinType(0)
+        }
     }
 
     const conditionalFetching = () => {
-        if ( route.params.skin_type != undefined){
+        if ( route.params.skin_type == undefined){
             setSkinType(route.params.skin_type)
         } else {
             fetchUserSkinType()

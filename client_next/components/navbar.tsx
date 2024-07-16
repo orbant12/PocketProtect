@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Ref, useRef } from 'react';
-import "../../cancer_app/css/navbar.css";
+import "../css/navbar.css";
 import { useAuth } from '@/Context/UserAuthContext';
 
 

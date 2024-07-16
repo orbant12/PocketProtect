@@ -133,3 +133,87 @@ const TodayTasks = ({
     </View>
     )
 }
+
+
+
+//REMINDER FUNCS
+
+//BN
+
+//<===>  Task_Manager <====>
+
+
+export const fetchMonthTasks = async ({
+    month,
+    userId,
+    year
+}:{userId:string,year:number,month:number}) => {
+    function splitDate(date:string){
+        const [year, month, day] = date.split('-').map(Number);
+        return {year,month,day}
+    }
+    try{
+        const ref = collection(db,"users",userId,"Task_Manager");
+        const snapshot = await getDocs(ref);
+        let taskData = [];
+        snapshot.forEach((doc) => {
+            const date = splitDate(doc.data().date)
+            if(date.year == year){
+                taskData.push(doc.data());
+            };
+        })
+        return taskData;
+        
+    } catch {   
+        return []
+    }
+}
+
+//<===>  Reminder <====>
+
+export const fetchReminders = async ({
+    userId
+}) => {
+    try{
+        const ref = collection(db,"users",userId,"Reminders");
+        const snapshot = await getDocs(ref);
+        let taskData = [];
+        snapshot.forEach((doc) => {
+                taskData.push(doc.data());
+        })
+        return taskData;
+        
+    } catch {   
+        return false
+    }
+}
+
+
+
+//FN
+
+const fetchThisMonthTasks = async () => {
+    if(currentuser){
+        const date = splitDate(format)       
+        const response = await fetchMonthTasks({
+            userId: currentuser.uid,
+            month: date.month,
+            year: date.year
+        })
+        if(response.length != 0){
+            setThisMonthTasks(response)
+            setAffectedDays(response.map(singleDate => singleDate.date));
+            console.log(response)
+        }
+    }
+}
+
+const fetchAllReminders = async () => {
+    if(currentuser){
+        const response = await fetchReminders({userId:currentuser.uid})
+        if ( response != false ){
+            setAllReminders(response)
+        }
+    }
+}
+

@@ -6,7 +6,7 @@ import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAuth } from "../../../context/UserAuthContext";
-import { saveDiagnosisProgress,saveTask } from "../../../services/server"
+import { saveDiagnosisProgress } from "../../../services/server"
 import { getDiagnosisData,getDiagnosis, getReDiagnosis, getSurvey } from "../../../services/prompt"
 
 const SurveyScreeen = ({route,navigation}) => {
@@ -331,12 +331,6 @@ const SurveyScreeen = ({route,navigation}) => {
         await saveDiagnosisProgress({
             userId:currentuser.uid,
             data
-        })
-        await saveTask({
-            userId: currentuser.uid,
-            data: data,
-            date: fullDiagnosis.periodic_assistance == "Weekly" ? dateFormat(7) : fullDiagnosis.periodic_assistance == "Daily" && dateFormat(1) ,
-            id: data.id
         })
         setIsDiagnosDone(true)
         navigation.navigate("DiagnosisCenter",{diagnosisData:data})

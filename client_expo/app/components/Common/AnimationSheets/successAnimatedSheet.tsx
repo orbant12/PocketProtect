@@ -85,7 +85,7 @@ export const SuccessAnimationSheet = ({active,loading,setActive}) => {
                         source={require('./lotties/Loading.json')}
                     />
                     <View style={{width:"100%",alignSelf:"center",alignItems:"center",position:"absolute",bottom:15}}>
-                        <Text style={{fontWeight:"600",fontSize:15,textAlign:"center",width:"90%",marginBottom:10,opacity:0.6}}>Uploading ...</Text>
+                        <Text style={{fontWeight:"800",fontSize:15,textAlign:"center",width:"90%",marginBottom:10,opacity:0.6}}>Uploading ...</Text>
                         <TouchableOpacity style={{padding:10,width:"80%",alignItems:"center",borderWidth:0.3,marginTop:0,borderRadius:100}}>
                             <Text> Stop </Text>
                         </TouchableOpacity>

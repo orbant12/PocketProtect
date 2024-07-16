@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	_ "image/jpeg"
 	"log"
 	"net/http"
@@ -145,6 +146,48 @@ type (
 			DetectedRelative string `json:"detected_relative"`
 		}
 	}
+
+	DiagnosisData struct {
+		Id               string `json:"id"`
+		Diagnosis        string `json:"diagnosis"`
+		ClientSymphtoms  string `json:"clientSymphtoms"`
+		Created_At       string `json:"created_at"`
+		PossibleOutcomes string `json:"possibleOutcomes"`
+		Stages           struct {
+			Stage_one []struct {
+				A    string `json:"a"`
+				Q    string `json:"q"`
+				Type string `json:"type"`
+			} `json:"stage_one"`
+			Stage_two struct {
+				Chance string `json:"chance"`
+				Survey []struct {
+					A    string `json:"a"`
+					Q    string `json:"q"`
+					Type string `json:"type"`
+				} `json:"survey"`
+			} `json:"stage_two"`
+			Stage_three struct {
+				AssistanceFrequency string `json:"assistance_frequency"`
+			} `json:"stage_three"`
+			Stage_four interface{} `json:"stage_four"`
+		} `json:"stages"`
+		Title string `json:"title"`
+	}
+
+	BloodWorkCategory struct {
+		Title string `json:"title"`
+		Data  []struct {
+			Type   string `json:"type"`
+			Number int    `json:"number"`
+		} `json:"data"`
+	}
+	BloodWorkDoc struct {
+		Created_at string              `json:"created_at"`
+		Data       []BloodWorkCategory `json:"data"`
+		Id         string              `json:"id"`
+		Risk       bool                `json:"risk"`
+	}
 )
 
 func main() {
@@ -190,6 +233,12 @@ func setupRoutes(e *echo.Echo) {
 	// Melanoma routes
 	setupMelanomaRoutes(e, client, storageClient)
 
+	// Diagnosis routes
+	setupDiagnosisRoutes(e, client)
+
+	// Blood routes
+	setupBloodRoutes(e, client)
+
 }
 
 func handleRoot(c echo.Context) error {
@@ -197,7 +246,7 @@ func handleRoot(c echo.Context) error {
 }
 
 func setupFirebase() *firestore.Client {
-	opt := option.WithCredentialsFile("../serverTs/keys/serviceAccountKey.json")
+	opt := option.WithCredentialsFile("../../Skin_Cancer/keys/serviceAccountKey.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Fatal(err)
@@ -210,7 +259,7 @@ func setupFirebase() *firestore.Client {
 }
 
 func setupStorageClient() *storage.Client {
-	opt := option.WithCredentialsFile("../serverTs/keys/serviceAccountKey.json")
+	opt := option.WithCredentialsFile("../../Skin_Cancer/keys/serviceAccountKey.json")
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx, opt)
 	if err != nil {
@@ -270,7 +319,6 @@ func setupClientRoutes(e *echo.Echo, client *firestore.Client) {
 
 		return c.JSON(http.StatusOK, userData)
 	})
-
 }
 
 func setupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *storage.Client) {
@@ -724,6 +772,18 @@ func setupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 	})
 
 	e.POST("client/upload/melanoma-metadata", func(c echo.Context) error {
+		type MelanomaMetaDataRequest struct {
+			UserId   string `json:"userId"`
+			MetaData struct {
+				Sunburn []struct {
+					Stage int    `json:"stage"`
+					Slug  string `json:"slug"`
+				} `json:"sunburn"`
+				SkinType         int    `json:"skin_type"`
+				DetectedRelative string `json:"detected_relative"`
+			} `json:"metaData"`
+		}
+
 		var req MelanomaMetaDataRequest
 
 		if err := c.Bind(&req); err != nil {
@@ -731,11 +791,34 @@ func setupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 		}
 
-		// Update Firestore with MelanomaMetaData and skin_data as doc id
-		_, err := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("skin_data").Set(context.Background(), req.MetaData)
-
+		// Fetch existing document data from Firestore
+		docRef := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("skin_data")
+		docSnapshot, err := docRef.Get(context.Background())
 		if err != nil {
-			log.Printf("Error uploading melanoma metadata: %v", err)
+			log.Printf("Error fetching document: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		// Merge existing data with new metaData
+		var existingData map[string]interface{}
+		if docSnapshot.Exists() {
+			if err := docSnapshot.DataTo(&existingData); err != nil {
+				log.Printf("Error converting document data: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			}
+		} else {
+			existingData = make(map[string]interface{})
+		}
+
+		// Update existingData with new metaData
+		existingData["sunburn"] = req.MetaData.Sunburn
+		existingData["skin_type"] = req.MetaData.SkinType
+		existingData["detected_relative"] = req.MetaData.DetectedRelative
+
+		// Perform the update operation in Firestore
+		_, err = docRef.Set(context.Background(), existingData)
+		if err != nil {
+			log.Printf("Error updating document: %v", err)
 			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		}
 
@@ -969,11 +1052,11 @@ func setupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 		}
 
 		// Get the Melanoma data
-		docs, error := client.Collection("users").Doc(req.UserId).Collection("Melanoma").Documents(context.Background()).GetAll()
+		docs, err := client.Collection("users").Doc(req.UserId).Collection("Melanoma").Documents(context.Background()).GetAll()
 
-		if error != nil {
-			log.Printf("Error getting melanoma documents: %v", error)
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": error.Error()})
+		if err != nil {
+			log.Printf("Error getting melanoma documents: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		}
 
 		var melanomaDataCount int
@@ -992,12 +1075,14 @@ func setupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 				melanomaDataCount++
 			}
 
-			if *spotData.Risk < 0.5 {
-				beningDataCount++
-			}
+			if spotData.Risk != nil {
+				if *spotData.Risk < 0.5 {
+					beningDataCount++
+				}
 
-			if *spotData.Risk > 0.5 {
-				malignantDataCount++
+				if *spotData.Risk > 0.5 {
+					malignantDataCount++
+				}
 			}
 
 			if spotData.Created_At.AddDate(0, 0, 186).Before(time.Now()) {
@@ -1039,4 +1124,500 @@ func setupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 		}
 	})
 
+	e.POST("client/get/number-of-melanoma-on-slug", func(c echo.Context) error {
+		type NumberOfMelanomaOnSlugRequest struct {
+			UserId string `json:"userId"`
+		}
+
+		var req NumberOfMelanomaOnSlugRequest
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		// Get the Melanoma data
+		docs, err := client.Collection("users").Doc(req.UserId).Collection("Melanoma").Documents(context.Background()).GetAll()
+
+		if err != nil {
+			log.Printf("Error getting melanoma documents: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		var slugValues []string
+		for _, doc := range docs {
+			var spotData SpotData
+			if err := doc.DataTo(&spotData); err != nil {
+				log.Printf("Error converting document to SpotData: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			}
+
+			if spotData.MelanomaDoc.Spot.Slug != "" {
+				slugValues = append(slugValues, spotData.MelanomaDoc.Spot.Slug)
+			}
+		}
+
+		slugCount := make(map[string]int)
+		for _, slug := range slugValues {
+			slugCount[slug]++
+		}
+
+		return c.JSON(http.StatusOK, slugCount)
+	})
+
+	e.POST("client/update/completed-parts", func(c echo.Context) error {
+		type CompletedArrayItem struct {
+			Slug string `json:"slug"`
+		}
+
+		type UpdateCompletedPartsRequest struct {
+			UserId         string               `json:"userId"`
+			CompletedArray []CompletedArrayItem `json:"completedArray"`
+		}
+
+		var req UpdateCompletedPartsRequest
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+		// Prepare updates for Firestore
+		var updates []firestore.Update
+		var formattedCompletedArray []map[string]interface{}
+
+		if len(req.CompletedArray) == 0 {
+			updates = append(updates, firestore.Update{
+				Path:  "completedArray",
+				Value: req.CompletedArray,
+			})
+		} else {
+
+			for _, item := range req.CompletedArray {
+				data := map[string]interface{}{"slug": item.Slug}
+				formattedCompletedArray = append(formattedCompletedArray, data)
+			}
+
+			updates = append(updates, firestore.Update{
+				Path:  "completedArray",
+				Value: formattedCompletedArray,
+			})
+		}
+		// Update Firestore with MelanomaMetaData and skin_data as doc id
+		_, err := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("skin_data").Update(context.Background(), updates)
+
+		if err != nil {
+			log.Printf("Error uploading melanoma metadata: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		return c.NoContent(http.StatusNoContent)
+	})
+
+	e.POST("client/get/completed-parts", func(c echo.Context) error {
+		type GetCompletedPartsRequest struct {
+			UserId string `json:"userId"`
+		}
+
+		var req GetCompletedPartsRequest
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		completedRef := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("skin_data")
+		docSnap, err := completedRef.Get(context.Background())
+		if err != nil {
+			log.Printf("Error getting completed parts: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		var completedParts []map[string]interface{}
+		if docSnap.Exists() {
+			completedArray := docSnap.Data()["completedArray"]
+			if completedArray != nil {
+				// Type assertion to []interface{}
+				if arr, ok := completedArray.([]interface{}); ok {
+					// Convert each item to map[string]interface{}
+					for _, item := range arr {
+						if m, ok := item.(map[string]interface{}); ok {
+							completedParts = append(completedParts, m)
+						} else {
+							log.Printf("Unexpected type in completedArray: %T", item)
+						}
+					}
+				} else {
+					log.Printf("Unexpected type for completedArray: %T", completedArray)
+				}
+			}
+		}
+
+		return c.JSON(http.StatusOK, completedParts)
+	})
+
+	e.POST("/client/get/skin-type", func(c echo.Context) error {
+		// Define a struct to represent the request payload
+		type GetSkinTypeRequest struct {
+			UserId string `json:"userId"`
+		}
+
+		// Parse request body into GetSkinTypeRequest struct
+		var req GetSkinTypeRequest
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		// Construct Firestore document reference
+		skinTypeRef := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("skin_data")
+
+		// Retrieve specific field ("skin_type") from Firestore document
+		docSnap, err := skinTypeRef.Get(context.Background())
+		if err != nil {
+			log.Printf("Error getting skin type: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		// Check if the document exists
+		if docSnap.Exists() {
+			// Parse the skin type from Firestore document data
+			var data map[string]interface{}
+			if err := docSnap.DataTo(&data); err != nil {
+				log.Printf("Error parsing skin type data: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			}
+
+			// Extract skin type from Firestore data
+			skinTypeValue, ok := data["skin_type"]
+			if !ok {
+				log.Printf("Skin type field not found in Firestore document")
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Skin type field not found"})
+			}
+
+			// Convert Firestore's float64 to int
+			var skinType int
+			switch v := skinTypeValue.(type) {
+			case int:
+				skinType = v
+			case int64:
+				skinType = int(v)
+			case float64:
+				skinType = int(v) // Firestore returns numbers as float64
+			default:
+				log.Printf("Invalid skin type format in Firestore: %v", skinTypeValue)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Invalid skin type format"})
+			}
+
+			// Return the skin type as JSON response
+			return c.JSON(http.StatusOK, skinType)
+		}
+
+		// If document doesn't exist, return appropriate response
+		log.Printf("No skin type document found for user %s", req.UserId)
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "Skin type not found"})
+	})
+
+	e.POST("client/get/melanoma--by-id", func(c echo.Context) error {
+		type GetMelanomaByIdRequest struct {
+			UserId string `json:"userId"`
+			MoleId string `json:"moleId"`
+		}
+
+		var req GetMelanomaByIdRequest
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		doc, err := client.Collection("users").Doc(req.UserId).Collection("Melanoma").Doc(req.MoleId).Get(context.Background())
+
+		if err != nil {
+			log.Printf("Error getting melanoma document: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		if doc.Exists() {
+			var spotData SpotData
+			if err := doc.DataTo(&spotData); err != nil {
+				log.Printf("Error converting document to SpotData: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			}
+
+			return c.JSON(http.StatusOK, spotData)
+		} else {
+			log.Printf("No such document!")
+			return c.JSON(http.StatusNotFound, map[string]string{"error": "No such document!"})
+		}
+	})
+}
+
+func setupDiagnosisRoutes(e *echo.Echo, client *firestore.Client) {
+
+	e.POST("client/get/diagnosis", func(c echo.Context) error {
+		type GetDiagnosisRequest struct {
+			UserId string `json:"userId"`
+		}
+
+		var req GetDiagnosisRequest
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		docs, err := client.Collection("users").Doc(req.UserId).Collection("Diagnosis").Documents(context.Background()).GetAll()
+
+		if err != nil {
+			log.Printf("Error getting diagnosis documents: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		var diagnosisData []DiagnosisData
+		for _, doc := range docs {
+			var data DiagnosisData
+			if err := doc.DataTo(&data); err != nil {
+				log.Printf("Error converting document to DiagnosisData: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			}
+			diagnosisData = append(diagnosisData, data)
+		}
+
+		if len(diagnosisData) == 0 {
+			return c.JSON(http.StatusOK, "NoDiagnosis")
+		}
+
+		return c.JSON(http.StatusOK, diagnosisData)
+	})
+
+	e.POST("client/upload/diagnosis", func(c echo.Context) error {
+		type UploadDiagnosisRequest struct {
+			UserId string        `json:"userId"`
+			Data   DiagnosisData `json:"data"`
+		}
+
+		var req UploadDiagnosisRequest
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		_, err := client.Collection("users").Doc(req.UserId).Collection("Diagnosis").Doc(req.Data.Id).Set(context.Background(), req.Data)
+		if err != nil {
+			log.Printf("Error uploading diagnosis data: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		return c.NoContent(http.StatusNoContent)
+	})
+}
+
+func setupBloodRoutes(e *echo.Echo, client *firestore.Client) {
+
+	e.POST("client/get/blood", func(c echo.Context) error {
+
+		type GetBloodRequest struct {
+			UserId string `json:"userId"`
+		}
+
+		var req GetBloodRequest
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		doc, err := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("blood_work").Get(context.Background())
+
+		if err != nil {
+			log.Printf("Error getting blood document: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		if doc.Exists() {
+			var data BloodWorkDoc
+			if err := doc.DataTo(&data); err != nil {
+				log.Printf("Error converting document to BloodWorkDoc: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			}
+
+			return c.JSON(http.StatusOK, data)
+		} else {
+			log.Printf("No such document!")
+			return c.JSON(http.StatusNotFound, map[string]string{"error": "No such document!"})
+		}
+	})
+
+	e.POST("client/upload/blood", func(c echo.Context) error {
+		type UploadBloodRequest struct {
+			UserId     string              `json:"userId"`
+			HigherRisk bool                `json:"higherRisk"`
+			Data       []BloodWorkCategory `json:"data"`
+			CreateDate string              `json:"createDate"`
+			Id         string              `json:"id"`
+		}
+
+		var req UploadBloodRequest
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		ref := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("blood_work")
+		ref2 := client.Collection("users").Doc(req.UserId).Collection("Reminders").Doc("blood_work")
+
+		_, err := ref.Set(context.Background(), map[string]interface{}{
+			"data":       req.Data,
+			"created_at": req.CreateDate,
+			"id":         req.Id,
+			"risk":       req.HigherRisk,
+		})
+
+		if err != nil {
+			log.Printf("Error uploading blood data: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		splited := formatDate(req.CreateDate)
+		var reminderDate map[string]interface{}
+
+		if req.HigherRisk {
+			if splited.Month+6 <= 12 {
+				reminderDate = map[string]interface{}{
+					"expires": fmt.Sprintf("%d-%d-%d", splited.Year, splited.Month+6, splited.Day),
+					"id":      "blood_work",
+				}
+			} else {
+				leftOff := splited.Month - 12
+				reminderDate = map[string]interface{}{
+					"expires": fmt.Sprintf("%d-%d-%d", splited.Year+1, splited.Month+leftOff, splited.Day),
+					"id":      "blood_work",
+				}
+			}
+		} else {
+			reminderDate = map[string]interface{}{
+				"expires": fmt.Sprintf("%d-%d-%d", splited.Year+1, splited.Month, splited.Day),
+				"id":      "blood_work",
+			}
+		}
+
+		_, err = ref2.Set(context.Background(), reminderDate)
+
+		if err != nil {
+			log.Printf("Error uploading blood reminder: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		return c.NoContent(http.StatusNoContent)
+
+	})
+
+	e.POST("client/update/blood", func(c echo.Context) error {
+
+		type UpdateBloodRequest struct {
+			UserId     string              `json:"userId"`
+			HigherRisk bool                `json:"higherRisk"`
+			Data       []BloodWorkCategory `json:"data"`
+			CreateDate string              `json:"createDate"`
+			Id         string              `json:"id"`
+		}
+
+		var req UpdateBloodRequest
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		// Save current data to history
+		ref := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("blood_work")
+
+		docSnap, err := ref.Get(context.Background())
+		if err != nil {
+			log.Printf("Error getting blood document: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		if docSnap.Exists() {
+			refSave := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("blood_work").Collection("History").Doc(docSnap.Data()["id"].(string))
+			_, err = refSave.Set(context.Background(), docSnap.Data())
+			if err != nil {
+				log.Printf("Error saving blood data to history: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			}
+		}
+
+		// Save new data
+		_, err = ref.Set(context.Background(), map[string]interface{}{
+			"data":       req.Data,
+			"created_at": req.CreateDate,
+			"id":         req.Id,
+			"risk":       req.HigherRisk,
+		})
+
+		if err != nil {
+			log.Printf("Error uploading blood data: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		return c.NoContent(http.StatusNoContent)
+	})
+
+	e.POST("client/get/blood-history", func(c echo.Context) error {
+		type GetBloodHistoryRequest struct {
+			UserId string `json:"userId"`
+		}
+
+		var req GetBloodHistoryRequest
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		ref := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("blood_work").Collection("History")
+		docs, err := ref.Documents(context.Background()).GetAll()
+
+		if err != nil {
+			log.Printf("Error getting blood history documents: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		var historyData []BloodWorkDoc
+		for _, doc := range docs {
+			var data BloodWorkDoc
+			if err := doc.DataTo(&data); err != nil {
+				log.Printf("Error converting document to BloodWorkDoc: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			}
+			historyData = append(historyData, data)
+		}
+
+		if len(historyData) == 0 {
+			return c.JSON(http.StatusOK, "NoHistory")
+		}
+
+		return c.JSON(http.StatusOK, historyData)
+	})
+}
+
+type Date struct {
+	Year  int
+	Month int
+	Day   int
+}
+
+// FOR 	splited := formatDate(req.CreateDate)
+func formatDate(dateString string) Date {
+	date := time.Now()
+	if dateString != "" {
+		date, _ = time.Parse(time.RFC3339, dateString)
+	}
+
+	return Date{
+		Year:  date.Year(),
+		Month: int(date.Month()),
+		Day:   date.Day(),
+	}
 }

@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../../context/UserAuthContext';
 import Calendar from '../../components/HomePage/Callendar/HorizontalCallendar';
 import {useTimer}  from '../../components/HomePage/timer';
-import { fetchMonthTasks, fetchReminders,fetchOutDatedSpots, fetchUnfinishedSpots, fetchUserData, fetchSpecialSpots, SpecialSpotResponse } from '../../services/server';
+import { fetchUserData, fetchSpecialSpots, SpecialSpotResponse } from '../../services/server';
 import { styles } from "../../styles/home_style";
 import { TodayScreen } from '../../components/HomePage/3_types/Today';
 import { DateToString, splitDate, parseDateToMidnight } from '../../utils/date_manipulations';
@@ -102,31 +102,6 @@ const [userData, setUserData] = useState<UserData>(UserData_Default);
         }
     }
 
-    const fetchThisMonthTasks = async () => {
-        if(currentuser){
-            const date = splitDate(format)       
-            const response = await fetchMonthTasks({
-                userId: currentuser.uid,
-                month: date.month,
-                year: date.year
-            })
-            if(response.length != 0){
-                setThisMonthTasks(response)
-                setAffectedDays(response.map(singleDate => singleDate.date));
-                console.log(response)
-            }
-        }
-    }
-
-    const fetchAllReminders = async () => {
-        if(currentuser){
-            const response = await fetchReminders({userId:currentuser.uid})
-            if ( response != false ){
-                setAllReminders(response)
-            }
-        }
-    }
-
     const fetchAllSpots = async () => {
         if(currentuser){
             const response = await fetchSpecialSpots({
@@ -152,8 +127,6 @@ const [userData, setUserData] = useState<UserData>(UserData_Default);
     }
 
     const handleLoadPage = () => {
-        fetchThisMonthTasks()
-        fetchAllReminders()
         fetchAllSpots()
         fetchAllUserData()
     }

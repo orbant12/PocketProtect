@@ -1,0 +1,455 @@
+/*!************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[12].use[3]!./css/navbar.css ***!
+  \************************************************************************************************************************************************************************************************************************************************************/
+/* ===== Google Font Import - Poppins ===== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+
+
+/*NAV BAR*/
+/* ===== Colours ===== */
+:root{
+    --body-color: rgb(255, 255, 255);
+    --nav-color: rgb(255, 255, 255);
+    --side-nav: #010718;
+    --text-color: #000000;
+    --highlight-color: #4afcaf;
+    --primary-color: #f49ffb;
+}
+
+
+
+body.dark{
+    --body-color: #18191A;
+    --nav-color: #242526;
+    --side-nav: #242526;
+    --text-color: #CCC;
+    --search-bar: #242526;
+}
+
+nav{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 10px 10px;
+    height: 70px;
+    justify-content: space-between;
+    background-color: rgb(255, 255, 255);
+    align-items: center;
+    background-color: var(--nav-color);
+    z-index: 100;
+    box-shadow: 0px 0px 1px 0.1px rgb(0, 0, 0);
+}
+
+.sticky{
+    position: sticky;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+}
+
+body.dark nav{
+    border: 1px solid #393838;
+
+}
+
+nav .nav-bar{
+    position: relative;
+    height: 100%;
+    width: 90%;
+    background-color: var(--nav-color);
+    padding: 0 30px;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: space-between;
+}
+
+nav .nav-bar .sidebarOpen{
+    color: var(--text-color);
+    font-size: 25px;
+    padding: 5px;
+    cursor: pointer;
+    display: none;
+}
+
+nav .nav-bar .logo a{
+    font-size: 25px;
+    font-weight: 500;
+    color: var(--text-color);
+    text-decoration: none;
+    width: 100%;
+}
+
+.menu .logo-toggle{
+    display: none;
+}
+
+.nav-bar .nav-links{
+    display: flex;
+    align-items: center;
+
+    width: 100%;
+    justify-content: space-between;
+}
+
+.nav-bar .nav-links li{
+    margin: 0 15px;
+    list-style: none;
+}
+
+.nav-links li a{
+    position: relative;
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--text-color);
+    text-decoration: none;
+    padding: 10px;
+}
+
+.nav-links li a::before{
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    height: 6px;
+    width: 6px;
+    border-radius: 50%;
+    background-color: var(--text-color);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.nav-links li:hover a::before{
+    opacity: 1;
+}
+
+
+.nav-more{
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-evenly;
+    cursor: pointer;
+    background-color: var(--primary-color);
+    border-radius: 3px;
+    padding: 10px;
+}
+
+.nav-more:hover{
+    transform: scale(0.90);
+}
+
+.nav-more a{
+    margin: 0 10px;
+    font-size: 15px;
+    font-weight: 500;
+    color: rgb(0, 0, 0);
+    font-style: unset;
+    text-decoration: none;
+
+}
+
+.nav-more a:hover{
+    font-size: 14px;
+}
+
+.search-field i{
+    position: absolute;
+    color: var(--nav-color);
+    right: 15px;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+body.dark .search-field i{
+    color: var(--text-color);
+}
+
+.add-bar{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 35px;
+  background-color: var(--highlight-color);
+}
+
+.add-bar span{
+  font-size: 13px;
+  font-weight: 500;
+}
+
+
+/*===RESPONSIVENESS====*/
+
+@media (max-width: 790px) {
+  nav .nav-bar .sidebarOpen{
+      display: block;
+  }
+
+  nav{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    padding: 0px 0px;
+    height: 70px;
+    justify-content: space-between;
+    background-color: rgb(255, 255, 255);
+    align-items: center;
+    background-color: var(--nav-color);
+    z-index: 100;
+    box-shadow: 0px 0px 10px 0.1px black;
+  }
+
+  .menu{
+      position: fixed;
+      height: 100%;
+      width: 320px;
+      left: -100%;
+      top: 0;
+      padding: 20px;
+      background-color: var(--side-nav);
+      z-index: 100;
+      transition: all 0.4s ease;
+  }
+
+  nav.active .menu{
+      left: -0%;
+  }
+
+  nav.active .nav-bar .navLogo a{
+      opacity: 0;
+      transition: all 0.3s ease;
+  }
+
+  .menu .logo-toggle{
+      display: block;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+  }
+
+  .logo-toggle .siderbarClose{
+      color: var(--text-color);
+      font-size: 24px;
+      cursor: pointer;
+  }
+
+  .nav-bar .nav-links{
+      flex-direction: column;
+      padding-top: 30px;
+  }
+
+  .nav-links li a{
+      display: block;
+      margin-top: 20px;
+  }
+
+    .nav-more{
+        position: relative;
+        display: flex;
+        align-items: center;
+        flex-direction: row;
+        justify-content: space-evenly;
+        cursor: pointer;
+        background-color: var(--primary-color);
+        border-radius: 3px;
+        padding: 8px 8px;
+    }
+
+
+    .nav-more a:hover{
+        transform: scale(0.90);
+        cursor: pointer;
+    }
+
+    .nav-more a{
+        font-size: 10px;
+        color: rgb(0, 0, 0);
+        font-style: unset;
+        margin: 0 5px;
+    }
+
+    nav .nav-bar{
+        position: relative;
+        height: 100%;
+        width: 90%;
+        background-color: var(--nav-color);
+        padding: 0 0px;
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+        margin-left: auto;
+        margin-right: auto;
+        justify-content: space-between;
+    }
+}
+
+
+.navIcon{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 10px;
+    background: black;
+    margin-bottom: 10px;
+    width: 100%;
+    align-items: center;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.navIcon:hover{
+    transform: scale(0.90);
+}
+
+
+.navItem{
+    flex-direction: row;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    background-color: rgba(0, 0, 0, 1);
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.navItem:hover{
+    transform: scale(0.95);
+}
+
+.logOffBtn{
+    background: black;
+    margin-top: 10px;
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.logOffBtn:hover{
+    transform: scale(0.90);
+}
+/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[2].use[1]!./node_modules/next/dist/build/webpack/loaders/next-font-loader/index.js??ruleSet[1].rules[11].oneOf[2].use[2]!./node_modules/next/font/google/target.css?{"path":"app/layout.tsx","import":"Inter","arguments":[{"subsets":["latin"]}],"variableName":"inter"} ***!
+  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/* cyrillic-ext */
+@font-face {
+  font-family: '__Inter_aaf875';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(/_next/static/media/ec159349637c90ad-s.woff2) format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+/* cyrillic */
+@font-face {
+  font-family: '__Inter_aaf875';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(/_next/static/media/513657b02c5c193f-s.woff2) format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+/* greek-ext */
+@font-face {
+  font-family: '__Inter_aaf875';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(/_next/static/media/fd4db3eb5472fc27-s.woff2) format('woff2');
+  unicode-range: U+1F00-1FFF;
+}
+/* greek */
+@font-face {
+  font-family: '__Inter_aaf875';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(/_next/static/media/51ed15f9841b9f9d-s.woff2) format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+/* vietnamese */
+@font-face {
+  font-family: '__Inter_aaf875';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(/_next/static/media/05a31a2ca4975f99-s.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: '__Inter_aaf875';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(/_next/static/media/d6b16ce4a6175f26-s.woff2) format('woff2');
+  unicode-range: U+0100-02AF, U+0304, U+0308, U+0329, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: '__Inter_aaf875';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url(/_next/static/media/c9a5bc6a7c948fb0-s.p.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}@font-face {font-family: '__Inter_Fallback_aaf875';src: local("Arial");ascent-override: 90.20%;descent-override: 22.48%;line-gap-override: 0.00%;size-adjust: 107.40%
+}.__className_aaf875 {font-family: '__Inter_aaf875', '__Inter_Fallback_aaf875';font-style: normal
+}
+
+/*!*************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[12].use[3]!./css/globals.css ***!
+  \*************************************************************************************************************************************************************************************************************************************************************/
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+/* @tailwind base;
+@tailwind components;
+@tailwind utilities; */
+
+/* Reset styles */
+
+/* @layer base {
+    @font-face {
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+        font-style: normal;
+        font-weight: 400;
+        font-display: swap;
+        src: url(https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap) format('woff2');
+    }
+  } */
+
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+        transition: all 0.4s ease;
+    }
+    
+  /* Global styles */
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f0f0f0;
+        color: #333;
+        line-height: 1.6;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        
+    }
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');

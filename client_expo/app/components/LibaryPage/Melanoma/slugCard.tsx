@@ -4,9 +4,10 @@ import Svg, { Circle, Path } from 'react-native-body-highlighter/node_modules/re
 import { styles_shadow } from "../../../styles/shadow_styles";
 import { BodyPart, Slug, SpotData, UserData } from "../../../utils/types";
 
+export type numberOfMolesOnSlugs = {Slug: number}[];
 
 
-const getSlugCount = (slug,numberOfMolesOnSlugs) => {
+const getSlugCount = (slug,numberOfMolesOnSlugs:numberOfMolesOnSlugs) => {
     const slugObject = numberOfMolesOnSlugs.find(item => Object.keys(item)[0] === slug);
     return slugObject ? slugObject[slug] : 0;
 };

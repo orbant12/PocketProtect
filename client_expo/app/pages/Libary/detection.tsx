@@ -75,7 +75,7 @@ const fetchMoles = async (gender:Gender) => {
             userId:currentuser.uid,
             gender: gender
         })
-        if(response != false){
+        if(response != null){
             setSkinCancerData(response)
             setSkinCancerProgress(response.outdated / 24)
         }

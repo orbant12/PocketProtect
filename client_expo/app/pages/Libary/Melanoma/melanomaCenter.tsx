@@ -13,7 +13,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { SkinModal } from "../../../components/LibaryPage/Melanoma/modals";
 import { Mstyles } from "../../../styles/libary_style";
 import { NavBar_Main } from "../../../components/LibaryPage/Melanoma/navBarRow";
-import { SlugCard } from "../../../components/LibaryPage/Melanoma/slugCard";
+import { numberOfMolesOnSlugs, SlugCard } from "../../../components/LibaryPage/Melanoma/slugCard";
 import { Navigation_MoleUpload_1,Navigation_SlugAnalysis } from "../../../navigation/navigation";
 import { AssistantAdvertBox } from "../../../components/LibaryPage/Melanoma/Assistance/assistantAdvert";
 import { styles_shadow } from "../../../styles/shadow_styles";
@@ -46,7 +46,7 @@ const SingleFeature = ({navigation}) => {
     const [selectedSide, setSelectedSide] = useState<"front" | "back">("front");
     const [melanomaData, setMelanomaData] = useState<SpotData[]>([])
     const [ completedParts, setCompletedParts] = useState([])
-    const [numberOfMolesOnSlugs,setNumberOfMolesOnSlugs] = useState([])
+    const [numberOfMolesOnSlugs,setNumberOfMolesOnSlugs] = useState<numberOfMolesOnSlugs>([])
     const [selectedModalItem,setSelectedModalItem] = useState<MelanomaModalOptions | null>(null)
     const [ melanomaMetaData, setMelanomaMetaData] = useState<MelanomaMetaData>({
         sunburn:[{
