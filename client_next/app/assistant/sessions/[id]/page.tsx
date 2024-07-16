@@ -181,7 +181,7 @@ export default function SessionPage(){
                     return {
                         id: index,
                         melanomaId: item.melanomaId,
-                        location:  item.melanomaDoc.spot[0].slug,
+                        location:  item.melanomaDoc.spot.slug,
                         ai_risk: `${item.risk != null ? item.risk + ' Chance' : "Not analised" }`,
                         finished: Mole_Order_Finish_Provider({answer:res.inspect,data:item,results:res?.results}),
                         moleImage: item.melanomaPictureUrl,

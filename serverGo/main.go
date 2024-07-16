@@ -188,6 +188,47 @@ type (
 		Id         string              `json:"id"`
 		Risk       bool                `json:"risk"`
 	}
+
+	SuccessPurchaseClientCheckoutData struct {
+		Answered      bool `json:"answered"`
+		AssistantData struct {
+			Fullname   string `json:"fullname"`
+			Id         string `json:"id"`
+			ProfileUrl string `json:"profileUrl"`
+			Email      string `json:"email"`
+			Field      string `json:"field"`
+		} `json:"assistantData"`
+		ClientData struct {
+			Fullname   string    `json:"fullname"`
+			Id         string    `json:"id"`
+			ProfileUrl string    `json:"profileUrl"`
+			Email      string    `json:"email"`
+			Birth_date time.Time `json:"birth_date"`
+			Gender     string    `json:"gender"`
+		} `json:"clientData"`
+		Chat []struct {
+			Date          string `json:"date"`
+			Message       string `json:"message"`
+			Inline_answer bool   `json:"inline_answer"`
+			Sent          bool   `json:"sent"`
+			User          string `json:"user"`
+		} `json:"chat"`
+		Id       string `json:"id"`
+		Purchase struct {
+			Type string     `json:"type"`
+			Item []SpotData `json:"item"`
+		} `json:"purchase"`
+		Created_at       string `json:"created_at"`
+		Result_documents any    `json:"result_documents"`
+	}
+
+	AssistantData struct {
+		Fullname   string `json:"fullname"`
+		Email      string `json:"email"`
+		ProfileUrl string `json:"profileUrl"`
+		Id         string `json:"id"`
+		Field      string `json:"field"`
+	}
 )
 
 func main() {
@@ -238,6 +279,12 @@ func setupRoutes(e *echo.Echo) {
 
 	// Blood routes
 	setupBloodRoutes(e, client)
+
+	// PAYMENT ROUTES
+	setupPaymentRoutes(e, client)
+
+	// Assistant routes
+	setupAssistantRoutes(e, client)
 
 }
 
@@ -319,6 +366,36 @@ func setupClientRoutes(e *echo.Echo, client *firestore.Client) {
 
 		return c.JSON(http.StatusOK, userData)
 	})
+
+	e.POST("/client/get/user-sessions", func(c echo.Context) error {
+		type UserSessionRequest struct {
+			UserId string `json:"userId"`
+		}
+
+		var req UserSessionRequest
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		clientRef := client.Collection("users").Doc(req.UserId).Collection("Assist_Panel")
+		snapshot, err := clientRef.Documents(context.Background()).GetAll()
+		if err != nil {
+			log.Printf("Error getting user sessions: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		var sessionData []map[string]interface{}
+
+		for _, doc := range snapshot {
+			data := doc.Data()
+			sessionData = append(sessionData, data)
+		}
+
+		return c.JSON(http.StatusOK, sessionData)
+	})
+
 }
 
 func setupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *storage.Client) {
@@ -1600,6 +1677,231 @@ func setupBloodRoutes(e *echo.Echo, client *firestore.Client) {
 
 		return c.JSON(http.StatusOK, historyData)
 	})
+}
+
+func setupPaymentRoutes(e *echo.Echo, client *firestore.Client) {
+
+	e.POST("client/handle/successful-payment", func(c echo.Context) error {
+		type HandleSuccessfulPaymentRequest struct {
+			CheckOutData SuccessPurchaseClientCheckoutData `json:"checkOutData"`
+			SessionUID   string                            `json:"session_UID"`
+		}
+
+		var req HandleSuccessfulPaymentRequest
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		assistantRef := client.Collection("assistants").Doc(req.CheckOutData.AssistantData.Id).Collection("Requests").Doc(req.SessionUID)
+		clientRef := client.Collection("users").Doc(req.CheckOutData.ClientData.Id).Collection("Assist_Panel").Doc(req.SessionUID)
+
+		var chatFormat []map[string]interface{}
+		var itemFormat []map[string]interface{}
+
+		for _, message := range req.CheckOutData.Chat {
+			chatFormat = append(chatFormat, map[string]interface{}{
+				"sent":          message.Sent,
+				"date":          message.Date,
+				"inline_answer": message.Inline_answer,
+				"message":       message.Message,
+				"user":          message.User,
+			})
+		}
+
+		for _, item := range req.CheckOutData.Purchase.Item {
+			itemFormat = append(itemFormat, map[string]interface{}{
+				"melanomaId": item.MelanomaId,
+				"melanomaDoc": map[string]interface{}{
+					"location": map[string]float64{
+						"x": item.MelanomaDoc.Location.X,
+						"y": item.MelanomaDoc.Location.Y,
+					},
+					"spot": map[string]interface{}{
+						"slug":      item.MelanomaDoc.Spot.Slug,
+						"pathArray": item.MelanomaDoc.Spot.PathArray,
+						"color":     item.MelanomaDoc.Spot.Color,
+					},
+				},
+				"risk":               item.Risk,
+				"gender":             item.Gender,
+				"storage_name":       item.Storage_Name,
+				"storage_location":   item.Storage_Location,
+				"melanomaPictureUrl": item.MelanomaPictureUrl,
+				"created_at":         item.Created_At,
+			})
+		}
+
+		formatCheckOutData := map[string]interface{}{
+			"answered": req.CheckOutData.Answered,
+			"assistantData": map[string]interface{}{
+				"email":      req.CheckOutData.AssistantData.Email,
+				"id":         req.CheckOutData.AssistantData.Id,
+				"fullname":   req.CheckOutData.AssistantData.Fullname,
+				"profileUrl": req.CheckOutData.AssistantData.ProfileUrl,
+				"field":      req.CheckOutData.AssistantData.Field,
+			},
+			"clientData": map[string]interface{}{
+				"birth_date": req.CheckOutData.ClientData.Birth_date,
+				"email":      req.CheckOutData.ClientData.Email,
+				"fullname":   req.CheckOutData.ClientData.Fullname,
+				"gender":     req.CheckOutData.ClientData.Gender,
+				"id":         req.CheckOutData.ClientData.Id,
+				"profileUrl": req.CheckOutData.ClientData.ProfileUrl,
+			},
+			"chat":       chatFormat,
+			"created_at": req.CheckOutData.Created_at,
+			"id":         req.CheckOutData.Id,
+			"purchase": map[string]interface{}{
+				"item": itemFormat,
+				"type": req.CheckOutData.Purchase.Type,
+			},
+			"result_documents": nil,
+		}
+
+		_, err := clientRef.Set(context.Background(), formatCheckOutData)
+		if err != nil {
+			log.Printf("Error setting client data: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		_, err = assistantRef.Set(context.Background(), formatCheckOutData)
+		if err != nil {
+			log.Printf("Error setting assistant data: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		return c.NoContent(http.StatusNoContent)
+	})
+}
+
+func setupAssistantRoutes(e *echo.Echo, client *firestore.Client) {
+
+	e.POST("assistant/get-by-field/data", func(c echo.Context) error {
+
+		type GetAssistantByFieldRequest struct {
+			Field string `json:"field"` //"dermatologist"
+		}
+
+		var req GetAssistantByFieldRequest
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		assistantRef := client.Collection("assistants")
+		docs, err := assistantRef.Documents(context.Background()).GetAll()
+
+		if err != nil {
+			log.Printf("Error getting assistants documents: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		var assistants []AssistantData
+		for _, doc := range docs {
+			var data AssistantData
+			if err := doc.DataTo(&data); err != nil {
+				log.Printf("Error converting document to AssistantData: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			}
+
+			if data.Field == req.Field {
+				assistants = append(assistants, data)
+			}
+		}
+
+		if len(assistants) == 0 {
+			return c.JSON(http.StatusOK, "NoAssistants")
+		}
+
+		return c.JSON(http.StatusOK, assistants)
+	})
+
+	e.POST("assistant/update/chat", func(c echo.Context) error {
+
+		type GetChatRealtimeRequest struct {
+			UserId    string `json:"userId"`
+			SessionId string `json:"sessionId"`
+			Chat      []struct {
+				Date          string `json:"date"`
+				Message       string `json:"message"`
+				Inline_answer bool   `json:"inline_answer"`
+				Sent          bool   `json:"sent"`
+				User          string `json:"user"`
+			} `json:"chat"`
+		}
+
+		var req GetChatRealtimeRequest
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		clientRef := client.Collection("users").Doc(req.UserId).Collection("Assist_Panel").Doc(req.SessionId)
+
+		chatFormat := []map[string]interface{}{}
+
+		for _, message := range req.Chat {
+			chatFormat = append(chatFormat, map[string]interface{}{
+				"sent":          message.Sent,
+				"date":          message.Date,
+				"inline_answer": message.Inline_answer,
+				"message":       message.Message,
+				"user":          message.User,
+			})
+		}
+
+		_, err := clientRef.Update(c.Request().Context(), []firestore.Update{
+			{
+				Path:  "chat",
+				Value: chatFormat,
+			},
+		})
+
+		if err != nil {
+			log.Printf("Error updating document: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		return c.JSON(http.StatusOK, map[string]string{"status": "success"})
+	})
+
+	e.POST("assistant/get/chat", func(c echo.Context) error {
+		type GetChatRequest struct {
+			SessionId string `json:"sessionId"`
+			ClientId  string `json:"clientId"`
+		}
+
+		var req GetChatRequest
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		clientRef := client.Collection("users").Doc(req.ClientId).Collection("Assist_Panel").Doc(req.SessionId)
+		docSnapshot, err := clientRef.Get(c.Request().Context())
+		if err != nil {
+			log.Printf("Error getting document: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		if docSnapshot.Exists() {
+			data := docSnapshot.Data()
+			chat, ok := data["chat"].([]interface{})
+			if !ok {
+				log.Printf("Error casting chat data")
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Error processing chat data"})
+			}
+			return c.JSON(http.StatusOK, chat)
+		}
+
+		return c.JSON(http.StatusOK, []interface{}{})
+	})
+
 }
 
 type Date struct {

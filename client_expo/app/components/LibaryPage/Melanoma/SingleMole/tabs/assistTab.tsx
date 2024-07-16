@@ -19,7 +19,7 @@ export const AssistTab = ({
 
     const [ selectedAssistant, setSelectedAssistant] = useState<AssistantData | null>(null)
     const [ userData, setUserData] = useState<UserData | null>(null)
-    const [ properAssistants, setProperAssistants] = useState([])
+    const [ properAssistants, setProperAssistants] = useState<AssistantData[]>([])
     const { currentuser } = useAuth()
 
 
@@ -27,7 +27,13 @@ export const AssistTab = ({
         const response = await fetchAssistantsByField({
             field:"dermatologist"
         })
-        setProperAssistants(response)
+        if(response == null){
+            console.log("No assistants found")
+        } else if(response != null && response != "NoAssistant"){
+            setProperAssistants(response)
+        } else if (response == "NoAssistant"){
+            console.log("No assistants found")
+        }
     }
 
     const fetchAllUserData = async () => {

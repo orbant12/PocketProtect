@@ -111,11 +111,11 @@ export type SpotData = {
     melanomaId:string;
     melanomaDoc:{
         location:{x:number,y:number},
-        spot:[
+        spot:
             {slug:Slug,
             pathArray: any[],
             color:string,}
-        ]
+        
     },
     risk:number | null;
     gender:Gender;

@@ -49,12 +49,9 @@ export function dateDistanceFromToday(date1:Timestamp | Date) {
     return 180 - diffDays;
 }
 
-export function timeDistanceFromToday(timestamp:Timestamp) {
-    const { seconds, nanoseconds } = timestamp;
-    const milliseconds = seconds * 1000 + Math.round(nanoseconds / 1000000);
-
+export function timeDistanceFromToday(timestamp:Date) {
     const now = new Date();
-    const inputTime = new Date(milliseconds);
+    const inputTime = new Date(DateToString(timestamp));
     const diffInMilliseconds = now.getTime() - inputTime.getTime();
 
     const diffInSeconds = Math.floor(diffInMilliseconds / 1000);

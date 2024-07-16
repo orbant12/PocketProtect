@@ -11,7 +11,7 @@ import {
 import { db,storage } from './firebase';
 import { ref,  getDownloadURL, uploadBytes,deleteObject} from "firebase/storage";
 import { dateDistanceFromToday, Timestamp } from "../utils/date_manipulations";
-import { Gender, SkinType, Slug, SpotData, Success_Purchase_Client_Checkout_Data, UserData,AssistanceFields } from "../utils/types";
+import { Gender, SkinType, Slug, SpotData, Success_Purchase_Client_Checkout_Data, UserData,AssistanceFields, AssistantData } from "../utils/types";
 import { MelanomaMetaData } from "../pages/Libary/Melanoma/melanomaCenter";
 import { numberOfMolesOnSlugs } from "../components/LibaryPage/Melanoma/slugCard";
 
@@ -598,7 +598,7 @@ export const fetchSingleMoleById = async ({
     userId,
     moleId
 }:API_Melanoma):Promise <null | SpotData> => {
-    const response = await fetch(`${DOMAIN}/client/get/single-mole`, {
+    const response = await fetch(`${DOMAIN}/client/get/melanoma--by-id`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -847,105 +847,102 @@ export const fetchBloodWorkHistory = async ({
 
 //<===> Payment <====>
 
+// DONE
 export const handleSuccesfullPayment = async ({
     checkOutData,
     session_UID
 }:{
     checkOutData:Success_Purchase_Client_Checkout_Data,
     session_UID:string
-    }) => {
-    try {
-        const assistRef = doc(db,"assistants", checkOutData.assistantData.id, "Requests",session_UID)
+    }):Promise <boolean> => {
+        const response = await fetch(`${DOMAIN}/client/handle/successful-payment`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ checkOutData, session_UID }),
+        });
 
-        await createAssistantSession({
-            userId: checkOutData.clientData.id,
-            session_UID:session_UID,
-            data:checkOutData
-        })
-        await setDoc(assistRef,checkOutData)
-        return true
-    } catch(err) {
-        console.log(err)
-        return err
-    }
-}
-
-export const createAssistantSession = async({
-    userId,
-    session_UID,
-    data
-}:{
-    userId:string,
-    session_UID:string,
-    data:Success_Purchase_Client_Checkout_Data
-}) => {
-    try{
-        const clientRef = doc(db,"users",userId, "Assist_Panel",session_UID)
-        await setDoc(clientRef,data)
-    } catch(err) {
-        
-    }
+        if(response.ok){
+            return true;
+        } else {
+            return false;
+        }
 }
 
 //<===> Asssistants <====>
 
+//DONE
 export const fetchAssistantsByField = async ({
     field
 }:{
     field:AssistanceFields
-}) => {
-    try{
-        const assistantRef = collection(db,"assistants")
-        const snapshot = await getDocs(assistantRef)
+}):Promise <null | AssistantData[] | "NoAssistant"> => {
+    const response = await fetch(`${DOMAIN}/assistant/get-by-field/data`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ field }),
+    });
 
-        let assistants = [];
-        snapshot.forEach((doc) => {
-            if(doc.data().field == field){
-                assistants.push(doc.data());
-            } 
+    if(response.ok){
+        const data = await response.json();
+        if(data != "NoAssistant"){
+            return data as AssistantData[];
+        } else {
+            return "NoAssistant"
         }
-        );
-        return assistants;
-    } catch(err) {
-        console.log(err)
-        return err
+    } else {
+        return null
     }
 }
 
+//DONE
 export const fetchAssistantSessions = async({
     userId
-}) => {
-    try{
-        const clientRef = collection(db,"users",userId, "Assist_Panel")
-        const snapshot = await getDocs(clientRef);
-        //ONLY PUT IF doc.data().gender == gender
-        let sessionData = [];
-        snapshot.forEach((doc) => {
-            sessionData.push(doc.data());
-        }
-        );
-        return sessionData;
-    } catch {
+}):Promise <[] | Success_Purchase_Client_Checkout_Data[]> => {
+    const response = await fetch(`${DOMAIN}/client/get/user-sessions`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+    });
 
+    if(response.ok){
+        const data = await response.json();
+        console.log(data[0].chat)
+        return data as Success_Purchase_Client_Checkout_Data[];
+    } else {
+        return []
     }
 }
 
+//DONE
 export const realTimeUpdateChat = async ({
     userId,
     sessionId,
     chat
-}) => {
-    try{
-        const ref = doc(db, "users", userId, "Assist_Panel", sessionId) 
-        await updateDoc(ref,{chat:[...chat]})
-        return true
-     } catch(Err) {
-        console.log(Err)
-        return Err
-     }
+}):Promise <boolean>  => {
+    const response = await fetch(`${DOMAIN}/assistant/update/chat`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, sessionId, chat }),
+    });
+
+    if(response.ok){
+        return true;
+    } else {
+        return false
+    }
 }
 
-export const fetchChat = async({sessionId,clientId}:{sessionId:string,clientId:string}) => {
+
+//DONE
+export const fetchChat = async({sessionId,clientId}:{sessionId:string,clientId:string}):Promise <[] | {date:Timestamp | Date, message:string, inline_answer:boolean,sent:boolean,user:string}[]> => {
     try{
         const ref = doc(db,"users",clientId,"Assist_Panel",sessionId)
         const snapshot = await getDoc(ref)

@@ -22,7 +22,9 @@ export const AssistantSelectorScreen = ({
                     userId: currentuser.uid,
                     moleId: id
                 });
-                return response; 
+                if (response != null){
+                    return response
+                }
             });
             const bodyParts = await Promise.all(promises);
             const filteredBodyParts = bodyParts.filter((part) => part !== undefined);

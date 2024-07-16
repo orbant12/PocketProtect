@@ -15,7 +15,7 @@ export default function CheckoutScreen({
     navigation:any;
 }) {
     const { initPaymentSheet, presentPaymentSheet } = useStripe();
-    const API_URL = "http://localhost:3001/intents";
+    const API_URL = "http://localhost:3001/payment/intents";
 
     const handleSuccesfullSession = async (checkOutData:Success_Purchase_Client_Checkout_Data) => {
         try{
