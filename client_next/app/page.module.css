@@ -1,0 +1,26 @@
+
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.4s ease;;
+}
+
+/*NAV BAR*/
+/* ===== Colours ===== */
+:root{
+    --body-color: rgb(0, 0, 0);
+    --nav-color: rgb(0, 0, 0);
+    --side-nav: #010718;
+    --text-color: #ffffff;
+    --highlight-color: #4afcaf;
+    --primary-color: #cc87fc;
+}
+
+
+/* Mobile */
+@media (max-width: 700px) {
+
+}

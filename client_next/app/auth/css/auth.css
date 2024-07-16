@@ -1,0 +1,264 @@
+/*LOGIN*/
+
+.login-page{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height:90vh;
+    overflow-y: hidden;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-left{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: 100%;
+    background-color: #f5f5f5;
+}
+
+.login-right{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: 100%;
+    background-color: #f5f5f5;
+    border: 1px solid black;
+}
+
+.login-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+    height: 100%;
+}
+
+.login-right-content{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 60%;
+    height: 70%;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 30px;
+}
+
+.login-form h1{
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.remember-me{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.forgot-pass a{
+    font-size: 13px;
+    font-weight: 700;
+    opacity: 0.6;
+    text-decoration: none;
+    color: black;
+}
+
+.login-form input{
+    width: 100%;
+    height: 2.5rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.form-group div{
+    width: 100%;
+    height: 3.5rem;
+    margin-top: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fb9ce3;
+    color: #fff;
+    font-size: 1rem;
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.form-group div:hover{
+    background-color: hsl(305, 100%, 73%);
+    cursor: pointer;
+}
+
+.form-group{
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+}
+
+.form-group label{
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    opacity: 0.4;
+}
+
+.form-group input{
+    width: 100%;
+    height: 3.3rem;
+    padding: 0.5rem;
+    border: 1px solid #dcdcdc;
+    border-radius: 3px;
+    
+}
+
+.other{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.login-right-content form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 70%;
+}
+
+.google-login{
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    box-shadow: inset 0px 0px 1px 0px #000000;
+    border: 1px solid #ccc;
+    margin-top: 20px;
+    align-items: center;
+    opacity: 0.8;
+    border-radius: 10px;
+    transition: ease-in-out 0.3s;
+    background-color: #f8a497;
+}
+
+.google-login:hover{
+    cursor: pointer;
+    opacity: 1;
+}
+
+
+/*REGISTER DETAILS*/
+
+.register-details{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: 100%;
+    background-color: #f5f5f5;
+
+
+}
+
+.details-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 70%;
+    height: 80%;
+;
+}
+
+.details-title{
+    display: flex;
+    flex-direction: column;
+}
+
+.details-title h1{
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.details-title h5{
+    font-size: 14px;
+    opacity: 0.6;
+    font-weight: 500;
+}
+
+.details-form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 80%;
+    border: 1px solid black;
+}
+
+.form-row{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.register-right-content{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 60%;
+    height: 72%;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 30px;
+}
+
+.register-page{
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height:90vh;
+    overflow-y: hidden;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.register-page form{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+
+@media (max-width: 700px) {
+    .login-left{
+        display: none;
+    }
+
+    .login-right{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+
