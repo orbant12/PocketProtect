@@ -4,7 +4,7 @@ import { useAuth } from "../../../context/UserAuthContext";
 import Svg, { Circle, Path } from 'react-native-body-highlighter/node_modules/react-native-svg';
 import { Tabs} from 'react-native-collapsible-tab-view'
 import Entypo from 'react-native-vector-icons/Entypo';
-import { fetchSpotHistory, deleteSpotWithHistoryReset, updateSpotRisk,fetchSelectedMole } from "../../../services/server";
+import { fetchSpotHistory, deleteSpotWithHistoryReset, updateSpotRisk,fetchSelectedMole, FLASK_DOMAIN } from "../../../services/server";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import {app} from "../../../services/firebase"
 import { SingleSlugStyle } from "../../../styles/libary_style";
@@ -19,11 +19,12 @@ import { convertImageToBase64 } from "../../../utils/imageConvert";
 import { SuccessDeleteAnimationSheet } from "../../../components/Common/AnimationSheets/deleteSuccAnimation";
 
 
+
 const SinglePartAnalasis = ({ route,navigation }) => {
 
 //<==================<[ Variables ]>====================>
 
-const FLASK_DOMAIN = "http://192.168.0.100:5001"
+
 
 //Route Params
 const bodyPartID:string = route.params.melanomaId;

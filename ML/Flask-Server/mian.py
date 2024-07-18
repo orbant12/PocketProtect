@@ -6,11 +6,12 @@ import numpy as np
 import base64
 import io
 from PIL import Image
+import os
 
 app = Flask(__name__)
 
 # Load the trained model
-model = load_model('../CNN_model/skin_cancer_model.h5')
+model = load_model('skin_cancer_model.h5')
 
 def preprocess_image(image, target_size):
     if image.mode != 'RGB':
@@ -20,6 +21,10 @@ def preprocess_image(image, target_size):
     image = np.expand_dims(image, axis=0)
     image = image / 255.0  # Rescale the image
     return image
+
+@app.route('/')
+def home():
+    return 'Skin Cancer Prediction Server'
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -50,4 +55,4 @@ def predict():
         return jsonify({'error': str(e)})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5001, debug=True)
+    app.run(host='0.0.0.0',debug=True,port=int(os.environ.get('PORT', 5001)))

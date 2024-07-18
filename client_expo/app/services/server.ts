@@ -1,21 +1,11 @@
-import { 
-    setDoc,
-    doc,
-    collection,
-    getDoc,
-    getDocs,
-    updateDoc,
-    deleteDoc,
-    addDoc,
-} from "firebase/firestore"
-import { db,storage } from './firebase';
-import { ref,  getDownloadURL, uploadBytes,deleteObject} from "firebase/storage";
-import { dateDistanceFromToday, Timestamp } from "../utils/date_manipulations";
+
+import { Timestamp } from "../utils/date_manipulations";
 import { Gender, SkinType, Slug, SpotData, Success_Purchase_Client_Checkout_Data, UserData,AssistanceFields, AssistantData } from "../utils/types";
 import { MelanomaMetaData } from "../pages/Libary/Melanoma/melanomaCenter";
 import { numberOfMolesOnSlugs } from "../components/LibaryPage/Melanoma/slugCard";
 
-const DOMAIN = "http://localhost:3001";
+const DOMAIN = "http://51.21.97.54:3001";
+export const FLASK_DOMAIN = "http://51.21.97.54:5001"
 
 type SpotDeleteTypes = "history" | "latest"
 
@@ -398,62 +388,6 @@ export const deleteSpotWithHistoryReset = async ({
     } else {
         return { firestore: { success: false, message: "Firestore deletion failed" }, storage: { success: false, message: "Storage deletion failed" } };
     }
-    // const deleteFromFirestore = async () => {
-    //     try {
-    //         if(deleteType == "history"){
-    //             const ref = doc(db, "users", userId, "Melanoma", spotId, "History",storage_name);            
-    //             await deleteDoc(ref);
-    //             return { success: true, message: "Deleted from Firestore" };
-    //         } else if ( deleteType == "latest" ) {
-    //             const ref = doc(db, "users", userId, "Melanoma", spotId);                                    
-    //             const closest = collection(db, "users", userId, "Melanoma", spotId, "History");
-    //             const snapshot = await getDocs(closest)
-    //             if (!snapshot.empty) {
-    //                 let historyData = [];
-    //                 snapshot.forEach((doc) => {
-    //                     historyData.push(doc.data());
-    //                 });
-    //                 historyData.sort((a, b) => {
-    //                     return b.created_at.seconds - a.created_at.seconds;
-    //                 });
-    //                 const elementWithHighestDate = historyData[0];       
-    //                 //DELETE
-    //                 const closestDelete = doc(db, "users", userId, "Melanoma", spotId, "History",elementWithHighestDate.storage_name);
-    //                 await deleteDoc(closestDelete)
-    //                 //SET NEW
-    //                 await setDoc(ref,elementWithHighestDate)
-    //                 return { success: true, message: "Deleted from Firestore" };                      
-    //             } else {
-    //                 await deleteDoc(ref)
-    //                 return { success: true, message: "Deleted from Firestore" };   
-    //             }                                               
-    //         }
-    //     } catch (error) {
-    //         console.error("Error deleting from Firestore:", error);
-    //         return { success: false, message: "Failed to delete from Firestore" };
-    //     }
-    // };
-
-    // const deleteFromStorage = async () => {
-    //     try {
-    //         const path = `users/${userId}/melanomaImages/${storage_name}`;
-    //         const storageRef = ref(storage, path);
-    //         await deleteObject(storageRef);
-    //         return { success: true, message: "Deleted from Storage" };
-    //     } catch (error) {
-    //         console.error("Error deleting from Storage:", error);
-    //         return { success: false, message: "Failed to delete from Storage" };
-    //     }
-    // };
-
-    // try {
-    //     const firestoreRes = await deleteFromFirestore();
-    //     const storageRes = await deleteFromStorage();
-    //     return { firestore: firestoreRes, storage: storageRes };
-    // } catch (error) {
-    //     console.error("Error deleting spot:", error);
-    //     return { firestore: { success: false, message: "Firestore deletion failed" }, storage: { success: false, message: "Storage deletion failed" } };
-    // }
 };
 
 //DONE
@@ -668,20 +602,7 @@ export const changePersonalData = async ({
     fieldNameToChange,
     dataToChange,
     userId,
-}:API_User) => {    
-    const changeData = (field: userFields) => {
-        const data = { [field]: dataToChange }; 
-        const ref = doc(db, "users", userId);
-        updateDoc(ref, data);
-    };
-    try{
-        // if (fieldNameToChange == "gender"){
-        //     changeData(fieldNameToChange)
-        // }
-        // if (fieldNameToChange == "birth_date"){
-        //     changeData(fieldNameToChange)
-        // }
-        // return true
+}:API_User):Promise <boolean> => {    
         const response = await fetch(`${DOMAIN}/client/change/personal-data`, {
             method: "PATCH",
             headers: {
@@ -691,10 +612,10 @@ export const changePersonalData = async ({
         });
         if(response.ok){
             return true;
+        } else {
+            return false
         }
-    } catch {
-        return false
-    }
+
 }
 
 
@@ -727,13 +648,18 @@ export const fetchAllDiagnosis = async ({
 export const saveDiagnosisProgress = async ({
     userId,
     data
-}:API_Diagnosis) => {
-    try{
-        const ref = doc(db, "users", userId, "Diagnosis", data.id);
-        await setDoc(ref,data);
-        return true           
-    } catch (error) {
-        console.log(error);
+}:API_Diagnosis):Promise <boolean>  => {
+    const response = await fetch(`${DOMAIN}/client/upload/diagnosis`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, data }),
+    });
+
+    if(response.ok){
+        return true;
+    } else {
         return false
     }
 }
@@ -943,15 +869,18 @@ export const realTimeUpdateChat = async ({
 
 //DONE
 export const fetchChat = async({sessionId,clientId}:{sessionId:string,clientId:string}):Promise <[] | {date:Timestamp | Date, message:string, inline_answer:boolean,sent:boolean,user:string}[]> => {
-    try{
-        const ref = doc(db,"users",clientId,"Assist_Panel",sessionId)
-        const snapshot = await getDoc(ref)
-        if (snapshot.exists()) {
-            return snapshot.data().chat;
-        } else {
-            return [];
-        }
-    } catch {
+    const response = await fetch(`${DOMAIN}/assistant/get/chat`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ sessionId, clientId }),
+    });
+
+    if(response.ok){
+        const data = await response.json();
+        return data;
+    } else {
         return []
     }
 }
