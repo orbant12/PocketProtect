@@ -1,8 +1,12 @@
 # Google Drive
 - https://drive.google.com/drive/folders/1GLvx5o9_MZBhh07r2aUW2Dbg3PyNP0Ur?usp=drive_link
 
+---
+
 
 # Getting Started
+
+---
 
 ## DOCKER
 
@@ -11,13 +15,13 @@
 - ARM64 ( MAC APPLE SILICON )
 
 ```bash
-    docker pull orbant12/skin-cancer-arm64:latest .
+    docker pull orbant12/skin-cancer-arm64:latest 
 ```
 
 - AMD64
 
 ```bash
-    docker pull orbant12/skin-cancer-amd64:latest .
+    docker pull orbant12/skin-cancer-amd64:latest 
 ```
 
 ---

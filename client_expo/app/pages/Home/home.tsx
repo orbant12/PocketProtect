@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../../context/UserAuthContext';
 import Calendar from '../../components/HomePage/Callendar/HorizontalCallendar';
 import {useTimer}  from '../../components/HomePage/timer';
-import { fetchUserData, fetchSpecialSpots, SpecialSpotResponse } from '../../services/server';
+import { fetchUserData, fetchSpecialSpots, } from '../../services/server';
 import { styles } from "../../styles/home_style";
 import { TodayScreen } from '../../components/HomePage/3_types/Today';
 import { DateToString, splitDate, parseDateToMidnight } from '../../utils/date_manipulations';
@@ -105,7 +105,8 @@ const [userData, setUserData] = useState<UserData>(UserData_Default);
     const fetchAllSpots = async () => {
         if(currentuser){
             const response = await fetchSpecialSpots({
-                userId: currentuser.uid,            
+                userId: currentuser.uid,    
+                gender: userData.gender,        
             });
             if (response != null){
                 setOutdatedMelanomaData(response.outdated);

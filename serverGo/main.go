@@ -83,6 +83,7 @@ type (
 
 	GetSpecialMelanomaDataRequest struct {
 		UserID string `json:"userId"`
+		Gender string `json:"gender"`
 	}
 
 	SpecialMelanomaData struct {
@@ -416,7 +417,9 @@ func setupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 				log.Printf("Error converting document to SpotData: %v", err)
 				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 			}
-			AllMelanomaData = append(AllMelanomaData, spotData)
+			if req.Gender == spotData.Gender {
+				AllMelanomaData = append(AllMelanomaData, spotData)
+			}
 		}
 
 		if err != nil {
@@ -525,17 +528,18 @@ func setupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 				log.Printf("Error converting document to SpotData: %v", err)
 				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 			}
+			if spotData.Gender == req.Gender {
+				if spotData.Risk != nil {
 
-			if spotData.Risk != nil {
-
-				if *spotData.Risk >= 0.5 {
-					SpecialMelanomaData.Risky = append(SpecialMelanomaData.Risky, spotData)
+					if *spotData.Risk >= 0.5 {
+						SpecialMelanomaData.Risky = append(SpecialMelanomaData.Risky, spotData)
+					}
+				} else {
+					SpecialMelanomaData.Unfinished = append(SpecialMelanomaData.Unfinished, spotData)
 				}
-			} else {
-				SpecialMelanomaData.Unfinished = append(SpecialMelanomaData.Unfinished, spotData)
-			}
-			if spotData.Created_At.AddDate(0, 0, 182).Before(time.Now()) {
-				SpecialMelanomaData.Outdated = append(SpecialMelanomaData.Outdated, spotData)
+				if spotData.Created_At.AddDate(0, 0, 182).Before(time.Now()) {
+					SpecialMelanomaData.Outdated = append(SpecialMelanomaData.Outdated, spotData)
+				}
 			}
 		}
 		if err != nil {
@@ -953,7 +957,7 @@ func setupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 				log.Printf("Error converting document to SpotData: %v", err)
 				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 			}
-			if spotData.MelanomaDoc.Spot.Slug == req.Slug {
+			if spotData.MelanomaDoc.Spot.Slug == req.Slug && spotData.Gender == req.Gender {
 				MelanomaOnSlugData = append(MelanomaOnSlugData, spotData)
 			}
 		}
@@ -1204,6 +1208,7 @@ func setupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 	e.POST("client/get/number-of-melanoma-on-slug", func(c echo.Context) error {
 		type NumberOfMelanomaOnSlugRequest struct {
 			UserId string `json:"userId"`
+			Gender string `json:"gender"`
 		}
 
 		var req NumberOfMelanomaOnSlugRequest
@@ -1229,13 +1234,14 @@ func setupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 			}
 
-			if spotData.MelanomaDoc.Spot.Slug != "" {
+			if spotData.MelanomaDoc.Spot.Slug != "" && spotData.Gender == req.Gender {
 				slugValues = append(slugValues, spotData.MelanomaDoc.Spot.Slug)
 			}
 		}
 
 		slugCount := make(map[string]int)
 		for _, slug := range slugValues {
+
 			slugCount[slug]++
 		}
 
@@ -1425,6 +1431,111 @@ func setupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 			log.Printf("No such document!")
 			return c.JSON(http.StatusNotFound, map[string]string{"error": "No such document!"})
 		}
+	})
+
+	e.POST("client/change/melanoma-picture", func(c echo.Context) error {
+		type ChangeMelanomaPictureRequest struct {
+			UserId       string `json:"userId"`
+			SpotId       string `json:"spotId"`
+			MelanomaBlob []byte `json:"melanomaBlob"`
+		}
+
+		var req ChangeMelanomaPictureRequest
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		// Get the spot data
+		doc, err := client.Collection("users").Doc(req.UserId).Collection("Melanoma").Doc(req.SpotId).Get(context.Background())
+
+		if err != nil {
+			log.Printf("Error getting melanoma document: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		if doc.Exists() {
+			var spotData SpotData
+			if err := doc.DataTo(&spotData); err != nil {
+				log.Printf("Error converting document to SpotData: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			}
+
+			// Delete the old image from Storage
+			bucketName := "pocketprotect-cc462.appspot.com"
+			path := "users/" + req.UserId + "/melanomaImages/" + req.SpotId
+			bucket := storageClient.Bucket(bucketName) // Remove "gs://" prefix
+			obj := bucket.Object(path)
+			if err := obj.Delete(context.Background()); err != nil {
+				log.Printf("Error deleting melanoma image: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			}
+
+			// Upload the new image to Storage
+			newPath := "users/" + req.UserId + "/melanomaImages/" + spotData.Storage_Name
+			ctx := context.Background()
+			newObj := bucket.Object(newPath)
+			w := newObj.NewWriter(ctx)
+			_, err := w.Write(req.MelanomaBlob)
+			if err != nil {
+				log.Fatalf("Failed to write to storage: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to write to storage"})
+			}
+			if err := w.Close(); err != nil {
+				log.Fatalf("Failed to close writer: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to close writer"})
+			}
+
+			// Set object ACL to publicRead
+			if err := obj.ACL().Set(ctx, storage.AllUsers, storage.RoleReader); err != nil {
+				log.Fatalf("Failed to set object ACL: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to set object ACL"})
+			}
+
+			attrs, err := obj.Attrs(ctx)
+			if err != nil {
+				log.Fatalf("Failed to get object attributes: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to get object attributes"})
+			}
+
+			downloadURL := attrs.MediaLink
+
+			newSpotData := map[string]interface{}{
+				"melanomaId": spotData.MelanomaId,
+				"melanomaDoc": map[string]interface{}{
+					"location": map[string]float64{
+						"x": spotData.MelanomaDoc.Location.X,
+						"y": spotData.MelanomaDoc.Location.Y,
+					},
+					"spot": map[string]interface{}{
+						"slug":      spotData.MelanomaDoc.Spot.Slug,
+						"pathArray": spotData.MelanomaDoc.Spot.PathArray,
+						"color":     spotData.MelanomaDoc.Spot.Color,
+					},
+				},
+				"risk":               spotData.Risk,
+				"gender":             spotData.Gender,
+				"storage_name":       spotData.Storage_Name,
+				"storage_location":   spotData.Storage_Location,
+				"melanomaPictureUrl": downloadURL,
+				"created_at":         spotData.Created_At,
+			}
+
+			// Update the Firestore document with the new image URL
+			_, err = client.Collection("users").Doc(req.UserId).Collection("Melanoma").Doc(req.SpotId).Set(ctx, newSpotData)
+
+			if err != nil {
+				log.Printf("Error updating melanoma document: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			}
+
+			return c.NoContent(http.StatusNoContent)
+		} else {
+			log.Printf("No such document!")
+			return c.JSON(http.StatusNotFound, map[string]string{"error": "No such document!"})
+		}
+
 	})
 }
 

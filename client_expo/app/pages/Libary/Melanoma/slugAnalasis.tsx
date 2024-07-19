@@ -1,5 +1,5 @@
-import React,{ useState,useCallback } from "react";
-import { View, ScrollView,Text, Pressable,TouchableOpacity,RefreshControl,Image } from "react-native";
+import React,{ useState,useCallback, useEffect, useRef } from "react";
+import { View, ScrollView,Text, Pressable,TouchableOpacity,RefreshControl,Image, ActivityIndicator, Animated } from "react-native";
 import { useAuth } from "../../../context/UserAuthContext";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {fetchSlugMelanomaData,updateCompletedParts,fetchCompletedParts } from "../../../services/server";
@@ -11,6 +11,8 @@ import { SlugStyles } from "../../../styles/libary_style";
 import { decodeParts } from "../../../utils/melanoma/decodeParts";
 import { styles_shadow } from "../../../styles/shadow_styles";
 import { BodyPart, Gender, SkinType, UserData,Slug, SpotData  } from "../../../utils/types";
+import { LinearGradient } from "expo-linear-gradient";
+import LottieView from "lottie-react-native";
 
 
 const SlugAnalasis = ({ route,navigation }) => {
@@ -158,7 +160,7 @@ return(
                 style={{width:"100%",height:"100%"}} 
             >
                 {melanomaData.length != 0 ?
-                <View style={{width:"100%",alignItems:"center",marginBottom:250}}>                               
+                <View style={{width:"100%",alignItems:"center",paddingBottom:500}}>                               
                     {melanomaData.map((data,index) => (
                         data.melanomaDoc.spot.slug == bodyPartSlug.slug  ? (
                             <MoleBar
@@ -214,12 +216,21 @@ const MoleBar = ({
     highlighted:string;
     showSpot:(id:string) => void;
 }) => {
+
+    const [loading, setLoading] = useState<boolean>(true);
+
+    const imageLoad = useRef(null);
+
     return(
         <TouchableOpacity onPress={() => handleSpotOpen(data)} key={index} style={[SlugStyles.melanomaBox,styles_shadow.shadowContainer]}>
-        <Image 
-            source={{ uri:data.melanomaPictureUrl}}
-            style={{width:80,height:80,borderWidth:0.3,borderRadius:10}}
-        />
+            <ImageLoaderComponent 
+                imageLoad={imageLoad}
+                loading={loading}
+                data={data}
+                setLoading={setLoading}
+                w={80}
+                h={80}
+            />
         <View style={SlugStyles.melanomaBoxL}>                            
             <Text style={{fontSize:14,fontWeight:"600",color:"black"}}>{data.melanomaId}</Text>
             <Text style={{fontSize:12,fontWeight:"600",color:"black",opacity:0.6,marginTop:2}}>Risk: <Text style={{fontSize:10,fontWeight:"800"}}>{data.risk == null ? "Not analised" : Math.round(data.risk * 100) / 100}</Text></Text>
@@ -238,5 +249,36 @@ const MoleBar = ({
             />
         </Pressable>
     </TouchableOpacity>
+    )
+}
+
+
+export const ImageLoaderComponent = ({imageLoad, loading, data, setLoading,w,h,style  }:{data:SpotData | {melanomaPictureUrl:string}; loading:boolean; imageLoad:any; setLoading:(arg:boolean) => void;w:number; h:number;style?:any}) => {
+    return(
+        <View style={[{ position: 'relative', width: w, height: h,borderColor:"black",borderWidth:0.3,borderRadius:10,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",backgroundColor:"#ebebeb" },style]}>
+        {/* Animated Gradient Loader */}
+        {loading && (
+            <LottieView
+                autoPlay
+                ref={imageLoad}
+                style={{
+                width: w - 8,
+                height:h - 8,
+                borderRadius:10,
+                backgroundColor: '#fffff',
+                }}
+                source={require('../../../components/Common/AnimationSheets/lotties/imageLoad.json')}
+            />
+        )}
+        
+        {/* Image */}
+        <Image 
+            source={{ uri: data.melanomaPictureUrl }}
+            style={[{ width: w , height: h, borderWidth: 0.3, borderRadius: 10, position: 'absolute' }]}
+            onLoadEnd={() => setLoading(false)}
+            onLoadStart={() => setLoading(true)}
+        />
+
+    </View>
     )
 }

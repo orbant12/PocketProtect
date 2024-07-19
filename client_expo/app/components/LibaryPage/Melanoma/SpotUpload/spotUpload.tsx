@@ -3,6 +3,8 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import SampleImage from "../../../../assets/IMG_0626.jpg"
 import { spotUpload_2_styles } from "../../../../styles/libary_style";
 import { ScrollView } from "react-native-gesture-handler";
+import { ImageLoaderComponent } from "../../../../pages/Libary/Melanoma/slugAnalasis";
+import React from "react";
 
 export function SpotUpload({
     uploadedSpotPicture,
@@ -96,6 +98,10 @@ export const AlreadyUploadedSpots = ({
     setMoleToDeleteId:(arg:string) => void;
 
 }) => {
+
+    const [loading, setLoading] = React.useState<boolean>(true);
+    const imageLoad = React.useRef<any>(null);
+
     return(
         <>
         {currentSlugMemory.length != 0 ? <View style={{width:"100%",borderWidth:0.4,marginBottom:10,opacity:0.2}} />:null}
@@ -103,9 +109,14 @@ export const AlreadyUploadedSpots = ({
             currentSlugMemory.map((data,index) => (
                 <View key={index}>
                     <View style={[{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:300,borderWidth:0.8,borderColor:"lightgray",padding:10,marginTop:10,borderRadius:20},highlighted == data.id && {position:"absolute",top:-460,backgroundColor:"white",zIndex:100,left:-150}]}>
-                        <Image
-                            source={{uri: data.picture }}
-                            style={{width:75,height:75,borderWidth:1,borderRadius:10,}}
+                        <ImageLoaderComponent 
+                            w={75}
+                            h={75}
+                            setLoading={setLoading}
+                            loading={loading}
+                            imageLoad={imageLoad}
+                            style={{borderWidth:1}}
+                            data={{melanomaPictureUrl:data.picture}}
                         />
                         <Text>{data.id}</Text>
                         <View style={{flexDirection:"row",alignItems:"center"}}>

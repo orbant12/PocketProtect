@@ -7,7 +7,7 @@
 ### Step 1: PULL the image from My Docker Hub Repository
 
 ```bash
-    docker pull orbant12/g-w-s:latest .
+    docker pull orbant12/g-w-s:latest 
 ```
 
 ---

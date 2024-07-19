@@ -2,11 +2,17 @@ import { SingleSlugStyle } from "../../../../../styles/libary_style";
 import { styles_shadow } from "../../../../../styles/shadow_styles";
 import { formatTimestampToString , dateDistanceFromToday, DateToString} from "../../../../../utils/date_manipulations";
 import LoadingOverlay from "../../../../Common/Loading/processing"
-import { View, Text, Image, TouchableOpacity } from "react-native";
+import { View, Text, Image, TouchableOpacity, Modal } from "react-native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { SpotData } from "../../../../../utils/types";
 import { OneOptionBox } from "../../boxes/oneOptionBox";
 import { opacity } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
+import { DiagnosisProcessModal } from "../../../../Common/AnimationSheets/diagnosisAnimation";
+import { CameraViewModal } from "../../../../../pages/Libary/Melanoma/components/cameraModal";
+import { useState } from "react";
+import { useAuth } from "../../../../../context/UserAuthContext";
+import { convertImageToBase64 } from "../../../../../utils/imageConvert";
+import { changeMelanomaPicture } from "../../../../../services/server";
 
 
 export const MoleTab = ({
@@ -23,13 +29,16 @@ export const MoleTab = ({
     setSelectedMelanoma,
     melanomaHistory,
     handleUpdateMole,
-    handleCallNeuralNetwork
+    handleCallNeuralNetwork,
+    setDiagnosisLoading,
+    simulateDiagnosis
 }:
 {
     moleDataRef: any;
     bodyPart: SpotData | null;
     selectedMelanoma: SpotData | null;
-    diagnosisLoading: boolean;
+    diagnosisLoading: "loading" | "first_loaded" | "repeat_loaded" | null;
+    setDiagnosisLoading:(diagnosisLoading:"first_loaded" | "repeat_loaded"| null | "loading") => void;
     setDeleteModal:(deleteModal:boolean) => void;
     setMoleToDelete:(moleToDelete:SpotData) => void;
     deleteModal: boolean;
@@ -38,10 +47,20 @@ export const MoleTab = ({
     setSelectedMelanoma:(selectedMelanoma:SpotData) => void;
     melanomaHistory: SpotData[];
     handleUpdateMole:(moleId:string) => void;
-    handleCallNeuralNetwork:(molePictureUrl:string) => void;
+    handleCallNeuralNetwork:(molePictureUrl:string,type:"first_loaded" | "repeat_loaded" ) => void;
     navigation: any;
+    simulateDiagnosis:() => void;
 }) => {
 
+    const [warningRepeatActive,setWarningRepeatActive] = useState(false);
+    const [newMoleImage,setNewMoleImage] = useState(null);
+
+    const { currentuser } = useAuth();
+
+    const toggleCameraOverlay = () => {
+        setWarningRepeatActive(!warningRepeatActive);
+        setDiagnosisLoading(null)
+    };
     return(
         <>
         {bodyPart != null &&
@@ -58,11 +77,13 @@ export const MoleTab = ({
                 selectedMelanoma.risk != null ?
                     <MalignantOrBeningDisplay 
                         selectedMelanoma={selectedMelanoma}
+                        handleCallNeuralNetwork={handleCallNeuralNetwork}
                     />
                     :
                     <DiagnosisStarter 
                         handleCallNeuralNetwork={handleCallNeuralNetwork}
                         selectedMelanoma={selectedMelanoma}
+                        simulateDiagnosis={simulateDiagnosis}
                     />                    
             }         
                 <View style={[{marginTop:50,alignItems:"center",width:"100%",borderTopWidth:0.3,paddingTop:30}]} >
@@ -180,15 +201,45 @@ export const MoleTab = ({
                 </View>
             </View>
         }
-        <LoadingOverlay 
-            visible={diagnosisLoading}
+        <DiagnosisProcessModal
+            loading={diagnosisLoading}
+            setLoading={(e:"repeat_loaded" | null) => {
+                if (e !== "repeat_loaded") {
+                    setDiagnosisLoading(e);
+                } else {
+                    setDiagnosisLoading(null);
+                    setWarningRepeatActive(true);
+                }
+            }}
+            imageSource={selectedMelanoma != null ? selectedMelanoma.melanomaPictureUrl : null}
+            selectedMelanoma={selectedMelanoma}
+        />
+
+        <CameraViewModal
+            isCameraOverlayVisible={warningRepeatActive}
+            setUploadedSpotPicture={async (e) => {
+                setDiagnosisLoading(null)
+                const pictureUrl = await convertImageToBase64(e);
+                await changeMelanomaPicture({
+                    userId: currentuser.uid,
+                    spotId: selectedMelanoma.melanomaId,
+                    melanomaBlob: pictureUrl
+                })
+                handleCallNeuralNetwork(e,"repeat_loaded");}}
+            toggleCameraOverlay={toggleCameraOverlay}
         />
     </>
     )
 }
 
+
+
+
+
+
 const MalignantOrBeningDisplay = ({
-    selectedMelanoma
+    selectedMelanoma,
+    handleCallNeuralNetwork
 }) => {
     return(
     <View style={[{width:"85%",padding:30,alignItems:"center",backgroundColor:"white",borderBottomLeftRadius:30,borderBottomRightRadius:30,zIndex:-1}]}>
@@ -209,21 +260,33 @@ const MalignantOrBeningDisplay = ({
             </View>
         </View>
         }
+
+<View style={[{width:330,alignItems:"center",padding:20,backgroundColor:"white",borderBottomLeftRadius:30,borderBottomRightRadius:30,zIndex:-1,paddingTop:30}]}>    
+        <Text style={{width:"90%",textAlign:"center",fontSize:25,color:"black",fontWeight:"800",opacity:0.6,marginBottom:25}}>Diagnosis</Text>                            
+        <TouchableOpacity onPress={() => handleCallNeuralNetwork(selectedMelanoma.melanomaPictureUrl,"repeat_loaded")}   style={[{width:"100%",padding:20,backgroundColor:"white",alignItems:"center",borderRadius:10,marginBottom:20,borderColor:"black",borderWidth:2},styles_shadow.hightShadowContainer]}>
+            <Text style={{color:"black",opacity:0.8,fontWeight:"700",fontSize:16}}>Reanalyze with Deep Learning</Text>
+        </TouchableOpacity>
+        <Text style={{width:"90%",textAlign:"center",fontSize:10,color:"black",fontWeight:"800",opacity:0.3,marginBottom:5}}>Our AI has 90% accuracy !</Text>
+    </View>   
     </View>
     )
 }
 
+
+
 const DiagnosisStarter = ({
     handleCallNeuralNetwork,
-    selectedMelanoma
+    selectedMelanoma,
+    simulateDiagnosis
 }) => {
     return(
         <View style={[{width:330,alignItems:"center",padding:20,backgroundColor:"white",borderBottomLeftRadius:30,borderBottomRightRadius:30,zIndex:-1,paddingTop:30}]}>
         <Text style={{width:"90%",textAlign:"center",fontSize:10,color:"black",fontWeight:"800",opacity:0.3,marginBottom:5}}>Our AI has 90% accuracy !</Text>
         <Text style={{width:"90%",textAlign:"center",fontSize:25,color:"black",fontWeight:"800",opacity:0.6,marginBottom:25}}>Diagnosis</Text>                                
-        <TouchableOpacity onPress={() => handleCallNeuralNetwork(selectedMelanoma.melanomaPictureUrl)} style={[{width:"100%",padding:20,backgroundColor:"white",alignItems:"center",borderRadius:10,marginBottom:20,borderColor:"black",borderWidth:2},styles_shadow.hightShadowContainer]}>
+        <TouchableOpacity onPress={() => handleCallNeuralNetwork(selectedMelanoma.melanomaPictureUrl,"first_loaded")}   style={[{width:"100%",padding:20,backgroundColor:"white",alignItems:"center",borderRadius:10,marginBottom:20,borderColor:"black",borderWidth:2},styles_shadow.hightShadowContainer]}>
             <Text style={{color:"black",opacity:0.8,fontWeight:"700",fontSize:16}}>Start Deep Learning AI Model</Text>
         </TouchableOpacity>
     </View>   
     )
 }
+

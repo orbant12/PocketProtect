@@ -7,7 +7,8 @@ import { formatTimestampToString, splitDate } from "../../../utils/date_manipula
 import { styles_shadow } from "../../../styles/shadow_styles";
 import { BodyPart, SpotData } from "../../../utils/types";
 import { Home_Navigation_Paths } from "../../../pages/Home/home";
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
+import { ImageLoaderComponent } from "../../../pages/Libary/Melanoma/slugAnalasis";
 
 export const TodayScreen = ({
     allReminders,
@@ -160,12 +161,21 @@ const OutdatedMelanomaBox = ({
     type:"risk" | "" | "unfinished";
     handleNavigation:({path,data}:{path:Home_Navigation_Paths, data:SpotData}) => void;
 }) => {
+    
+    const imageLoad = useRef<any>(null);
+    const [loading,setLoading] = useState<boolean>(false);
+
     return(
         <View style={{width:"100%",borderBottomWidth:1,borderColor:"gray",alignItems:"center",flexDirection:"row",paddingBottom:20,padding:10,borderRadius:0,marginBottom:10,justifyContent:"space-between"}}>
         <View style={{width:"70%",flexDirection:"row",alignItems:"center"}}>
-            <Image 
-                source={{uri: data.melanomaPictureUrl}}
-                style={{width:50,height:50,borderWidth:1,borderColor:"white",borderRadius:10}}
+            <ImageLoaderComponent
+                imageLoad={imageLoad}
+                loading={loading}
+                data={data}
+                setLoading={setLoading}
+                style={{borderWidth:1,borderColor:"white",borderRadius:10}}
+                w={50}
+                h={50}
             />
             <View style={{marginLeft:10}}>
                 <Text style={{color:"white",fontWeight:"600",opacity:0.8,fontSize:13}}>{data.melanomaId}</Text>

@@ -22,20 +22,13 @@ export const SuccessAnimationSheet = ({active,loading,setActive}) => {
 
     const repeatTillVisible = () => {
         setTimeout(() => {
-            if (loading && animationLoad.current) {
+            if (loading != false && animationLoad.current) {
                 animationLoad.current.reset();
                 animationLoad.current.play();
                 repeatTillVisible();
             }
         }, 1000);
     };
-
-    useEffect(() => {
-        if (loading && animationLoad.current) {
-            animationLoad.current.play();
-            repeatTillVisible();
-        }
-    }, [loading]);
 
     if (loading && animationLoad.current) {
         animationLoad.current.play();
@@ -60,7 +53,7 @@ export const SuccessAnimationSheet = ({active,loading,setActive}) => {
                         style={{
                         width: 130,
                         height:130,
-                        backgroundColor: '#fffff',
+                        backgroundColor: 'transparent',
                         }}
                         source={require('./lotties/DoneAnimation.json')}
                     />
@@ -78,7 +71,7 @@ export const SuccessAnimationSheet = ({active,loading,setActive}) => {
                         style={{
                         width: 230,
                         height: 230,
-                        backgroundColor: '#ffff',
+                        backgroundColor: 'transparent',
                         position:"absolute",
                         top:-10,
                         }}
@@ -99,7 +92,7 @@ export const SuccessAnimationSheet = ({active,loading,setActive}) => {
                         style={{
                         width: 200,
                         height:200,
-                        backgroundColor: '#fffff',
+                        backgroundColor: 'transparent',
                         }}
                         source={require('./lotties/failed.json')}
                     />

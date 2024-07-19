@@ -165,7 +165,7 @@ export default AllMelanomaAdd
 
 const ColorLabels = () => {
     return(
-        <View style={[spotUploadStyle.colorExplain,{top:100}]}>
+        <View style={[spotUploadStyle.colorExplain]}>
         <View style={spotUploadStyle.colorExplainRow} >
         <View style={spotUploadStyle.redDot} />
             <Text style={{position:"relative",marginLeft:10,fontWeight:"500",opacity:0.8}}>Empty</Text>

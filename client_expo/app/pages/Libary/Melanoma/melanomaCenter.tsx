@@ -104,6 +104,7 @@ const SingleFeature = ({navigation}) => {
         if(currentuser){
             const response = await fetchNumberOfMolesOnSlugs({
                 userId: currentuser.uid,
+                gender: userData.gender
             });
             setNumberOfMolesOnSlugs(response)
         }
@@ -344,7 +345,7 @@ const MelanomaContent = ({
         <View style={styles_shadow.shadowContainer}>
             <Body
                 data={affectedSlugs}
-                gender={userData.gender}
+                gender={"male"}
                 side={selectedSide}
                 scale={1.1}
                 colors={['#FF0000','#A6FF9B','#FFA8A8']}
@@ -409,6 +410,7 @@ const MelanomaContent = ({
                             melanomaData={melanomaData}
                             index={index}
                             key={index}
+                            skin_type={melanomaMetaData.skin_type}
                         />
                     ))
                 )}

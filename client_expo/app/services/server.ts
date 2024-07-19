@@ -427,6 +427,7 @@ export const fetchNumberOfMoles = async ({
 //DONE
 export const fetchNumberOfMolesOnSlugs = async ({
     userId, 
+    gender
 }:API_Melanoma):Promise <numberOfMolesOnSlugs | []> =>{
     const response = await fetch(`${DOMAIN}/client/get/number-of-melanoma-on-slug`, {
         method: "POST",
@@ -435,6 +436,7 @@ export const fetchNumberOfMolesOnSlugs = async ({
         },
         body: JSON.stringify({
             userId,
+            gender
         })}
     );
 
@@ -488,7 +490,8 @@ export const fetchCompletedParts = async ({
 
 //DONE
 export const fetchSpecialSpots = async ({
-    userId
+    userId,
+    gender
 }:API_Melanoma): Promise <SpecialSpotResponse | null> => {
     try{
         const response = await fetch(`${DOMAIN}/client/get/special-moles`, {
@@ -496,7 +499,7 @@ export const fetchSpecialSpots = async ({
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ userId }),
+            body: JSON.stringify({ userId,gender }),
         });
         if(response.ok){
             const data = await response.json();
@@ -574,6 +577,28 @@ export const checkUniqueBirthmarkId = async ({
         return null
     }
 }
+
+export const changeMelanomaPicture = async ({
+    userId,
+    melanomaBlob,
+    spotId
+}:API_Melanoma) => {
+    const response = await fetch(`${DOMAIN}/client/change/melanoma-picture`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, melanomaBlob, spotId }),
+    });
+
+    if(response.ok){
+        return true;
+    } else {
+        return false
+    }
+
+}
+
 
 //<===> USER <====>
 
