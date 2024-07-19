@@ -293,7 +293,7 @@ func handleRoot(c echo.Context) error {
 }
 
 func setupFirebase() *firestore.Client {
-	opt := option.WithCredentialsFile("../../Skin_Cancer/keys/serviceAccountKey.json")
+	opt := option.WithCredentialsFile("serviceAccountKey.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Fatal(err)
@@ -306,7 +306,7 @@ func setupFirebase() *firestore.Client {
 }
 
 func setupStorageClient() *storage.Client {
-	opt := option.WithCredentialsFile("../../Skin_Cancer/keys/serviceAccountKey.json")
+	opt := option.WithCredentialsFile("serviceAccountKey.json")
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx, opt)
 	if err != nil {

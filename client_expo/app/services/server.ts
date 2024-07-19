@@ -4,8 +4,11 @@ import { Gender, SkinType, Slug, SpotData, Success_Purchase_Client_Checkout_Data
 import { MelanomaMetaData } from "../pages/Libary/Melanoma/melanomaCenter";
 import { numberOfMolesOnSlugs } from "../components/LibaryPage/Melanoma/slugCard";
 
-const DOMAIN = "http://51.21.97.54:3001";
-export const FLASK_DOMAIN = "http://51.21.97.54:5001"
+//const DOMAIN = "http://51.21.97.54:3001";
+const DOMAIN = "http://localhost:3001";
+
+export const FLASK_DOMAIN =  "http://localhost:5001";
+//export const FLASK_DOMAIN = "http://51.21.97.54:5001"
 
 type SpotDeleteTypes = "history" | "latest"
 
