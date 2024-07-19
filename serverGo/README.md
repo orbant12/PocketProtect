@@ -1,6 +1,26 @@
 # GO REST API
 
-## Getting Started
+# Getting Started
+
+## DOCKER
+
+### Step 1: PULL the image from My Docker Hub Repository
+
+```bash
+    docker pull orbant12/g-w-s:latest .
+```
+
+---
+
+### Step 2: RUN the image
+
+```bash
+    docker run -p 5001:5001 orbant12/g-w-s:latest
+```
+
+---
+
+## MANUALLY
 
 ### Step 1: Install Packages
 
