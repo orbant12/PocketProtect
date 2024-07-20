@@ -13,6 +13,7 @@ import { useState } from "react";
 import { useAuth } from "../../../../../context/UserAuthContext";
 import { convertImageToBase64 } from "../../../../../utils/imageConvert";
 import { changeMelanomaPicture } from "../../../../../services/server";
+import { ImageLoaderComponent } from "../../../../../pages/Libary/Melanoma/slugAnalasis";
 
 
 export const MoleTab = ({
@@ -31,7 +32,6 @@ export const MoleTab = ({
     handleUpdateMole,
     handleCallNeuralNetwork,
     setDiagnosisLoading,
-    simulateDiagnosis
 }:
 {
     moleDataRef: any;
@@ -49,7 +49,6 @@ export const MoleTab = ({
     handleUpdateMole:(moleId:string) => void;
     handleCallNeuralNetwork:(molePictureUrl:string,type:"first_loaded" | "repeat_loaded" ) => void;
     navigation: any;
-    simulateDiagnosis:() => void;
 }) => {
 
     const [warningRepeatActive,setWarningRepeatActive] = useState(false);
@@ -57,9 +56,13 @@ export const MoleTab = ({
 
     const { currentuser } = useAuth();
 
-    const toggleCameraOverlay = () => {
+    const toggleCameraOverlay = (type:"back" | "finish") => {
         setWarningRepeatActive(!warningRepeatActive);
-        setDiagnosisLoading(null)
+        if (type == "finish") {
+            setDiagnosisLoading(null)
+        } else {
+            setDiagnosisLoading("repeat_loaded");
+        }
     };
     return(
         <>
@@ -83,7 +86,6 @@ export const MoleTab = ({
                     <DiagnosisStarter 
                         handleCallNeuralNetwork={handleCallNeuralNetwork}
                         selectedMelanoma={selectedMelanoma}
-                        simulateDiagnosis={simulateDiagnosis}
                     />                    
             }         
                 <View style={[{marginTop:50,alignItems:"center",width:"100%",borderTopWidth:0.3,paddingTop:30}]} >
@@ -92,10 +94,11 @@ export const MoleTab = ({
                     {selectedMelanoma != null && bodyPart != null &&
                     <>
                         <View style={[SingleSlugStyle.melanomaBox, highlight != selectedMelanoma.storage_name && {borderColor:"white"}]}>
-                            
-                            <Image 
-                                source={{ uri:selectedMelanoma.melanomaPictureUrl}}
-                                style={{width:80,height:80,borderWidth:1,borderRadius:10}}
+                            <ImageLoaderComponent
+                                w={80}
+                                h={80}
+                                style={{borderWidth:1,borderRadius:10}}
+                                data={selectedMelanoma}
                             />
                             <View style={SingleSlugStyle.melanomaBoxL}>                            
                                 <Text style={{fontSize:14,fontWeight:"600",color:"black"}}>{selectedMelanoma.melanomaId}</Text>
@@ -213,6 +216,7 @@ export const MoleTab = ({
             }}
             imageSource={selectedMelanoma != null ? selectedMelanoma.melanomaPictureUrl : null}
             selectedMelanoma={selectedMelanoma}
+            navigation={navigation}
         />
 
         <CameraViewModal
@@ -240,6 +244,9 @@ export const MoleTab = ({
 const MalignantOrBeningDisplay = ({
     selectedMelanoma,
     handleCallNeuralNetwork
+}:{
+    selectedMelanoma:SpotData;
+    handleCallNeuralNetwork:(molePictureUrl:string,type:"first_loaded" | "repeat_loaded") => void;
 }) => {
     return(
     <View style={[{width:"85%",padding:30,alignItems:"center",backgroundColor:"white",borderBottomLeftRadius:30,borderBottomRightRadius:30,zIndex:-1}]}>
@@ -276,8 +283,10 @@ const MalignantOrBeningDisplay = ({
 
 const DiagnosisStarter = ({
     handleCallNeuralNetwork,
-    selectedMelanoma,
-    simulateDiagnosis
+    selectedMelanoma
+}:{
+    handleCallNeuralNetwork:(molePictureUrl:string,type:"first_loaded" | "repeat_loaded") => void;
+    selectedMelanoma:SpotData;
 }) => {
     return(
         <View style={[{width:330,alignItems:"center",padding:20,backgroundColor:"white",borderBottomLeftRadius:30,borderBottomRightRadius:30,zIndex:-1,paddingTop:30}]}>

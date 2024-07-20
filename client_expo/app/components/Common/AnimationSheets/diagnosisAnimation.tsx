@@ -4,17 +4,20 @@ import React, { useRef, useEffect } from 'react';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { styles_shadow } from "../../../styles/shadow_styles";
 import { SpotData } from "../../../utils/types";
+import { Navigation_AssistCenter } from "../../../navigation/navigation";
 
 export const DiagnosisProcessModal = ({
     loading,
     setLoading,
     imageSource,
-    selectedMelanoma
+    selectedMelanoma,
+    navigation
 }:{
     loading:"first_loaded" | "repeat_loaded" | null | "loading" ;
     setLoading:(loading:"loading" | null | "first_loaded" | "repeat_loaded") => void;
     imageSource:string;
     selectedMelanoma:SpotData;
+    navigation:any;
 }) => {
 
     const animationLoad = useRef(null);
@@ -54,8 +57,8 @@ export const DiagnosisProcessModal = ({
 
 
     return(
-        <Modal visible={loading != null} animationType="fade">
-            <View style={{width:"100%",height:"100%",backgroundColor:"rgba(0,0,0,0.3)",display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",position:"absolute"}}>
+        <Modal visible={loading != null} animationType="fade" transparent >
+            <View style={{width:"100%",height:"100%",backgroundColor:"rgba(0,0,0,0.9)",display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",position:"absolute"}}>
             <View style={[loading === "first_loaded" || loading == "repeat_loaded" ? {width:300,height:420,justifyContent:"space-between",padding:10} : loading === "loading" ? {width:300,height:420,justifyContent:"space-between",padding:10} : {width:300,height:400,justifyContent:"space-between",padding:10},{backgroundColor:"white",display:"flex",flexDirection:"column",alignItems:"center",borderRadius:30},styles_shadow.hightShadowContainer]}>
             {!(loading == "loading") ? (
             <>
@@ -109,17 +112,25 @@ export const DiagnosisProcessModal = ({
                         <>
                             <LottieView
                                 autoPlay
+                                speed={0.9}
                                 ref={animationSucc}
                                 style={{
-                                    width: 130,
-                                    height:130,
+                                    width: 170,
+                                    height:170,
                                     backgroundColor: 'transparent',
                                 }}
-                                source={require('./lotties/DoneAnimation.json')}
+                                source={require('./lotties/succ.json')}
                             />
-                            <Text style={{fontWeight:"600",fontSize:15,textAlign:"center",width:"80%"}}>GOOD</Text>
-                            <TouchableOpacity onPress={() => setLoading(null)} style={{padding:10,width:"80%",alignItems:"center",borderWidth:0.3,marginTop:10,borderRadius:100}}>
-                                <Text> Close </Text>
+                            <View style={{alignItems:"center", width:"100%",padding:10, backgroundColor:"rgba(0,0,0,0.1)", borderRadius:5}}>
+                                <Text style={{fontWeight:"600",fontSize:20,textAlign:"center",width:"100%"}}>Seem's perfect !</Text>
+                                <Text style={{fontWeight:"600",fontSize:15,textAlign:"center",width:"100%",marginTop:3}}>Your mole appears to be within the ABCDE guidelines ...</Text>
+                            </View>
+                            <Text style={{fontWeight:"600",fontSize:15,textAlign:"center",width:"80%",marginVertical:20}}>Prediction: {selectedMelanoma.risk}</Text>
+                            <TouchableOpacity onPress={() => setLoading(null)} style={{padding:10,width:"80%",alignItems:"center",borderWidth:2,marginTop:10,borderRadius:100,borderColor:"black", backgroundColor:"rgba(0,255,0,0.3)"}}>
+                                <Text style={{fontWeight:"800"}}> Done </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => setLoading("repeat_loaded")} style={{padding:10,width:"80%",alignItems:"center",borderWidth:0,marginTop:0,borderRadius:100}}>
+                                <Text style={{fontWeight:"700",opacity:0.6}}> Try again </Text>
                             </TouchableOpacity>
                         </>
                     ):(
@@ -128,23 +139,25 @@ export const DiagnosisProcessModal = ({
                                 autoPlay
                                 ref={animationSucc}
                                 style={{
-                                    width: 130,
-                                    height:130,
+                                    width: 110,
+                                    height:110,
                                     backgroundColor: 'transparent',
                                 }}
-                                source={require('./lotties/Warning.json')}
+                                source={require('./lotties/alert.json')}
                             />
                             <View style={{alignItems:"center", width:"100%",padding:10, backgroundColor:"rgba(0,0,0,0.1)", borderRadius:5}}>
-                                <Text style={{fontWeight:"600",fontSize:20,textAlign:"center",width:"100%"}}>PARA</Text>
-                                <Text style={{fontWeight:"600",fontSize:15,textAlign:"center",width:"100%",marginTop:3}}>This mole seems very suspicous</Text>
+                                <Text style={{fontWeight:"600",fontSize:20,textAlign:"center",width:"100%"}}>Malignant ALERT</Text>
+                                <Text style={{fontWeight:"600",fontSize:15,textAlign:"center",width:"100%",marginTop:5}}>This mole seem's to be malignant as it violates the ABCDE guidelines</Text>
                             </View>
                             <Text style={{fontWeight:"600",fontSize:15,textAlign:"center",width:"80%",marginVertical:20}}>Prediction: {selectedMelanoma.risk}</Text>
-                            <TouchableOpacity onPress={() => setLoading("repeat_loaded")} style={{padding:10,width:"80%",alignItems:"center",borderWidth:2,marginTop:10,borderRadius:100,borderColor:"black", backgroundColor:"#f0c44a"}}>
-                                <Text style={{fontWeight:"800"}}> WARNING Repeat </Text>
-                                <Text style={{position:"absolute",fontSize:11,top:-19,opacity:0.4,fontWeight:"800"}}> Very recommended </Text>
+                            <TouchableOpacity onPress={() => setLoading(null)} style={{padding:10,width:"80%",alignItems:"center",borderWidth:2,marginTop:10,borderRadius:100,borderColor:"black", backgroundColor:"rgba(250,0,0,0.4)"}}>
+                                <Text style={{fontWeight:"800"}}> Done </Text>
                             </TouchableOpacity>
-                            <TouchableOpacity onPress={() => setLoading(null)} style={{padding:10,width:"80%",alignItems:"center",borderWidth:0,marginTop:0,borderRadius:100}}>
-                                <Text style={{fontWeight:"700",opacity:0.6}}> Accept </Text>
+                            <TouchableOpacity onPress={() => setLoading("repeat_loaded")} style={{padding:10,width:"80%",alignItems:"center",borderWidth:2,marginTop:10,borderRadius:100,borderColor:"black", backgroundColor:"rgba(250,0,0,0)"}}>
+                                <Text style={{fontWeight:"800"}}> Try Again </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => {setLoading(null); Navigation_AssistCenter({navigation})}} style={{padding:10,width:"80%",alignItems:"center",borderWidth:0,marginTop:0,borderRadius:100}}>
+                                <Text style={{fontWeight:"700",opacity:0.6}}> Seek Professional Help </Text>
                             </TouchableOpacity>
                         </>
                     ) 

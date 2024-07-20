@@ -184,14 +184,6 @@ const [melanomaDeleteState, setMelanomaDeleteState] = useState<boolean | string 
         }, [])
     );
 
-
-    const simulateDiagnosis = async () => {
-        setDiagnosisLoading("loading")
-        setTimeout(() => {
-            setDiagnosisLoading("first_loaded")
-        }, 5000);
-    }
-
 //<==================<[ Components ]>====================>
 
     const dotSelectOnPart = () => {
@@ -262,7 +254,6 @@ const [melanomaDeleteState, setMelanomaDeleteState] = useState<boolean | string 
                         handleUpdateMole={handleUpdateMole}
                         navigation={navigation}
                         setDiagnosisLoading={setDiagnosisLoading}
-                        simulateDiagnosis={simulateDiagnosis}
                     />
                 </Tabs.ScrollView>
             </Tabs.Tab>

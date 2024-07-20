@@ -4,9 +4,12 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 export const TagContainer = ({
     labels,
     style
+}:{
+    labels: {text:string,icon_name:string}[],
+    style?:object
 }) => {
     return(
-            <View style={[{width:"95%",flexDirection:"row",flexWrap:"wrap",justifyContent:"center",backgroundColor:"rgba(0,0,0,0.2)",padding:5,borderRadius:5},style]}>
+            <View style={[{width:"95%",flexDirection:"row",flexWrap:"wrap",justifyContent:"center",backgroundColor:"rgba(0,0,0,0.2)",padding:5,borderRadius:5},style != undefined ? style : {}]}>
             {labels.map((data,index) => (
                 <TagLabel key={index} label={data.text} icon={data.icon_name} />
             ))}                    

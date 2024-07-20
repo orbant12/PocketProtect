@@ -10,10 +10,10 @@ export const CameraViewModal = ({
     return(
         <Modal visible={isCameraOverlayVisible} animationType="slide">
             <CameraScreenView
-                onClose={toggleCameraOverlay}
+                onClose={() => toggleCameraOverlay("back")}
                 onPictureTaken={(pictureUri) => {
                     setUploadedSpotPicture(pictureUri);
-                    toggleCameraOverlay();
+                    toggleCameraOverlay("finish");
                 }}
             />
         </Modal>

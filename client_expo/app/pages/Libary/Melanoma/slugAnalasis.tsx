@@ -217,17 +217,11 @@ const MoleBar = ({
     showSpot:(id:string) => void;
 }) => {
 
-    const [loading, setLoading] = useState<boolean>(true);
-
-    const imageLoad = useRef(null);
 
     return(
         <TouchableOpacity onPress={() => handleSpotOpen(data)} key={index} style={[SlugStyles.melanomaBox,styles_shadow.shadowContainer]}>
             <ImageLoaderComponent 
-                imageLoad={imageLoad}
-                loading={loading}
                 data={data}
-                setLoading={setLoading}
                 w={80}
                 h={80}
             />
@@ -253,7 +247,12 @@ const MoleBar = ({
 }
 
 
-export const ImageLoaderComponent = ({imageLoad, loading, data, setLoading,w,h,style  }:{data:SpotData | {melanomaPictureUrl:string}; loading:boolean; imageLoad:any; setLoading:(arg:boolean) => void;w:number; h:number;style?:any}) => {
+export const ImageLoaderComponent = ({ data,w,h,style  }:{data:SpotData | {melanomaPictureUrl:string}; w:number; h:number;style?:any}) => {
+
+    const [loading, setLoading] = useState<boolean>(true);
+
+    const imageLoad = useRef(null);
+
     return(
         <View style={[{ position: 'relative', width: w, height: h,borderColor:"black",borderWidth:0.3,borderRadius:10,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",backgroundColor:"#ebebeb" },style]}>
         {/* Animated Gradient Loader */}
