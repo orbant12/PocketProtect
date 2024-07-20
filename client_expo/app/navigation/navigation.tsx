@@ -149,3 +149,11 @@ export const Navigation_AI_Assistant = ({
     }
 }
 
+export const Navigation_AI_Diagnosis = ({
+    navigation
+}:AssistanceNavigationParams) => {
+    if ( navigation != undefined ) {
+        navigation.navigate("AI_Diagnosis")
+    }
+}
+

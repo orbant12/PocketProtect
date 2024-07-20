@@ -6,6 +6,7 @@ import { ExpStyle } from "../../styles/add_style";
 import { TagContainer } from "../Common/tagContainer";
 import { styles_shadow } from "../../styles/shadow_styles";
 import diagnsisBG from "../../assets/features/diagn.png"
+import { actionNavigationTypes } from "./explainModal";
 
 export type addTypes = "Melanoma Monitor" | "Medical AI Assistant" | "Diagnosis AI"
 
@@ -109,9 +110,9 @@ export const ExploreView = ({navigation,setSelected}) => {
 }
 
 export type actionListType = {
-    melanoma:{title:string,action:string,icon_name:string,type:"melanoma-monitor" | "medical-ai-assistant" | "diagnosis-ai"}[]
-    blood_work:{title:string,action:string,icon_name:string,type:"melanoma-monitor" | "medical-ai-assistant" | "diagnosis-ai"}[]
-    diagnosis:{title:string,action:string,icon_name:string,type:"melanoma-monitor" | "medical-ai-assistant" | "diagnosis-ai"}[]
+    melanoma:{title:string,action:actionNavigationTypes,icon_name:string,type:"melanoma-monitor" | "medical-ai-assistant" | "diagnosis-ai"}[]
+    blood_work:{title:string,action:actionNavigationTypes,icon_name:string,type:"melanoma-monitor" | "medical-ai-assistant" | "diagnosis-ai"}[]
+    diagnosis:{title:string,action:actionNavigationTypes,icon_name:string,type:"melanoma-monitor" | "medical-ai-assistant" | "diagnosis-ai"}[]
 }
 
 const FeatureBox = ({

@@ -3,12 +3,47 @@ import { Timestamp } from "../utils/date_manipulations";
 import { Gender, SkinType, Slug, SpotData, Success_Purchase_Client_Checkout_Data, UserData,AssistanceFields, AssistantData } from "../utils/types";
 import { MelanomaMetaData } from "../pages/Libary/Melanoma/melanomaCenter";
 import { numberOfMolesOnSlugs } from "../components/LibaryPage/Melanoma/slugCard";
+import { getWeatherAPIKey } from "../../key";
+
 
 //const DOMAIN = "http://51.21.97.54:3001";
 const DOMAIN = "http://localhost:3001";
 
 export const FLASK_DOMAIN =  "http://localhost:5001";
 //export const FLASK_DOMAIN = "http://51.21.97.54:5001"
+
+export interface WeatherApiCallTypes {
+    lat?: number;
+    lon?: number;
+    part?: "current" | "minutely" | "hourly" | "daily";
+}
+
+const lat = "35";
+const lon = "139";
+const part = "current";
+
+
+export const getWeatherData = async({
+    lat,
+    lon,
+    part,
+}:WeatherApiCallTypes):Promise<null | any> => {
+    const API_key = getWeatherAPIKey();
+    console.log("Weather fetching")
+    const WEATHER_API = `https://api.openweathermap.org/data/3.0/onecall?lat={${lat}}&lon={${lon}}&appid={${API_key}}`;
+    console.log(WEATHER_API)
+    const response = await fetch(WEATHER_API);
+    if(response.ok){
+        console.log("Weather data fetched")
+        console.log(response)
+        const data = await response.json();
+        return data;
+    } else {
+        return null
+    }
+}
+
+
 
 type SpotDeleteTypes = "history" | "latest"
 

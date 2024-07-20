@@ -31,6 +31,7 @@ import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MelanomaNavigationParams } from "./app/navigation/navigation";
 import { BodyPart } from "./app/utils/types";
+import AiDiagnosis from "./app/pages/Chat/diagnosisPage";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -58,6 +59,7 @@ export type RootStackParamList = {
     AssesmentScreen: { title: string };
     AssistCenter: undefined;
     AI_Assistant: undefined;
+    AI_Diagnosis: undefined;
 };
 //stack navigation props
 export type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -93,6 +95,7 @@ return (
             <Stack.Screen name="AssesmentScreen" component={AssesmentScreen}   options={({ route }) => ({ title: route.params.title, headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShon:true, headerBackVisible:false})} />
             <Stack.Screen name="AssistCenter" component={AssistCenter}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
             <Stack.Screen name="AI_Assistant" component={AssistantPage}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
+            <Stack.Screen name="AI_Diagnosis" component={AiDiagnosis}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
         </ Stack.Navigator>
     </StripeProvider>
     </UserAuthContext>

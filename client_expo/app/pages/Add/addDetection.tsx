@@ -3,13 +3,13 @@ import { View} from 'react-native';
 import { Horizontal_Navbar } from '../../components/LibaryPage/mainNav';
 import { actionListType, ExploreView } from '../../components/AddPage/exploreView';
 import { styles } from "../../styles/add_style";
-import { ExplainModal } from "../../components/AddPage/explainModal";
+import { actionNavigationTypes, ExplainModal } from "../../components/AddPage/explainModal";
 
 const AddDetection = ({navigation}) => {
 
 //<==================<[ Variable ]>====================>  
 
-type selectedItemType = {title:string,action:string,icon_name:string,type:"melanoma-monitor" | "medical-ai-assistant" | "diagnosis-ai"}[]
+type selectedItemType = {title:string,action:actionNavigationTypes,icon_name:string,type:"melanoma-monitor" | "medical-ai-assistant" | "diagnosis-ai"}[]
 
 
 
@@ -20,16 +20,6 @@ const [selected, setSelected ] = useState<selectedItemType>([]) // IF It's empty
 
     return(
         <View style={styles.container}>
-                    {/* <Horizontal_Navbar
-                        setIsSelected={setHeaderSelect}
-                        isSelected={headerSelect}
-                        options={[
-                            {
-                                title:"AI Vision",
-                                value:"ai_vision",
-                            }
-                        ]}
-                    />        */}
                     <ExploreView 
                         navigation={navigation}
                         setSelected={setSelected}

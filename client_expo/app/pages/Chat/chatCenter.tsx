@@ -5,10 +5,11 @@ import { ChatSessionModal } from "../../components/Assist/chatSessionModal"
 import { useAuth } from "../../context/UserAuthContext"
 import { useState, useEffect, useCallback } from "react"
 import { fetchAssistantSessions } from "../../services/server"
-import { NavBar_TwoOption } from "../../components/Common/navBars"
+import { NavBar_OneOption, NavBar_TwoOption } from "../../components/Common/navBars"
 import { ChatBotBar } from "../../components/Assist/Bots/chatBotBar.js"
-import { Navigation_AI_Assistant } from "../../navigation/navigation"
+import { Navigation_AI_Assistant, Navigation_AI_Diagnosis } from "../../navigation/navigation"
 import robotAi from "../../assets/assist/robotAI.png"
+import diagAi from "../../assets/assist/diag.png"
 import { AssistantAdvertBox } from "../../components/LibaryPage/Melanoma/Assistance/assistantAdvert"
 import { Success_Purchase_Client_Checkout_Data } from "../../utils/types"
 import { SessionData_Default } from "../../utils/initialValues"
@@ -25,11 +26,20 @@ const ChatCenter = ({navigation}) => {
         {
             name:"AI Medical Assistant",
             profileUrl:robotAi,
-            desc:"",
+            desc:"Get quick and accurate advice and insight to your concerns and sympthoms",
             tags:[
                 {icon_name:"brain",text:"AI can see your Medical Data like: Blood Work, BMI or additional vital medical information you've provided ..."},
             ],
             action:() => Navigation_AI_Assistant({navigation})
+        },
+        {
+            name:"AI Diagnosis",
+            profileUrl:diagAi,
+            desc:"Are you worried about an unusal feeling or sympthom? Relieve your stress and get a quick diagnosis",
+            tags:[
+                {icon_name:"brain",text:"AI can see your Medical Data like: Blood Work, BMI or additional vital medical information you've provided ..."},
+            ],
+            action:() => Navigation_AI_Diagnosis({navigation})
         }
     ]
 
@@ -65,10 +75,10 @@ const ChatCenter = ({navigation}) => {
 
     return(
         <View style={AssistPanel_style.container}>
-            <NavBar_TwoOption 
+            <NavBar_OneOption
                 title={"Chats"}
-                icon_left={{name:"arrow-left",size:25}}
-                icon_right={{name:"image",size:25}}
+                icon_left={{name:"arrow-left",action:() => navigation.goBack(),size:24}}
+                
             />
             <AssistantAdvertBox 
                 navigation={navigation}

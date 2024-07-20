@@ -4,11 +4,13 @@ import { HeaderContainer } from "../Common/headerContainer";
 import { NavBar_OneOption } from "../Common/navBars";
 import { PagerComponent } from "../Common/pagerComponent";
 import tutorial1 from "../../assets/diagnosis/first.png"
-import { Navigation_MoleUpload_1,Navigation_MelanomaFullsetup } from "../../navigation/navigation";
+import { Navigation_MoleUpload_1,Navigation_MelanomaFullsetup, Navigation_AI_Assistant, Navigation_AI_Diagnosis } from "../../navigation/navigation";
 import { styles } from "../../styles/add_style";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 
 const { width } = Dimensions.get('window');
+
+export type actionNavigationTypes = "Full_Melanoma_Navigation" | "Manual_Melanoma_Navigation" | "Ai_Chat_Navigation" | "Ai_Diagnosis_Navigation"
 
 export const ExplainModal = ({
     selected,
@@ -20,25 +22,29 @@ export const ExplainModal = ({
     navigation:any
 }) => {
 
-    const handleAction = (action) => {
+    const handleAction = (action:actionNavigationTypes) => {
+        setSelected([])
         if (action == "Full_Melanoma_Navigation"){
             Navigation_MelanomaFullsetup({navigation})
         } else if (action == "Manual_Melanoma_Navigation"){
             Navigation_MoleUpload_1({
                 navigation
             })
+        } else if (action == "Ai_Chat_Navigation"){
+            Navigation_AI_Assistant({navigation})
+        } else if (action == "Ai_Diagnosis_Navigation"){
+            Navigation_AI_Diagnosis({navigation})
         }
-        setSelected([])
     }
     
     return(
-        <Modal visible={selected.length != 0}>
+        <Modal visible={selected.length != 0} animationType='slide'>
         <Explain_NavBar 
             setSelected={setSelected}
         />
         <ExplainPanel 
             handleAction={handleAction}
-            actions={selected}
+            actions={selected.length != 0 ? selected : []}
         />
     </Modal>   
     )
@@ -51,7 +57,7 @@ function ExplainPanel({actions,handleAction}:{
 }){
     return(
         <View style={{width:"100%",alignItems:"center",height:"80%",justifyContent:"space-between",marginTop:0}}>  
-            {actions[0].type  == "melanoma-monitor" &&
+            {actions.length != 0 &&  (actions[0].type == "melanoma-monitor" &&
                 <View style={{width:"100%"}} >  
                 <PagerComponent 
                     pages={[
@@ -75,8 +81,8 @@ function ExplainPanel({actions,handleAction}:{
                     dotColor={"white"}
                 />                                                       
                 </View>  
-            }
-            {actions[0].type  == "medical-ai-assistant" &&
+            )}
+            {actions.length != 0 && (actions[0].type == "medical-ai-assistant" &&
                 <View style={{width:"100%"}} >  
                 <PagerComponent 
                     pages={[
@@ -100,8 +106,8 @@ function ExplainPanel({actions,handleAction}:{
                     dotColor={"white"}
                 />                                                       
                 </View>  
-            }      
-            {actions[0].type  == "diagnosis-ai" &&
+            )}      
+            {actions.length != 0 && (actions[0].type == "diagnosis-ai" &&
                 <View style={{width:"100%"}} >  
                 <PagerComponent 
                     pages={[
@@ -125,7 +131,7 @@ function ExplainPanel({actions,handleAction}:{
                     dotColor={"white"}
                 />                                                       
                 </View>  
-            }                 
+            )}                 
             <View style={{borderWidth:1,width:"95%",borderRadius:20,alignItems:"center",backgroundColor:"black",marginTop:-50,padding:0,paddingBottom:25}}>                            
                 <View style={{width:50, borderWidth:1.5,borderColor:"white", opacity:0.7,marginTop:10}} />
                 <Text style={{color:"white",fontWeight:"700",fontSize:15,marginTop:10}}>Get Started</Text>

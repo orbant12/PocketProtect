@@ -1,6 +1,7 @@
 import { View, TouchableOpacity, Text, Image} from "react-native"
 import { AssistPanel_style } from "../../styles/assistance_style"
 import { timeDistanceFromToday } from "../../utils/date_manipulations"
+import { ImageLoaderComponent } from "../../pages/Libary/Melanoma/slugAnalasis"
 
 export const SessionBar = ({data,index,setSelectedChat}) => {
     return(
@@ -8,14 +9,11 @@ export const SessionBar = ({data,index,setSelectedChat}) => {
     {data.chat.length != 0 &&
         <TouchableOpacity onPress={() => setSelectedChat(data)} key={index} style={AssistPanel_style.sessionBar}>
             <View style={{flexDirection:"row",alignItems:"center"}}>
-                <Image
-                    source={{uri: data.assistantData.profileUrl}}
-                    style={{
-                        width:60,
-                        height:60,
-                        borderWidth:0.5,
-                        borderRadius:100
-                    }}
+                <ImageLoaderComponent
+                    w={60}
+                    h={60}
+                    style={{borderWidth:0.5,borderRadius:10}}
+                    data={{melanomaPictureUrl:data.assistantData.profileUrl}}
                 />
                 <View style={{marginLeft:10,height:40}}>
                     <Text style={{fontSize:16,fontWeight:"600"}}>{data.assistantData.fullname}</Text>

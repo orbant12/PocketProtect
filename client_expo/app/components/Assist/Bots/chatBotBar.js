@@ -20,7 +20,7 @@ export const ChatBotBar = ({data,index}) => {
                 <View style={{marginLeft:15}}>
                     <Text style={{fontSize:16,fontWeight:"600"}}>{data.name}</Text>
                     <View>
-                        <Text style={{fontSize:13,fontWeight:"500",maxWidth:"93%",opacity:0.6,marginTop:3}}>Get quick and accurate advice and insight to your concerns and sympthoms</Text>
+                        <Text style={{fontSize:13,fontWeight:"500",maxWidth:"93%",opacity:0.6,marginTop:3}}>{data.desc}</Text>
                     </View>
                     <TagContainer
                         style={{width:"85%",marginTop:10}}

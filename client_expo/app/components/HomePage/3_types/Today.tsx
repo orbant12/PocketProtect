@@ -1,5 +1,5 @@
 import { styles } from "../../../styles/home_style"
-import { View,Text,Pressable,TouchableOpacity,Image, Button } from "react-native"
+import { View,Text,Pressable,TouchableOpacity,Image, Button, TouchableOpacityBase } from "react-native"
 import { TaskBox_2,TaskBox_1 } from "../taskBoxes"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import PagerView from 'react-native-pager-view';
@@ -9,6 +9,7 @@ import { BodyPart, SpotData } from "../../../utils/types";
 import { Home_Navigation_Paths } from "../../../pages/Home/home";
 import React, { useRef, useState } from 'react';
 import { ImageLoaderComponent } from "../../../pages/Libary/Melanoma/slugAnalasis";
+import { getWeatherData, WeatherApiCallTypes } from "../../../services/server";
 
 export const TodayScreen = ({
     allReminders,
@@ -38,6 +39,7 @@ export const TodayScreen = ({
 ) => {
     return(    
         <>
+            <UvMonitor />
             <View style={[styles.TodaySection,styles_shadow.hightShadowContainer]}>
                 <View style={styles.titleRow}>
                     <Text style={styles.title}>Melanoma Monitor</Text>
@@ -168,11 +170,8 @@ const OutdatedMelanomaBox = ({
     return(
         <View style={{width:"100%",borderBottomWidth:1,borderColor:"gray",alignItems:"center",flexDirection:"row",paddingBottom:20,padding:10,borderRadius:0,marginBottom:10,justifyContent:"space-between"}}>
         <View style={{width:"70%",flexDirection:"row",alignItems:"center"}}>
-            <ImageLoaderComponent
-                imageLoad={imageLoad}
-                loading={loading}
+            <ImageLoaderComponent 
                 data={data}
-                setLoading={setLoading}
                 style={{borderWidth:1,borderColor:"white",borderRadius:10}}
                 w={50}
                 h={50}
@@ -258,3 +257,28 @@ const SpecialMelanomaDataComponent = ({ MelanomaData, handleNavigation,type }) =
         </View>
     );
 };
+
+const handleGetUv = async ({part,lat,lon}:WeatherApiCallTypes) => {
+    const response = await getWeatherData({
+        part:part,
+        lat:lat,
+        lon:lon
+    });
+
+    const data = await response.json();
+    console.log(data);
+}
+
+const UvMonitor = () => {
+    return(
+        <View>
+            <TouchableOpacity onPress={() => handleGetUv({
+                part:"hourly,daily",
+                lat:33.44,
+                lon:-94.04
+            })}>
+                <Text>Call API</Text>
+            </TouchableOpacity>
+        </View>
+    )
+}
