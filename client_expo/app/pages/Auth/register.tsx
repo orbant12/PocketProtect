@@ -1,13 +1,14 @@
 
 import React,{useState} from 'react';
-import { View, Text,SafeAreaView,TextInput,Button,Pressable,GestureResponderEvent  } from 'react-native';
+import { View, Text,SafeAreaView,TextInput,Button,Pressable,GestureResponderEvent, TouchableOpacity  } from 'react-native';
 import { useAuth } from '../../context/UserAuthContext'
 import { auth } from '../../services/firebase';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { Icon } from 'react-native-elements';
 import { r_styles } from '../../styles/auth_style';
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 
-const RegisterPage = ({navigation}) => {
+const RegisterPage = ({navigation,handleClose}) => {
 
 //<********************VARIABLES************************>
 
@@ -65,6 +66,14 @@ return (
     <View style={r_styles.titleSection}>
         <Text style={r_styles.title} >Let's get started</Text>
     </View>
+
+    <TouchableOpacity onPress={handleClose} style={{flexDirection:"column",justifyContent:"center",width:50,height:50, backgroundColor:"black", borderRadius:100, borderWidth:2, borderColor:"white",alignItems:"center",position:"absolute",right:20,top:20}}>
+                    <MaterialCommunityIcons 
+                        name='arrow-left'
+                        color={"white"}
+                        size={25}
+                    />
+                </TouchableOpacity>
 
     <View style={r_styles.inputArea}>
       {/* EMAIL INPUT */}

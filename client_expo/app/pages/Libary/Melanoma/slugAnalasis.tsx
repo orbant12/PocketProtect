@@ -247,7 +247,7 @@ const MoleBar = ({
 }
 
 
-export const ImageLoaderComponent = ({ data,w,h,style  }:{data:SpotData | {melanomaPictureUrl:string}; w:number; h:number;style?:any}) => {
+export const ImageLoaderComponent = ({ data,w,h,style,imageStyle  }:{data:SpotData | {melanomaPictureUrl:string}; w:number; h:number;style?:any,imageStyle?:any}) => {
 
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -273,7 +273,7 @@ export const ImageLoaderComponent = ({ data,w,h,style  }:{data:SpotData | {melan
         {/* Image */}
         <Image 
             source={{ uri: data.melanomaPictureUrl }}
-            style={[{ width: w , height: h, borderWidth: 0.3, borderRadius: 10, position: 'absolute' }]}
+            style={[{ width: w , height: h, borderWidth: 0.3, borderRadius: 10, position: 'absolute' },imageStyle]}
             onLoadEnd={() => setLoading(false)}
             onLoadStart={() => setLoading(true)}
         />

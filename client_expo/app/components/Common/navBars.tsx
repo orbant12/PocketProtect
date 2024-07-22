@@ -4,12 +4,12 @@ import { HeaderContainer } from "./headerContainer"
 import { ReactNode } from "react";
 
 
-export const NavBar_TwoOption = ({title,icon_right,icon_left,titleComponent,style,icon_left_component}:{icon_left_component?:() => ReactNode,style?:{},title?:string;icon_right:{name:string,size?:number,action?:() => void};icon_left?:{name:string,size?:number,action?:() => void};titleComponent?:() => ReactNode}) => {
+export const NavBar_TwoOption = ({title,icon_right,icon_left,titleComponent,style,icon_left_component,outerBg}:{icon_left_component?:() => ReactNode,style?:{},title?:string;icon_right:{name:string,size?:number,action?:() => void};icon_left?:{name:string,size?:number,action?:() => void};titleComponent?:() => ReactNode; outerBg?:string}) => {
     return(
     HeaderContainer({
-    outerBg:"transparent",
+        outerBg:outerBg != undefined ? outerBg : "transparent",
     content:() =>
-        <View style={[{width:"95%",padding:0,marginTop:10,flexDirection:"row",backgroundColor:"black",borderRadius:10,borderWidth:0,borderColor:"black",justifyContent:"space-between",alignItems:"center",alignSelf:"center"},style]}>
+        <View style={[{width:"95%",padding:5,marginTop:10,flexDirection:"row",backgroundColor:"black",borderRadius:10,borderWidth:0,borderColor:"black",justifyContent:"space-between",alignItems:"center",alignSelf:"center"},style]}>
         {icon_left_component != undefined ? 
         
             icon_left_component()

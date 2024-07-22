@@ -4,21 +4,20 @@ import { Button, StyleSheet, Text, TouchableOpacity, View, Image } from 'react-n
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as ImagePicker from 'expo-image-picker';
 import Slider from '@react-native-community/slider';
-import LoadingOverlay  from "../../../../components/Common/Loading/processing"
 import { manipulateAsync } from 'expo-image-manipulator';
-import { Overlay_1 } from '../../../../components/Common/overlay';
-import zoomMoleImage from "../../../../assets/melanoma/1.png"
-import molesImage from "../../../../assets/melanoma/2.png"
+import zoomMoleImage from "../../assets/melanoma/1.png"
+import molesImage from "../../assets/melanoma/2.png"
+import { Overlay_1 } from '../../components/Common/overlay';
+import LoadingOverlay from '../../components/Common/Loading/processing';
+import { ImageShowcase } from '../Libary/Melanoma/components/cameraView';
 
-export default function CameraScreenView({navigation,onClose,onPictureTaken}) {
+export default function ProfileCameraScreenView({onClose,onPictureTaken}) {
     const [facing, setFacing] = useState('back');
     const [permission, requestPermission] = useCameraPermissions();
-    const [ zoomValue, setZoomValue ] = useState(0)
     const [uploadedSpotPicture, setUploadedSpotPicture] = useState(null);
     const [loading, setLoading] = useState(false);
     const cameraRef = useRef(null)
     const [ show, setShow ] = useState(false)
-    const [ overlayVisible, setOverlayVisible] = useState(true)    
 
     if (!permission) {
         return <View />;
@@ -61,12 +60,6 @@ export default function CameraScreenView({navigation,onClose,onPictureTaken}) {
     onPictureTaken(uploadedSpotPicture)
   }
 
-  const simulateLoading = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-    }, 3000); // Simulate a network request
-  };
 
   const handleUndoPicture = () => {
     setShow(false)
@@ -76,7 +69,7 @@ export default function CameraScreenView({navigation,onClose,onPictureTaken}) {
       return (
         <>
           <View style={styles.container}>
-              <CameraView style={styles.camera} facing={facing} zoom={zoomValue} ref={cameraRef}>
+              <CameraView style={styles.camera} facing={facing} ref={cameraRef}>
                 
                     <TouchableOpacity onPress={() => onClose()} style={{position:"absolute",top:30,left:10,borderWidth:2,borderColor:"white",borderRadius:30,padding:5}}>
                     <MaterialCommunityIcons 
@@ -85,23 +78,6 @@ export default function CameraScreenView({navigation,onClose,onPictureTaken}) {
                       size={25}                
                     />
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setOverlayVisible(!overlayVisible)} style={{position:"absolute",top:30,right:10,borderWidth:0,borderColor:"white",borderRadius:30,padding:5}}>
-                      <MaterialCommunityIcons 
-                        name='information'
-                        color={"white"}
-                        size={30}                
-                      />
-                    </TouchableOpacity>
-                    <View style={{width:300,height:300,borderWidth:5,backgroundColor:"transparent",borderColor:"magenta",borderRadius:20}} />
-                    <Slider
-                      style={{width: 200, height: 40,marginTop:50}}
-                      minimumValue={0}
-                      maximumValue={0.05}
-                      minimumTrackTintColor="magenta"
-                      maximumTrackTintColor="#000000"
-                      value={zoomValue}
-                      onValueChange={(value) => setZoomValue(value)}
-                    />
                     <View style={styles.buttonContainer}>
                         <TouchableOpacity style={styles.button} onPress={handlePictureUpload}>
                             <MaterialCommunityIcons 
@@ -129,14 +105,6 @@ export default function CameraScreenView({navigation,onClose,onPictureTaken}) {
               <LoadingOverlay visible={loading} />
               <ImageShowcase show={show} uploadedSpotPicture={uploadedSpotPicture} handleUndoPicture={handleUndoPicture} handleDone={handleDone} />
           </View>
-          <Overlay_1 
-            visible={overlayVisible}
-            pages={[
-              {text:"Center your mole inside the rectangle and wait to focus your camera",image:zoomMoleImage},
-              {text:"Then zoom in and try to make your photo look simular to the images above ",image:molesImage}
-            ]}
-            setOverlayVisible={setOverlayVisible}
-          />
         </>
       );
     }
@@ -171,36 +139,3 @@ const styles = StyleSheet.create({
   },
 });
 
-export const ImageShowcase = ({uploadedSpotPicture,show,handleUndoPicture,handleDone}) => {
-  return(
-    <>
-    {show &&
-    <View style={{width:"100%", height:"100%" ,backgroundColor:"rgba(0,0,0,0.95)",position:"absolute",alignItems:"center",justifyContent:"center"}}>
-
-      <Image 
-        source={{uri: uploadedSpotPicture}}
-        style={{width:300,height:300,borderRadius:50}}
-      />
-      <TouchableOpacity onPress={handleDone} style={{marginTop:80,width:"80%",justifyContent:"center",alignItems:"center",borderWidth:0,borderColor:"magenta",padding:10,borderRadius:10,flexDirection:"row",backgroundColor:"white"}}>
-        <MaterialCommunityIcons 
-          name='upload'
-          color={"black"}
-          size={30}
-          style={{position:"absolute",left:10}}
-        />
-        <Text style={{color:"black",fontSize:20,fontWeight:"700"}}>Done</Text>
-      </TouchableOpacity>
-      <TouchableOpacity onPress={handleUndoPicture} style={{marginTop:20,width:"80%",justifyContent:"center",alignItems:"center",borderWidth:1,borderColor:"white",padding:10,borderRadius:40,flexDirection:"row"}}>
-        <MaterialCommunityIcons 
-          name='arrow-left'
-          color={"white"}
-          size={30}
-          style={{position:"absolute",left:10}}
-        />
-        <Text style={{color:"white",fontSize:20,fontWeight:"700"}}>Back</Text>
-      </TouchableOpacity>
-    </View>
-    }
-    </>
-  )
-}

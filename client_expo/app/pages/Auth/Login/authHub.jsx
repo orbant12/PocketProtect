@@ -1,4 +1,4 @@
-import { View,Text,Pressable,StyleSheet } from "react-native"
+import { View,Text,Pressable,StyleSheet, Modal } from "react-native"
 import { useNavigation } from "@react-navigation/core";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAuth } from '../../../context/UserAuthContext'
@@ -9,10 +9,14 @@ import React, {useState,useEffect} from "react";
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import LoginPage from "../login";
+import RegisterPage from "../register";
 
 WebBrowser.maybeCompleteAuthSession();
 
 const AuthHub = () => {
+
+    const [ selectedAuth, setSelectedAuth] = useState(null)
 
     const [request, response, promptAsync] = Google.useAuthRequest({
         androidClientId: "567381254436-b0cqltfecu40o0skrmiq77iiqp2h9njl.apps.googleusercontent.com",
@@ -46,6 +50,7 @@ const navigation = useNavigation();
     
 
     return(
+        <>
         <View style={styles.container}>
             <View style={styles.TopAnimationSection}>
                 <Text>Let's get protected</Text>
@@ -66,15 +71,20 @@ const navigation = useNavigation();
                         />
                         <Text style={{fontWeight:"700",fontSize:15,color:"white",marginLeft:10}}>Continue with Google</Text>
                     </Pressable>
-                    <Pressable onPress={() => handleNavigation("Login")} style={[styles.Button,{backgroundColor:"black",borderWidth:1,borderColor:"white"}]}>
+                    <Pressable onPress={() => setSelectedAuth("login")} style={[styles.Button,{backgroundColor:"black",borderWidth:1,borderColor:"white"}]}>
                         <Text style={{fontWeight:"600",fontSize:15,color:"white"}}>Log in</Text>
                     </Pressable>
-                    <Pressable onPress={() => handleNavigation("Register")} style={[styles.Button,{backgroundColor:"black",borderWidth:1,borderColor:"white"}]}>
+                    <Pressable onPress={() => setSelectedAuth("register")} style={[styles.Button,{backgroundColor:"black",borderWidth:1,borderColor:"white"}]}>
                         <Text style={{fontWeight:"600",fontSize:15,color:"white"}}>Register</Text>
                     </Pressable>
                 </View>
             </View>            
         </View>
+        <AuthSheetModal 
+            selectedAuth={selectedAuth}
+            setSelectedAuth={setSelectedAuth}
+        />
+        </>
     )
 }
 
@@ -115,3 +125,18 @@ const styles = StyleSheet.create({
 })
 
 export default AuthHub
+
+
+
+const AuthSheetModal = ({selectedAuth,setSelectedAuth}) => {
+    return(
+        <Modal presentationStyle="formSheet" animationType="slide"  visible={selectedAuth != null} >
+            {selectedAuth == "login" && <LoginPage 
+                handleClose={() => setSelectedAuth(null)}
+            /> }
+            {selectedAuth == "register" && <RegisterPage 
+                handleClose={() => setSelectedAuth(null)}
+            /> }
+        </Modal>
+    )
+}

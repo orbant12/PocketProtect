@@ -49,6 +49,7 @@ interface SelectionPageProps {
   setProgress: (progress: number) => void;
   specialValues?: number[];
   handleEvent?: () => void;
+  desc?: string;
 }
 
 export const SelectionPage: React.FC<SelectionPageProps> = ({
@@ -62,11 +63,27 @@ export const SelectionPage: React.FC<SelectionPageProps> = ({
   optionValue,
   setProgress,
   specialValues = [],
-  handleEvent
+  handleEvent,
+  desc
 }) => {
   return (
     <View style={[styles.startScreen, pageStyle]}>
-      <Text style={{ marginBottom: 10, fontWeight: "800", fontSize: 20, marginTop: 60 }}>{pageTitle}</Text>
+      
+        <View style={{marginTop:0,alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,padding:10,width:"90%"}}>  
+                        <Text style={{marginBottom:0,fontWeight:"700",fontSize:23,textAlign:"left"}}>{pageTitle}</Text>
+                        {desc != undefined &&
+                        <View style={{width:"100%",backgroundColor:"rgba(0,0,0,0.1)",padding:7,borderRadius:5,marginTop:15,flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
+                            <MaterialCommunityIcons 
+                                name="information"
+                                color={"black"}
+                                size={30}
+                                style={{width:"10%",opacity:0.6}}
+                            />
+                            <Text style={{textAlign:"left",fontWeight:"600",opacity:0.6,fontSize:11,width:"87%"}}>{desc}</Text>
+                        </View>
+                        }
+                    </View>
+      
       {selectableOption === 'box' && (
         <OptionsBoxes
           items={selectableData}
@@ -93,7 +110,7 @@ export const SelectionPage: React.FC<SelectionPageProps> = ({
                 handleEvent();
               }
             }}
-            style={[styles.startButton, { position: 'relative', marginBottom: 20 }]}
+            style={[styles.startButton, { position: 'relative' }]}
           >
             <Text style={{ padding: 15, fontWeight: "600", color: 'white' }}>Next</Text>
           </Pressable>
@@ -114,8 +131,6 @@ const styles = StyleSheet.create({
     width: '90%',
     borderRadius: 10,
     backgroundColor: 'black',
-    position: 'absolute',
-    bottom: 20,
   },
   startButtonNA: {
     borderWidth: 1,
@@ -130,9 +145,9 @@ const styles = StyleSheet.create({
     padding: 5,
     width: '100%',
     alignItems: 'center',
-    height: '100%',
+    height: '90%',
     justifyContent: 'space-between',
-    marginBottom: 0,
+    marginBottom: "5%",
     backgroundColor: 'white',
     zIndex: -1,
   },

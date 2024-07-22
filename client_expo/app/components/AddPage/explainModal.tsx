@@ -64,14 +64,14 @@ function ExplainPanel({actions,handleAction}:{
                         {pageComponent:() => 
                             <TutorialPage
                                 image={tutorial1}
-                                title={"Type in your concerns and describe how you feel in detail ..."}
+                                title={"Mark & upload your moles on your body parts ..."}
                                 index={1}
                             />
                         },
                         {pageComponent:() => 
                             <TutorialPage
                                 image={tutorial1}
-                                title={"Type in your concerns and describe how you feel in detail ..."}
+                                title={"Set reminders & monitor your moles with AI vision ..."}
                                 index={2}
                             />
                         },
@@ -89,14 +89,14 @@ function ExplainPanel({actions,handleAction}:{
                         {pageComponent:() => 
                             <TutorialPage
                                 image={tutorial1}
-                                title={"Type in your concerns and describe how you feel in detail ..."}
+                                title={"Ask your medical concerns and get instant answers ..."}
                                 index={1}
                             />
                         },
                         {pageComponent:() => 
                             <TutorialPage
                                 image={tutorial1}
-                                title={"Type in your concerns and describe how you feel in detail ..."}
+                                title={"Use the context button so AI can see your medical data ..."}
                                 index={2}
                             />
                         },

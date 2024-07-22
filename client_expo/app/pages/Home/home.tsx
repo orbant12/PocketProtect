@@ -176,7 +176,8 @@ const [userData, setUserData] = useState<UserData>(UserData_Default);
                     format={format}
                     outdatedMelanomaData={outdatedMelanomaData}
                     riskyMelanomaData={riskyMelanomaData}
-                    unfinishedMelanomaData={unfinishedMelanomaData}                    
+                    unfinishedMelanomaData={unfinishedMelanomaData}          
+                    navigation={navigation}
                 />
             :
             !historyShown?

@@ -29,7 +29,7 @@ type FirebaseUser = {
 
 export interface AuthContextType {
   currentuser: FirebaseUser| null;
-  Login: (email: string, password: string) => Promise<void>;
+  Login: (email: string, password: string) => Promise<boolean>;
   SignUp: (email: string, password: string,FullName:string) => Promise<void>;
   error:any;
 }
@@ -67,7 +67,7 @@ onAuthStateChanged(auth, user => {
 
 // <====> LOGIN HANDLER <====>
 
-const Login = async (email:string,password:string) => {
+const Login = async (email:string,password:string):Promise<boolean> => {
   const logEmail = email;
   const logPass = password
   try {
@@ -75,11 +75,12 @@ const Login = async (email:string,password:string) => {
     .then((userCredential) => {
       // Signed in 
       const user = userCredential.user;
-    
     })
+    return true
   } catch(error) {
     console.log(error)
     alert("Wrong Email or Password")
+    return false
   }
 }
 

@@ -5,8 +5,9 @@ import { auth } from '../../services/firebase';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import { Icon } from 'react-native-elements';
 import { l_styles } from '../../styles/auth_style';
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 
-const LoginPage = ({navigation}) => {
+const LoginPage = ({navigation, handleClose}) => {
 
 //<==================<[ Variables ]>====================>
 
@@ -23,9 +24,10 @@ const LoginPage = ({navigation}) => {
         const email = inputEmail;
         const password = inputPassword;
         const response = await Login(email, password)
-        if (currentuser) {
+        if (currentuser && response == true) {
             setInputEmail('');
             setInputPassword('');
+            handleClose()
         }
     };
 
@@ -50,6 +52,13 @@ const LoginPage = ({navigation}) => {
                 <View style={l_styles.titleSection}>
                     <Text style={l_styles.title} >Hey, Welcome Back</Text>
                 </View>
+                <TouchableOpacity onPress={handleClose} style={{flexDirection:"column",justifyContent:"center",width:50,height:50, backgroundColor:"black", borderRadius:100, borderWidth:2, borderColor:"white",alignItems:"center",position:"absolute",right:20,top:20}}>
+                    <MaterialCommunityIcons 
+                        name='arrow-left'
+                        color={"white"}
+                        size={25}
+                    />
+                </TouchableOpacity>
                 <InputSection 
                     handleNavigation={handleNavigation}
                     inputEmail={inputEmail} 

@@ -6,11 +6,12 @@ import { numberOfMolesOnSlugs } from "../components/LibaryPage/Melanoma/slugCard
 import { getWeatherAPIKey } from "../../key";
 
 
-//const DOMAIN = "http://51.21.97.54:3001";
-const DOMAIN = "http://localhost:3001";
-
-export const FLASK_DOMAIN =  "http://localhost:5001";
 //export const FLASK_DOMAIN = "http://51.21.97.54:5001"
+//const DOMAIN = "http://51.21.97.54:3001";
+
+const DOMAIN = "http://localhost:3001";
+export const FLASK_DOMAIN =  "http://localhost:5001";
+
 
 export interface WeatherApiCallTypes {
     lat?: number;

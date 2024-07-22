@@ -22,6 +22,7 @@ export const TodayScreen = ({
     outdatedMelanomaData,
     riskyMelanomaData,
     unfinishedMelanomaData,
+    navigation
 }:
 {
     handleNavigation:({path,data}:{path:Home_Navigation_Paths,data:SpotData}) => void;
@@ -34,12 +35,15 @@ export const TodayScreen = ({
     outdatedMelanomaData:SpotData[];
     riskyMelanomaData:any[];
     unfinishedMelanomaData:any[];
-
+    navigation:any;
 }
 ) => {
     return(    
         <>
             <UvMonitor />
+            <TouchableOpacity onPress={() => navigation.navigate("RegOnBoarding")}>
+                <Text>Click to open on boarding</Text>
+            </TouchableOpacity>
             <View style={[styles.TodaySection,styles_shadow.hightShadowContainer]}>
                 <View style={styles.titleRow}>
                     <Text style={styles.title}>Melanoma Monitor</Text>
@@ -264,9 +268,10 @@ const handleGetUv = async ({part,lat,lon}:WeatherApiCallTypes) => {
         lat:lat,
         lon:lon
     });
-
-    const data = await response.json();
-    console.log(data);
+    if( response != null){
+        const data = await response.json();
+        console.log(data);
+    }
 }
 
 const UvMonitor = () => {
