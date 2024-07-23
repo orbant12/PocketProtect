@@ -147,7 +147,6 @@ const [melanomaDeleteState, setMelanomaDeleteState] = useState<boolean | string 
         setDiagnosisLoading("loading")
         try{            
             const prediction = await evaluate(pictureURL)   
-            console.log(prediction.confidence)   
             const response = await updateSpotRisk({
                 userId: currentuser.uid,
                 spotId: selectedMelanoma.melanomaId,

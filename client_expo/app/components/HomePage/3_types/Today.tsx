@@ -270,7 +270,6 @@ const handleGetUv = async ({part,lat,lon}:WeatherApiCallTypes) => {
     });
     if( response != null){
         const data = await response.json();
-        console.log(data);
     }
 }
 
@@ -278,7 +277,7 @@ const UvMonitor = () => {
     return(
         <View>
             <TouchableOpacity onPress={() => handleGetUv({
-                part:"hourly,daily",
+                part:"daily",
                 lat:33.44,
                 lon:-94.04
             })}>

@@ -128,11 +128,10 @@ const SingleFeature = ({navigation}) => {
                 const spotSlug = data.melanomaDoc.spot.slug;
                 if( data.risk != null && data.risk != undefined){
                     const intensity = Number(data.risk) >= 0.3 ? (Number(data.risk)  >= 0.8 ? 1 : 3) : 2;
-                    return { slug: spotSlug }; 
+                    return { slug: spotSlug, key:index }; 
                 }
                 return { slug: spotSlug }; 
             });
-            console.log(affectedSlug)
             setAffectedSlugs(affectedSlug);
         }
 
@@ -409,7 +408,7 @@ const MelanomaContent = ({
                             userData={userData}
                             melanomaData={melanomaData}
                             index={index}
-                            key={index}
+                            key={`box_${bodyPart.slug}_${index}`}
                             skin_type={melanomaMetaData.skin_type}
                         />
                     ))

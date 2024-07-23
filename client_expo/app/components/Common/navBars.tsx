@@ -24,7 +24,7 @@ export const NavBar_TwoOption = ({title,icon_right,icon_left,titleComponent,styl
         </TouchableOpacity>
         }
         {title != null ? 
-            <Text style={{color:"white",fontWeight:"800",fontSize:16}}>{title}</Text>
+            <Text lineBreakMode="tail" numberOfLines={1} style={{color:"white",fontWeight:"800",fontSize:16, maxWidth:"60%",flexWrap:"nowrap"}}>{title}</Text>
             :
             titleComponent()
         }

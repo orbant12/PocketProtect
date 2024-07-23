@@ -21,6 +21,7 @@ const dotSelectOnPart = (bodyPart:BodyPart,userData:UserData,melanomaData:SpotDa
                     <BodyPartPath
                         path={path}
                         index={index}
+                        key={`${"path"}_${index}`}
                         skin_type={skin_type}
                         bodyPart={bodyPart}
                         userData={userData}
@@ -31,7 +32,6 @@ const dotSelectOnPart = (bodyPart:BodyPart,userData:UserData,melanomaData:SpotDa
             {melanomaData &&
             melanomaData.map((data:SpotData,index:number) => (
                     data.melanomaDoc.spot.slug == bodyPart.slug && data.gender == userData.gender  && (
-                        
                             <Circle cx={data.melanomaDoc.location.x} cy={data.melanomaDoc.location.y} r="5" fill="red" key={`${"circle"}_${index}`} />
                         
                     )
@@ -62,7 +62,7 @@ export const SlugCard = ({
     skin_type:SkinType;
 }) => {
     return(
-        <View style={[Mstyles.melanomaBox,styles_shadow.hightShadowContainer,!completedParts.includes(bodyPart.slug) ? {borderColor:"red"} : {borderColor:"lightgreen"}]} key={`box_${bodyPart.slug}_${index}`}>
+        <View style={[Mstyles.melanomaBox,styles_shadow.hightShadowContainer,!completedParts.includes(bodyPart.slug) ? {borderColor:"red"} : {borderColor:"lightgreen"}]} >
         <Text style={{fontSize:20,fontWeight:"700",color:"white"}}>{bodyPart.slug}</Text>
         <Text style={{fontSize:15,fontWeight:"500",opacity:0.7,color:"white",marginBottom:10}}>Birthmarks: {getSlugCount(bodyPart.slug,numberOfMolesOnSlugs)}</Text>
         

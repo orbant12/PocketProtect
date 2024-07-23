@@ -1,11 +1,11 @@
-import { View,Text,StyleSheet,Image,TouchableOpacity, SafeAreaView, ScrollView } from "react-native"
+import { View,Text,StyleSheet,Image,TouchableOpacity, SafeAreaView, ScrollView, Modal, Pressable } from "react-native"
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import UserDiagnosis from "./tabs/userDiagnosis"
 import UserSavedPage from "./tabs/userSavedPage"
 import { Tabs} from 'react-native-collapsible-tab-view'
 import Entypo from 'react-native-vector-icons/Entypo';
 import { useAuth } from "../../context/UserAuthContext";
-import { fetchUserData } from "../../services/server";
+import { changeProfilePicture, fetchUserData } from "../../services/server";
 import { Icon } from 'react-native-elements';
 import AssistPanel from "./tabs/userAssistPanel"
 import DetectionLibary from "../Libary/detection"
@@ -14,6 +14,12 @@ import { UserData } from "../../utils/types";
 import { UserData_Default } from "../../utils/initialValues";
 import { HeaderContainer } from "../../components/Common/headerContainer";
 import { NavBar_TwoOption } from "../../components/Common/navBars";
+import { ImageLoaderComponent } from "../Libary/Melanoma/slugAnalasis";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import * as ImagePicker from 'expo-image-picker';
+import ProfileCameraScreenView from "../Auth/cameraModal";
+import { styles_shadow } from "../../styles/shadow_styles";
+import { convertImageToBase64 } from "../../utils/imageConvert";
 
 type NavbarValues = "ai_vision" | "blood_work" | "diagnosis" | "soon"
 
@@ -23,6 +29,13 @@ const Profile = ({navigation,handleSettings}) => {
 
 const [userData, setUserData] = useState<UserData>(UserData_Default);
 const { currentuser } = useAuth()
+const [isProfileChangeActive, setProfileChangeActive] = useState(false);  
+const [profileUrl, setProfileUrl] = useState("");
+const [isCameraActive, setIsCameraActive] = useState(false);
+
+const maleDefault = Image.resolveAssetSource(require("../../assets/male.png")).uri;
+const femaleDefault = Image.resolveAssetSource(require("../../assets/female.png")).uri;
+
 
 //Libary 
 const [isSelected, setIsSelected ] = useState<NavbarValues>("ai_vision")
@@ -59,7 +72,30 @@ const handleSettingsNavigation = () => {
 }
 
 
+const handlePictureUpload = async() => {        
+    let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+    });
 
+    if (!result.canceled) {
+        setProfileUrl(result.assets[0].uri);
+    }
+};
+
+const handleChangeProfile = async() => {
+    const profileBlob = await convertImageToBase64(profileUrl);
+    const respose = await changeProfilePicture({
+        userId:currentuser.uid,
+        profileBlob:profileBlob
+    })
+    if(respose == true){
+        setProfileChangeActive(false);
+        fetchAllUserData();
+    }
+}
 
 
 //<==================<[ Main Return ]>====================>
@@ -72,15 +108,21 @@ const handleSettingsNavigation = () => {
                     <NavBar_TwoOption
                         title={userData.fullname}
                         icon_right={{name:"menu",size:25,action:handleSettingsNavigation}}
-                        icon_left_component={() => <Image
-                            source={{ uri: userData.profileUrl }}
-                            style={{ 
-                                width: 50,
-                                height: 50,
-                                borderRadius: 50,
-                                borderColor: "magenta",
-                                borderWidth: 1}}
-                            />}
+                        icon_left_component={() => 
+                            <TouchableOpacity onPress={() => setProfileChangeActive(true)}>
+                                {userData.profileUrl != "" ?
+                                    <ImageLoaderComponent 
+                                        w={50}
+                                        h={50}
+                                        imageStyle={{borderRadius:50,borderColor:"magenta",borderWidth:2}}
+                                        style={{borderRadius:50,borderColor:"magenta",borderWidth:1}}
+                                        data={{melanomaPictureUrl:userData.profileUrl}}
+                                    />
+                                    :
+                                    <View style={{width:50,height:50, borderRadius:50,borderColor:"magenta",borderWidth:2}} />
+                                }
+                            </TouchableOpacity>
+                        }
                         style={{marginBottom:20,borderWidth:0,borderColor:"white",position:"relative",zIndex:300}}
                     />
                     {activeTab == "libary" &&
@@ -152,6 +194,84 @@ const handleSettingsNavigation = () => {
                 </Tabs.Tab>
 
             </Tabs.Container>     
+            <Modal animationType="slide" visible={isProfileChangeActive} presentationStyle="formSheet">
+            <>
+                <View style={{flexDirection:"column",justifyContent:"center",width:"90%",height:50,borderRadius:10,backgroundColor:"black",borderWidth:3,borderColor:"white",alignItems:"center",position:"absolute",top:20,alignSelf:"center"}}>
+                        <MaterialCommunityIcons 
+                            name="close"
+                            size={25}
+                            color={"white"}
+                        />
+                    </View>
+                <View style={styles.startScreen}>
+                    <View style={{marginTop:0,alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,padding:10,width:"90%"}}>  
+                        <Text style={{marginBottom:0,fontWeight:"700",fontSize:23,textAlign:"left"}}>Select or upload your profile picture !</Text>
+                        <View style={{width:"100%",backgroundColor:"rgba(0,0,0,0.1)",padding:7,borderRadius:5,marginTop:15,flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
+                            <MaterialCommunityIcons 
+                                name="information"
+                                color={"black"}
+                                size={30}
+                                style={{width:"10%",opacity:0.6}}
+                            />
+                            <Text style={{textAlign:"left",fontWeight:"600",opacity:0.6,fontSize:11,width:"87%"}}>You can change this later ! We need this information for making chatting and medical reports more personal & formal ...</Text>
+                        </View>
+                    </View>
+                    <View style={{width:"100%",alignItems:"center"}}>
+                        <View style={[{borderWidth:0.3,borderColor:"magenta",backgroundColor:"rgba(0,0,0,1)",borderRadius:10,marginBottom:30,width:130,height:130,flexDirection:"column",alignItems:"center",justifyContent:"center"},styles_shadow.hightShadowContainer]}>
+                            <ImageLoaderComponent
+                                w={120}
+                                h={120}
+                                imageStyle={{borderRadius:10}}
+                                style={{backgroundColor:"transparent",borderRadius:10}}
+                                data={{melanomaPictureUrl:profileUrl}}
+                            />
+                        </View>
+                        <View style={{width:"80%",flexDirection:"row",alignItems:"center",justifyContent:"center",padding:10,borderWidth:0.3,borderRadius:10}}>
+                            <TouchableOpacity onPress={() => setProfileUrl(maleDefault)}>
+                                <Image 
+                                    style={profileUrl != maleDefault ? {width:50,height:50,marginLeft:5,borderWidth:3} : {width:50,height:50,marginLeft:5,borderWidth:3,borderColor:"magenta"}}
+                                    source={{uri: maleDefault}}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => setProfileUrl(femaleDefault)}>
+                                <Image 
+                                    style={profileUrl != femaleDefault ? {width:50,height:50,marginLeft:5,borderWidth:3} : {width:50,height:50,marginLeft:5,borderWidth:3,borderColor:"magenta"}}
+                                    source={{uri: femaleDefault}}
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => setIsCameraActive(true)} style={{backgroundColor:"white",padding:10,borderRadius:5, width:50,height:50,marginLeft:25,borderWidth:3,alignItems:"center",flexDirection:"column",justifyContent:"center"}}>
+                                <MaterialCommunityIcons 
+                                    name="camera"
+                                    size={25}
+                                    color="black"
+                                />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={handlePictureUpload} style={{backgroundColor:"black",padding:10,borderRadius:5, width:50,height:50,marginLeft:5,alignItems:"center",flexDirection:"column",justifyContent:"center"}}>
+                                <MaterialCommunityIcons 
+                                    name="image"
+                                    size={30}
+                                    color="white"
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                    <TouchableOpacity onPress={() => {
+                        handleChangeProfile()
+                        }} style={[styles.startButton,{marginBottom:0}]}>
+                        <Text style={{padding:14,fontWeight:"700",color:"white",fontSize:15}}>Save</Text>
+                    </TouchableOpacity>
+                </View>
+                <Modal visible={isCameraActive} animationType="slide" presentationStyle="overFullScreen" >
+                    <ProfileCameraScreenView 
+                        onClose={() => setIsCameraActive(false)}
+                        onPictureTaken={(uri:string) => {
+                            setProfileUrl(uri);
+                            setIsCameraActive(false);
+                        }}
+                    />  
+                </Modal>
+            </>
+            </Modal>
         </View>   
     )}
 
@@ -166,6 +286,25 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     width: '100%',
     height: '100%',
+    },
+    startButton:{
+        borderWidth:0,
+        alignItems:"center",
+        width:"90%",
+        borderRadius:10,
+        marginBottom:2,
+        backgroundColor:"magenta",
+    },
+    startScreen:{
+        borderWidth:0,
+        padding:5,
+        width:"100%",
+        alignItems:"center",
+        backgroundColor:"white",
+        zIndex:-1,
+        justifyContent:"space-between",
+        height:"80%",
+        marginTop:"20%"
     },
     rowOne: {
         flexDirection:"row",
@@ -228,15 +367,14 @@ const Header = ({
             outerBg:"black",
             content:() => 
                 <View style={styles.rowOne}>
-                <Image 
-                    source={{ uri: userData.profilePictureURL }}
-                    style={{ 
-                        width: 50,
-                        height: 50,
-                        borderRadius: 50,
-                        borderColor: "magenta",
-                        borderWidth: 1}}
-                    />
+                    
+                <ImageLoaderComponent 
+                    w={50}
+                    h={50}
+                    imageStyle={{borderRadius:50}}
+                    style={{borderRadius:50,borderColor:"magenta",borderWidth:1}}
+                    data={{melanomaPictureUrl:"userData.melanomaPictureUrl"}}
+                />
                 <Text style={styles.userNameStyle}>
                     {userData.fullname}
                 </Text>

@@ -32,7 +32,7 @@ const RegOnBoarding = ({navigation}) => {
     // <===> Variable <====> 
 
     const [ progress, setProgress] = useState(0)
-    const [gender, setGender ] = useState("")
+    const [gender, setGender ] = useState(null)
     const [birthDate, setBirthDate] = useState(new Date(2098051730000));
     const {currentuser} = useAuth()
     const [profileUrl, setProfileUrl] = useState(maleDefault)
@@ -496,16 +496,14 @@ const RegOnBoarding = ({navigation}) => {
                 icon_right={{name:"skip-next-outline",size:25,action() {
                     progress >= 0.6 ? setProgress(1) : alert("You need to add mandatory data first !")
                 },}}
-                icon_left={{name:"arrow-left",size:25,action() {
-                    setProgress(progress - 0.2)
-                },}}
-                title={"Welcome to PocketProtect"}
+                icon_left={{name:"arrow-left",size:25,action:() => setProgress(progress - 0.2) }}
+                title={"Welcome to PocketProtect"} 
                 outerBg="white"
             />
             :
             <NavBar_OneOption 
                 icon_left={{name:"arrow-left",size:25,action() {
-                    setProgress(progress - 0.2)
+                    round(progress) !== 0 ? setProgress(progress - 0.2) : setProgress(0)
                 },}}
                 title="Welcome to PocketProtect"
             />}

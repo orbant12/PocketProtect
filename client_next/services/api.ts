@@ -68,10 +68,8 @@ export const fetchSessions_All = async ({ userId }:FetchingProps) => {
         snapshot.forEach((doc) => {
             assistantSession.push(doc.data());
         });
-        console.log(assistantSession)
         return assistantSession;
     } catch(err) {
-        console.log(err)
         return [{err}]
     }
 }
@@ -83,7 +81,6 @@ export const fetchSession_Single = async ({sessionId,userId} : {sessionId:string
         if (snapshot.exists()) {
             return snapshot.data() as SessionType;
         } else {
-            console.error(`Assistant with ID ${userId} does not exist.`);
             return null;
         }
     } catch {
@@ -103,7 +100,6 @@ export const fetchSessionSingleOrder = async ({
         const snapshot = await getDoc(ref);
 
         if (!snapshot.exists()) {
-            console.error(`Session with ID ${sessionId} does not exist for user ${userId}.`);
             return null;
         }
 
@@ -123,7 +119,6 @@ export const fetchSessionSingleOrder = async ({
         }
 
     } catch (error) {
-        console.error("Error fetching session single order:", error);
         return null;
     }
 };
@@ -157,7 +152,6 @@ export const realTimeUpdateChat = async ({
         await updateDoc(ref,{chat:[...chat]})
         return true
      } catch(Err) {
-        console.log(Err)
         return Err
      }
 }

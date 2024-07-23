@@ -48,7 +48,7 @@ const GeneralSettings = ({ route, navigation }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={openBottomSheet} style={styles.topicRow}>
-                        <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>Password</Text>
+                        <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>Change Password</Text>
                         <Icon
                             name='arrow-forward-ios'
                             type='material'

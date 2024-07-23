@@ -30,13 +30,9 @@ export const getWeatherData = async({
     part,
 }:WeatherApiCallTypes):Promise<null | any> => {
     const API_key = getWeatherAPIKey();
-    console.log("Weather fetching")
     const WEATHER_API = `https://api.openweathermap.org/data/3.0/onecall?lat={${lat}}&lon={${lon}}&appid={${API_key}}`;
-    console.log(WEATHER_API)
     const response = await fetch(WEATHER_API);
     if(response.ok){
-        console.log("Weather data fetched")
-        console.log(response)
         const data = await response.json();
         return data;
     } else {
@@ -540,7 +536,6 @@ export const fetchSpecialSpots = async ({
         });
         if(response.ok){
             const data = await response.json();
-            console.log("Special spots data:", data);  // Correct logging
             return data;
         } else {
             return null
@@ -657,7 +652,6 @@ export const fetchUserData = async ({
         }
         return null;
     } catch (error) {
-        console.log(error);
         return null;
     }
 };
@@ -923,7 +917,6 @@ export const fetchAssistantSessions = async({
 
     if(response.ok){
         const data = await response.json();
-        console.log(data[0].chat)
         return data as Success_Purchase_Client_Checkout_Data[];
     } else {
         return []
