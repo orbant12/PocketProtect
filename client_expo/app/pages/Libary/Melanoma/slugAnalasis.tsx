@@ -247,7 +247,7 @@ const MoleBar = ({
 }
 
 
-export const ImageLoaderComponent = ({ data,w,h,style,imageStyle  }:{data:SpotData | {melanomaPictureUrl:string}; w:number; h:number;style?:any,imageStyle?:any}) => {
+export const ImageLoaderComponent = ({ data,w,h,style,imageStyle  }:{data:SpotData | {melanomaPictureUrl:string}; w:number | string; h:number | string;style?:any,imageStyle?:any}) => {
 
     const [loading, setLoading] = useState<boolean>(true);
 
@@ -261,10 +261,10 @@ export const ImageLoaderComponent = ({ data,w,h,style,imageStyle  }:{data:SpotDa
                 autoPlay
                 ref={imageLoad}
                 style={{
-                width: w - 8,
-                height:h - 8,
-                borderRadius:10,
-                backgroundColor: '#fffff',
+                    width: typeof w === 'string' ? w : w - 8,
+                    height: typeof h === 'string' ? h : h - 8,
+                    borderRadius:10,
+                    backgroundColor: '#fffff',
                 }}
                 source={require('../../../components/Common/AnimationSheets/lotties/imageLoad.json')}
             />

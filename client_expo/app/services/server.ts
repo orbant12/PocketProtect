@@ -48,7 +48,7 @@ export const getWeatherData = async({
 
 type SpotDeleteTypes = "history" | "latest"
 
-type userFields = "gender" | "birth_date"
+type userFields = "gender" | "birth_date" | "profileUrl"
 
 
 export type BloodWorkTypes = 
@@ -133,8 +133,9 @@ interface API_Melanoma {
 
 interface API_User {
     userId:string;
-    fieldNameToChange: userFields;
-    dataToChange: any
+    fieldNameToChange?: userFields;
+    dataToChange?: any;
+    profileBlob?:string;
 }
 
 interface API_Diagnosis {
@@ -667,7 +668,7 @@ export const changePersonalData = async ({
     dataToChange,
     userId,
 }:API_User):Promise <boolean> => {    
-        const response = await fetch(`${DOMAIN}/client/change/personal-data`, {
+        const response = await fetch(`${DOMAIN}/client/update/user-data`, {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json",
@@ -680,6 +681,26 @@ export const changePersonalData = async ({
             return false
         }
 
+}
+
+//DONE
+export const changeProfilePicture = async ({
+    userId,
+    profileBlob
+}:API_User):Promise<boolean>  => {
+    const response = await fetch(`${DOMAIN}/client/update/profile-picture`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, profileBlob }),
+    });
+
+    if(response.ok){
+        return true;
+    } else {
+        return false
+    }
 }
 
 

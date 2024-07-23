@@ -4,7 +4,7 @@ import React,{useState,useEffect} from "react";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Onboarding from 'react-native-onboarding-swiper';
 import "react-native-gesture-handler"
-import { changePersonalData } from "../../../services/server"
+import { changePersonalData, changeProfilePicture } from "../../../services/server"
 import { useAuth } from "../../../context/UserAuthContext";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { NavBar_OneOption, NavBar_TwoOption } from "../../../components/Common/navBars";
@@ -17,12 +17,21 @@ import ProfileCameraScreenView from "../cameraModal";
 import { PagerComponent } from "../../../components/Common/pagerComponent";
 import { OneOptionBox } from "../../../components/LibaryPage/Melanoma/boxes/oneOptionBox";
 import { AssistantAdvertBox } from "../../../components/LibaryPage/Melanoma/Assistance/assistantAdvert";
+import { opacity } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
+import { convertImageToBase64 } from "../../../utils/imageConvert";
 
 
 const RegOnBoarding = ({navigation}) => {
 
     const maleDefault = Image.resolveAssetSource(require("../../../assets/male.png")).uri;
     const femaleDefault = Image.resolveAssetSource(require("../../../assets/female.png")).uri;
+    const toolImage = Image.resolveAssetSource(require("../../../assets/assist/proTool.png")).uri;
+    const chatImage = Image.resolveAssetSource(require("../../../assets/assist/chat.png")).uri;
+    const pdfImage = Image.resolveAssetSource(require("../../../assets/assist/pdf.png")).uri;
+    const tapImage = Image.resolveAssetSource(require("../../../assets/tap.png")).uri;
+    const zoomImage = Image.resolveAssetSource(require("../../../assets/zoomed.png")).uri;
+    const analasisImage = Image.resolveAssetSource(require("../../../assets/analasis.png")).uri;
+    const remindImage = Image.resolveAssetSource(require("../../../assets/remind.png")).uri;
 
     // <===> Variable <====> 
 
@@ -46,7 +55,12 @@ const RegOnBoarding = ({navigation}) => {
             dataToChange: birthDate,
             userId: currentuser.uid,
         })
-        if (response == true && response2 == true){
+        const profileBlob = await convertImageToBase64(profileUrl)
+        const response3 = await changeProfilePicture({
+            userId: currentuser.uid,
+            profileBlob:profileBlob
+        })
+        if (response == true && response2 == true && response3 == true) {
             navigation.navigate("Home")
         } else {
             alert("Something went wrong !")
@@ -218,108 +232,120 @@ const RegOnBoarding = ({navigation}) => {
         )
     }
 
-    function ThirdScreen(){
-
-        function TutorialFirst(){
+    function TutorialFirst(){
 
 
-            return(
-                <View style={styles.startScreen}>
+        return(
+            <View style={[styles.startScreen,{height:"93%"}]}>
+                <ScrollView contentContainerStyle={{alignItems:"center",paddingBottom:250}} style={{width:"100%",paddingTop:20}}>
                     <View style={{marginTop:0,alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,padding:10,width:"90%",marginBottom:10}}>  
-                        <Text style={{marginBottom:0,fontWeight:"700",fontSize:23,textAlign:"center"}}>Take your time to explore the app and it's features</Text>
+                        <Text style={{marginBottom:0,fontWeight:"700",fontSize:23,textAlign:"left"}}>Take our warm welcome and let's get you protected !</Text>
+                        <View style={{width:"100%",backgroundColor:"rgba(0,0,0,0.1)",padding:7,borderRadius:5,marginTop:15,flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
+                            <MaterialCommunityIcons 
+                                name="information"
+                                color={"black"}
+                                size={30}
+                                style={{width:"10%",opacity:0.6}}
+                            />
+                            <Text style={{textAlign:"left",fontWeight:"600",opacity:0.6,fontSize:11,width:"87%"}}>Take your time to explore the app and it's features ...</Text>
+                        </View>
                     </View>
-                    <ScrollView contentContainerStyle={{alignItems:"center",paddingBottom:250}} style={{width:"100%"}}>
-                        <View style={[{width:"80%",borderWidth:0.3,height:350,borderRadius:10,marginTop:70},styles_shadow.hightShadowContainer]}>
-                            <View style={{width:"100%",borderWidth:2,height:50,flexDirection:"row",justifyContent:"space-between",alignItems:"center",backgroundColor:"rgba(0,0,0,0.9)",paddingHorizontal:10,borderTopLeftRadius:10,borderTopRightRadius:10}}>
-                                <Text style={{fontSize:18,fontWeight:"700",color:"white"}}>Melanoma Monitor</Text>
-                                <MaterialCommunityIcons 
-                                    name="liquid-spot"
-                                    color={"white"}
-                                    size={25}
+                    <View style={[{width:"80%",borderWidth:0.3,height:350,borderRadius:10,marginTop:40},styles_shadow.hightShadowContainer]}>
+                        <View style={{width:"100%",borderWidth:2,height:50,flexDirection:"row",justifyContent:"space-between",alignItems:"center",backgroundColor:"rgba(0,0,0,0.9)",paddingHorizontal:10,borderTopLeftRadius:10,borderTopRightRadius:10}}>
+                            <Text style={{fontSize:18,fontWeight:"700",color:"white"}}>Melanoma Monitor</Text>
+                            <MaterialCommunityIcons 
+                                name="liquid-spot"
+                                color={"white"}
+                                size={25}
+                            />
+                        </View>
+                    <PagerComponent 
+                        indicator_position={{backgroundColor:"black",padding:15}}
+                        dotColor={"white"}
+                        pagerStyle={{height:300,borderWidth:1}}
+                        pages={[
+                            {pageComponent:() =>
+                                <Image
+                                    source={{uri: maleDefault}}
+                                    style={{width:"100%",height:300}}
                                 />
-                            </View>
+                            },
+                            {pageComponent:() =>
+                            <Image
+                                source={{uri: maleDefault}}
+                                style={{width:"100%",height:300}}
+                            />
+                            }
+                        ]}
+                    />
+                    </View>
+                    <View style={[{width:"80%",borderWidth:0.3,height:350,borderRadius:10,marginTop:70},styles_shadow.hightShadowContainer]}>
+                        <View style={{width:"100%",borderWidth:2,height:50,flexDirection:"row",justifyContent:"space-between",alignItems:"center",backgroundColor:"rgba(0,0,0,0.9)",paddingHorizontal:10,borderTopLeftRadius:10,borderTopRightRadius:10}}>
+                            <Text style={{fontSize:18,fontWeight:"700",color:"white"}}>Medical AI Assistant</Text>
+                            <MaterialCommunityIcons 
+                                name="doctor"
+                                color={"white"}
+                                size={25}
+                            />
+                        </View>
                         <PagerComponent 
-                            indicator_position={{backgroundColor:"black",padding:15}}
-                            dotColor={"white"}
-                            pagerStyle={{height:300,borderWidth:1}}
-                            pages={[
-                                {pageComponent:() =>
-                                    <Image
-                                        source={{uri: maleDefault}}
-                                        style={{width:"100%",height:300}}
-                                    />
-                                },
-                                {pageComponent:() =>
+                        indicator_position={{backgroundColor:"black",padding:15}}
+                        dotColor={"white"}
+                        pagerStyle={{height:300,borderWidth:1}}
+                        pages={[
+                            {pageComponent:() =>
                                 <Image
                                     source={{uri: maleDefault}}
                                     style={{width:"100%",height:300}}
                                 />
-                                }
-                            ]}
-                        />
+                            },
+                            {pageComponent:() =>
+                            <Image
+                                source={{uri: maleDefault}}
+                                style={{width:"100%",height:300}}
+                            />
+                            }
+                        ]}
+                    />
+                    </View>
+                    <View style={[{width:"80%",borderWidth:0.3,height:350,borderRadius:10,marginTop:70},styles_shadow.hightShadowContainer]}>
+                        <View style={{width:"100%",borderWidth:2,height:50,flexDirection:"row",justifyContent:"space-between",alignItems:"center",backgroundColor:"rgba(0,0,0,0.9)",paddingHorizontal:10,borderTopLeftRadius:10,borderTopRightRadius:10}}>
+                            <Text style={{fontSize:18,fontWeight:"700",color:"white"}}>Diagnosis AI</Text>
+                            <MaterialCommunityIcons 
+                                name="brain"
+                                color={"white"}
+                                size={25}
+                            />
                         </View>
-                        <View style={[{width:"80%",borderWidth:0.3,height:350,borderRadius:10,marginTop:70},styles_shadow.hightShadowContainer]}>
-                            <View style={{width:"100%",borderWidth:2,height:50,flexDirection:"row",justifyContent:"space-between",alignItems:"center",backgroundColor:"rgba(0,0,0,0.9)",paddingHorizontal:10,borderTopLeftRadius:10,borderTopRightRadius:10}}>
-                                <Text style={{fontSize:18,fontWeight:"700",color:"white"}}>Medical AI Assistant</Text>
-                                <MaterialCommunityIcons 
-                                    name="doctor"
-                                    color={"white"}
-                                    size={25}
-                                />
-                            </View>
-                            <PagerComponent 
-                            indicator_position={{backgroundColor:"black",padding:15}}
-                            dotColor={"white"}
-                            pagerStyle={{height:300,borderWidth:1}}
-                            pages={[
-                                {pageComponent:() =>
-                                    <Image
-                                        source={{uri: maleDefault}}
-                                        style={{width:"100%",height:300}}
-                                    />
-                                },
-                                {pageComponent:() =>
+                        <PagerComponent 
+                        indicator_position={{backgroundColor:"black",padding:15}}
+                        dotColor={"white"}
+                        pagerStyle={{height:300,borderWidth:1}}
+                        pages={[
+                            {pageComponent:() =>
                                 <Image
                                     source={{uri: maleDefault}}
                                     style={{width:"100%",height:300}}
                                 />
-                                }
-                            ]}
-                        />
-                        </View>
-                        <View style={[{width:"80%",borderWidth:0.3,height:350,borderRadius:10,marginTop:70},styles_shadow.hightShadowContainer]}>
-                            <View style={{width:"100%",borderWidth:2,height:50,flexDirection:"row",justifyContent:"space-between",alignItems:"center",backgroundColor:"rgba(0,0,0,0.9)",paddingHorizontal:10,borderTopLeftRadius:10,borderTopRightRadius:10}}>
-                                <Text style={{fontSize:18,fontWeight:"700",color:"white"}}>Diagnosis AI</Text>
-                                <MaterialCommunityIcons 
-                                    name="brain"
-                                    color={"white"}
-                                    size={25}
-                                />
-                            </View>
-                            <PagerComponent 
-                            indicator_position={{backgroundColor:"black",padding:15}}
-                            dotColor={"white"}
-                            pagerStyle={{height:300,borderWidth:1}}
-                            pages={[
-                                {pageComponent:() =>
-                                    <Image
-                                        source={{uri: maleDefault}}
-                                        style={{width:"100%",height:300}}
-                                    />
-                                },
-                                {pageComponent:() =>
-                                <Image
-                                    source={{uri: maleDefault}}
-                                    style={{width:"100%",height:300}}
-                                />
-                                }
-                            ]}
-                        />
-                        </View>
-                    </ScrollView>
-                </View>
-            )
-        }
+                            },
+                            {pageComponent:() =>
+                            <Image
+                                source={{uri: maleDefault}}
+                                style={{width:"100%",height:300}}
+                            />
+                            }
+                        ]}
+                    />
+                    </View>
+                </ScrollView>
+                <TouchableOpacity onPress={() => handleFinishOnboarding()} style={{width:"85%",padding:14,backgroundColor:"magenta",alignItems:"center",justifyContent:"center",borderRadius:10,marginBottom:10,marginTop:0}}>
+                <Text style={{fontSize:15,fontWeight:"700", color:"white"}}>Start</Text>
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
+    function ThirdScreen(){
 
         function TutorialSecound(){
             return(
@@ -336,57 +362,66 @@ const RegOnBoarding = ({navigation}) => {
 
         function TutorialFourth(){
             return(
-                <View style={styles.startScreen}>
-                <View style={{marginTop:0,alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,padding:10,width:"90%",marginBottom:10}}>  
-                    <Text style={{marginBottom:0,fontWeight:"700",fontSize:23,textAlign:"center"}}>Skin Cancer Monitoring Process</Text>
-                </View>
+                <View style={[styles.startScreen,{height:"94%"}]}>
+                <View style={{alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,padding:10,width:"90%",marginBottom:10}}>  
+                        <Text style={{marginBottom:0,fontWeight:"700",fontSize:23,textAlign:"left"}}>Skin Cancer Monitoring</Text>
+                        <View style={{width:"100%",backgroundColor:"rgba(0,0,0,0.1)",padding:7,borderRadius:5,marginTop:15,flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
+                            <MaterialCommunityIcons 
+                                name="information"
+                                color={"black"}
+                                size={30}
+                                style={{width:"10%",opacity:0.6}}
+                            />
+                            <Text style={{textAlign:"left",fontWeight:"600",opacity:0.6,fontSize:11,width:"87%"}}>Take your time to explore the app and it's features ...</Text>
+                        </View>
+                    </View>
                 <View style={{width:"100%",height:"80%",alignItems:"center",zIndex:-1}}>
                     <PagerComponent 
-                        indicator_position={{backgroundColor:"rgba(0,0,0,0.1)",padding:15,marginTop:-12}}
+                        indicator_position={{backgroundColor:"rgba(0,0,0,0.9)",padding:15,marginTop:-10,borderRadius:10,borderTopLeftRadius:30,borderTopRightRadius:30}}
                         dotColor={"white"}
                         pagerStyle={[{height:320,borderWidth:0,width:"90%"},styles_shadow.shadowContainer]}
                         pages={[
                             {pageComponent:() =>
                                 <View style={{height:300,width:"100%",alignItems:"center"}}>
                                     <Image
-                                        source={{uri: maleDefault}}
+                                        source={{uri: tapImage}}
                                         style={{width:200,height:200,objectFit:"contain"}}
                                     />
-                                    <View style={{width:"100%",backgroundColor:"rgba(0,0,0,0.1)",padding:7,borderRadius:5,marginTop:15,alignSelf:"center",height:"30%",marginBottom:30,flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-                                        <Text style={{textAlign:"center",fontWeight:"600",opacity:0.8}}>Mark and take a photo of the moles on all separate parts of your body ...</Text>
+                                    <View style={{width:"95%",backgroundColor:"rgba(0,0,0,1)",padding:7,paddingVertical:18,borderRadius:5,marginTop:15,alignSelf:"center",maxHeight:"30%",marginBottom:30,flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+                                        <Text style={{textAlign:"center",fontWeight:"700",opacity:0.9,fontSize:15,color:"white"}}><Text style={{color:"magenta"}}>Mark</Text> and <Text style={{color:"magenta"}}>take a photo</Text> of the moles on all separate parts of your body ...</Text>
                                     </View>
                                 </View>
                             },
                             {pageComponent:() =>
                                 <>
                                 <Image
-                                    source={{uri: maleDefault}}
+                                    source={{uri: zoomImage}}
                                     style={{width:"100%",height:"60%",objectFit:"contain"}}
                                 />
-                                <View style={{width:"90%",backgroundColor:"rgba(0,0,0,0.1)",padding:7,borderRadius:5,marginTop:15,alignSelf:"center",height:"30%",marginBottom:30,flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-                                <Text style={{textAlign:"center",fontWeight:"600",opacity:0.8}}>Make sure your mole is centered within the 'magenta cube' and zoomed in properly while maintaining high quality ...</Text>
+                                <View style={{width:"95%",backgroundColor:"rgba(0,0,0,1)",padding:10,paddingVertical:18,borderRadius:5,marginTop:15,alignSelf:"center",maxHeight:"30%",marginBottom:30,flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+                                <Text style={{textAlign:"center",fontWeight:"700",opacity:0.9,fontSize:15,color:"white"}}>Make sure your mole is <Text style={{color:"magenta"}}>centered</Text> within the 'magenta cube' and <Text style={{color:"magenta"}}>zoomed in</Text> properly while <Text style={{color:"magenta"}}>maintaining high quality</Text> ...</Text>
                                 </View>
                             </>
                             },
                             {pageComponent:() =>
                                 <>
                                 <Image
-                                    source={{uri: maleDefault}}
+                                    source={{uri: analasisImage}}
                                     style={{width:"100%",height:"60%",objectFit:"contain"}}
                                 />
-                                <View style={{width:"90%",backgroundColor:"rgba(0,0,0,0.1)",padding:7,borderRadius:5,marginTop:15,alignSelf:"center",height:"30%",marginBottom:30,flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-                                <Text style={{textAlign:"center",fontWeight:"600",opacity:0.8}}>Press the AI analasis button within your mole to get a 90% accurate prediction ...</Text>
+                                 <View style={{width:"95%",backgroundColor:"rgba(0,0,0,1)",padding:10,paddingVertical:18,borderRadius:5,marginTop:15,alignSelf:"center",maxHeight:"30%",marginBottom:30,flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+                                 <Text style={{textAlign:"center",fontWeight:"700",opacity:0.9,fontSize:15,color:"white"}}>Press the <Text style={{color:"magenta"}}>AI analasis</Text> button within your mole to get a 90% accurate prediction ...</Text>
                                 </View>
                             </>
                             },
                             {pageComponent:() =>
                                 <>
                                 <Image
-                                    source={{uri: maleDefault}}
+                                    source={{uri: remindImage}}
                                     style={{width:"100%",height:"60%",objectFit:"contain"}}
                                 />
-                                <View style={{width:"90%",backgroundColor:"rgba(0,0,0,0.1)",padding:7,borderRadius:5,marginTop:15,alignSelf:"center",height:"30%",marginBottom:30,flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
-                                <Text style={{textAlign:"center",fontWeight:"600",opacity:0.8}}>Store data about your skin and birthmarks safely and in an organized manner. Also, set reminders for recommended updates about your moles ...</Text>
+                                 <View style={{width:"95%",backgroundColor:"rgba(0,0,0,1)",padding:10,paddingVertical:18,borderRadius:5,marginTop:15,alignSelf:"center",maxHeight:"30%",marginBottom:30,flexDirection:"column",alignItems:"center",justifyContent:"center"}}>
+                                <Text style={{textAlign:"center",fontWeight:"700",opacity:0.9,fontSize:14,color:"white"}}><Text style={{color:"magenta"}}>Store data</Text> about your <Text style={{color:"magenta"}}>skin and birthmarks </Text>in an organized manner. Also, set <Text style={{color:"magenta"}}>reminders </Text> for recommended checkups ...</Text>
                                 </View>
                             </>
                             }
@@ -420,6 +455,7 @@ const RegOnBoarding = ({navigation}) => {
                             mainTitle="Detect Skin Cancer"
                             image={require("../../../assets/abcde.png")}
                             bgColor="white"
+                            onClick={() => alert("Complete your onboarding to access this feature")}
                         />
 
 
@@ -432,6 +468,7 @@ const RegOnBoarding = ({navigation}) => {
                             image={require("../../../assets/type.png")}
                             bgColor={"black"}
                             textColor={"white"}
+                            onClick={() => alert("Complete your onboarding to access this feature")}
                         />
 
                         <OneOptionBox 
@@ -441,6 +478,7 @@ const RegOnBoarding = ({navigation}) => {
                             mainTitle="Our AI Model"
                             image={require("../../../assets/ai.png")}
                             bgColor="white"
+                            onClick={() => alert("Complete your onboarding to access this feature")}
                         />
 
                         <OneOptionBox 
@@ -451,6 +489,7 @@ const RegOnBoarding = ({navigation}) => {
                             mainTitle="Track Sun Burn"
                             image={require("../../../assets/burn.png")}
                             bgColor={"orange"}
+                            onClick={() => alert("Complete your onboarding to access this feature")}
                         />
                     </ScrollView>
                 </View>
@@ -473,90 +512,74 @@ const RegOnBoarding = ({navigation}) => {
                             <Text style={{textAlign:"left",fontWeight:"600",opacity:0.6,fontSize:11,width:"87%"}}>We have a bunch of quick learning modules about skin cancer and it's signs of appearance</Text>
                         </View>
                     </View>
-                        <View style={[{width:"80%",borderWidth:0.3,height:350,borderRadius:10,marginTop:70},styles_shadow.hightShadowContainer]}>
+                        <View style={[{width:"80%",borderWidth:0.3,height:350,borderRadius:10,marginTop:50},styles_shadow.hightShadowContainer]}>
                             <View style={{width:"100%",borderWidth:2,height:50,flexDirection:"row",justifyContent:"space-between",alignItems:"center",backgroundColor:"rgba(0,0,0,0.9)",paddingHorizontal:10,borderTopLeftRadius:10,borderTopRightRadius:10}}>
-                                <Text style={{fontSize:18,fontWeight:"700",color:"white"}}>Melanoma Monitor</Text>
+                                <Text style={{fontSize:15,fontWeight:"700",color:"white",opacity:0.9,width:"90%"}}>Get checked with professional tools by a professional</Text>
                                 <MaterialCommunityIcons 
-                                    name="liquid-spot"
+                                    name="microscope"
                                     color={"white"}
                                     size={25}
                                 />
                             </View>
                         <PagerComponent 
-                            indicator_position={{backgroundColor:"black",padding:15}}
+                            indicator_position={{backgroundColor:"black",padding:15,display:"none"}}
                             dotColor={"white"}
                             pagerStyle={{height:300,borderWidth:1}}
                             pages={[
                                 {pageComponent:() =>
-                                    <Image
-                                        source={{uri: maleDefault}}
-                                        style={{width:"100%",height:300}}
+                                    <ImageLoaderComponent
+                                        w={"100%"}
+                                        h={300}
+                                        imageStyle={{borderRadius:0}}
+                                        data={{melanomaPictureUrl:toolImage}}
                                     />
                                 },
-                                {pageComponent:() =>
-                                <Image
-                                    source={{uri: maleDefault}}
-                                    style={{width:"100%",height:300}}
-                                />
-                                }
                             ]}
                         />
                         </View>
                         <View style={[{width:"80%",borderWidth:0.3,height:350,borderRadius:10,marginTop:70},styles_shadow.hightShadowContainer]}>
                             <View style={{width:"100%",borderWidth:2,height:50,flexDirection:"row",justifyContent:"space-between",alignItems:"center",backgroundColor:"rgba(0,0,0,0.9)",paddingHorizontal:10,borderTopLeftRadius:10,borderTopRightRadius:10}}>
-                                <Text style={{fontSize:18,fontWeight:"700",color:"white"}}>Medical AI Assistant</Text>
+                                <Text style={{fontSize:15,fontWeight:"800",color:"white",opacity:1}}>Chat with your dermotologist</Text>
                                 <MaterialCommunityIcons 
-                                    name="doctor"
+                                    name="chat-processing-outline"
                                     color={"white"}
                                     size={25}
                                 />
                             </View>
                             <PagerComponent 
-                            indicator_position={{backgroundColor:"black",padding:15}}
+                            indicator_position={{backgroundColor:"black",padding:15,display:"none"}}
                             dotColor={"white"}
                             pagerStyle={{height:300,borderWidth:1}}
                             pages={[
                                 {pageComponent:() =>
                                     <Image
-                                        source={{uri: maleDefault}}
+                                        source={{uri: chatImage}}
                                         style={{width:"100%",height:300}}
                                     />
                                 },
-                                {pageComponent:() =>
-                                <Image
-                                    source={{uri: maleDefault}}
-                                    style={{width:"100%",height:300}}
-                                />
-                                }
                             ]}
                         />
                         </View>
                         <View style={[{width:"80%",borderWidth:0.3,height:350,borderRadius:10,marginTop:70},styles_shadow.hightShadowContainer]}>
                             <View style={{width:"100%",borderWidth:2,height:50,flexDirection:"row",justifyContent:"space-between",alignItems:"center",backgroundColor:"rgba(0,0,0,0.9)",paddingHorizontal:10,borderTopLeftRadius:10,borderTopRightRadius:10}}>
-                                <Text style={{fontSize:18,fontWeight:"700",color:"white"}}>Diagnosis AI</Text>
+                                <Text style={{fontSize:15,fontWeight:"700",color:"white",width:"80%"}}>Get a report pdf file with a detailed analasis</Text>
                                 <MaterialCommunityIcons 
-                                    name="brain"
+                                    name="paperclip"
                                     color={"white"}
                                     size={25}
                                 />
                             </View>
                             <PagerComponent 
-                            indicator_position={{backgroundColor:"black",padding:15}}
+                            indicator_position={{backgroundColor:"black",padding:15,display:"none"}}
                             dotColor={"white"}
                             pagerStyle={{height:300,borderWidth:1,}}
                             pages={[
                                 {pageComponent:() =>
                                     <Image
-                                        source={{uri: maleDefault}}
+                                        source={{uri: pdfImage}}
                                         style={{width:"100%",height:300}}
                                     />
                                 },
-                                {pageComponent:() =>
-                                <Image
-                                    source={{uri: maleDefault}}
-                                    style={{width:"100%",height:300}}
-                                />
-                                }
                             ]}
                         />
                         </View>
@@ -599,11 +622,6 @@ const RegOnBoarding = ({navigation}) => {
                         image: <Image source={{uri: "https://picsum.photos/200/300"}} />,
                         title: 
                             TutorialSecound()
-                    },
-                    {
-                        backgroundColor: 'white',
-                        title: 
-                            TutorialFirst()
                     },
                 ]}
                 />
@@ -673,7 +691,7 @@ const RegOnBoarding = ({navigation}) => {
                 {round(progress) == 0.2 ? SecoundScreen():null}
                 {round(progress) == 0.4 ? ProfileScreen():null}
                 {round(progress) == 0.6 ? ThirdScreen():null}
-                {round(progress) == 1 ? FinalScreen():null}
+                {round(progress) == 1 ? TutorialFirst():null}
             </View>
         </>
     )

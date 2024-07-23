@@ -1,24 +1,14 @@
 {
   "functions": [
     {
-      "source": "functions",
-      "codebase": "default",
-      "runtime": "nodejs18",
+      "source": "openai",
+      "codebase": "openai",
       "ignore": [
         "node_modules",
         ".git",
         "firebase-debug.log",
-        "firebase-debug.*.log"
-      ]
-    },
-    {
-      "source": "ml",
-      "codebase": "ml",
-      "ignore": [
-        "venv",
-        ".git",
-        "firebase-debug.log",
-        "firebase-debug.*.log"
+        "firebase-debug.*.log",
+        "*.local"
       ]
     }
   ]
