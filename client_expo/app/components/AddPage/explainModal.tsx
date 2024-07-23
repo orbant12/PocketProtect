@@ -1,5 +1,5 @@
 
-import { Text,View,TouchableOpacity,Image,Modal,Dimensions} from 'react-native';
+import { Text,View,TouchableOpacity,Image,Modal,Dimensions,ScrollView} from 'react-native';
 import { HeaderContainer } from "../Common/headerContainer";
 import { NavBar_OneOption } from "../Common/navBars";
 import { PagerComponent } from "../Common/pagerComponent";
@@ -7,6 +7,7 @@ import tutorial1 from "../../assets/diagnosis/first.png"
 import { Navigation_MoleUpload_1,Navigation_MelanomaFullsetup, Navigation_AI_Assistant, Navigation_AI_Diagnosis } from "../../navigation/navigation";
 import { styles } from "../../styles/add_style";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
+import { SkinCancerMonitor_Onboard } from './onBoardings/skinCancerMonitorBoard';
 
 const { width } = Dimensions.get('window');
 
@@ -56,31 +57,12 @@ function ExplainPanel({actions,handleAction}:{
     handleAction:Function
 }){
     return(
-        <View style={{width:"100%",alignItems:"center",height:"80%",justifyContent:"space-between",marginTop:0}}>  
+        <ScrollView contentContainerStyle={{alignItems:"center",paddingBottom:30}} style={{width:"100%",marginTop:0}}>  
+        
+
             {actions.length != 0 &&  (actions[0].type == "melanoma-monitor" &&
-                <View style={{width:"100%"}} >  
-                <PagerComponent 
-                    pages={[
-                        {pageComponent:() => 
-                            <TutorialPage
-                                image={tutorial1}
-                                title={"Mark & upload your moles on your body parts ..."}
-                                index={1}
-                            />
-                        },
-                        {pageComponent:() => 
-                            <TutorialPage
-                                image={tutorial1}
-                                title={"Set reminders & monitor your moles with AI vision ..."}
-                                index={2}
-                            />
-                        },
-                    ]}
-                    pagerStyle={{height:"70%",borderWidth:1,marginTop:10}}
-                    indicator_position={{backgroundColor:"black",padding:12}}
-                    dotColor={"white"}
-                />                                                       
-                </View>  
+                
+                <SkinCancerMonitor_Onboard containerStyle={{marginTop:40}} style={{height:550,marginTop:20,marginBottom:0,borderWidth:0}} noTitle={false} />
             )}
             {actions.length != 0 && (actions[0].type == "medical-ai-assistant" &&
                 <View style={{width:"100%"}} >  
@@ -132,7 +114,7 @@ function ExplainPanel({actions,handleAction}:{
                 />                                                       
                 </View>  
             )}                 
-            <View style={{borderWidth:1,width:"95%",borderRadius:20,alignItems:"center",backgroundColor:"black",marginTop:-50,padding:0,paddingBottom:25}}>                            
+            <View style={{borderWidth:1,width:"95%",borderRadius:20,alignItems:"center",backgroundColor:"black",marginTop:0,padding:0,paddingBottom:25,height:220}}>                            
                 <View style={{width:50, borderWidth:1.5,borderColor:"white", opacity:0.7,marginTop:10}} />
                 <Text style={{color:"white",fontWeight:"700",fontSize:15,marginTop:10}}>Get Started</Text>
                 {actions.map((data,index) => (
@@ -149,7 +131,7 @@ function ExplainPanel({actions,handleAction}:{
 
                 }                          
             </View> 
-        </View> 
+        </ScrollView> 
     )
 }
 

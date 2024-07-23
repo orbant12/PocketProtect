@@ -345,7 +345,7 @@ const MelanomaContent = ({
         <View style={styles_shadow.shadowContainer}>
             <Body
                 data={affectedSlugs}
-                gender={"male"}
+                gender={userData.gender}
                 side={selectedSide}
                 scale={1.1}
                 colors={['#FF0000','#A6FF9B','#FFA8A8']}
