@@ -93,7 +93,7 @@ return (
           goBack={() => navigation.goBack()}
           title={"Ask Anything"}
           id={"Are you having suspicious sympthoms ?"}
-          right_icon={{type:"icon",name:"information"}}
+          right_icon={{type:"icon",name:"comment-eye"}}
           right_action={() => handleOpenBottomSheet("open")}
         />
         :
