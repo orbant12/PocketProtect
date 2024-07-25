@@ -1,4 +1,4 @@
-import { Chat_InputField } from "./chatInputField"
+import { AI_InpitField} from "./chatInputField"
 import { ChatLogView } from "../../ChatPage/chatLogView"
 import { Modal,View } from "react-native"
 import { NavBar_AssistantModal } from "../navbarAssistantModal"
@@ -14,7 +14,7 @@ export const ChatBot_Modal = ({
     handlePromptTrigger,
     chatScrollRef,
     currentuser,
-    handleOpenBottomSheet
+    setSelectedType
   }) => {
       //<========<[ Variables ]>==========>
 
@@ -38,24 +38,35 @@ export const ChatBot_Modal = ({
                     title={"Chat Log"}
                     id={"session_10232"}
                     right_icon={{type:"static_image",name:robotLogo}}
-                    right_action={() => handleOpenBottomSheet("open")}
+                    right_action={() => setSelectedType("context")}
                 />
-                <ChatLogView 
-                    chatLog={chatLog}
-                    me={currentuser.uid}
-                    end={"gpt"}
-                    profileUrl={robotLogo}
-                    chatScrollRef={chatScrollRef}
-                    handleScroll={handleScroll}
-                    handleKeyboardDismiss={handleKeyboardDismiss}
-                />
-                <Chat_InputField 
-                    handleSend={handlePromptTrigger}
-                    handleOpenBottomSheet={handleOpenBottomSheet}
-                    setInputValue={setInputText}
-                    inputValue={inputText}
-                />
+                <View style={{justifyContent:"space-between",marginTop:"0%",width:"100%",height:"86%",borderWidth:3}}>
+                    <ChatLogView 
+                        chatLog={chatLog}
+                        me={currentuser.uid}
+                        end={"gpt"}
+                        profileUrl={robotLogo}
+                        chatScrollRef={chatScrollRef}
+                        handleScroll={handleScroll}
+                        handleKeyboardDismiss={handleKeyboardDismiss}
+                    />
+                    <ContextActive />
+                    <AI_InpitField
+                        handleSend={handlePromptTrigger}
+                        setInputValue={setInputText}
+                        inputValue={inputText}
+                        setSelectedType={setSelectedType}
+                    />
+                </View>
             </View>
         </Modal>
       )
+  }
+
+  const ContextActive = () => {
+    return(
+        <View style={{position:"absolute",bottom:10,right:10}}>
+
+        </View>
+    )
   }
