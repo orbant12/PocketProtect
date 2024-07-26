@@ -1,4 +1,4 @@
-import { PromptResponseFormat } from "../pages/Chat/Personal_Assistant";
+import { PromptResponseFormat } from "../pages/Chat/aiChatWelcome";
 import { app } from "./firebase"
 import { getFunctions, httpsCallable } from "firebase/functions";
 

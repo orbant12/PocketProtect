@@ -1,6 +1,7 @@
 import { TextInput, ScrollView,View, Text, Image, KeyboardAvoidingView, Platform,TouchableOpacity,Pressable,Animated  } from "react-native"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import React, { useRef, useEffect } from "react"
+import { styles_shadow } from "../../styles/shadow_styles"
 
 export const ChatLogView = ({
     chatLog,
@@ -47,7 +48,7 @@ const ChatMessage = ({ message, me, end, isLast,profileUrl,animate }) => {
       }, [animate]);
 
 return(
-<Animated.View style={[{flexDirection:"row",width:"100%",borderWidth:0,padding:10,paddingTop:1,paddingBottom:1},{opacity}, message.user == me ? {backgroundColor:"rgba(0,0,0,0)", flexDirection:"row-reverse"}:{backgroundColor:"rgba(0,0,0,0)"}, !message.inline_answer && message.sent && {marginTop:30},isLast && message.user == me && {marginBottom:20}]}>
+<Animated.View style={[{flexDirection:"row",width:"100%",borderWidth:0,padding:10,paddingTop:1,paddingBottom:1},{opacity}, message.user == me ? {backgroundColor:"rgba(0,0,0,0)", flexDirection:"row-reverse"}:{backgroundColor:"rgba(0,0,0,0)"}, !message.inline_answer && message.sent && {marginTop:30},isLast && message.user == me && {marginBottom:20},styles_shadow.shadowContainer]}>
     {message.user == end &&
         (
         !message.inline_answer ?
@@ -60,14 +61,14 @@ return(
         )
     }
     {message.user == end ? (
-        <View style={[{alignItems:"start",paddingVertical:8,paddingHorizontal:10,backgroundColor:"rgba(0,0,255,0.4)",borderRadius:10,borderTopLeftRadius:0,borderBottomLeftRadius:2,marginBottom:0}, isLast && {marginBottom:10}]}>
+        <View style={[{alignItems:"start",paddingVertical:8,paddingHorizontal:10,backgroundColor:"rgba(250,0,250,0.6)",borderRadius:10,borderTopLeftRadius:0,borderBottomLeftRadius:2,marginBottom:0}, isLast && {marginBottom:10}]}>
             <Text style={[{maxWidth:290,color:"black"},{fontWeight:"500"}]}>
                 {message.message}
             </Text>
         </View>
     ):(
         
-        <View style={[{alignItems:"start",paddingVertical:8,paddingHorizontal:10,backgroundColor:"rgba(0,0,255,0.4)",borderRadius:10,borderTopRightRadius:0,borderBottomRightRadius:2,marginBottom:0}, isLast && {marginBottom:10}]}>
+        <View style={[{alignItems:"start",paddingVertical:8,paddingHorizontal:10,backgroundColor:"rgba(250,0,250,0.3)",borderRadius:10,borderTopRightRadius:0,borderBottomRightRadius:2,marginBottom:0}, isLast && {marginBottom:10}]}>
             <Text style={[{maxWidth:290,color:"black"},{fontWeight:"500"}]}>
                 {message.message}
             </Text>

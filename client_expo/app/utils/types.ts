@@ -1,5 +1,6 @@
 //<===================== MELANOOMA ==========================>
 
+import { BloodWorkDoc } from "../services/server";
 import { Timestamp } from "./date_manipulations";
 
 //BODY-PART
@@ -194,4 +195,20 @@ export type DiagnosisData = {
         },
         stage_four:null
     }
+}
+
+export type ContextToggleType = {
+    useBloodWork:boolean,
+    useUvIndex:boolean,
+    useMedicalData:boolean,
+    useBMI:boolean,
+    useWeatherEffect:boolean
+}
+
+export type UserContextType = {
+    useBloodWork:null | string,
+    useUvIndex:null | "",
+    useMedicalData:null | "",
+    useBMI:null | "",
+    useWeatherEffect:null | ""
 }

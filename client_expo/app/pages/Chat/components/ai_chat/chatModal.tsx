@@ -1,9 +1,10 @@
 import { AI_InpitField} from "./chatInputField"
-import { ChatLogView } from "../../ChatPage/chatLogView"
+import { ChatLogView } from "../../../../components/ChatPage/chatLogView"
 import { Modal,View } from "react-native"
-import { NavBar_AssistantModal } from "../navbarAssistantModal"
+import { NavBar_AssistantModal } from "../../../../components/Assist/navbarAssistantModal"
 import { useState } from "react"
-import robotLogo from "../../../assets/assist/robotAI.png"
+import robotLogo from "../../../../assets/assist/robotAI.png"
+import { ContextToggleType } from "../../../../utils/types"
 
 export const ChatBot_Modal = ({
     setInputText,
@@ -14,7 +15,21 @@ export const ChatBot_Modal = ({
     handlePromptTrigger,
     chatScrollRef,
     currentuser,
-    setSelectedType
+    setSelectedType,
+    navigation,
+    contextToggles
+  }:{
+    setInputText: (arg:string) => void,
+    setChatLog: ({}) => void,
+    chatLog: any[],
+    handleKeyboardDismiss: any,
+    inputText: string,
+    handlePromptTrigger: any,
+    chatScrollRef: any,
+    currentuser: any,
+    setSelectedType: (arg: "context" | "help" | "questions") => void,
+    navigation: any,
+    contextToggles:ContextToggleType
   }) => {
       //<========<[ Variables ]>==========>
 
@@ -29,18 +44,16 @@ export const ChatBot_Modal = ({
 
       //<===========<[ Main ]>===========>
       return(
-          <Modal visible={chatLog.length != 0} >
             <View style={{width:"100%",alignItems:"center",height:"100%"}}>
                 <NavBar_AssistantModal 
-                    goBack={setChatLog}
-                    scrollRef={chatScrollRef}
+                    goBack={() => navigation.goBack()}
                     bgColor={"black"}
                     title={"Chat Log"}
                     id={"session_10232"}
-                    right_icon={{type:"static_image",name:robotLogo}}
-                    right_action={() => setSelectedType("context")}
+                    right_icon={{type:"icon",name:"comment-question"}}
+                    right_action={() => setSelectedType("questions")}
                 />
-                <View style={{justifyContent:"space-between",marginTop:"0%",width:"100%",height:"86%",borderWidth:3}}>
+                <View style={{justifyContent:"space-between",marginTop:"0%",width:"100%",height:"88%",borderWidth:3}}>
                     <ChatLogView 
                         chatLog={chatLog}
                         me={currentuser.uid}
@@ -50,23 +63,15 @@ export const ChatBot_Modal = ({
                         handleScroll={handleScroll}
                         handleKeyboardDismiss={handleKeyboardDismiss}
                     />
-                    <ContextActive />
                     <AI_InpitField
                         handleSend={handlePromptTrigger}
                         setInputValue={setInputText}
                         inputValue={inputText}
                         setSelectedType={setSelectedType}
+                        contextToggles={contextToggles}
                     />
                 </View>
             </View>
-        </Modal>
       )
   }
 
-  const ContextActive = () => {
-    return(
-        <View style={{position:"absolute",bottom:10,right:10}}>
-
-        </View>
-    )
-  }

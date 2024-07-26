@@ -2,6 +2,7 @@ import {BottomSheetModal} from '@gorhom/bottom-sheet';
 import { StyleSheet,ScrollView, View, Pressable,Text} from 'react-native';
 import { MedicalData_Box } from '../ProfilePage/medicalDataBox';
 import { useState } from 'react';
+import { ContextToggleType } from '../../utils/types';
 
 
 
@@ -11,8 +12,11 @@ export const ContextSheet = ({
     setIsContextPanelOpen,    
   }) => {
 
-    const [ contextToggles , setContextToggles ] = useState({
+    const [ contextToggles , setContextToggles ] = useState<ContextToggleType>({
         useBloodWork:false,
+        useUvIndex:false,
+        useMedicalData:false,
+        useBMI:false,
         useWeatherEffect:false,
     })
 
@@ -55,19 +59,7 @@ export const ContextSheet = ({
 
 
     return(
-        <BottomSheetModal
-            ref={contextSheet}
-            snapPoints={["80%"]}
-            onChange={() => setIsContextPanelOpen(!isContextPanelOpen)}
-            enablePanDownToClose={true}
-            handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:40,color:"white",zIndex:20}}
-            handleIndicatorStyle={{backgroundColor:"white"}}
-
-        >
-            <ContextPanel 
-  
-            />
-        </BottomSheetModal>
+  <></>
     )
 }
 
@@ -89,13 +81,12 @@ const Cstyles = StyleSheet.create({
 
 
   export function ContextPanel({
+    contextToggles,
+    setContextToggles,
+    userContexts
   }){
 
-    const [ contextToggles , setContextToggles ] = useState({
-      useBloodWork:false,
-      useWeatherEffect:false,
-    })
-    
+
     const ContextOptions = [
       {
         title:"Blood Work",
@@ -103,17 +94,22 @@ const Cstyles = StyleSheet.create({
         stateID:"useBloodWork"
       },
       {
-        title:"Weather Effects",
-        stateName:contextToggles.useWeatherEffect,
-        stateID:"useWeatherEffect"
+        title:"UV Index",
+        stateName:contextToggles.useUvIndex,
+        stateID:"useUvIndex"
       },
       {
-        title:"Weather Effects",
-        stateName:contextToggles.useWeatherEffect,
-        stateID:"useWeatherEffect"
+        title:"Medical Data",
+        stateName:contextToggles.useMedicalData,
+        stateID:"useMedicalData"
       },
       {
-        title:"Weather Effects",
+        title:"BMI",
+        stateName:contextToggles.useBMI,
+        stateID:"useBMI"
+      },
+      {
+        title:"Weather Data",
         stateName:contextToggles.useWeatherEffect,
         stateID:"useWeatherEffect"
       },
@@ -130,7 +126,23 @@ const Cstyles = StyleSheet.create({
           ...contextToggles,
           [name]:e
       })
+      } else if ( name == "useMedicalData"){
+        setContextToggles({
+          ...contextToggles,
+          [name]:e
+      })
+      } else if ( name == "useBMI"){
+        setContextToggles({
+          ...contextToggles,
+          [name]:e
+      })
+      } else if ( name == "useUvIndex"){
+        setContextToggles({
+          ...contextToggles,
+          [name]:e
+      })
       }
+
     }
 
     return(      
@@ -144,7 +156,7 @@ const Cstyles = StyleSheet.create({
         </View>
       </View>
       <View style={[Cstyles.container,{zIndex:30}]}>
-        <ScrollView style={{width:"100%",marginLeft:"auto",marginRight:"auto",backgroundColor:"white",height:"100%",paddingTop:0}} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={{paddingBottom:100}} style={{width:"100%",marginLeft:"auto",marginRight:"auto",backgroundColor:"white",height:"100%",paddingTop:0}} showsVerticalScrollIndicator={false}>
           <View style={{width:"100%",alignItems:"center"}}>
           {ContextOptions.map((data,index)=>(
               <MedicalData_Box 
@@ -152,6 +164,7 @@ const Cstyles = StyleSheet.create({
                   index={index}
                   handleSwitch={handleSwitch}
                   key={index}
+                  avalible={userContexts[data.stateID] != null}
               />
           ))
           }     

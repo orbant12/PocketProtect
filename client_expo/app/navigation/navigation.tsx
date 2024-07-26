@@ -2,7 +2,7 @@
 
 //<========> MELANOMA <=========>
 
-import { SpotData,BodyPart,Gender,SkinType,SpotArrayData,UserData } from "../utils/types";
+import { SpotData,BodyPart,Gender,SkinType,SpotArrayData,UserData, ContextToggleType } from "../utils/types";
 
 
 
@@ -157,3 +157,21 @@ export const Navigation_AI_Diagnosis = ({
     }
 }
 
+
+export const Navigation_AI_Chat = ({
+    navigation,
+    chatLog,
+    contextToggles,
+    preQuestion,
+    userContexts
+}:{
+    navigation:any,
+    chatLog:any[],
+    contextToggles?:ContextToggleType;
+    preQuestion?:string;
+    userContexts:any;
+}) => {
+    if(navigation != undefined && chatLog != undefined){
+        navigation.navigate("AI_Chat",{chatLog:chatLog,contextToggles:contextToggles,preQuestion:preQuestion,userContexts:userContexts})
+    }
+}

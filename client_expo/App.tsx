@@ -26,12 +26,13 @@ import AssesmentScreen from "./app/pages/Home/DailyReportScreens/assesmentScreen
 import CameraView from "./app/pages/Libary/Melanoma/components/cameraView";
 import { StripeProvider } from '@stripe/stripe-react-native';
 import AssistCenter from "./app/pages/Assist/assistCenter";
-import AssistantPage from "./app/pages/Chat/Personal_Assistant";
+import AssistantPage from "./app/pages/Chat/aiChatWelcome";
 import { RouteProp } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { MelanomaNavigationParams } from "./app/navigation/navigation";
 import { BodyPart } from "./app/utils/types";
 import AiDiagnosis from "./app/pages/Chat/diagnosisPage";
+import AiChatPage from "./app/pages/Chat/aiChatPage";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -60,6 +61,7 @@ export type RootStackParamList = {
     AssistCenter: undefined;
     AI_Assistant: undefined;
     AI_Diagnosis: undefined;
+    AI_Chat: undefined;
 };
 //stack navigation props
 export type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -96,6 +98,7 @@ return (
             <Stack.Screen name="AssistCenter" component={AssistCenter}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
             <Stack.Screen name="AI_Assistant" component={AssistantPage}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
             <Stack.Screen name="AI_Diagnosis" component={AiDiagnosis}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
+            <Stack.Screen name="AI_Chat" component={AiChatPage}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
         </ Stack.Navigator>
     </StripeProvider>
     </UserAuthContext>

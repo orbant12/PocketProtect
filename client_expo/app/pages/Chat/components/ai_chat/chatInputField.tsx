@@ -1,7 +1,8 @@
 import { View, TextInput,TouchableOpacity,KeyboardAvoidingView,Text,ScrollView } from 'react-native';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
-import { styles_shadow } from '../../../styles/shadow_styles';
+import { styles_shadow } from '../../../../styles/shadow_styles';
 import React from 'react';
+import { ContextToggleType } from '../../../../utils/types';
 
 export const Chat_InputField = ({
     inputValue,
@@ -81,7 +82,8 @@ export const AI_InpitField = ({
     inputValue,
     setInputValue,
     handleSend,
-    setSelectedType
+    setSelectedType,
+    contextToggles
   }) => {
     return(
         <KeyboardAvoidingView
@@ -90,7 +92,9 @@ export const AI_InpitField = ({
           
         >
             <View style={[{flexDirection:"row",width:"100%",alignItems:"baseline",justifyContent:"center",height:110,backgroundColor:"rgba(0,0,0,0.85)",paddingRight:10,paddingTop:20},styles_shadow.hightShadowContainer]}>
-                <ContextActive />
+                <ContextActive 
+                    contextToggles={contextToggles}
+                />
                 <View style={{ width: '75%', padding: 12, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.1)', alignSelf: 'center', borderRadius: 30,zIndex:100,borderWidth:2,borderColor:"magenta",marginLeft:0}}>
                     <View style={{ flexDirection: 'row', alignItems: 'center'  }}>
                         <TextInput
@@ -115,11 +119,11 @@ export const AI_InpitField = ({
                 
           ) : (
               <TouchableOpacity onPress={() => handleSend()} style={{ padding: 10, backgroundColor: 'magenta', justifyContent: 'center', alignItems:"center", borderRadius: 100,marginLeft:10,height:50,width:80,borderWidth:1 }}>
-                  <MaterialCommunityIcons
-                      name={"send"}
-                      size={23}
-                      color={"white"}
-                  />
+                    <MaterialCommunityIcons
+                        name={"send"}
+                        size={23}
+                        color={"white"}
+                    />
               </TouchableOpacity>
           )}
            </View>
@@ -128,14 +132,14 @@ export const AI_InpitField = ({
 }
 
 
-const ContextActive = () => {
+const ContextActive = ({contextToggles}:{contextToggles:ContextToggleType}) => {
 
     const [isActive,setIsActive] = React.useState(false)
 
     return(
         <>
         {isActive ?
-        <ScrollView contentContainerStyle={{flexDirection:"column",alignItems:"center"}} style={{position:"absolute",top:-110,right:10,width:110,padding:0,backgroundColor:"rgba(0,0,0,1)",padding:0,borderRadius:5,maxHeight:110,borderBottomLeftRadius:0,borderBottomRightRadius:0}}>
+        <ScrollView contentContainerStyle={{flexDirection:"column",alignItems:"center"}} style={{position:"absolute",top:-110,right:10,width:130,backgroundColor:"rgba(0,0,0,1)",padding:0,borderRadius:5,maxHeight:110,borderBottomLeftRadius:0,borderBottomRightRadius:0}}>
             <TouchableOpacity onPress={() => setIsActive(!isActive)} style={{width:"100%",justifyContent:"center",alignItems:"center",backgroundColor:"rgba(255,255,255,0.3)",borderRadius:5,padding:2,borderWidth:2,borderColor:"gray",borderBottomLeftRadius:0,borderBottomRightRadius:0}}>
                 <MaterialCommunityIcons
                     name='close'
@@ -143,34 +147,12 @@ const ContextActive = () => {
                     color={"white"}
                 />
             </TouchableOpacity>
-            <Text style={{fontSize:10,fontWeight:"800",marginBottom:10,color:"white",paddingTop:5}}>Active</Text>
-            <View style={{width:"80%",backgroundColor:"white",padding:5,borderRadius:10,flexDirection:"row",alignItems:"center",marginBottom:10}}>
-                <MaterialCommunityIcons
-                    name={"eye"}
-                    size={10}
-                    color={"black"}
-                />
-                <Text style={{color:"black",marginLeft:5,fontSize:7,fontWeight:"700"}}>Blood Work</Text>
-            </View>
-            <View style={{width:"80%",backgroundColor:"white",padding:5,borderRadius:10,flexDirection:"row",alignItems:"center",marginBottom:10}}>
-                <MaterialCommunityIcons
-                    name={"eye"}
-                    size={10}
-                    color={"black"}
-                />
-                <Text style={{color:"black",marginLeft:5,fontSize:7,fontWeight:"700"}}>Blood Work</Text>
-            </View>
-            <View style={{width:"80%",backgroundColor:"white",padding:5,borderRadius:10,flexDirection:"row",alignItems:"center",marginBottom:10}}>
-                <MaterialCommunityIcons
-                    name={"eye"}
-                    size={10}
-                    color={"black"}
-                />
-                <Text style={{color:"black",marginLeft:5,fontSize:7,fontWeight:"700"}}>Blood Work</Text>
-            </View>
+            <Text style={{fontSize:10,fontWeight:"800",marginBottom:10,color:"white",paddingTop:5}}>Active - <View style={{backgroundColor:"lightgreen",width:5,height:5,borderRadius:100,position:"absolute"}}></View> </Text>
+            <ContextBox title={"Blood Work"} active={contextToggles.useBloodWork}/>
+            <ContextBox title={"Weather"} active={contextToggles.useWeatherEffect}/>
         </ScrollView>
         :
-        <TouchableOpacity onPress={() => setIsActive(!isActive)} style={{position:"absolute",top:-20,right:10,width:110,backgroundColor:"black",height:20,justifyContent:"center",alignItems:"center",borderRadius:5,borderBottomLeftRadius:0,borderBottomRightRadius:0,borderWidth:1,borderColor:"gray",flexDirection:"row"}}>
+        <TouchableOpacity onPress={() => setIsActive(!isActive)} style={{position:"absolute",top:-20,right:10,width:130,backgroundColor:"black",height:20,justifyContent:"center",alignItems:"center",borderRadius:5,borderBottomLeftRadius:0,borderBottomRightRadius:0,borderWidth:1,borderColor:"gray",flexDirection:"row"}}>
             
             <MaterialCommunityIcons
                 name='arrow-up'
@@ -183,5 +165,19 @@ const ContextActive = () => {
         </TouchableOpacity>
         }
         </>
+    )
+  }
+
+
+  const ContextBox = ({title,active}) => {
+    return(
+        <View style={[{width:"80%",padding:5,borderRadius:5,flexDirection:"row",alignItems:"center",marginBottom:10},active ? {backgroundColor:"lightgreen"} : {backgroundColor:"white",opacity:0.3}]}>
+        <MaterialCommunityIcons
+            name={"eye"}
+            size={10}
+            color={"black"}
+        />
+        <Text style={{color:"black",marginLeft:5,fontSize:7,fontWeight:"700"}}>{title}</Text>
+    </View>
     )
   }
