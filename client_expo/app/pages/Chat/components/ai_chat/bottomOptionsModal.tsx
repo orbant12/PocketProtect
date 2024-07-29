@@ -13,7 +13,7 @@ export const BottomOptionsModal = ({selectedType, setSelectedType,contextToggles
     setSelectedType:(e:null | "context" | "help" | "questions") => void;
     contextToggles:ContextToggleType;
     setContextToggles:(e:ContextToggleType) => void;
-    handleStartChat:(arg:string) => void;
+    handleStartChat:(arg:string,c_t:"blood_work" | "uv" | "medical" | "bmi" | "weather") => void;
     userContexts: any;
   }) => {
     return(
@@ -59,7 +59,7 @@ export const BottomOptionsModal = ({selectedType, setSelectedType,contextToggles
         }
         {selectedType == "questions" &&
           <QuestionsSheet 
-            handlePreQuestion={(e:string) => handleStartChat(e)}
+            handlePreQuestion={(e:string,c_t:"blood_work" | "uv" | "medical" | "bmi" | "weather") => handleStartChat(e,c_t)}
           />
         }
       </Modal>

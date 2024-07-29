@@ -67,13 +67,13 @@ return(
   export const QuestionsSheet = ({
     handlePreQuestion
   }:{
-    handlePreQuestion: (arg:string) => void;
+    handlePreQuestion: (arg:string,c_t:"blood_work" | "uv" | "medical" | "bmi" | "weather") => void;
   }) => {
 
     return(
       <ScrollView contentContainerStyle={{flexDirection:"column",alignItems:"center",paddingBottom:100}} style={{width:"100%",backgroundColor:"rgba(0,0,0,1)",height:"100%"}}>
           <QuestionContainer 
-            handlePreQuestion={handlePreQuestion}
+            handlePreQuestion={(e) => handlePreQuestion(e,"blood_work")}
             title={"Blood Work"}
             boxes={[
               {title:"Insight",q:"Can you give me insight on my blood work ?",icon:"water-alert"},
@@ -83,7 +83,7 @@ return(
             ]}
           />
         <QuestionContainer 
-            handlePreQuestion={handlePreQuestion}
+            handlePreQuestion={(e) => handlePreQuestion(e,"uv")}
             title={"UV Data"}
             boxes={[
               {title:"Sun Screen",q:"How much sunscreen for today's weather?",icon:"shield-sun-outline"},
@@ -93,7 +93,7 @@ return(
             ]}
           />
         <QuestionContainer 
-            handlePreQuestion={handlePreQuestion}
+            handlePreQuestion={(e) => handlePreQuestion(e,"medical")}
             title={"Medical Data"}
             boxes={[
               {title:"BMI",q:"Provide some insights based on my BMI score !",icon:"human"},
@@ -103,7 +103,7 @@ return(
             ]}
           />
         <QuestionContainer 
-            handlePreQuestion={handlePreQuestion}
+            handlePreQuestion={(e) => handlePreQuestion(e,"bmi")}
             title={"BMI"}
             boxes={[
               {title:"Insight",q:"Provide some insights based on my BMI score !",icon:"human"},
@@ -113,7 +113,7 @@ return(
             ]}
           />
         <QuestionContainer 
-            handlePreQuestion={handlePreQuestion}
+            handlePreQuestion={(e) => handlePreQuestion(e,"weather")}
             title={"Weather Data"}
             boxes={[
               {title:"Insight",q:"Provide some insights based on my BMI score !",icon:"water"},

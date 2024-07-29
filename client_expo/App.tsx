@@ -33,6 +33,7 @@ import { MelanomaNavigationParams } from "./app/navigation/navigation";
 import { BodyPart } from "./app/utils/types";
 import AiDiagnosis from "./app/pages/Chat/diagnosisPage";
 import AiChatPage from "./app/pages/Chat/aiChatPage";
+import DiagWelcomePage from "./app/pages/Chat/diagWelcome";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -62,6 +63,7 @@ export type RootStackParamList = {
     AI_Assistant: undefined;
     AI_Diagnosis: undefined;
     AI_Chat: undefined;
+    Diagnosis_Chat: undefined;
 };
 //stack navigation props
 export type RootStackNavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -77,7 +79,7 @@ return (
             <Stack.Screen name="AuthHub" component={AuthHub} options={{ headerShown:false}} />
             <Stack.Screen name="RegOnBoarding" component={RegOnBoarding} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerTitle:"Welcome !",headerShown:false}} />
             <Stack.Screen name="Login" component={LoginPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
-            <Stack.Screen name="SurveyScreen" component={SurveyScreeen} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false} } />
+            <Stack.Screen name="SurveyScreen" component={SurveyScreeen} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerShown:false} } />
             <Stack.Screen name="DailyReport" component={DailyReport} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerTitle:"Daily Report" }} />
             <Stack.Screen name="Register" component={RegisterPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
             <Stack.Screen name="Main" component={HomeBottomTabNavigator} options={{ headerShown:false}} />
@@ -97,7 +99,8 @@ return (
             <Stack.Screen name="AssesmentScreen" component={AssesmentScreen}   options={({ route }) => ({ title: route.params.title, headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShon:true, headerBackVisible:false})} />
             <Stack.Screen name="AssistCenter" component={AssistCenter}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
             <Stack.Screen name="AI_Assistant" component={AssistantPage}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
-            <Stack.Screen name="AI_Diagnosis" component={AiDiagnosis}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
+            <Stack.Screen name="AI_Diagnosis" component={DiagWelcomePage}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
+            <Stack.Screen name="Diagnosis_Chat" component={AiDiagnosis}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
             <Stack.Screen name="AI_Chat" component={AiChatPage}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
         </ Stack.Navigator>
     </StripeProvider>

@@ -4,18 +4,19 @@ import {View} from 'react-native';
 import "react-native-gesture-handler"
 import { NavBar_AssistantModal } from '../../components/Assist/navbarAssistantModal';
 import { useAuth } from '../../context/UserAuthContext';
-import { Navigation_AI_Chat } from '../../navigation/navigation';
+import { Navigation_AI_Chat, Navigation_Diag_Input } from '../../navigation/navigation';
 import { ContextToggleType, UserContextType, UserData } from '../../utils/types';
 import { UserData_Default } from '../../utils/initialValues';
 import { BloodWorkCategory, fetchBloodWork, fetchUserData } from '../../services/server';
 import { BottomOptionsModal } from './components/ai_chat/bottomOptionsModal';
 import { AiAssistant } from './components/ai_chat/aiWelcomePage';
+import { DiagWelcomeComponent } from './components/diag/diagWelcomePage';
 
 
 
-export type PromptResponseFormat = {data:{data:{choices:{message:{content:string}}[]}}}
 
-const AssistantPage = ({navigation}) => {
+
+const DiagWelcomePage = ({navigation}) => {
 
 
 //<==================<[ Variables ]>====================>
@@ -42,36 +43,14 @@ const [ contextToggles , setContextToggles ] = useState<ContextToggleType>({
   useWeatherEffect:false,
 })
 
-const placeholders = {
-  useBloodWork:"[ Blood Work Provided ]",
-  useUvIndex:"[ UV Index Provided ]",
-  useMedicalData:"[ Medical Data Provided ]",
-  useBMI:"[ BMI Provided ]",
-  useWeatherEffect:"[ Weather Data Provided ]"
-}
 
-const handleStartChat = (e:"get_started" | string,c_t:"blood_work" | "uv" | "medical" | "bmi" | "weather") => {
-  const f_q = {user:"gpt",message:"Hello, how can I help you today ?",sent:true, inline_answer: false}
-
-  const q_w_context = {c_t:c_t,message:e}
-
-  if (e == "get_started"){
-    Navigation_AI_Chat({
+const handleStartChat = () => {
+    Navigation_Diag_Input({
       navigation:navigation,
-      chatLog:[f_q],
       contextToggles:contextToggles,
       userContexts:userContexts
     })
-  } else {
-    Navigation_AI_Chat({
-      navigation:navigation,
-      chatLog:[f_q],
-      contextToggles:contextToggles,
-      preQuestion: q_w_context,
-      userContexts:userContexts
-    })
-  }
-  setSelectedType(null)
+    setSelectedType(null)
 }
 
 const fetchAllUserData = async () => {
@@ -100,9 +79,6 @@ const fetchContextDatas = async () => {
   } 
 }
 
-const generateBYCT = (c_t:"blood_work" | "uv" | "medical" | "bmi" | "weather") => {
-  return ( c_t == "blood_work" ? {placeholder:placeholders.useBloodWork ,message:userContexts.useBloodWork} : c_t == "uv" ? {placeholder:placeholders.useUvIndex ,message:userContexts.useUvIndex} : c_t == "medical" ? {placeholder:placeholders.useMedicalData ,message:userContexts.useMedicalData} : c_t == "bmi" ? {placeholder:placeholders.useBMI ,message:userContexts.useBMI} : {placeholder:placeholders.useWeatherEffect ,message:userContexts.useWeatherEffect});
-}
 
 useEffect(() => {
   fetchAllUserData()
@@ -118,13 +94,13 @@ return (
         {/*HEADER*/}
         <NavBar_AssistantModal
           goBack={() => navigation.goBack()}
-          title={"Ask Anything"}
-          id={"Are you having suspicious sympthoms ?"}
+          title={"Suspicious Sympthoms ?"}
+          id={"Get quick answers to your concerns?"}
           right_icon={{type:"icon",name:"information"}}
           right_action={() => setSelectedType("help")}
         />
         {/*AI ASSISTANT*/}
-        <AiAssistant 
+        <DiagWelcomeComponent
           setSelectedType={setSelectedType}
           handleStartChat={handleStartChat}
           userData={userData}
@@ -141,4 +117,4 @@ return (
   </>
 )}
 
-export default AssistantPage
+export default DiagWelcomePage;

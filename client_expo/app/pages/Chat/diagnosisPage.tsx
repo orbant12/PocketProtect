@@ -16,6 +16,8 @@ import tutorial1 from "../../assets/diagnosis/first.png"
 import { NavBar_TwoOption } from "../../components/Common/navBars";
 import { ZoomIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { ContextToggleType, UserContextType } from "../../utils/types";
+import { BottomOptionsModal } from "./components/ai_chat/bottomOptionsModal";
 
 
 const { width } = Dimensions.get('window');
@@ -34,50 +36,33 @@ type OpenApiResponseType = {
 
 
 
-function AiDiagnosis({navigation}){
-    const functions = getFunctions(app);
-    //DETECTION
-    const snapPoints = ['80%'];
-    const bottomSheetRef = useRef(null);
-    const [isContextPanelOpen,setIsContextPanelOpen] = useState(false)
-    const [isAddTriggered, setIsAddTriggered] = useState(false)
-    const [isInfoActive, setIsInfoActive] = useState<boolean>(false)
+function AiDiagnosis({navigation,route}){
 
-    const [ contextToggles , setContextToggles ] = useState({
+    const functions = getFunctions(app);
+    const [isInfoActive, setIsInfoActive] = useState<boolean>(false)
+    const [selectedType, setSelectedType] = useState<null | "context" | "help" | "questions">(null);
+
+    const [userContexts, setUserContexts] = useState<null | UserContextType>(route.params.userContexts != undefined ? route.params.userContexts : {
+        useBloodWork:null,
+        useUvIndex:null,
+        useMedicalData:null,
+        useBMI:null,
+        useWeatherEffect:null,
+    }
+    )
+    const [ contextToggles , setContextToggles ] = useState<ContextToggleType>(route.params.contextToggles != undefined ? route.params.contextToggles : {
         useBloodWork:false,
+        useUvIndex:false,
+        useMedicalData:false,
+        useBMI:false,
         useWeatherEffect:false,
-    })
-    const ContextOptions = [
-        {
-          title:"Blood Work",
-          stateName:contextToggles.useBloodWork,
-          stateID:"useBloodWork"
-        },
-        {
-          title:"Weather Effects",
-          stateName:contextToggles.useWeatherEffect,
-          stateID:"useWeatherEffect"
-        },
-        {
-          title:"Weather Effects",
-          stateName:contextToggles.useWeatherEffect,
-          stateID:"useWeatherEffect"
-        },
-        {
-          title:"Weather Effects",
-          stateName:contextToggles.useWeatherEffect,
-          stateID:"useWeatherEffect"
-        },
-    ]
+    });
+
     const [sympthomInput, setSympthomInput] = useState('')
     const [addedSymptoms, setAddedSymptoms] = useState<string[]>([])
-    const [progress, setProgress] = useState(0)
     const [ isDiagnosisLoading, setIsDiagnosisLoading] = useState(false)
     const addingInput = useRef(null);
 
-    const handleAddingSwitch = async () => {
-        setIsAddTriggered(!isAddTriggered)
-    }
     
     const handleAddSympthoms = () => {
         setAddedSymptoms([
@@ -93,29 +78,6 @@ function AiDiagnosis({navigation}){
         setAddedSymptoms(updatedSymptoms);
     };
     
-    const handleOpenBottomSheet = (state:"open" | "hide") => {
-        if(state == "open"){
-            bottomSheetRef.current.present();      
-        } else if (state == "hide"){
-            bottomSheetRef.current.close();
-            setProgress(progress + 0.1)
-        }
-    }
-    
-    const handleSwitch = (name,e) => {
-        if ( name == "useBloodWork"){
-            setContextToggles({
-            ...contextToggles,
-            [name]:e
-            })
-        }  else if ( name == "useWeatherEffect"){
-            setContextToggles({
-            ...contextToggles,
-            [name]:e
-            })
-        }
-    }
-    
     const generateDiagnosisFromPrompt = async (request:string):Promise<string> => {
         const generateTextFunction:Function = httpsCallable(functions, 'openAIHttpFunctionSec');
         try {
@@ -126,15 +88,7 @@ function AiDiagnosis({navigation}){
             return error
         }
     };
-
-    useEffect(()=>{
-        if(isAddTriggered == true && addingInput.current != null){
-        addingInput.current.focus()
-        } else if(isAddTriggered == false){
-        }
-    },[isAddTriggered])
     
-
     //——————— FEATURE ENGINEERING - SURVEY ---------
 
     const ProcessAllPossibleOutcomes = async ():Promise <{possibleOutcomes:string, clientSymptoms:string}> => {
@@ -213,7 +167,7 @@ function AiDiagnosis({navigation}){
             </View>
             <View style={{flexDirection:"row",width:"80%",justifyContent:"space-evenly",alignItems:"center",marginTop:30}}>
     
-                <TouchableOpacity onPress={() => handleOpenBottomSheet("open")} style={{borderRadius:10,borderWidth:1,backgroundColor:"black",marginTop:15}}>
+                <TouchableOpacity onPress={() => setSelectedType("context")} style={{borderRadius:10,borderWidth:1,backgroundColor:"black",marginTop:15}}>
                     <Text style={{color:"white",padding:10,fontWeight:"700",paddingLeft:10,paddingRight:10,opacity:1,fontSize:12}}>Context Panel</Text>
                 </TouchableOpacity>
     
@@ -227,55 +181,10 @@ function AiDiagnosis({navigation}){
         )
     }
     
-    function ContextPanel(){
-        return(
-            
-            <View style={Cstyles.container}>
-            <ScrollView style={{width:"100%",marginLeft:"auto",marginRight:"auto",backgroundColor:"white",height:"100%",paddingTop:0}} showsVerticalScrollIndicator={false}>
-                <View style={{width:"100%",alignItems:"center"}}>
-                {ContextOptions.map((data,index)=>(
-                    <View key={index} style={[styles.contextBox, !data.stateName ? {backgroundColor:"magenta"} : {backgroundColor:"lightgreen"}]}>
-                    <View style={[styles.cardRight, !data.stateName && {}]}>
-                    <View>
-                        {!data.stateName ? 
-                        <Text style={{color:"magenta",fontWeight:"500",fontSize:10}}>Not Active</Text>
-                        :
-                        <Text style={{color:"lightgreen",fontWeight:"500",fontSize:10}}>Active  </Text>
-                        }
-                
-                        <Text style={{color:"white",fontWeight:"700",fontSize:20}}>
-                        {data.title}
-                    </Text>
-                    </View>
-    
-                    <Pressable style={[{flexDirection:"row",alignItems:"center",borderWidth:0,borderColor:"magenta",borderRadius:20,padding:8,justifyContent:"center",backgroundColor:"white"}, !data.stateName ? {borderColor:"magenta"} : {borderColor:"lightgreen"}]}>
-                        <Text style={{color:"black",marginRight:10,fontWeight:"600"}}>See Data</Text>
-                        <MaterialCommunityIcons 
-                            name='arrow-right'
-                            color={!data.stateName? "magenta" : "lightgreen"}
-                            size={15}
-                        />
-                    </Pressable>
-                    </View>
-                    <View style={[styles.cardLeft,  !data.stateName && {}]}>
-                    <Switch value={data.stateName} onValueChange={(e) => handleSwitch(data.stateID,e)} thumbColor={"white"} trackColor={"magenta"} ios_backgroundColor={"magenta"} />
-                    </View>
-                    </View>
-                ))
-                }     
-                </View>
-            </ScrollView>
-            
-            </View>
-        
-        )
-        }
-
 
     return(
         <>
-        <GestureHandlerRootView style={{ width:"100%",backgroundColor:"white" }}>
-            <BottomSheetModalProvider>
+        <View style={{ width:"100%",backgroundColor:"white" }}>
                 <SafeAreaView style={{backgroundColor:"rgba(255,255,255,0.7)"}}>
                 <NavBar_TwoOption 
                     title={"Type in your concerns"}
@@ -329,24 +238,22 @@ function AiDiagnosis({navigation}){
                             <Text style={{fontSize:20,marginBottom:20,fontWeight:"800",color:"black"}}>Your diagnosis is in process ...</Text>
                             <ActivityIndicator size="large" color="black" />
                         </View>
-                    }
-                    <BottomSheetModal
-                        ref={bottomSheetRef}
-                        snapPoints={snapPoints}
-                        onChange={() => setIsContextPanelOpen(!isContextPanelOpen)}
-                        enablePanDownToClose={true}
-                        handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:30}}
-                        handleIndicatorStyle={{backgroundColor:"white"}}
-                    >
-                        {ContextPanel()}
-                    </BottomSheetModal>
+                    }                   
                 </View>
-            </BottomSheetModalProvider>
-        </GestureHandlerRootView >
+        </View>
         <InfoModal 
             isInfoActive={isInfoActive}
             setIsInfoActive={setIsInfoActive}
         />
+        <BottomOptionsModal 
+            selectedType={selectedType}
+            setSelectedType={setSelectedType}
+            contextToggles={contextToggles}
+            setContextToggles={setContextToggles}
+            handleStartChat={() => {}}
+            userContexts={userContexts}
+        />
+
         </>
     )
 }

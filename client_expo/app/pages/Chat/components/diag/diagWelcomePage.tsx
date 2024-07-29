@@ -4,13 +4,13 @@ import { UserData } from "../../../../utils/types";
 import { styles } from '../../../../styles/chatBot_style';
 import { styles_shadow } from "../../../../styles/shadow_styles";
 
-export const AiAssistant = ({
+export const DiagWelcomeComponent = ({
     setSelectedType ,
      handleStartChat,
     userData
 }:{
   setSelectedType:(e:null | "context" | "help") => void;
-   handleStartChat:(arg:string,c_t:"blood_work" | "uv" | "medical" | "bmi" | "weather") => void;
+   handleStartChat:() => void;
   userData:UserData
 }) => {
   return(
@@ -33,11 +33,11 @@ const WelcomeAiCompontent = ({setSelectedType,userData}:{setSelectedType:(arg: "
     <View  style={[{width:"100%",flexDirection:"column",alignItems:"center",height:"60%",justifyContent:"center"},styles_shadow.shadowContainer]}>
       <View>
         <Text style={{fontWeight:"600",opacity:1}}><Text style={{fontWeight:"600",opacity:0.5}}>Hi {userData.fullname}</Text> 👋</Text>
-        <Text style={{marginTop:8,fontWeight:"800",fontSize:25}}>Your AI Medic</Text>
+        <Text style={{marginTop:8,fontWeight:"800",fontSize:25}}>Eliminate Concerns</Text>
       </View>
       <View style={{width:"100%",alignItems:"center",marginTop:20,opacity:0.8}}>
         <TouchableOpacity onPress={() => setSelectedType("questions")} style={{width:"60%",paddingHorizontal:10,paddingVertical:15,backgroundColor:"rgba(0,0,0,0.3)",borderRadius:10,justifyContent:"center",alignItems:"center",marginVertical:10,borderWidth:2}}>
-          <Text style={{color:"white",fontWeight:"700"}}>Questions</Text>
+          <Text style={{color:"white",fontWeight:"700"}}>How it works ?</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setSelectedType("context")} style={{width:"60%",paddingHorizontal:10,paddingVertical:15,backgroundColor:"rgba(0,0,0,0.7)",borderRadius:10,justifyContent:"center",alignItems:"center",marginVertical:10,borderWidth:2}}>
           <Text style={{color:"white",fontWeight:"700"}}>Context Sheet</Text>
@@ -74,7 +74,7 @@ const WelcomeBottom = ({
           </View>
         </View>
       </View>
-      <TouchableOpacity onPress={() => handleStartChat("get_started")} style={{width:"80%",paddingHorizontal:20,paddingVertical:18,backgroundColor:"magenta",borderRadius:10,justifyContent:"center",alignItems:"center",marginVertical:10}}>
+      <TouchableOpacity onPress={() => handleStartChat()} style={{width:"80%",paddingHorizontal:20,paddingVertical:18,backgroundColor:"magenta",borderRadius:10,justifyContent:"center",alignItems:"center",marginVertical:10}}>
         <Text style={{color:"white",fontWeight:"700"}}>Get Started</Text>
       </TouchableOpacity>
     </View>

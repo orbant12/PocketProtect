@@ -168,10 +168,24 @@ export const Navigation_AI_Chat = ({
     navigation:any,
     chatLog:any[],
     contextToggles?:ContextToggleType;
-    preQuestion?:string;
+    preQuestion?:{c_t:"blood_work" | "uv" | "medical" | "bmi" | "weather",message:string};
     userContexts:any;
 }) => {
     if(navigation != undefined && chatLog != undefined){
         navigation.navigate("AI_Chat",{chatLog:chatLog,contextToggles:contextToggles,preQuestion:preQuestion,userContexts:userContexts})
+    }
+}
+
+export const Navigation_Diag_Input = ({
+    navigation,
+    contextToggles,
+    userContexts,
+}:{
+    contextToggles?:ContextToggleType,
+    userContexts:any,
+    navigation:any
+}) => {
+    if (navigation != undefined){
+        navigation.navigate("Diagnosis_Chat",{contextToggles:contextToggles,userContexts:userContexts})
     }
 }

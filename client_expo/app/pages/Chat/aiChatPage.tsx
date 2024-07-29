@@ -9,6 +9,7 @@ import { ContextToggleType, UserContextType } from "../../utils/types";
 import { BottomOptionsModal } from "./components/ai_chat/bottomOptionsModal";
 
 
+
 const AiChatPage = ({route,navigation}) => {
     const { currentuser } = useAuth()
     const functions = getFunctions(app);
@@ -26,11 +27,11 @@ const AiChatPage = ({route,navigation}) => {
     )
 
     const placeholders = {
-        useBloodWork:"*[ Blood Work Provided ]*",
-        useUvIndex:"*[ UV Index Provided ]*",
-        useMedicalData:"*[ Medical Data Provided ]*",
-        useBMI:"*[ BMI Provided ]*",
-        useWeatherEffect:"*[ Weather Data Provided ]*"
+        useBloodWork:"[ Blood Work Provided ]",
+        useUvIndex:"[ UV Index Provided ]",
+        useMedicalData:"[ Medical Data Provided ]",
+        useBMI:"[ BMI Provided ]",
+        useWeatherEffect:"[ Weather Data Provided ]"
     }
 
     const [ contextToggles , setContextToggles ] = useState<ContextToggleType>(route.params.contextToggles != undefined ? route.params.contextToggles : {
@@ -62,14 +63,15 @@ const AiChatPage = ({route,navigation}) => {
         }
       };
 
-      const handlePromptTrigger = (e:string) => { 
+
+      const handlePromptTrigger = ({e,c_t}:{e:string,c_t?:"blood_work" | "uv" | "medical" | "bmi" | "weather"}) => { 
         if (questionLoading == false){
             setQuestionLoading(true)
             //fid the active one 
             const activeContext = Object.keys(contextToggles).find(key => contextToggles[key] === true);
-    
-            let contextText = {placeholder:placeholders[activeContext],message:userContexts[activeContext]}
-            const  question =  e;
+            
+            let contextText = c_t == undefined ? ( activeContext != undefined ? {placeholder:placeholders[activeContext],message:userContexts[activeContext]} : {placeholder:"",message:""} ) : generateBYCT(c_t);
+            const question =  e;
             let chatLogNew = [...chatLog, {user:`${currentuser.uid}`,message:`${contextText.placeholder + " " + question}`,sent:true,inline_answer: false}];
             setChatLog([...chatLogNew, {user:`gpt`,message:"Loading...",sent:true, inline_answer: false}]);
             //FUNCTION EVENT
@@ -80,10 +82,14 @@ const AiChatPage = ({route,navigation}) => {
           }
       };
 
+      const generateBYCT = (c_t:"blood_work" | "uv" | "medical" | "bmi" | "weather") => {
+        return ( c_t == "blood_work" ? {placeholder:placeholders.useBloodWork ,message:userContexts.useBloodWork} : c_t == "uv" ? {placeholder:placeholders.useUvIndex ,message:userContexts.useUvIndex} : c_t == "medical" ? {placeholder:placeholders.useMedicalData ,message:userContexts.useMedicalData} : c_t == "bmi" ? {placeholder:placeholders.useBMI ,message:userContexts.useBMI} : {placeholder:placeholders.useWeatherEffect ,message:userContexts.useWeatherEffect});
+      }
+
       useEffect(() => {
         if(route.params.preQuestion != undefined){
-            setInputText(route.params.preQuestion)
-            handlePromptTrigger(inputText)
+            const text : {c_t:"blood_work" | "uv" | "medical" | "bmi" | "weather", message:string} = route.params.preQuestion
+            handlePromptTrigger({e:text.message,c_t:text.c_t})
         }
       },[])
 
@@ -95,7 +101,7 @@ const AiChatPage = ({route,navigation}) => {
                 setChatLog={setChatLog}
                 handleKeyboardDismiss={handleKeyboardDismiss}
                 inputText={inputText}
-                handlePromptTrigger={() => handlePromptTrigger(inputText)}
+                handlePromptTrigger={() => handlePromptTrigger({e:inputText})}
                 chatScrollRef={chatScrollRef}
                 currentuser={currentuser}
                 setSelectedType={setSelectedType}
@@ -107,7 +113,7 @@ const AiChatPage = ({route,navigation}) => {
                 setSelectedType={setSelectedType}
                 contextToggles={contextToggles}
                 setContextToggles={setContextToggles}
-                handleStartChat={async(e) => {handlePromptTrigger(e),setSelectedType(null)}}
+                handleStartChat={(e,c_t) => {handlePromptTrigger({e:e,c_t:c_t}),setSelectedType(null)}}
                 userContexts={userContexts}
             />
         </>
@@ -115,3 +121,5 @@ const AiChatPage = ({route,navigation}) => {
 }
 
 export default AiChatPage;
+
+
