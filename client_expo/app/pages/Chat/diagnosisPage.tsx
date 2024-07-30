@@ -18,11 +18,12 @@ import { ZoomIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ContextToggleType, UserContextType } from "../../utils/types";
 import { BottomOptionsModal } from "./components/ai_chat/bottomOptionsModal";
+import { Navigation_Diag_Survey } from "../../navigation/navigation";
 
 
 const { width } = Dimensions.get('window');
 
-type OpenApiResponseType = {
+export type OpenApiResponseType = {
     data: {
         data: {
             choices: {
@@ -63,6 +64,17 @@ function AiDiagnosis({navigation,route}){
     const [ isDiagnosisLoading, setIsDiagnosisLoading] = useState(false)
     const addingInput = useRef(null);
 
+    const ensureAnswer = async (surveyData : {type:string,q:string}[]) : Promise < {type:string,q:string}[] | null > => {
+        const filtered = surveyData.filter(item => item.q !== undefined)
+        const result = filtered.every((item) => {
+            return item.type == "feedback" || item.type == "binary";
+        });
+
+        if (!result){
+            return null
+        } 
+        return filtered;
+    }
     
     const handleAddSympthoms = () => {
         setAddedSymptoms([
@@ -100,34 +112,49 @@ function AiDiagnosis({navigation,route}){
         console.log(response)
         return {possibleOutcomes:response, clientSymptoms:symptonScript}
     }
-    const ProcessCreateSurvey= async (causes:string):Promise<{ type:string, q: string }[]> => {
-    let symptonScript = addedSymptoms.join(", ");
-    const sympthomsPrompt:string = `Client reported sympthoms: ${symptonScript}`;
-    const causesPrompt:string = `Possible causes: ${causes}`
-    const prompt:string = `${causesPrompt}.${sympthomsPrompt}. You are a doctor trying to diagnose your patient, simulate your question stlyes like you are having a conversation with your patient. Create a servey from which you will be able to determine which causes is the most likely one. Servey must only contain forms of these: yes or no (qid:binary), client feedback required (qid:feedback). Your answer must be only contain the survey and each question asked like this:
-    binary,Have you ...? \n
-    feedback,Please describe ... \n `;
-    const response :string= await generateDiagnosisFromPrompt(prompt)
-    
-    const formattedData = response.split('\n').map(line => {
-        const [type, question] = line.split(',');
-        return { type, q: question };
-    });
-    
-    return formattedData
+
+    const ProcessCreateSurvey= async (causes:string):Promise<{ type:string, q: string }[] | false> => {
+        try{
+            let symptonScript = addedSymptoms.join(", ");
+            const sympthomsPrompt:string = `Client reported sympthoms: ${symptonScript}`;
+            const causesPrompt:string = `Possible causes: ${causes}`
+            const prompt:string = `${causesPrompt}.${sympthomsPrompt}. You are a doctor trying to diagnose your patient, simulate your question stlyes like you are having a conversation with your patient. Create a servey from which you will be able to determine which causes is the most likely one. Servey must only contain forms of these: yes or no (qid:binary), client feedback required (qid:feedback). Your answer must be only contain the survey and each question asked like this:
+            binary,Have you ...? \n
+            feedback,Please describe ... \n `;
+            const response :string= await generateDiagnosisFromPrompt(prompt)
+            
+            const formattedData = response.split('\n').map(line => {
+                const [type, question] = line.split(',');
+                return { type, q: question };
+            });
+            
+            return formattedData
+        }  catch (error) {
+            return false
+        }
     }
     const handleStartSurvey = async () => {
-    setIsDiagnosisLoading(true)
-    const result : {possibleOutcomes:string, clientSymptoms:string} = await ProcessAllPossibleOutcomes()
-    if (result.possibleOutcomes != "qid:too_broad"){
-        const survey = await ProcessCreateSurvey(result.possibleOutcomes)
-        if (survey) {
-        navigation.navigate("SurveyScreen", {data: survey, outcomes: result.possibleOutcomes, clientSymptoms: result.clientSymptoms,isDone: "Not yet"})
-        setIsDiagnosisLoading(false)
-        }
-    } else if (result.possibleOutcomes == "qid:too_broad"){
-        alert("too broad")
-    }
+        setIsDiagnosisLoading(true)
+        const result : {possibleOutcomes:string, clientSymptoms:string} = await ProcessAllPossibleOutcomes()
+        if (result.possibleOutcomes != "qid:too_broad"){
+            const survey = await ProcessCreateSurvey(result.possibleOutcomes)
+            if (survey != false) {
+            const filteredSurveyData = await ensureAnswer(survey) 
+            if (filteredSurveyData != null){
+                Navigation_Diag_Survey({
+                    surveyData:survey,
+                    result:result,
+                    isDone:"Not yet",
+                    navigation:navigation
+                })
+            } else{
+                alert("There was a system error please try again !")
+            }
+            setIsDiagnosisLoading(false)
+            }
+            } else {
+                setIsDiagnosisLoading(false)
+            }
     }
 
     //<=======>  Componnets <===========>
@@ -166,14 +193,13 @@ function AiDiagnosis({navigation,route}){
             </TouchableOpacity>
             </View>
             <View style={{flexDirection:"row",width:"80%",justifyContent:"space-evenly",alignItems:"center",marginTop:30}}>
-    
-                <TouchableOpacity onPress={() => setSelectedType("context")} style={{borderRadius:10,borderWidth:1,backgroundColor:"black",marginTop:15}}>
-                    <Text style={{color:"white",padding:10,fontWeight:"700",paddingLeft:10,paddingRight:10,opacity:1,fontSize:12}}>Context Panel</Text>
+                {!(addedSymptoms.length == 0) ?
+                <TouchableOpacity onPress={handleStartSurvey} style={{borderRadius:5,borderWidth:2,backgroundColor:"rgba(250,0,250,0.2)",marginTop:15,borderColor:"magenta"}}>
+                    <Text style={{color:"black",padding:10,fontWeight:"700",paddingLeft:15,paddingRight:15,opacity:1,fontSize:12}}>Start Diagnosis</Text>
                 </TouchableOpacity>
-    
-                {!(addedSymptoms.length == 0) &&
-                <TouchableOpacity onPress={handleStartSurvey} style={{borderRadius:10,borderWidth:2,backgroundColor:"white",marginTop:15}}>
-                    <Text style={{color:"black",padding:10,fontWeight:"700",paddingLeft:10,paddingRight:10,opacity:1,fontSize:12}}>Start Diagnosis</Text>
+                :
+                <TouchableOpacity onPress={() => alert("No concern has been added !")} style={{borderRadius:5,borderWidth:2,backgroundColor:"rgba(250,0,250,0.2)",marginTop:15,borderColor:"magenta",opacity:0.5}}>
+                    <Text style={{color:"black",padding:10,fontWeight:"700",paddingLeft:15,paddingRight:15,opacity:1,fontSize:12}}>Start Diagnosis</Text>
                 </TouchableOpacity>
                 }       
             </View>
@@ -189,7 +215,7 @@ function AiDiagnosis({navigation,route}){
                 <NavBar_TwoOption 
                     title={"Type in your concerns"}
                     icon_left={{name:"arrow-left",size:25,action:() => navigation.goBack()}}
-                    icon_right={{name:"information",size:25,action:() => setIsInfoActive(!isInfoActive)}}
+                    icon_right={{name:"folder-eye-outline",size:30,action:() => setSelectedType("context")}}
                     style={{zIndex:9999}}
                 />
                 </SafeAreaView>
@@ -206,23 +232,23 @@ function AiDiagnosis({navigation,route}){
                                 label={() => <Entypo name={'folder'} size={25} color={"white"} />}
                             >
                                 <Tabs.ScrollView>
-                                <View style={{width:"100%",height:60,backgroundColor:"black",marginTop:0,alignItems:"center",justifyContent:"center",flexDirection:"row"}}>
+                                <View style={{width:"100%",height:70,backgroundColor:"rgba(0,0,0,1)",marginTop:0,alignItems:"center",justifyContent:"center",flexDirection:"row",borderBottomWidth:0.3,borderColor:"white"}}>
                                         <View style={{ alignItems:"center"}}>
                                         <View style={{width:"30%",borderWidth:1,borderColor:"white",marginBottom:10}} />
                                     <Text style={{color:"white",fontWeight:"700",fontSize:18}}>Your Sympthoms</Text>
                                         </View>  
                                     <Text style={{color:"white",fontWeight:"700",fontSize:12,right:18,position:"absolute",borderWidth:1,borderColor:"magenta",paddingVertical:6,borderRadius:15,paddingHorizontal:10,opacity:0.7}}>{addedSymptoms.length}</Text>
                                 </View>   
-                                <ScrollView style={{width:"100%",borderWidth:1,paddingBottom:200,height:"100%"}}>
+                                <ScrollView style={{width:"100%",borderWidth:1,paddingBottom:200,height:"100%",backgroundColor:"rgba(0,0,0,1)"}}>
                                     <View style={{width:"100%",alignItems:"center",padding:10}}>
                                     {addedSymptoms.map((data)=>(
-                                    <View style={{borderWidth:0.3,padding:10,marginBottom:20,width:"80%",justifyContent:"space-between",flexDirection:"row",alignItems:"center",borderRadius:10}}>
-                                        <Text>{data}</Text>
+                                    <View style={{borderWidth:0.3,padding:15,marginBottom:20,width:"90%",justifyContent:"space-between",flexDirection:"row",alignItems:"center",borderRadius:5,backgroundColor:"rgba(250,0,250,0.2)",borderColor:"magenta"}}>
+                                        <Text style={{fontSize:14,fontWeight:"600",color:"white"}}>{data}</Text>
                                         <MaterialCommunityIcons 
                                         name='close'
                                         color={"red"}
-                                        size={13}
-                                        style={{opacity:1,padding:5}}
+                                        size={15}
+                                        style={{opacity:1,padding:5,borderWidth:1,borderRadius:5,borderColor:"red"}}
                                         onPress={() => handleRemoveSymptom(data)}
                                         />
                                     </View>
@@ -241,10 +267,6 @@ function AiDiagnosis({navigation,route}){
                     }                   
                 </View>
         </View>
-        <InfoModal 
-            isInfoActive={isInfoActive}
-            setIsInfoActive={setIsInfoActive}
-        />
         <BottomOptionsModal 
             selectedType={selectedType}
             setSelectedType={setSelectedType}
@@ -255,71 +277,6 @@ function AiDiagnosis({navigation,route}){
         />
 
         </>
-    )
-}
-
-
-const InfoModal = ({
-    isInfoActive,
-    setIsInfoActive
-}:{
-    isInfoActive:boolean,
-    setIsInfoActive:Function
-}) => {
-    return(
-        <Modal visible={isInfoActive} animationType="slide" presentationStyle="formSheet" style={{display:"flex",flexDirection:"column",height:"100%",justifyContent:"center"}}>
-        <View style={{width:"100%",alignItems:"center",height:"90%",justifyContent:"space-between",marginTop:"10%"}}>  
-            
-                <View style={{width:"100%"}} >  
-                <PagerComponent
-                    pages={[
-                        {pageComponent:() => 
-                            <TutorialPage
-                                image={tutorial1}
-                                title={"Type in your concerns and describe how you feel in detail ..."}
-                                index={1}
-                            />
-                        },
-                        {pageComponent:() => 
-                            <TutorialPage
-                                image={tutorial1}
-                                title={"Type in your concerns and describe how you feel in detail ..."}
-                                index={2}
-                            />
-                        },
-                    ]}
-                    pagerStyle={{height:"70%",borderWidth:1,marginTop:10}}
-                    indicator_position={{backgroundColor:"black",padding:12}}
-                    dotColor={"white"}
-                />                                                       
-                </View>  
-            
-               
-            <View style={{borderWidth:1,width:"95%",borderRadius:20,alignItems:"center",backgroundColor:"black",marginTop:-50,padding:0,paddingBottom:25}}>                            
-                <View style={{width:50, borderWidth:1.5,borderColor:"white", opacity:0.7,marginTop:10}} />
-                <Text style={{color:"white",fontWeight:"700",fontSize:15,marginTop:10}}>Get Started</Text>
-                
-                <TouchableOpacity onPress={() => setIsInfoActive(!isInfoActive)} style={{flexDirection:"row",
-                    alignItems:"center",
-                    borderWidth:1,
-                    width:"80%",
-                    marginTop:20,
-                    borderRadius:50,
-                    padding:12,
-                    backgroundColor:"white",
-                    justifyContent:"center"
-                }}>
-                    <MaterialCommunityIcons 
-                        name={"check"}
-                        color={"black"}
-                        size={20}
-                        style={{opacity:0.5}}
-                    />
-                    <Text style={{color:"black",marginLeft:20,fontWeight:"600"}}>Understand</Text>
-                </TouchableOpacity >                            
-            </View> 
-        </View> 
-        </Modal>
     )
 }
 
@@ -344,40 +301,6 @@ const Dstyles = StyleSheet.create({
   }
 });
 
-const Cstyles = StyleSheet.create({
-
-container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    flexDirection: 'column',
-    paddingTop:0,
-    width:'100%',
-    alignItems:'center',
-    position:"relative",
-    height:"100%"
-},
-});
-
 
 export default AiDiagnosis;
 
-
-
-const TutorialPage = ({
-    index,
-    image,
-    title
-}) => {
-    return(
-        <View key={index} style={{width:"100%",justifyContent:"center",alignItems:"center",borderWidth:0,height:"100%",padding:10}}>
-        <View style={{flexDirection:"row",alignItems:"center",marginBottom:10,marginTop:0}}>
-            <Text style={{borderRadius:15,paddingVertical:5,paddingHorizontal:10,borderWidth:1}}>{index}</Text> 
-            <Text style={{width:"80%",fontSize:15,fontWeight:"800",opacity:0.7,marginBottom:0,marginLeft:20}}>{title}</Text>    
-        </View>         
-        <Image 
-            source={image}
-            style={{width:width,height:"65%",borderWidth:0,marginBottom:0}}
-        />             
-    </View>
-    )
-}

@@ -172,29 +172,31 @@ export type PromptEngineering_Feedback_Type = "binary" | "feedback";
 export type DiagnosisData = {
     title:string;
     clientSymphtoms:string;
-    created_at:Timestamp | Date | string;
+    created_at: string;
     diagnosis:string;
     id:string;
     possibleOutcomes:string;
     stages:{
-        stage_one:{
-            a: string;
-            q: string;
-            type: PromptEngineering_Feedback_Type
-        }[],
+        stage_one:DiagnosisResultType | {diagnosis:"Not yet"},
         stage_two:{
             chance: string
             survey: {
                 a: string;
                 q: string;
                 type: PromptEngineering_Feedback_Type
-            }[]
-        },
-        stage_three:{
-            assistance_frequency: string;
-        },
-        stage_four:null
-    }
+            }[],
+            assistance_frequency: string
+        }
+    },
+    explain_video:string;
+}
+
+export type DiagnosisResultType = {
+    diagnosis?:string,
+    description?:string,
+    chance?:string,
+    explain_video?:string,
+    symphtoms?:{numbering:string,content:string}[]
 }
 
 export type ContextToggleType = {

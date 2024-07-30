@@ -131,6 +131,44 @@ export const AI_InpitField = ({
     )
 }
 
+export const Diag_InpitField = ({
+    inputValue,
+    setInputValue,
+    handleSend,
+    setSelectedType,
+  }) => {
+    return(
+        <KeyboardAvoidingView
+          behavior="position"
+          keyboardVerticalOffset={80} 
+          
+        >
+            <View style={[{flexDirection:"row",width:"100%",alignItems:"baseline",justifyContent:"center",height:110,backgroundColor:"rgba(0,0,0,0.0)",paddingRight:10,paddingTop:20},styles_shadow.hightShadowContainer]}>
+                <View style={{ width: '75%', padding: 12, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(0,0,0,1)', alignSelf: 'center', borderRadius:10,zIndex:100,borderWidth:2,borderColor:"magenta",marginLeft:0}}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center'  }}>
+                        <TextInput
+                            placeholder="Type here ..."
+                            value={inputValue}
+                            onChangeText={setInputValue}
+                            placeholderTextColor={"white"}
+                            style={{ maxWidth: 240, flexWrap: 'wrap',minWidth:170,color:"white",fontWeight:"500",alignSelf:"center",padding:5 }}
+                            multiline={true}
+                        />
+                    </View>
+                </View>
+
+              <TouchableOpacity onPress={() => handleSend()} style={{ padding: 10, backgroundColor: 'magenta', justifyContent: 'center', alignItems:"center", borderRadius: 10,marginLeft:10,height:50,width:60,borderWidth:0.3 }}>
+                    <MaterialCommunityIcons
+                        name={"send"}
+                        size={23}
+                        color={"white"}
+                    />
+              </TouchableOpacity>
+           </View>
+        </KeyboardAvoidingView>
+    )
+}
+
 
 const ContextActive = ({contextToggles}:{contextToggles:ContextToggleType}) => {
 

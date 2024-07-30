@@ -145,11 +145,13 @@ export const styles = StyleSheet.create({
     },
     loadingModal:{
       alignItems:"center",
+      flexDirection:"column",
       justifyContent:"center",
       position:"absolute",
       width:"100%",
-      height:"100%",
+      height:"50%",
       backgroundColor: "rgba(0, 0, 0, 0)",
-      paddingBottom:200
+      top:0,
+      borderWidth:0
   },
   });

@@ -4,6 +4,8 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 
 const functions = getFunctions(app);
 
+type ReqTypes = "description" | "symphtoms" | "recovery" | "diagnosis" | "periodic_assistance" | "help" | "explain_video" | "chance"
+
 
 const  generateDiagnosisFromPrompt = async (request:string) => {
     const generateTextFunction = httpsCallable(functions, 'openAIHttpFunctionSec');
@@ -16,27 +18,27 @@ const  generateDiagnosisFromPrompt = async (request:string) => {
     }
 };  
 
-const ProcessDiagnosisDescription= async (diagnosis) => {
-    const type = "description"
+const ProcessDiagnosisDescription= async (diagnosis):Promise<{ [K in ReqTypes]?:string }> => {
+    const type:ReqTypes = "description"
     const prompt = `Can you make a short description about ${diagnosis}. Try to explain it under 50 words and as efficently as possible.`;
     const response = await generateDiagnosisFromPrompt(prompt)
-    return {[type]: response}
+    return {[type]: response};
 }
 
-const ProcessDiagnosisSymphtoms = async (diagnosis) => {
-    const type = "symphtoms"
+const ProcessDiagnosisSymphtoms = async (diagnosis):Promise <{[K in ReqTypes]?: {numbering:string,content:string} }>  => {
+    const type:ReqTypes = "symphtoms"
     const prompt = `Can list out all common symphtoms of ${diagnosis}. Be straight forward and you MUST only state the symphtoms by ascending numbered order.`;
     const response = await generateDiagnosisFromPrompt(prompt)
     const lines = response.split('\n');
-    const formating = await lines.map(line => {
+    const formating:{numbering:string,content:string} = await lines.map(line => {
         const [numbering, content] = line.match(/^(\d+)\.\s(.*)$/).slice(1);
         return { numbering, content };
     });
     return {[type]: formating}
 }
 
-const ProcessDiagnosisRecovery= async (diagnosis) => {
-    const type = "recovery"
+const ProcessDiagnosisRecovery= async (diagnosis):Promise <{[K in ReqTypes]?: {numbering:string,content:string}}> => {
+    const type:ReqTypes = "recovery"
     const prompt = `You are a doctor. I am your patient and I have ${diagnosis}. List out all of the professional medication used in medicine for recovering from ${diagnosis}. Be straight forward and you must only state your solutions by ascending numbered order.`;
     const response = await generateDiagnosisFromPrompt(prompt)
     const lines = response.split('\n');
@@ -51,7 +53,7 @@ const ProcessSingleDiagnosis = async ({
     possibleOutcomes,
     dataFixed
 }) => {
-    const type = "diagnosis"
+    const type:ReqTypes = "diagnosis"
     const sympthomsPrompt = `Possible causes: ${possibleOutcomes}`;
     const binaryFeedback = dataFixed.map(item => {
             return item.q + ", " + item.a + '\n';
@@ -62,7 +64,7 @@ const ProcessSingleDiagnosis = async ({
 }
 
 const ProcessRediagnosis = async ({dataFixed,possibleOutcomes,preDiagnosis}) => {
-    const type = "diagnosis"
+    const type:ReqTypes = "diagnosis"
     const sympthomsPrompt = `Possible causes: ${possibleOutcomes}`;
     const binaryFeedback = dataFixed.map(item => {
             return item.q + ", " + item.a + '\n';
@@ -72,7 +74,7 @@ const ProcessRediagnosis = async ({dataFixed,possibleOutcomes,preDiagnosis}) => 
     return { [type]: response }
 }
 
-const ProcessCreateSurvey= async ({dataFixed,fullDiagnosis}) => {    
+const ProcessCreateSurvey= async ({dataFixed,fullDiagnosis}):Promise <{type:string,q:string}[]> => {    
     const binaryFeedback = dataFixed.map(item => {
         return item.q + ", " + item.a + '\n';
     });
@@ -83,18 +85,17 @@ const ProcessCreateSurvey= async ({dataFixed,fullDiagnosis}) => {
     feedback,Please describe ... \n `;
     const response = await generateDiagnosisFromPrompt(prompt)
 
-    const formattedData = response.split('\n').map(line => {
+    const formattedData: {type:string,q:string}[] = response.split('\n').map(line => {
         const [type, question] = line.split(',');    
         return { type, q: question };
     });    
 
-    const filtered = await formattedData.filter(item => item.q !== undefined);
-
+    const filtered = formattedData.filter(item => item.q !== undefined);
     return filtered
 }
 
 const ProcessFutureAssistanceDiagnosis = async ({diagnosis,memoryDataFixed,dataFixed}) => {   
-    const type = "periodic_assistance"
+    const type:ReqTypes = "periodic_assistance"
     const binaryFeedback = memoryDataFixed.map(item => {
         return item.q + ", " + item.a + '\n';
     });
@@ -109,7 +110,7 @@ const ProcessFutureAssistanceDiagnosis = async ({diagnosis,memoryDataFixed,dataF
 }
 
 const ProcessHelpForDiagnosis = async (diagnosis) => {
-    const type = "help"
+    const type:ReqTypes = "help"
     const prompt = `I have ${diagnosis}. Can you offer me help advice for solution like: lifestyle choices, medication extc. Be straight forward and you must focus only stating your advice and solutions`;
     const response = await generateDiagnosisFromPrompt(prompt)
     const lines = response.split('\n');
@@ -121,14 +122,14 @@ const ProcessHelpForDiagnosis = async (diagnosis) => {
 }
 
 const ProcessYoutubeExplainVideo = async (diagnosis) => {   
-    const type = "explain_video"   
+    const type:ReqTypes = "explain_video"   
     const prompt = `Can you please recommend the best youtube video that explains ${diagnosis}. Your answer MUST be ONLY the https:// link to the video`
     const response = await generateDiagnosisFromPrompt(prompt)
     return { [type]: response }
 }
 
 const ProcessChanceOfDiagnosis = async ({diagnosis,dataFixed,memoryDataFixed}) => {
-    const type = "chance"
+    const type:ReqTypes = "chance"
     const binaryFeedback = memoryDataFixed.map(item => {
         return item.q + ", " + item.a + '\n';
     });
@@ -148,10 +149,15 @@ export const getDiagnosisData = async ({
     diagnosis,
     memoryDataFixed,
     dataFixed
+}:{
+    stage:number,
+    diagnosis:string,
+    memoryDataFixed?:any,
+    dataFixed?:any[]
 }) => {
     try{
         if ( stage === 1 ){
-            const description = await ProcessDiagnosisDescription(diagnosis)
+            const description: {[K in ReqTypes]?: string} = await ProcessDiagnosisDescription(diagnosis)
             const symphtoms = await ProcessDiagnosisSymphtoms(diagnosis)  
             const recovery = await ProcessDiagnosisRecovery(diagnosis)                          
             let diagnosisData = [description, symphtoms, recovery]     
@@ -203,11 +209,16 @@ export const getReDiagnosis = async ({
 export const getSurvey = async ({
     dataFixed,
     fullDiagnosis
-}) => {
-    try{
+}):Promise <{type:string,q:string}[] | null> => {
         const survey = await ProcessCreateSurvey({dataFixed,fullDiagnosis})
-        return survey
-    } catch {
-
-    }
+        
+        const result = survey.every((item) => {
+            return (item.type == "feedback" || item.type == "binary") && item.q !== undefined;
+        });
+        console.log(result)
+        if(result == true){
+            return survey
+        } else {
+            return null
+        }
 }

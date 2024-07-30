@@ -189,3 +189,29 @@ export const Navigation_Diag_Input = ({
         navigation.navigate("Diagnosis_Chat",{contextToggles:contextToggles,userContexts:userContexts})
     }
 }
+
+export const Navigation_Diag_Survey = ({
+    surveyData,
+    result,
+    isDone,
+    navigation  
+}:{
+    surveyData:{type:string,q:string}[],
+    result:{possibleOutcomes:string, clientSymptoms:string},
+    isDone:string,
+    navigation:any
+}) => {
+    try {
+        surveyData.forEach((item) => {
+            if(item.type == "feedback" || item.type == "binary"){
+                
+            }
+        })
+        if(navigation != undefined){
+            navigation.navigate("SurveyScreen", {surveyData: surveyData, possibleOutcomes: result.possibleOutcomes, clientSymptoms: result.clientSymptoms,isDone: isDone})
+        }
+    } catch (error) {
+        alert("Something went wrong")
+    }
+
+}

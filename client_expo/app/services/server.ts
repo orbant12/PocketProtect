@@ -1,6 +1,6 @@
 
 import { Timestamp } from "../utils/date_manipulations";
-import { Gender, SkinType, Slug, SpotData, Success_Purchase_Client_Checkout_Data, UserData,AssistanceFields, AssistantData } from "../utils/types";
+import { Gender, SkinType, Slug, SpotData, Success_Purchase_Client_Checkout_Data, UserData,AssistanceFields, AssistantData, DiagnosisData } from "../utils/types";
 import { MelanomaMetaData } from "../pages/Libary/Melanoma/melanomaCenter";
 import { numberOfMolesOnSlugs } from "../components/LibaryPage/Melanoma/slugCard";
 import { getWeatherAPIKey } from "../../key";
@@ -59,25 +59,6 @@ export type BloodWorkTypes =
     | "Hormonal Panel"
     | "Hormonal Panel";
 
-export type DiagnosisData = {
-    id:string,
-        diagnosis: string,
-        clientSymphtoms:string,
-        created_at: string,
-        possibleOutcomes: string;
-        stages:{
-            stage_one:[{a:string,q:string,type:"binary" | "feedback"}]
-            stage_two:{
-                chance:string;
-                survey:[{a:string,q:string,type:"binary" | "feedback"}]
-            }
-            stage_three:{
-                assistance_frequency:string
-            }
-            stage_four:any
-        }
-        title:string;
-}
 
 export type BloodWorkCategory = {
     title: string;

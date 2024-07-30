@@ -8,6 +8,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { useAuth } from "../../../context/UserAuthContext";
 import { saveDiagnosisProgress } from "../../../services/server"
 import { getDiagnosisData,getDiagnosis, getReDiagnosis, getSurvey } from "../../../services/prompt"
+import { AI_InpitField, Diag_InpitField } from "../../Chat/components/ai_chat/chatInputField";
+import { DiagnosisData, DiagnosisResultType, PromptEngineering_Feedback_Type } from "../../../utils/types";
 
 const SurveyScreeen = ({route,navigation}) => {
 
@@ -20,16 +22,18 @@ const SurveyScreeen = ({route,navigation}) => {
     const {currentuser} = useAuth()
 
     const [progress , setProgress] =useState(0)
-    const [dataFixed , setDataFixed] = useState(route.params.data != undefined ? route.params.data : [{q:"",type:"binary"}] )
-    const [memoryDataFixed, setMemoryDataFixed ] = useState([])
-    const possibleOutcomes = route.params.outcomes
-    const clientSymphtoms = route.params.clientSymptoms
+    const [dataFixed , setDataFixed] = useState<{type:string,q:string,a?:string}[]>(route.params.surveyData != undefined ? route.params.surveyData : [{q:"",type:"binary"}] )
+    const [memoryDiagnosis, setMemoryDiagnosis ] = useState<DiagnosisResultType>({diagnosis:"Not yet"})
+    const [memoryDataFixed, setMemoryDataFixed ] = useState<{type:string,q:string,a?:string}[]>([{q:"",type:"binary"}])
+
+    const possibleOutcomes: string = route.params.possibleOutcomes
+    const clientSymphtoms: string = route.params.clientSymptoms
     const [ answerInput, setAnswerInput ] = useState("")
     const diagnosisSnapPoints = ["86%"];
     const diagnoseSheetRef = useRef(null);
     const answerEditSheetRef = useRef(null);
 
-    const [ fullDiagnosis, setFullDiagnosis] = useState({diagnosis:"Not yet"})
+    const [ fullDiagnosis, setFullDiagnosis] = useState<DiagnosisResultType | {diagnosis:"Not yet"}>({diagnosis:"Not yet"})
     const [ isDiagnosisDone, setIsDiagnosDone] = useState(false)
 
     const [ indexToEdit, setIndexToEdit] = useState(0)
@@ -57,13 +61,12 @@ const SurveyScreeen = ({route,navigation}) => {
         });
     };
     
-    const handleTextAnswer = async (index) => {
+    const handleTextAnswer = async (index,text) => {
         setDataFixed(prevData => {
             const newData = [...prevData];
-            newData[index] = { ...newData[index], a: answerInput };
+            newData[index] = { ...newData[index], a: text };
             return newData;
         });
-        setProgress(progress + 1)
     };
     
     const handleCloseDiagnosis = () => {
@@ -92,19 +95,18 @@ const SurveyScreeen = ({route,navigation}) => {
         const day = String(currentDate.getDate()).padStart(2, '0');
         const formattedDate = `${year}.${month}.${day}`;
 
-        const data = {
+        const data: DiagnosisData = {
             id: session.id,
             title: session.title,
             diagnosis: fullDiagnosis.diagnosis,
             clientSymphtoms: clientSymphtoms,
             possibleOutcomes: possibleOutcomes,
             stages:{
-                stage_one:dataFixed,
+                stage_one:fullDiagnosis,
                 stage_two:null,
-                stage_three:null,
-                stage_four:null, 
             },
             created_at: formattedDate,
+            explain_video:""
         }
         const result = await saveDiagnosisProgress({userId:currentuser.uid,data})
         if (result == true){
@@ -150,7 +152,7 @@ const SurveyScreeen = ({route,navigation}) => {
 
 //<===========> STAGES <===========>
     
-    const handleStartDiagnosis = async (potentialDiagnosis) => {
+    const handleStartDiagnosis = async (potentialDiagnosis:any | "Not yet") => {
         diagnoseSheetRef.current.present()
         setIsDiagnosDone(false)
         if (editedtTracker == true){
@@ -162,7 +164,7 @@ const SurveyScreeen = ({route,navigation}) => {
                         stage:1
                     })
                     if ( diagnosisData != false ){
-                        diagnosisData.map((data) => {
+                        diagnosisData.map((data:any) => {
                             setFullDiagnosis(prevState => ({
                                 ...prevState,
                                 ...data
@@ -176,7 +178,7 @@ const SurveyScreeen = ({route,navigation}) => {
                         stage:1
                     })
                     if ( diagnosisData != false ){
-                        diagnosisData.map((data) => {
+                        diagnosisData.map((data:any) => {
                             setFullDiagnosis(prevState => ({
                                 ...prevState,
                                 ...data
@@ -208,7 +210,7 @@ const SurveyScreeen = ({route,navigation}) => {
                 const diagnosis = await getReDiagnosis({possibleOutcomes,dataFixed,preDiagnosis})
                 const diagnosisData = await getDiagnosisData({diagnosis:diagnosis,stage:1}) 
                 if ( diagnosisData != false ){
-                    diagnosisData.map((data) => {
+                    diagnosisData.map((data:any) => {
                         setFullDiagnosis(prevState => ({
                             ...prevState,
                             ...data
@@ -235,32 +237,36 @@ const SurveyScreeen = ({route,navigation}) => {
         })
         setIsDiagnosDone(false)
         const createdAt = dateFormat(0)
-        const data = {
+        const data: DiagnosisData = {
             id: session.id,
             title: session.title,
             diagnosis: fullDiagnosis.diagnosis,
             clientSymphtoms: clientSymphtoms,
             possibleOutcomes: possibleOutcomes,
             stages:{
-                stage_one:dataFixed,
-                stage_two:null,
-                stage_three:null,
-                stage_four:null, 
+                stage_one:fullDiagnosis,
+                stage_two:null, 
             },
             created_at: createdAt,
+            explain_video:""
         }
         await saveDiagnosisProgress({
             userId:currentuser.uid,
             data
         })
         const survey = await getSurvey({dataFixed,fullDiagnosis})        
-        if (survey) {
+        if (survey != null) {
             setMemoryDataFixed(dataFixed)
-            setDataFixed([...survey])        
+            setMemoryDiagnosis(fullDiagnosis)
+            setDataFixed(survey)    
+            setEditedTracker(true)    
             setIsDiagnosDone(true)
             setProgress(0)
             setEditedTracker(true)
             diagnoseSheetRef.current.close()
+        } else{
+            alert("Something went wrong")
+            setIsDiagnosDone(true)
         }
     }
     
@@ -274,35 +280,39 @@ const SurveyScreeen = ({route,navigation}) => {
                     const diagnosis = potentialDiagnosis
                     const stage2_diagnosisData = await getDiagnosisData({diagnosis,dataFixed,memoryDataFixed,stage:2})
                     if ( stage2_diagnosisData != false ){
-                        stage2_diagnosisData.map((data) => {
+                        stage2_diagnosisData.map((data:any) => {
                             setFullDiagnosis(prevState => ({
                                 ...prevState,
                                 ...data
                                 }));                         
-                            })                                    
+                            })      
+                            setIsDiagnosDone(true)                                
                     }                 
                 } else {
                     const diagnosis = fullDiagnosis.diagnosis
                     const stage2_diagnosisData = await getDiagnosisData({diagnosis,dataFixed,memoryDataFixed,stage:2})
                     if ( stage2_diagnosisData != false ){
-                        stage2_diagnosisData.map((data) => {
+                        stage2_diagnosisData.map((data:any) => {
                             setFullDiagnosis(prevState => ({
                                 ...prevState,
                                 ...data
                                 }));                         
-                            })                                    
-                    }                      
+                            })       
+                        setIsDiagnosDone(true)                               
+                    }      
+
                 }
                 // If data is not edited it stays only --> openEditSheet() can change it
                 setEditedTracker(false)
                 }
             catch (error) {
                 alert(`Something went wrong ${error}`)
+                setIsDiagnosDone(true)
             }
         } else if (editedtTracker == false){
-
+            setIsDiagnosDone(true)
         }  
-        setIsDiagnosDone(true)
+       
     }
     
     //<------> Stage 3 <------->     
@@ -313,27 +323,27 @@ const SurveyScreeen = ({route,navigation}) => {
         })
         setIsDiagnosDone(false)
         const formattedDate = await dateFormat(0)
-        const data = {
-            id: session.id,
-            title: session.title,
-            diagnosis: fullDiagnosis.diagnosis,
-            clientSymphtoms: clientSymphtoms,
-            possibleOutcomes: possibleOutcomes,
-            explain_video:fullDiagnosis.explain_video,            
-            stages:{
-                stage_one:memoryDataFixed,
-                stage_two:{survey:dataFixed,chance:fullDiagnosis.chance},
-                stage_three:{assistance_frequency:fullDiagnosis.periodic_assistance},
-                stage_four:null, 
-            },
-            created_at: formattedDate,
+        if (fullDiagnosis.diagnosis != "Not yet"){
+            const data = {
+                id: session.id,
+                title: session.title,
+                diagnosis: fullDiagnosis.diagnosis,
+                clientSymphtoms: clientSymphtoms,
+                possibleOutcomes: possibleOutcomes,
+                explain_video:"",            
+                stages:{
+                    stage_one:memoryDataFixed,
+                    stage_two:fullDiagnosis,
+                },
+                created_at: formattedDate,
+            }
+            await saveDiagnosisProgress({
+                userId:currentuser.uid,
+                data
+            })
+            setIsDiagnosDone(true)
+            navigation.navigate("DiagnosisCenter",{diagnosisData:data})
         }
-        await saveDiagnosisProgress({
-            userId:currentuser.uid,
-            data
-        })
-        setIsDiagnosDone(true)
-        navigation.navigate("DiagnosisCenter",{diagnosisData:data})
     }
     
 
@@ -374,14 +384,6 @@ const SurveyScreeen = ({route,navigation}) => {
                         <Text style={{fontWeight:"600",fontSize:13,position:"absolute",right:10,borderWidth:0,paddingTop:30,bottom:90,opacity:0.3}}>{session.id}</Text>
                         <View style={{width:"100%",alignItems:"center"}}>
                             <Text style={{fontWeight:"700",fontSize:20,marginBottom:10}}>Your Report</Text>
-                            {/* <TextInput
-                                style={{width:"80%",borderWidth:0.3,padding:10,alignItems:"center",textAlign:"center",borderRadius:30}}
-                                onChangeText={(e) => setSession({
-                                    ...session,
-                                    title: e
-                                })}
-                                value={session.title}
-                            />      */}
                         </View> 
                         <ScrollView style={{width:"100%"}}>                                       
                                 <Text style={{fontWeight:"600",marginTop:20}}>Diagnosis: <Text style={{opacity:0.6}}>{fullDiagnosis.diagnosis}</Text></Text>
@@ -390,10 +392,14 @@ const SurveyScreeen = ({route,navigation}) => {
                                 <View style={{width:"100%",alignItems:"center",borderTopWidth:5,marginTop:20}}>
                                     <Text style={{fontWeight:"700",fontSize:18,marginTop:15}}>Progress</Text>
                                 {dataFixed.map((data)=>(
+                                    (data.q !== undefined && data.a !== undefined) ? (
                                     <View style={{width:"90%",borderWidth:1,marginTop:15,padding:20,height:150,justifyContent:"center",borderRadius:10}}>        
                                         <Text style={{fontWeight:"700"}}>Question: <Text style={{fontWeight:"700",opacity:0.6}}>{data.q}</Text></Text>                        
                                         <Text style={{fontWeight:"700",marginTop:20}}>Your Answer: <Text style={{fontWeight:"700",opacity:0.6}}>{data.a == undefined ? "None" : data.a}</Text></Text>
                                     </View>
+                                    ):(
+                                        <></>
+                                    )
                                 ))}
                                 </View>                                                
                         </ScrollView>
@@ -427,7 +433,7 @@ const SurveyScreeen = ({route,navigation}) => {
 
                 <View style={{width:"100%",backgroundColor:"white",marginBottom:0,borderBottomWidth:5,padding:30,}}>
                 <Text style={{color:"back",fontSize:20,fontWeight:"800"}}>{fullDiagnosis.diagnosis}</Text>
-                <View style={{color:"back",fontSize:12,fontWeight:"500",textAlign:"justify",marginTop:10,borderLeftWidth:2,borderColor:"black"}}>
+                <View style={{marginTop:10,borderLeftWidth:2,borderColor:"black"}}>
                     <Text style={{color:"back",fontSize:12,fontWeight:"500",textAlign:"justify",paddingLeft:10}}>{fullDiagnosis.description}</Text>
                 </View>
                 </View>              
@@ -494,7 +500,7 @@ const SurveyScreeen = ({route,navigation}) => {
 
                 <View style={{width:"100%",backgroundColor:"white",marginBottom:0,borderBottomWidth:5,padding:30,}}>
                 <Text style={{color:"back",fontSize:20,fontWeight:"800"}}>{fullDiagnosis.diagnosis}</Text>
-                <View style={{color:"back",fontSize:12,fontWeight:"500",textAlign:"justify",marginTop:10,borderLeftWidth:2,borderColor:"black"}}>
+                <View style={{marginTop:10,borderLeftWidth:2,borderColor:"black"}}>
                     <Text style={{color:"back",fontSize:12,fontWeight:"500",textAlign:"justify",paddingLeft:10}}>{fullDiagnosis.description}</Text>
                 </View>
                 </View> 
@@ -595,7 +601,7 @@ const SurveyScreeen = ({route,navigation}) => {
                         </View>
                             <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:10,position:"absolute",right:10,top:65,opacity:0.3}}>{progress + 1} / {dataFixed.length}</Text>
                             <View style={{width:"90%",alignItems:"center",backgroundColor:"white",justifyContent:"center",marginTop:150,padding:20,borderRadius:20}}>
-                                <Text style={{fontWeight:"700",fontSize:"20",width:"100%",textAlign:"center"}}>{dataFixed[progress].q}</Text>
+                                <Text style={{fontWeight:"700",fontSize:20,width:"100%",textAlign:"center"}}>{dataFixed[progress].q !== undefined ? dataFixed[progress].q : ""}</Text>
                             </View>                         
                             {dataFixed[progress].type == "binary" ?
                             <View style={{width:"90%",justifyContent:"space-between",flexDirection:"row"}}> 
@@ -609,15 +615,11 @@ const SurveyScreeen = ({route,navigation}) => {
                             : 
                             <View style={{width:"100%",alignItems:"center"}}>
                                 <Text style={{marginBottom:50,fontWeight:"600"}}>Your answer: <Text style={{fontWeight:"400"}}>{answerInput}</Text></Text>
-                                <TextInput
-                                    onChangeText={(e) => setAnswerInput(e)}
-                                    placeholder="Type your answer here"
-                                    value={answerInput}
-                                    style={{width:"80%",borderWidth:1,padding:12,borderRadius:10,marginBottom:30,height:60}}
+                                <Diag_InpitField
+                                    setInputValue={setAnswerInput}
+                                    inputValue={answerInput}
+                                    handleSend={() => {handleTextAnswer(progress);setProgress(progress + 1);setAnswerInput("")}}
                                 />
-                                <TouchableOpacity style={[styles.btn,{backgroundColor:"white"}]} onPress={() => {handleTextAnswer(progress);setProgress(progress + 1);setAnswerInput("")}}>
-                                    <Text style={{color:"black",fontWeight:"600"}}>Done</Text>
-                                </TouchableOpacity>
                             </View>
                             }
 
@@ -643,26 +645,33 @@ const SurveyScreeen = ({route,navigation}) => {
                                 />
                             </TouchableOpacity>
                         </View>
-                        <Text style={{fontSize:20,fontWeight:"800",marginBottom:50,marginTop:80}}>Nice ! We are all done and ready to create your diagnosis ...</Text>
-                        <TouchableOpacity onPress={() => {session.stage == 1 ? handleStartDiagnosis(route.params.isDone) : handleStartDiagnosis2(route.params.isDone)}} style={{borderRadius:10,borderWidth:1,padding:10,width:150,alignItems:"center",backgroundColor:"black"}}>
-                            <Text style={{color:"white",fontWeight:"600"}}>Start Diagnosis</Text>
+                        <View style={{padding:15,backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,marginTop:80,marginBottom:50,width:"90%"}}>
+                            <Text style={{fontSize:18,fontWeight:"700"}}>Nice ! We are all done and ready to create your diagnosis ...</Text>
+                        </View>
+                        <TouchableOpacity onPress={() => {session.stage == 1 ? handleStartDiagnosis(route.params.isDone) : handleStartDiagnosis2(route.params.isDone)}} style={{borderRadius:8,borderWidth:2,padding:20,width:"80%",alignItems:"center",backgroundColor:"black",borderColor:"magenta"}}>
+                            <Text style={{fontWeight:"700",color:"white"}}>Start Diagnosis</Text>
                         </TouchableOpacity>
-                        <View style={{width:"100%",height:100,backgroundColor:"black",alignItems:"center",justifyContent:"center",marginTop:40}}>
+                        <View style={{width:"100%",height:80,backgroundColor:"black",alignItems:"center",justifyContent:"center",marginTop:40,borderBottomWidth:0.3,borderColor:"white"}}>
                             <Text style={{color:"white",opacity:0.4,fontWeight:"500",fontSize:13}}>Feel free to edit them !</Text>
                             <Text style={{color:"white",opacity:0.8,fontWeight:"700",fontSize:18}}>Your Answers</Text>
                         </View>
+                        <View style={{backgroundColor:"black",width:"100%",alignItems:"center",paddingBottom:100}}>
                         {dataFixed.map((data,index) => (
-                            <View style={{width:"90%",borderWidth:1,marginTop:30,padding:20,height:150,justifyContent:"center",borderRadius:10}}>
+                            (data.q !== undefined && data.a !== undefined) ? (
+                            <View style={{width:"90%",borderWidth:1,marginTop:30,padding:20,height:150,justifyContent:"center",borderRadius:10,borderColor:"magenta",backgroundColor:"rgba(250,0,250,0.3)"}}>
                                 <MaterialCommunityIcons 
                                     name="pencil"
                                     size={20}
                                     onPress={() => openEditSheet(index)}
-                                    style={{position:"absolute",right:0,bottom:0,padding:8,borderWidth:0.3,borderRadius:8}}
+                                    color={"white"}
+                                    style={{position:"absolute",right:0,bottom:0,padding:8,borderWidth:0.3,borderRadius:8,borderColor:"white"}}
                                 />
-                                <Text style={{fontWeight:"700"}}>Question: <Text style={{fontWeight:"700",opacity:0.6}}>{data.q}</Text></Text>                        
-                                <Text style={{fontWeight:"700",marginTop:20}}>Your Answer: <Text style={{fontWeight:"700",opacity:0.6}}>{data.a}</Text></Text>
+                                <Text style={{fontWeight:"700",color:"white"}}>Question: <Text style={{fontWeight:"700",opacity:0.6,color:"white"}}>{data.q}</Text></Text>                        
+                                <Text style={{fontWeight:"700",marginTop:20,color:"white"}}>Your Answer: <Text style={{fontWeight:"700",opacity:0.6,color:"white"}}>{data.a}</Text></Text>
                             </View>
-                        ))}               
+                            ):(<></>)
+                        ))}    
+                        </View>           
                     </View>
                     </ScrollView>
                     }
@@ -670,7 +679,7 @@ const SurveyScreeen = ({route,navigation}) => {
                         ref={answerEditSheetRef}
                         snapPoints={diagnosisSnapPoints}
                         enablePanDownToClose={true}                    
-                        handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:30,color:"white"}}
+                        handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:30}}
                         handleIndicatorStyle={{backgroundColor:"white"}}
                         handleComponent={() => 
                         <View style={{width:"100%",height:50,backgroundColor:"black",justifyContent:"center",alignItems:"center",borderRadius:0}}>
@@ -686,7 +695,10 @@ const SurveyScreeen = ({route,navigation}) => {
                     }
                     >
                     <View style={styles.container}>
-                    <Text style={{fontWeight:"700",fontSize:"20",marginTop:100,width:"90%",textAlign:"center"}}>{dataFixed[indexToEdit].q}</Text>
+                        <View style={{marginTop:"20%",width:"90%",backgroundColor:"rgba(0,0,0,0.1)",padding:20,borderRadius:10}}>
+                            <Text style={{fontWeight:"700",fontSize:20,textAlign:"center"}}>{dataFixed[indexToEdit].q !== undefined ? dataFixed[indexToEdit].q : ""}</Text>
+                        </View>
+                    
                             {dataFixed[indexToEdit].type == "binary" ?
                             <View style={{width:"90%",justifyContent:"space-between",flexDirection:"row"}}> 
                                 <TouchableOpacity style={styles.btn}  onPress={() => handleBinaryAnswer(indexToEdit,"yes")}>
@@ -703,14 +715,18 @@ const SurveyScreeen = ({route,navigation}) => {
                                     onChangeText={(e) => setAnswerInput(e)}
                                     placeholder="Type your answer here"
                                     value={answerInput}
-                                    style={{width:"60%",borderWidth:1,padding:12,borderRadius:10,marginBottom:30}}
+                                    placeholderTextColor={"white"}
+                                    style={{width:"80%",borderWidth:3,padding:18,borderRadius:5,marginBottom:30,backgroundColor:"black",color:"white",borderColor:"magenta"}}
                                 />
-                                <TouchableOpacity style={[styles.btn,{backgroundColor:"white"}]} onPress={() => handleTextAnswer(indexToEdit)}>
-                                    <Text style={{color:"black",fontWeight:"600"}}>Done</Text>
+                                <TouchableOpacity style={[styles.btn,{backgroundColor:"black",borderWidth:2,borderColor:"magenta"}]} onPress={() => handleTextAnswer(indexToEdit,answerInput)}>
+                                    <Text style={{color:"white",fontWeight:"600"}}>Done</Text>
                                 </TouchableOpacity>
                             </View>
                             }
-                            <Text style={{marginTop:50,fontWeight:"600"}}>Your Current Answer: {dataFixed[indexToEdit].a}</Text>
+                            <View style={{padding:13,backgroundColor:"black",marginTop:50,borderRadius:10,paddingHorizontal:20,opacity:0.9}}>
+                                <Text style={{fontWeight:"600",color:"white"}}>Your Current Answer: <Text style={{color:"magenta"}}>{dataFixed[indexToEdit].a}</Text></Text>
+                            </View>
+                            
                     </View>
                     </BottomSheetModal>
                     
@@ -719,7 +735,7 @@ const SurveyScreeen = ({route,navigation}) => {
                         snapPoints={diagnosisSnapPoints}
                         enablePanDownToClose={true}
                         onDismiss={() => {handleCloseDiagnosis}}
-                        handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:30,color:"white"}}
+                        handleStyle={{backgroundColor:"black",borderTopLeftRadius:0,borderTopRightRadius:0,borderBottomWidth:2,height:30}}
                         handleIndicatorStyle={{backgroundColor:"white"}}
                         handleComponent={() => 
                         <View style={{width:"100%",height:50,backgroundColor:"black",justifyContent:"center",alignItems:"center",borderRadius:0}}>
