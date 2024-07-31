@@ -19,7 +19,7 @@ const ChatCenter = ({navigation}) => {
     const [ selectedChat, setSelectedChat] = useState<Success_Purchase_Client_Checkout_Data | null>(null)
     const {currentuser} = useAuth();
     const [assistSessions, setAssistSessions] = useState([])
-    const [ activeBubble, setActiveBubble] = useState("assist")
+    const [ activeBubble, setActiveBubble] = useState("ai")
     const [refreshing, setRefreshing] = useState(false);
 
     const AI_Doctors_Data = [

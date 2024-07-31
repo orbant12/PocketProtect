@@ -10,6 +10,7 @@ import { saveDiagnosisProgress } from "../../../services/server"
 import { getDiagnosisData,getDiagnosis, getReDiagnosis, getSurvey } from "../../../services/prompt"
 import { AI_InpitField, Diag_InpitField } from "../../Chat/components/ai_chat/chatInputField";
 import { DiagnosisData, DiagnosisResultType, PromptEngineering_Feedback_Type } from "../../../utils/types";
+import { Navigation_Diag_Center } from "../../../navigation/navigation";
 
 const SurveyScreeen = ({route,navigation}) => {
 
@@ -106,7 +107,6 @@ const SurveyScreeen = ({route,navigation}) => {
                 stage_two:null,
             },
             created_at: formattedDate,
-            explain_video:""
         }
         const result = await saveDiagnosisProgress({userId:currentuser.uid,data})
         if (result == true){
@@ -248,7 +248,6 @@ const SurveyScreeen = ({route,navigation}) => {
                 stage_two:null, 
             },
             created_at: createdAt,
-            explain_video:""
         }
         await saveDiagnosisProgress({
             userId:currentuser.uid,
@@ -329,8 +328,7 @@ const SurveyScreeen = ({route,navigation}) => {
                 title: session.title,
                 diagnosis: fullDiagnosis.diagnosis,
                 clientSymphtoms: clientSymphtoms,
-                possibleOutcomes: possibleOutcomes,
-                explain_video:"",            
+                possibleOutcomes: possibleOutcomes,         
                 stages:{
                     stage_one:memoryDiagnosis,
                     stage_two:fullDiagnosis,
@@ -342,7 +340,7 @@ const SurveyScreeen = ({route,navigation}) => {
                 data
             })
             setIsDiagnosDone(true)
-            navigation.navigate("DiagnosisCenter",{diagnosisData:data})
+            Navigation_Diag_Center({diagnosisData:data,navigationType:"from_diagn",navigation:navigation})
         }
     }
     

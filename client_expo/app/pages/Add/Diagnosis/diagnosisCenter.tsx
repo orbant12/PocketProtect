@@ -9,9 +9,10 @@ import { useAuth } from "../../../context/UserAuthContext";
 import moment from 'moment'
 import {app} from "../../../services/firebase"
 import { getFunctions, httpsCallable } from "firebase/functions";
-import { saveDiagnosisProgress } from "../../../services/server";
+import { deleteDiagnosis, saveDiagnosisProgress } from "../../../services/server";
 import { DiagnosisData } from "../../../utils/types";
 import { OpenApiResponseType } from "../../Chat/diagnosisPage";
+import { Navigation_AI_Diagnosis } from "../../../navigation/navigation";
 
 
 
@@ -29,12 +30,15 @@ const DiagnosisCenter = ({navigation,route}) => {
     const [ currentPageFeature, setCurrentPageFeature] = useState(0)
     //SHEET SHOW
 
+    const navigationType = route.params.navigationType
+
     const snapPoints = ["100%"]
     const sheetRef = useRef(null)
     //H-SWIPE
     const { width } = Dimensions.get('window');
     const [currentPage, setCurrentPage] = useState(0);
     const [isLoading, setIsLoading] = useState(false)
+    const [selectedType, setSelectedType] = useState<"stage_1" | "stage_2" | null>(null)
 
 
 //<==================<[ Functions ]>====================>
@@ -96,7 +100,7 @@ const DiagnosisCenter = ({navigation,route}) => {
     
     const ProcessYoutubeExplainVideo = async () => {   
         const type = "explain_video"   
-        const wrongLink = diagnosisData.explain_video
+        const wrongLink = diagnosisData.stages.stage_two.explain_video
         const prompt = `The video that explains: ${diagnosisData.diagnosis}, ${wrongLink} - Was not avalible. Can you please recommend another great youtube video that explains ${diagnosisData.diagnosis}. Your answer MUST be ONLY the https:// link to the video`
         const response = await generateDiagnosisFromPrompt(prompt)
         setDiagnosisData(prevState => ({
@@ -119,6 +123,20 @@ const DiagnosisCenter = ({navigation,route}) => {
         } catch(err) {
             console.log(err)
         }                 
+    }
+
+    const handleDeleteDiagnosis = async(navType:"from_diagn" | "other") => {
+        const response = await deleteDiagnosis({
+            userId:currentuser.uid,
+            diagnosisId:diagnosisData.id
+        })
+        if(response == true && navType == "from_diagn"){
+            Navigation_AI_Diagnosis({navigation})
+        } else if (response == false) {
+            alert("Delete failed. Try again later or restart the app !")
+        } else if (response == true && navType == "other"){
+            navigation.goBack()
+        }
     }
 
 
@@ -192,7 +210,7 @@ const DiagnosisCenter = ({navigation,route}) => {
                             <Text style={[{fontSize:12,fontWeight:"600"},{opacity:1,color:"white"}]}>Chance: <Text style={diagnosisData.stages.stage_two.chance.length > 4 ? {fontSize:20,color:"white"} : {fontSize:12,color:"white"}}>{diagnosisData.stages.stage_two.chance}</Text></Text> 
                         </View>
                         <View style={{padding:10,backgroundColor:"rgba(0,0,0,0.3)",borderRadius:5,marginTop:5}}>                        
-                            <Text style={{fontWeight:"500",opacity:0.7,maxWidth:"100%",color:"white"}}>Recommended Revision : <Text style={{fontWeight:"800",color:"white"}}>{diagnosisData.stages.stage_two.assistance_frequency}</Text></Text>
+                            <Text style={{fontWeight:"500",opacity:0.7,maxWidth:"100%",color:"white"}}>Recommended Revision : <Text style={{fontWeight:"800",color:"white"}}>{diagnosisData.stages.stage_two.periodic_assistance}</Text></Text>
                         </View>
                     </View>
                 </View>
@@ -213,7 +231,7 @@ const DiagnosisCenter = ({navigation,route}) => {
                                 />
                                 <Text style={{fontWeight:"600",opacity:0.3,marginLeft:10,color:"white"}}>Youtube</Text>                     
                             </View>                     
-                            <TouchableOpacity  onPress={() => Linking.openURL(diagnosisData.explain_video)} style={{borderWidth:0.3,width:"100%",padding:10,paddingVertical:15,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row",backgroundColor:"black"}}>
+                            <TouchableOpacity  onPress={() => Linking.openURL(diagnosisData.stages.stage_two.explain_video)} style={{borderWidth:0.3,width:"100%",padding:10,paddingVertical:15,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row",backgroundColor:"black"}}>
                                 <Text style={{fontWeight:"700",color:"white",marginRight:15,fontSize:13,opacity:0.8}}>Watch</Text>
                                 <MaterialCommunityIcons 
                                     name='arrow-right'
@@ -304,7 +322,7 @@ const DiagnosisCenter = ({navigation,route}) => {
                     <Text style={{fontWeight:"700",fontSize:20,opacity:0.9,color:"white"}}>Most likely hypothesis</Text>
                 </View>
                 <View style={styles.boxBottom}>
-                    <TouchableOpacity style={{width:"100%",alignItems:"center",borderWidth:1,padding:10,borderRadius:5,backgroundColor:"rgba(255,255,255,0.1)",borderColor:"white"}}>
+                    <TouchableOpacity onPress={() => setSelectedType("stage_1")} style={{width:"100%",alignItems:"center",borderWidth:1,padding:10,borderRadius:5,backgroundColor:"rgba(255,255,255,0.1)",borderColor:"white"}}>
                         <Text style={{color:"white",fontWeight:"700"}}>Open</Text>
                     </TouchableOpacity>
                 </View>
@@ -315,23 +333,23 @@ const DiagnosisCenter = ({navigation,route}) => {
                     <Text style={{fontWeight:"700",fontSize:20,opacity:0.9,color:"white"}}>Chance evaluation</Text>
                 </View>
                 <View style={styles.boxBottom}>
-                    <TouchableOpacity style={{width:"100%",alignItems:"center",borderWidth:1,padding:10,borderRadius:5,backgroundColor:"rgba(255,255,255,0.1)",borderColor:"white"}}>
+                    <TouchableOpacity onPress={() => setSelectedType("stage_2")} style={{width:"100%",alignItems:"center",borderWidth:1,padding:10,borderRadius:5,backgroundColor:"rgba(255,255,255,0.1)",borderColor:"white"}}>
                         <Text style={{color:"white",fontWeight:"700"}}>Open</Text>
                     </TouchableOpacity>
                 </View>
             </View>
 
                 <View style={[{marginTop:30,width:"100%",alignItems:"center",zIndex:20,marginBottom:50,borderTopWidth:1,paddingTop:30}]}>
-                    <TouchableOpacity style={{width:"80%",backgroundColor:"black",borderColor:"magenta",borderWidth:2,padding:20,marginTop:0,alignItems:"center",borderRadius:100}}>
+                    <TouchableOpacity onPress={() => handleDeleteDiagnosis(navigationType)} style={{width:"80%",backgroundColor:"black",borderColor:"magenta",borderWidth:2,padding:20,marginTop:0,alignItems:"center",borderRadius:100}}>
                         <Text style={{color:"white",fontWeight:"800"}}>Delete</Text>
                     </TouchableOpacity>
                 </View>
         </View>             
         </ScrollView>
         }
-        <Modal visible={false} animationType="slide" presentationStyle="formSheet" >
+        <Modal visible={selectedType != null} animationType="slide" presentationStyle="formSheet" >
             <View style={{backgroundColor:"white",width:"100%",height:"100%"}}>
-            <TouchableOpacity onPress={() => {}} style={{flexDirection:"row",alignItems:"center",justifyContent:"center",backgroundColor:"rgba(0,0,0,0.86)",borderWidth:2,borderColor:"gray",paddingVertical:10,borderRadius:10,width:"100%",alignSelf:"center",borderBottomLeftRadius:0,borderBottomRightRadius:0}}>
+            <TouchableOpacity onPress={() => {setSelectedType(null)}} style={{flexDirection:"row",alignItems:"center",justifyContent:"center",backgroundColor:"rgba(0,0,0,0.86)",borderWidth:2,borderColor:"gray",paddingVertical:10,borderRadius:10,width:"100%",alignSelf:"center",borderBottomLeftRadius:0,borderBottomRightRadius:0}}>
                 <MaterialCommunityIcons 
                     name='close'
                     size={25}
@@ -339,7 +357,8 @@ const DiagnosisCenter = ({navigation,route}) => {
                 />
                 <Text style={{color:"white",fontWeight:"800",fontSize:16,marginLeft:10,marginRight:10}}>Close</Text>
             </TouchableOpacity>
-            <Stage_1 fullDiagnosis={diagnosisData.stages.stage_one} />
+            {selectedType == "stage_1" && <Stage_1 fullDiagnosis={diagnosisData.stages.stage_one} />}
+            {selectedType == "stage_2" && <Stage_2 fullDiagnosis={diagnosisData.stages.stage_two} />}
             </View>
         </Modal>
     </>
@@ -382,6 +401,68 @@ const Stage_1 = ({fullDiagnosis}) => {
             </View>    
         </View>
         </ScrollView>
+    )
+}
+
+const Stage_2 = ({fullDiagnosis}) => {
+    return(
+        <>
+        {fullDiagnosis.help &&
+            <ScrollView style={{width:"100%",height:"100%"}} showsVerticalScrollIndicator={false}>
+            <View style={Dstyles.diagnosisPage}>
+
+                <View style={[styles.scoreCircle,{borderWidth:3,width:200,height:200,borderRadius:10,marginTop:40}]}>
+                    <Text style={{color:"back",fontSize:20,fontWeight:"800"}}>{fullDiagnosis.chance}</Text>     
+                    <Text style={[{fontSize:16,fontWeight:"700"},{color:"black",opacity:0.8}]}>Chance</Text>
+                </View>
+
+                <View style={{width:"100%",backgroundColor:"white",marginBottom:0,borderBottomWidth:5,padding:30,}}>
+                <Text style={{color:"back",fontSize:20,fontWeight:"800"}}>{fullDiagnosis.diagnosis}</Text>
+                <View style={{marginTop:10,borderLeftWidth:2,borderColor:"black"}}>
+                    <Text style={{color:"back",fontSize:12,fontWeight:"500",textAlign:"justify",paddingLeft:10}}>{fullDiagnosis.description}</Text>
+                </View>
+                </View> 
+
+                <View style={{width:"100%",marginTop:0,borderWidth:2,paddingBottom:30,alignItems:"center"}}>
+                <Text style={{color:"back",fontWeight:"800",marginBottom:10,fontSize:20,padding:20}}>Advice</Text>
+                <ScrollView horizontal style={{width:"100%"}} showsHorizontalScrollIndicator={false} >
+                {fullDiagnosis.help.map((data)=>(
+                    <View style={{width:200,alignItems:"center",borderRightWidth:0,justifyContent:"center",marginLeft:20,marginTop:0}}>
+                        <Text style={{paddingVertical:10,borderWidth:1,paddingHorizontal:15,borderRadius:20,fontWeight:"800",borderColor:"magenta",opacity:0.5}}>{data.numbering}</Text>
+                        <Text style={{padding:0,fontWeight:"600",marginTop:20,textAlign:"center"}}>{data.content}</Text>
+                    </View>
+                ))}
+                </ScrollView>
+                </View>    
+
+                <View style={{width:"100%",marginTop:50,borderWidth:2,paddingBottom:30,alignItems:"center"}}>
+                <Text  style={{color:"back",fontWeight:"800",marginBottom:10,fontSize:15,padding:20}}>Common symphtoms of {fullDiagnosis.diagnosis}</Text>
+                <ScrollView horizontal style={{width:"100%"}} showsHorizontalScrollIndicator={false} >
+                {fullDiagnosis.symphtoms.map((data)=>(
+                    <View style={{width:200,alignItems:"center",borderRightWidth:0,justifyContent:"center",marginLeft:20,marginTop:0}}>
+                    <Text style={{paddingVertical:10,borderWidth:1,paddingHorizontal:15,borderRadius:20,fontWeight:"800",borderColor:"magenta",opacity:0.5}}>{data.numbering}</Text>
+                    <Text style={{padding:0,fontWeight:"600",marginTop:20,textAlign:"center"}}>{data.content}</Text>
+                    </View>
+                ))}
+                </ScrollView>
+                </View>
+
+                <View style={{width:"100%",marginTop:50,borderWidth:2,paddingBottom:30,alignItems:"center"}}>
+                <Text  style={{color:"back",fontWeight:"800",marginBottom:10,fontSize:20,padding:20}}>Medication</Text>
+                <ScrollView horizontal style={{width:"100%"}} showsHorizontalScrollIndicator={false} >
+                {fullDiagnosis.recovery.map((data)=>(
+                    <View style={{width:200,alignItems:"center",borderRightWidth:0,justifyContent:"center",marginLeft:20,marginTop:0}}>
+                    <Text style={{paddingVertical:10,borderWidth:1,paddingHorizontal:15,borderRadius:20,fontWeight:"800",borderColor:"magenta",opacity:0.5}}>{data.numbering}</Text>
+                    <Text style={{padding:0,fontWeight:"600",marginTop:20,textAlign:"center"}}>{data.content}</Text>
+                    </View>
+                ))}
+                </ScrollView>
+                </View>
+
+            </View>
+            </ScrollView>
+        }
+        </>
     )
 }
 

@@ -12,14 +12,14 @@ type (
 	}
 
 	StageDataTypes_2 struct {
-		Diagnosis           string    `json:"diagnosis"`
-		Description         string    `json:"description"`
-		Chance              string    `json:"chance"`
-		ExplainVideo        string    `json:"explain_video"`
-		Symphtoms           []Symptom `json:"symphtoms"`
-		Help                []Symptom `json:"help"`
-		Recovery            []Symptom `json:"recovery"`
-		AssistanceFrequency string    `json:"assistance_frequency"`
+		Diagnosis          string    `json:"diagnosis"`
+		Description        string    `json:"description"`
+		Chance             string    `json:"chance"`
+		ExplainVideo       string    `json:"explain_video"`
+		Symphtoms          []Symptom `json:"symphtoms"`
+		Help               []Symptom `json:"help"`
+		Recovery           []Symptom `json:"recovery"`
+		PeriodicAssistance string    `json:"periodic_assistance"`
 	}
 
 	DiagnosisData struct {
@@ -31,7 +31,7 @@ type (
 		Stages           struct {
 			Stage_one StageDataTypes_1 `json:"stage_one"`
 			Stage_two StageDataTypes_2 `json:"stage_two"`
-		}
+		} `json:"stages"`
 		Title string `json:"title"`
 	}
 

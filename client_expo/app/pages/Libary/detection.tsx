@@ -12,6 +12,7 @@ import { styles_shadow } from '../../styles/shadow_styles';
 import { UserData_Default } from '../../utils/initialValues';
 import { Gender } from '../../utils/types';
 import { DiagnosisData } from '../../utils/types';
+import { useFocusEffect } from '@react-navigation/native';
 
 type NavbarValues = "ai_vision" | "blood_work" | "diagnosis" | "soon"
 
@@ -50,10 +51,6 @@ const [ skinCancerData, setSkinCancerData] = useState({
 })
 
 
-
-
-
-
 //<==================<[ Functions ]>====================>   
 
 const fetchDiagnosis = async () => {
@@ -67,6 +64,7 @@ const fetchDiagnosis = async () => {
     } else if ( response == "NoDiagnosis"){
         
     }
+    console.log(response)
 }
 
 const fetchMoles = async (gender:Gender) => {
@@ -156,6 +154,15 @@ useEffect(() => {
     }, 0);
 }, []);
 
+
+useFocusEffect(
+    useCallback(() => {
+        fetchDiagnosis()    
+        fetchAllUserData()
+    return () => {};
+    }, [])
+);
+
 //<==================<[ Main Return ]>====================> 
 
 return(
@@ -231,7 +238,8 @@ return(
                 {/*DIAGNOSIS*/}
                 <View ref={diagnosisRef}  style={{width:"100%"}}>
                     <Text style={{fontWeight:"800",fontSize:24,margin:15,marginTop:40}}>Custom Diagnosis</Text>
-                    {diagnosisData.map((data,index) => (
+                    {diagnosisData.map((data:DiagnosisData,index) => (
+                        data.stages != undefined &&
                         <MainDiagnosisBox 
                             navigation={navigation}
                             data={data}

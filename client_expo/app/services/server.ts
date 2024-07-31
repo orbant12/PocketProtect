@@ -1,6 +1,6 @@
 
 import { Timestamp } from "../utils/date_manipulations";
-import { Gender, SkinType, Slug, SpotData, Success_Purchase_Client_Checkout_Data, UserData,AssistanceFields, AssistantData, DiagnosisData } from "../utils/types";
+import { Gender, SkinType, Slug, SpotData, Success_Purchase_Client_Checkout_Data, UserData,AssistanceFields, AssistantData, DiagnosisData, WeatherAPIResponse } from "../utils/types";
 import { MelanomaMetaData } from "../pages/Libary/Melanoma/melanomaCenter";
 import { numberOfMolesOnSlugs } from "../components/LibaryPage/Melanoma/slugCard";
 import { getWeatherAPIKey } from "../../key";
@@ -11,36 +11,6 @@ import { getWeatherAPIKey } from "../../key";
 
 const DOMAIN = "http://localhost:3001";
 export const FLASK_DOMAIN =  "http://localhost:5001";
-
-
-export interface WeatherApiCallTypes {
-    lat?: number;
-    lon?: number;
-    part?: "current" | "minutely" | "hourly" | "daily";
-}
-
-const lat = "35";
-const lon = "139";
-const part = "current";
-
-
-export const getWeatherData = async({
-    lat,
-    lon,
-    part,
-}:WeatherApiCallTypes):Promise<null | any> => {
-    const API_key = getWeatherAPIKey();
-    const WEATHER_API = `https://api.openweathermap.org/data/3.0/onecall?lat={${lat}}&lon={${lon}}&appid={${API_key}}`;
-    const response = await fetch(WEATHER_API);
-    if(response.ok){
-        const data = await response.json();
-        return data;
-    } else {
-        return null
-    }
-}
-
-
 
 type SpotDeleteTypes = "history" | "latest"
 
@@ -132,6 +102,12 @@ export type SpecialSpotResponse = {
     risky: SpotData[];
     outdated: SpotData[];
     unfinished: SpotData[];
+}
+
+export interface WeatherApiCallTypes {
+    lat?: number;
+    lon?: number;
+    part?: "current" | "minutely" | "hourly" | "daily";
 }
 
 //<===> Melanoma <====>
@@ -724,6 +700,27 @@ export const saveDiagnosisProgress = async ({
     }
 }
 
+export const deleteDiagnosis = async ({
+    diagnosisId,
+    userId,
+}:{
+    diagnosisId:string,
+    userId:string
+}):Promise<boolean> => {
+    const response = await fetch(`${DOMAIN}/client/delete/diagnosis`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ diagnosisId, userId }),
+    });
+
+    if(response.ok){
+        return true;
+    } else {
+        return false
+    }
+}
 
 //<===>  Blood Work <====>
 
@@ -941,5 +938,28 @@ export const fetchChat = async({sessionId,clientId}:{sessionId:string,clientId:s
         return data;
     } else {
         return []
+    }
+}
+
+//WETAHER API
+
+export const getWeatherData = async({
+    lat,
+    lon,
+    part,
+}:WeatherApiCallTypes):Promise<null | any> => {
+    const API_key = getWeatherAPIKey();
+    const WEATHER_API = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=current&appid=${API_key}`;
+    const response = await fetch(WEATHER_API, {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    });
+    if(response.ok){
+        const data : WeatherAPIResponse = await response.json();
+        return data;
+    } else {
+        return null;
     }
 }

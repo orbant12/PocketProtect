@@ -86,13 +86,13 @@ func SetupDiagnosisRoutes(e *echo.Echo, client *firestore.Client) {
 					"symphtoms":   formatSymptoms(req.Data.Stages.Stage_one.Symphtoms),
 				},
 				"stage_two": map[string]interface{}{
-					"assistance_frequency": req.Data.Stages.Stage_two.AssistanceFrequency,
-					"chance":               req.Data.Stages.Stage_two.Chance,
-					"diagnosis":            req.Data.Stages.Stage_two.Diagnosis,
-					"explain_video":        req.Data.Stages.Stage_two.ExplainVideo,
-					"help":                 formatSymptoms(req.Data.Stages.Stage_two.Help),
-					"recovery":             formatSymptoms(req.Data.Stages.Stage_two.Recovery),
-					"symphtoms":            formatSymptoms(req.Data.Stages.Stage_two.Symphtoms),
+					"periodic_assistance": req.Data.Stages.Stage_two.PeriodicAssistance,
+					"chance":              req.Data.Stages.Stage_two.Chance,
+					"diagnosis":           req.Data.Stages.Stage_two.Diagnosis,
+					"explain_video":       req.Data.Stages.Stage_two.ExplainVideo,
+					"help":                formatSymptoms(req.Data.Stages.Stage_two.Help),
+					"recovery":            formatSymptoms(req.Data.Stages.Stage_two.Recovery),
+					"symphtoms":           formatSymptoms(req.Data.Stages.Stage_two.Symphtoms),
 				},
 			},
 		}
@@ -100,6 +100,30 @@ func SetupDiagnosisRoutes(e *echo.Echo, client *firestore.Client) {
 		_, err := client.Collection("users").Doc(req.UserId).Collection("Diagnosis").Doc(req.Data.Id).Set(context.Background(), formattedData)
 		if err != nil {
 			log.Printf("Error uploading diagnosis data: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		return c.NoContent(http.StatusNoContent)
+	})
+
+	e.POST("client/delete/diagnosis", func(c echo.Context) error {
+		type DeleteDiagnosisReq struct {
+			UserId      string `json:"userId"`
+			DiagnosisId string `json:"diagnosisId"`
+		}
+
+		var req DeleteDiagnosisReq
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		ref := client.Collection("users").Doc(req.UserId).Collection("Diagnosis").Doc(req.DiagnosisId)
+		_, err := ref.Delete(context.Background())
+
+		if err != nil {
+			log.Printf("Error deleting diagnosis data: %v", err)
 			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		}
 

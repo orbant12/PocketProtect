@@ -1,15 +1,17 @@
 import { styles } from "../../../styles/home_style"
-import { View,Text,Pressable,TouchableOpacity,Image, Button, TouchableOpacityBase } from "react-native"
-import { TaskBox_2,TaskBox_1 } from "../taskBoxes"
+import { View,Text,TouchableOpacity} from "react-native"
+import { TaskBox_2, } from "../taskBoxes"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 import PagerView from 'react-native-pager-view';
-import { formatTimestampToString, splitDate } from "../../../utils/date_manipulations";
+import { formatTimestampToString} from "../../../utils/date_manipulations";
 import { styles_shadow } from "../../../styles/shadow_styles";
-import { BodyPart, SpotData } from "../../../utils/types";
+import { BodyPart, SpotData, WeatherAPIResponse } from "../../../utils/types";
 import { Home_Navigation_Paths } from "../../../pages/Home/home";
 import React, { useRef, useState } from 'react';
 import { ImageLoaderComponent } from "../../../pages/Libary/Melanoma/slugAnalasis";
-import { getWeatherData, WeatherApiCallTypes } from "../../../services/server";
+import { useWeather } from "../../../context/WeatherContext";
+import { WeatherData_Default } from "../../../utils/initialValues";
+import { getUvIndexCategory } from "../../../utils/melanoma/uvIndexEval";
 
 export const TodayScreen = ({
     allReminders,
@@ -38,9 +40,15 @@ export const TodayScreen = ({
     navigation:any;
 }
 ) => {
+
+    const { weatherData, loading, error,locationPermissionGranted } = useWeather();
+
     return(    
         <>
-            <UvMonitor />
+            <UvMonitor 
+                weatherData={weatherData != null ? weatherData : WeatherData_Default.daily[0]}
+            />
+            <Text style={{color:"black"}}>{locationPermissionGranted == true ? "true" : "false"}</Text>
             <TouchableOpacity onPress={() => navigation.navigate("RegOnBoarding")}>
                 <Text>Click to open on boarding</Text>
             </TouchableOpacity>
@@ -262,27 +270,11 @@ const SpecialMelanomaDataComponent = ({ MelanomaData, handleNavigation,type }) =
     );
 };
 
-const handleGetUv = async ({part,lat,lon}:WeatherApiCallTypes) => {
-    const response = await getWeatherData({
-        part:part,
-        lat:lat,
-        lon:lon
-    });
-    if( response != null){
-        const data = await response.json();
-    }
-}
 
-const UvMonitor = () => {
+const UvMonitor = ({weatherData}:{weatherData:WeatherAPIResponse}) => {
     return(
         <View>
-            <TouchableOpacity onPress={() => handleGetUv({
-                part:"daily",
-                lat:33.44,
-                lon:-94.04
-            })}>
-                <Text>Call API</Text>
-            </TouchableOpacity>
+            <Text>{getUvIndexCategory(Math.round(weatherData.uvi))}</Text>
         </View>
     )
 }

@@ -2,7 +2,7 @@
 
 //<========> MELANOMA <=========>
 
-import { SpotData,BodyPart,Gender,SkinType,SpotArrayData,UserData, ContextToggleType } from "../utils/types";
+import { SpotData,BodyPart,Gender,SkinType,SpotArrayData,UserData, ContextToggleType, DiagnosisData } from "../utils/types";
 
 
 
@@ -214,4 +214,18 @@ export const Navigation_Diag_Survey = ({
         alert("Something went wrong")
     }
 
+}
+
+export const Navigation_Diag_Center = ({
+    diagnosisData,
+    navigationType,
+    navigation
+}:{
+    diagnosisData?:DiagnosisData,
+    navigationType:"from_diagn" | "other",
+    navigation:any
+}) => {
+    if ( navigation != undefined && navigationType != undefined){
+        navigation.navigate("DiagnosisCenter",{diagnosisData:diagnosisData,navigationType:navigationType})
+    }
 }

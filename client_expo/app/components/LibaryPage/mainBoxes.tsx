@@ -4,6 +4,8 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { styles } from "../../styles/libary_style";
 import PagerView from 'react-native-pager-view';
 import { styles_shadow } from "../../styles/shadow_styles";
+import { DiagnosisData } from "../../utils/types";
+import { Navigation_Diag_Center } from "../../navigation/navigation";
 
 
 export function MainMelanomaBox({
@@ -142,6 +144,9 @@ export function MainBloodBox({
 export function MainDiagnosisBox({
     data,
     navigation
+}:{
+    data:DiagnosisData,
+    navigation:any
 }){
     return(
         <View key={data.id} style={styles.selectBox}>
@@ -163,27 +168,20 @@ export function MainDiagnosisBox({
             <Text style={{fontSize:14,fontWeight:"700",marginTop:10}}>Stages</Text>
             <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>1. Hypothesis: {data.stages.stage_one == null ? <Text style={{color:"red",fontSize:10}}>NOT STARTED</Text> : <Text style={{color:"green",fontSize:10}}>DONE (✓)</Text>} </Text>
             <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>2. Chance Evaluating: {data.stages.stage_two == null ? <Text style={{color:"red",fontSize:10}}>NOT STARTED</Text> : <Text style={{color:"green",fontSize:10}}>DONE (✓)</Text>} </Text>
-            <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>3. Sustained Sympthoms Test: {data.stages.stage_three == null ? <Text style={{color:"red",fontSize:10}}>NOT STARTED</Text> : <Text style={{color:"green",fontSize:10}}>DONE (✓)</Text>} </Text>
-            <Text style={{fontSize:12,fontWeight:"500",marginTop:5}}>4. Solution: {data.stages.stage_four == null ? <Text style={{color:"red",fontSize:10}}>NOT STARTED</Text> : <Text style={{color:"green",fontSize:10}}>DONE (✓)</Text>} </Text>
         </View>
         <View style={{marginTop:30}}>
         <Text style={{fontSize:12,fontWeight:"500",marginBottom:7,opacity:0.6}}>Diagnosis Stage:  <Text style={{fontWeight:"600",marginBottom:7,opacity:0.4}}>
-            {data.stages.stage_one == null && data.diagnosis == "Not yet" ? 
-            "1/4 • Hyphotesis"
+            {data.stages.stage_one != null && data.diagnosis != "Not yet" &&  data.stages.stage_two == null ? 
+            "1/2 • Hyphotesis"
             :
-            data.stages.stage_two == null && data.stages.stage_one != null && data.diagnosis != "Not yet" ?
-            "2/4 • Chance Evaluating"
-            :
-            data.stages.stage_three == null && data.stages.stage_one != null && data.diagnosis != "Not yet" &&  data.stages.stage_two != null  ?
-            "3/4 • Sustained Symothoms Test"
-            :            
-            "4/4 • Solution"
+            "2/2 • Chance Evaluating"
+            
             }</Text>
         </Text>
-            <ProgressBar progress={(data.diagnosis == "Not yet" ? 0 : data.diagnosis != "Not yet" ? 1 : data.stages.stage_two != null ? 2 :data.stages.stage_three != null && 3 )/ 4} width={250} height={4} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
+            <ProgressBar progress={data.diagnosis == "Not yet" ? 0 : data.diagnosis != "Not yet" ? 1 : 2 } width={250} height={4} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
         </View>                     
         <View style={[styles.boxBottom,{marginTop:5}]}>                                
-            <TouchableOpacity onPress={() => navigation.navigate("DiagnosisCenter",{diagnosisData:data})} style={{width:"100%",backgroundColor:"black",padding:10,paddingVertical:12,alignItems:"center",justifyContent:"center",borderRadius:20,flexDirection:"row"}}>
+            <TouchableOpacity onPress={() => Navigation_Diag_Center({diagnosisData:data,navigation:navigation,navigationType:"other"})} style={{width:"100%",backgroundColor:"black",padding:10,paddingVertical:12,alignItems:"center",justifyContent:"center",borderRadius:20,flexDirection:"row"}}>
                 <Text style={{fontWeight:"600",color:"white",marginRight:15}}>Open</Text>
                 <MaterialCommunityIcons 
                     name='arrow-right'

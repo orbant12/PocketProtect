@@ -34,6 +34,7 @@ import { BodyPart } from "./app/utils/types";
 import AiDiagnosis from "./app/pages/Chat/diagnosisPage";
 import AiChatPage from "./app/pages/Chat/aiChatPage";
 import DiagWelcomePage from "./app/pages/Chat/diagWelcome";
+import { WeatherProvider } from "./app/context/WeatherContext";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -75,34 +76,36 @@ return (
         <StripeProvider
             publishableKey="pk_test_51PRx4QGWClPUuUnF9GNoIEOpKugJy30Sip6vstMnPwaaojxw4vJ2DWZwRPs9mabQcX7DolDjT6s4TJHbZSfBWxZI00nrYjmKNm"
         >
-        <Stack.Navigator initialRouteName="AuthHub">
-            <Stack.Screen name="AuthHub" component={AuthHub} options={{ headerShown:false}} />
-            <Stack.Screen name="RegOnBoarding" component={RegOnBoarding} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerTitle:"Welcome !",headerShown:false}} />
-            <Stack.Screen name="Login" component={LoginPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
-            <Stack.Screen name="SurveyScreen" component={SurveyScreeen} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerShown:false} } />
-            <Stack.Screen name="DailyReport" component={DailyReport} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerTitle:"Daily Report" }} />
-            <Stack.Screen name="Register" component={RegisterPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
-            <Stack.Screen name="Main" component={HomeBottomTabNavigator} options={{ headerShown:false}} />
-            <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown:true,title:"Settings"}} />
-            <Stack.Screen name="GeneralSettings" component={GeneralSettings}   options={({ route }) => ({ title: route.params.data,headerStyle: { backgroundColor: "#18191a"},headerTintColor: "white" })} />
-            <Stack.Screen name="MelanomaAdd" component={MelanomaAdd}   options={({ route }) => ({ title:"+ Mole", headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black", headerShown:false })} />
-            <Stack.Screen name="MelanomaAllAdd" component={AllMelanomaAdd}   options={({ route }) => ({ title:"+ Mole", headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black", headerShown:false  })} />
-            <Stack.Screen name="SinglePartAnalasis" component={SinglePartAnalasis}   options={({ route }) => ({ title: route.params.melanomaId.charAt(0).toUpperCase() + route.params.melanomaId.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black", headerShown:false })} />
-            <Stack.Screen name="SlugAnalasis" component={SlugAnalasis}   options={({ route }) => ({ title: route.params.bodyPartSlug.slug.charAt(0).toUpperCase() + route.params.bodyPartSlug.slug.slice(1), headerShown:false, headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />            
-            <Stack.Screen name="MelanomaCenter" component={MelanomaCenter}   options={() => ({ headerStyle: { backgroundColor: "white", },headerTintColor: "black",headerShown:false  })} />
-            <Stack.Screen name="BloodCenter" component={BloodCenter}   options={({ route }) => ({ title: "", headerStyle: { backgroundColor: "white"},headerTintColor: "black", headerShown:false  })} />
-            <Stack.Screen name="CameraView" component={CameraView}   options={({ route }) => ({ title: "", headerStyle: { backgroundColor: "white"},headerTintColor: "black", headerShown:false  })} />
-            <Stack.Screen name="DiagnosisCenter" component={DiagnosisCenter}   options={({ route }) => ({ title: "", headerStyle: { backgroundColor: "white"},headerTintColor: "black", headerShown:false  })} />
-            <Stack.Screen name="FullMelanomaProcess" component={MelanomaFullProcess}   options={({ route }) => ({ title: "Melanoma Setup",headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerTitleStyle:{fontWeight:"700",fontSize:18} }) } />          
-            <Stack.Screen name="MelanomaProcessSingleSlug" component={MelanomaSingleSlug}   options={({ route }) => ({ title: route.params.bodyPartSlug.slug.charAt(0).toUpperCase() + route.params.bodyPartSlug.slug.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black", headerShown:false })} />
-            <Stack.Screen name="Add_BloodWork" component={BloodWorkPage}   options={({ route }) => ({ title: "+ Add Blood Work",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShon:true, headerBackVisible:false})} />
-            <Stack.Screen name="AssesmentScreen" component={AssesmentScreen}   options={({ route }) => ({ title: route.params.title, headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShon:true, headerBackVisible:false})} />
-            <Stack.Screen name="AssistCenter" component={AssistCenter}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
-            <Stack.Screen name="AI_Assistant" component={AssistantPage}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
-            <Stack.Screen name="AI_Diagnosis" component={DiagWelcomePage}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
-            <Stack.Screen name="Diagnosis_Chat" component={AiDiagnosis}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
-            <Stack.Screen name="AI_Chat" component={AiChatPage}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
-        </ Stack.Navigator>
+        <WeatherProvider part="daily">
+            <Stack.Navigator initialRouteName="AuthHub">
+                <Stack.Screen name="AuthHub" component={AuthHub} options={{ headerShown:false}} />
+                <Stack.Screen name="RegOnBoarding" component={RegOnBoarding} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerTitle:"Welcome !",headerShown:false}} />
+                <Stack.Screen name="Login" component={LoginPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
+                <Stack.Screen name="SurveyScreen" component={SurveyScreeen} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerShown:false} } />
+                <Stack.Screen name="DailyReport" component={DailyReport} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerTitle:"Daily Report" }} />
+                <Stack.Screen name="Register" component={RegisterPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
+                <Stack.Screen name="Main" component={HomeBottomTabNavigator} options={{ headerShown:false}} />
+                <Stack.Screen name="SettingsPage" component={SettingsPage} options={{ headerShown:true,title:"Settings"}} />
+                <Stack.Screen name="GeneralSettings" component={GeneralSettings}   options={({ route }) => ({ title: route.params.data,headerStyle: { backgroundColor: "#18191a"},headerTintColor: "white" })} />
+                <Stack.Screen name="MelanomaAdd" component={MelanomaAdd}   options={({ route }) => ({ title:"+ Mole", headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black", headerShown:false })} />
+                <Stack.Screen name="MelanomaAllAdd" component={AllMelanomaAdd}   options={({ route }) => ({ title:"+ Mole", headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black", headerShown:false  })} />
+                <Stack.Screen name="SinglePartAnalasis" component={SinglePartAnalasis}   options={({ route }) => ({ title: route.params.melanomaId.charAt(0).toUpperCase() + route.params.melanomaId.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black", headerShown:false })} />
+                <Stack.Screen name="SlugAnalasis" component={SlugAnalasis}   options={({ route }) => ({ title: route.params.bodyPartSlug.slug.charAt(0).toUpperCase() + route.params.bodyPartSlug.slug.slice(1), headerShown:false, headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black" })} />            
+                <Stack.Screen name="MelanomaCenter" component={MelanomaCenter}   options={() => ({ headerStyle: { backgroundColor: "white", },headerTintColor: "black",headerShown:false  })} />
+                <Stack.Screen name="BloodCenter" component={BloodCenter}   options={({ route }) => ({ title: "", headerStyle: { backgroundColor: "white"},headerTintColor: "black", headerShown:false  })} />
+                <Stack.Screen name="CameraView" component={CameraView}   options={({ route }) => ({ title: "", headerStyle: { backgroundColor: "white"},headerTintColor: "black", headerShown:false  })} />
+                <Stack.Screen name="DiagnosisCenter" component={DiagnosisCenter}   options={({ route }) => ({ title: "", headerStyle: { backgroundColor: "white"},headerTintColor: "black", headerShown:false  })} />
+                <Stack.Screen name="FullMelanomaProcess" component={MelanomaFullProcess}   options={({ route }) => ({ title: "Melanoma Setup",headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerTitleStyle:{fontWeight:"700",fontSize:18} }) } />          
+                <Stack.Screen name="MelanomaProcessSingleSlug" component={MelanomaSingleSlug}   options={({ route }) => ({ title: route.params.bodyPartSlug.slug.charAt(0).toUpperCase() + route.params.bodyPartSlug.slug.slice(1),headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black", headerShown:false })} />
+                <Stack.Screen name="Add_BloodWork" component={BloodWorkPage}   options={({ route }) => ({ title: "+ Add Blood Work",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShon:true, headerBackVisible:false})} />
+                <Stack.Screen name="AssesmentScreen" component={AssesmentScreen}   options={({ route }) => ({ title: route.params.title, headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShon:true, headerBackVisible:false})} />
+                <Stack.Screen name="AssistCenter" component={AssistCenter}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
+                <Stack.Screen name="AI_Assistant" component={AssistantPage}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
+                <Stack.Screen name="AI_Diagnosis" component={DiagWelcomePage}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
+                <Stack.Screen name="Diagnosis_Chat" component={AiDiagnosis}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
+                <Stack.Screen name="AI_Chat" component={AiChatPage}   options={({ route }) => ({ title: "",headerStyle: { backgroundColor: "black"},headerTintColor: "white" , headerShown:false,headerBackTitleVisible:false})} />
+            </ Stack.Navigator>
+        </WeatherProvider>
     </StripeProvider>
     </UserAuthContext>
 </NavigationContainer>   
