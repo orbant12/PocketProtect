@@ -1,6 +1,27 @@
 package route_types
 
 type (
+	Symptom struct {
+		Numbering string `json:"numbering"`
+		Content   string `json:"content"`
+	}
+	StageDataTypes_1 struct {
+		Diagnosis   string    `json:"diagnosis"`
+		Description string    `json:"description"`
+		Symphtoms   []Symptom `json:"symphtoms"`
+	}
+
+	StageDataTypes_2 struct {
+		Diagnosis           string    `json:"diagnosis"`
+		Description         string    `json:"description"`
+		Chance              string    `json:"chance"`
+		ExplainVideo        string    `json:"explain_video"`
+		Symphtoms           []Symptom `json:"symphtoms"`
+		Help                []Symptom `json:"help"`
+		Recovery            []Symptom `json:"recovery"`
+		AssistanceFrequency string    `json:"assistance_frequency"`
+	}
+
 	DiagnosisData struct {
 		Id               string `json:"id"`
 		Diagnosis        string `json:"diagnosis"`
@@ -8,24 +29,9 @@ type (
 		Created_At       string `json:"created_at"`
 		PossibleOutcomes string `json:"possibleOutcomes"`
 		Stages           struct {
-			Stage_one []struct {
-				A    string `json:"a"`
-				Q    string `json:"q"`
-				Type string `json:"type"`
-			} `json:"stage_one"`
-			Stage_two struct {
-				Chance string `json:"chance"`
-				Survey []struct {
-					A    string `json:"a"`
-					Q    string `json:"q"`
-					Type string `json:"type"`
-				} `json:"survey"`
-			} `json:"stage_two"`
-			Stage_three struct {
-				AssistanceFrequency string `json:"assistance_frequency"`
-			} `json:"stage_three"`
-			Stage_four interface{} `json:"stage_four"`
-		} `json:"stages"`
+			Stage_one StageDataTypes_1 `json:"stage_one"`
+			Stage_two StageDataTypes_2 `json:"stage_two"`
+		}
 		Title string `json:"title"`
 	}
 

@@ -324,7 +324,7 @@ const SurveyScreeen = ({route,navigation}) => {
         setIsDiagnosDone(false)
         const formattedDate = await dateFormat(0)
         if (fullDiagnosis.diagnosis != "Not yet"){
-            const data = {
+            const data:DiagnosisData = {
                 id: session.id,
                 title: session.title,
                 diagnosis: fullDiagnosis.diagnosis,
@@ -332,7 +332,7 @@ const SurveyScreeen = ({route,navigation}) => {
                 possibleOutcomes: possibleOutcomes,
                 explain_video:"",            
                 stages:{
-                    stage_one:memoryDataFixed,
+                    stage_one:memoryDiagnosis,
                     stage_two:fullDiagnosis,
                 },
                 created_at: formattedDate,
@@ -392,7 +392,7 @@ const SurveyScreeen = ({route,navigation}) => {
                                 <View style={{width:"100%",alignItems:"center",borderTopWidth:5,marginTop:20}}>
                                     <Text style={{fontWeight:"700",fontSize:18,marginTop:15}}>Progress</Text>
                                 {dataFixed.map((data)=>(
-                                    (data.q !== undefined && data.a !== undefined) ? (
+                                    (data !== undefined) ? (
                                     <View style={{width:"90%",borderWidth:1,marginTop:15,padding:20,height:150,justifyContent:"center",borderRadius:10}}>        
                                         <Text style={{fontWeight:"700"}}>Question: <Text style={{fontWeight:"700",opacity:0.6}}>{data.q}</Text></Text>                        
                                         <Text style={{fontWeight:"700",marginTop:20}}>Your Answer: <Text style={{fontWeight:"700",opacity:0.6}}>{data.a == undefined ? "None" : data.a}</Text></Text>
@@ -601,9 +601,9 @@ const SurveyScreeen = ({route,navigation}) => {
                         </View>
                             <Text style={{paddingVertical:10,paddingHorizontal:15,borderWidth:1,borderRadius:10,position:"absolute",right:10,top:65,opacity:0.3}}>{progress + 1} / {dataFixed.length}</Text>
                             <View style={{width:"90%",alignItems:"center",backgroundColor:"white",justifyContent:"center",marginTop:150,padding:20,borderRadius:20}}>
-                                <Text style={{fontWeight:"700",fontSize:20,width:"100%",textAlign:"center"}}>{dataFixed[progress].q !== undefined ? dataFixed[progress].q : ""}</Text>
+                                <Text style={{fontWeight:"700",fontSize:20,width:"100%",textAlign:"center"}}>{dataFixed[progress] !== undefined ? dataFixed[progress].q : ""}</Text>
                             </View>                         
-                            {dataFixed[progress].type == "binary" ?
+                            {(dataFixed[progress] !== undefined) && dataFixed[progress].type == "binary" ?
                             <View style={{width:"90%",justifyContent:"space-between",flexDirection:"row"}}> 
                                 <TouchableOpacity style={styles.btn}  onPress={() => {handleBinaryAnswer(progress,"yes");setProgress(progress + 1)}}>
                                     <Text style={{color:"white",fontWeight:"600",fontSize:17}}>Yes</Text>
@@ -657,7 +657,7 @@ const SurveyScreeen = ({route,navigation}) => {
                         </View>
                         <View style={{backgroundColor:"black",width:"100%",alignItems:"center",paddingBottom:100}}>
                         {dataFixed.map((data,index) => (
-                            (data.q !== undefined && data.a !== undefined) ? (
+                            (data !== undefined) ? (
                             <View style={{width:"90%",borderWidth:1,marginTop:30,padding:20,height:150,justifyContent:"center",borderRadius:10,borderColor:"magenta",backgroundColor:"rgba(250,0,250,0.3)"}}>
                                 <MaterialCommunityIcons 
                                     name="pencil"
@@ -696,10 +696,10 @@ const SurveyScreeen = ({route,navigation}) => {
                     >
                     <View style={styles.container}>
                         <View style={{marginTop:"20%",width:"90%",backgroundColor:"rgba(0,0,0,0.1)",padding:20,borderRadius:10}}>
-                            <Text style={{fontWeight:"700",fontSize:20,textAlign:"center"}}>{dataFixed[indexToEdit].q !== undefined ? dataFixed[indexToEdit].q : ""}</Text>
+                            <Text style={{fontWeight:"700",fontSize:20,textAlign:"center"}}>{dataFixed[indexToEdit] !== undefined ? dataFixed[indexToEdit].q : ""}</Text>
                         </View>
                     
-                            {dataFixed[indexToEdit].type == "binary" ?
+                            {(dataFixed[indexToEdit] !== undefined) && dataFixed[indexToEdit].type == "binary" ?
                             <View style={{width:"90%",justifyContent:"space-between",flexDirection:"row"}}> 
                                 <TouchableOpacity style={styles.btn}  onPress={() => handleBinaryAnswer(indexToEdit,"yes")}>
                                     <Text style={{color:"white",fontWeight:"600"}}>Yes</Text>

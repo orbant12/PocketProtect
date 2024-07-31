@@ -64,7 +64,40 @@ func SetupDiagnosisRoutes(e *echo.Echo, client *firestore.Client) {
 			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 		}
 
-		_, err := client.Collection("users").Doc(req.UserId).Collection("Diagnosis").Doc(req.Data.Id).Set(context.Background(), req.Data)
+		formattedArray := make([]map[string]string, len(req.Data.Stages.Stage_one.Symphtoms))
+		for i, symptom := range req.Data.Stages.Stage_one.Symphtoms {
+			formattedArray[i] = map[string]string{
+				"numbering": symptom.Numbering,
+				"content":   symptom.Content,
+			}
+		}
+
+		formattedData := map[string]interface{}{
+			"id":               req.Data.Id,
+			"diagnosis":        req.Data.Diagnosis,
+			"clientSymphtoms":  req.Data.ClientSymphtoms,
+			"created_at":       req.Data.Created_At,
+			"possibleOutcomes": req.Data.PossibleOutcomes,
+			"title":            req.Data.Title,
+			"stages": map[string]interface{}{
+				"stage_one": map[string]interface{}{
+					"diagnosis":   req.Data.Stages.Stage_one.Diagnosis,
+					"description": req.Data.Stages.Stage_one.Description,
+					"symphtoms":   formatSymptoms(req.Data.Stages.Stage_one.Symphtoms),
+				},
+				"stage_two": map[string]interface{}{
+					"assistance_frequency": req.Data.Stages.Stage_two.AssistanceFrequency,
+					"chance":               req.Data.Stages.Stage_two.Chance,
+					"diagnosis":            req.Data.Stages.Stage_two.Diagnosis,
+					"explain_video":        req.Data.Stages.Stage_two.ExplainVideo,
+					"help":                 formatSymptoms(req.Data.Stages.Stage_two.Help),
+					"recovery":             formatSymptoms(req.Data.Stages.Stage_two.Recovery),
+					"symphtoms":            formatSymptoms(req.Data.Stages.Stage_two.Symphtoms),
+				},
+			},
+		}
+
+		_, err := client.Collection("users").Doc(req.UserId).Collection("Diagnosis").Doc(req.Data.Id).Set(context.Background(), formattedData)
 		if err != nil {
 			log.Printf("Error uploading diagnosis data: %v", err)
 			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
@@ -282,4 +315,15 @@ func formatDate(dateString string) Date {
 		Month: int(date.Month()),
 		Day:   date.Day(),
 	}
+}
+
+func formatSymptoms(symptoms []route_types.Symptom) []map[string]string {
+	formattedArray := make([]map[string]string, len(symptoms))
+	for i, symptom := range symptoms {
+		formattedArray[i] = map[string]string{
+			"numbering": symptom.Numbering,
+			"content":   symptom.Content,
+		}
+	}
+	return formattedArray
 }

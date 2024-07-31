@@ -188,7 +188,7 @@ const DiagnosisCenter = ({navigation,route}) => {
                         <Text style={{fontWeight:"500",opacity:0.5,color:"white"}}>{diagnosisData.created_at}</Text>
                     </View>
                     <View style={{maxWidth:"60%",alignItems:"center"}}>
-                        <View style={{padding:10,backgroundColor:"rgba(0,0,0,0.8)",borderRadius:5,marginTop:5,opacity:0.6}}>    
+                        <View style={{padding:10,backgroundColor:"rgba(0,0,0,0.8)",borderRadius:5,marginTop:5,opacity:0.6,alignSelf:"flex-end"}}>    
                             <Text style={[{fontSize:12,fontWeight:"600"},{opacity:1,color:"white"}]}>Chance: <Text style={diagnosisData.stages.stage_two.chance.length > 4 ? {fontSize:20,color:"white"} : {fontSize:12,color:"white"}}>{diagnosisData.stages.stage_two.chance}</Text></Text> 
                         </View>
                         <View style={{padding:10,backgroundColor:"rgba(0,0,0,0.3)",borderRadius:5,marginTop:5}}>                        
@@ -329,8 +329,8 @@ const DiagnosisCenter = ({navigation,route}) => {
         </View>             
         </ScrollView>
         }
-        <Modal visible={true} animationType="slide" presentationStyle="formSheet" >
-            <View style={{backgroundColor:"black",width:"100%",height:"100%"}}>
+        <Modal visible={false} animationType="slide" presentationStyle="formSheet" >
+            <View style={{backgroundColor:"white",width:"100%",height:"100%"}}>
             <TouchableOpacity onPress={() => {}} style={{flexDirection:"row",alignItems:"center",justifyContent:"center",backgroundColor:"rgba(0,0,0,0.86)",borderWidth:2,borderColor:"gray",paddingVertical:10,borderRadius:10,width:"100%",alignSelf:"center",borderBottomLeftRadius:0,borderBottomRightRadius:0}}>
                 <MaterialCommunityIcons 
                     name='close'

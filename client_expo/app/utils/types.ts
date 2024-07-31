@@ -178,15 +178,7 @@ export type DiagnosisData = {
     possibleOutcomes:string;
     stages:{
         stage_one:DiagnosisResultType | {diagnosis:"Not yet"},
-        stage_two:{
-            chance: string
-            survey: {
-                a: string;
-                q: string;
-                type: PromptEngineering_Feedback_Type
-            }[],
-            assistance_frequency: string
-        }
+        stage_two:DiagnosisResultType,
     },
     explain_video:string;
 }
@@ -196,7 +188,8 @@ export type DiagnosisResultType = {
     description?:string,
     chance?:string,
     explain_video?:string,
-    symphtoms?:{numbering:string,content:string}[]
+    symphtoms?:{numbering:string,content:string}[],
+    assistance_frequency?:string,
 }
 
 export type ContextToggleType = {
