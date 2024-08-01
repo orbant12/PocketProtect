@@ -7,6 +7,7 @@ import { app } from "../../services/firebase";
 import { ChatBot_Modal } from "./components/ai_chat/chatModal";
 import { ContextToggleType, UserContextType } from "../../utils/types";
 import { BottomOptionsModal } from "./components/ai_chat/bottomOptionsModal";
+import { useWeather } from "../../context/WeatherContext";
 
 
 
@@ -28,7 +29,7 @@ const AiChatPage = ({route,navigation}) => {
 
     const placeholders = {
         useBloodWork:"[ Blood Work Provided ]",
-        useUvIndex:"[ UV Index Provided ]",
+        useUvIndex:`[ ${userContexts.useUvIndex} Provided ]`,
         useMedicalData:"[ Medical Data Provided ]",
         useBMI:"[ BMI Provided ]",
         useWeatherEffect:"[ Weather Data Provided ]"

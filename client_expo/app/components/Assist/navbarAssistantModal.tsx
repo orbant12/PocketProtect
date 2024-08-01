@@ -49,13 +49,13 @@ export const NavBar_AssistantModal = ({
                     <Text style={{color:"white",opacity:0.3,fontSize:10}}>{id}</Text>
                 </View>
                 
-                <TouchableOpacity onPress={right_action != undefined ? right_action : () => {}} style={{backgroundColor:"rgba(255,255,255,0.9)",borderRadius:30,borderColor:"white",borderWidth:2}}>
+                <TouchableOpacity onPress={right_action != undefined ? right_action : () => {}} style={{backgroundColor:"rgba(250,0,250,0.5)",borderRadius:10,borderColor:"magenta",borderWidth:2}}>
                     {right_icon.type == "icon" ?
                         <MaterialCommunityIcons
                             name={right_icon.name}
-                            size={30}
-                            color={"black"}
-                            style={{padding:5}}
+                            size={27}
+                            color={"white"}
+                            style={{padding:8}}
                         />
                     :
                     <Image

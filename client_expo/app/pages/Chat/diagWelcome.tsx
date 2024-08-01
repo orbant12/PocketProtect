@@ -4,16 +4,11 @@ import {View} from 'react-native';
 import "react-native-gesture-handler"
 import { NavBar_AssistantModal } from '../../components/Assist/navbarAssistantModal';
 import { useAuth } from '../../context/UserAuthContext';
-import { Navigation_AI_Chat, Navigation_Diag_Input } from '../../navigation/navigation';
-import { ContextToggleType, UserContextType, UserData } from '../../utils/types';
-import { UserData_Default } from '../../utils/initialValues';
-import { BloodWorkCategory, fetchBloodWork, fetchUserData } from '../../services/server';
+import { Navigation_Diag_Input } from '../../navigation/navigation';
+import { ContextToggleType, UserContextType} from '../../utils/types';
+import { BloodWorkCategory, fetchBloodWork } from '../../services/server';
 import { BottomOptionsModal } from './components/ai_chat/bottomOptionsModal';
-import { AiAssistant } from './components/ai_chat/aiWelcomePage';
 import { DiagWelcomeComponent } from './components/diag/diagWelcomePage';
-
-
-
 
 
 const DiagWelcomePage = ({navigation}) => {
@@ -22,7 +17,6 @@ const DiagWelcomePage = ({navigation}) => {
 //<==================<[ Variables ]>====================>
 
 const { currentuser } = useAuth()
-const [userData, setUserData] = useState<UserData>(UserData_Default);
 const [selectedType, setSelectedType] = useState<null | "context" | "help" | "questions">(null);
 
 const [userContexts, setUserContexts] = useState<null | UserContextType>({
@@ -53,13 +47,6 @@ const handleStartChat = () => {
     setSelectedType(null)
 }
 
-const fetchAllUserData = async () => {
-  const response = await fetchUserData({
-    userId: currentuser.uid
-  })
-  setUserData(response)
-}
-
 function convertBloodWorkCategoriesToString(categories: BloodWorkCategory[]): string {
   return categories.map(category => {
       const dataStrings = category.data.map(item => `${item.type}: ${item.number}`).join(', ');
@@ -81,7 +68,6 @@ const fetchContextDatas = async () => {
 
 
 useEffect(() => {
-  fetchAllUserData()
   fetchContextDatas()
 },[])
 
@@ -103,7 +89,7 @@ return (
         <DiagWelcomeComponent
           setSelectedType={setSelectedType}
           handleStartChat={handleStartChat}
-          userData={userData}
+          userData={currentuser}
           />      
         <BottomOptionsModal 
           selectedType={selectedType}

@@ -1,19 +1,15 @@
 import { View } from "react-native"
 import React,{ useEffect, useState } from "react";
-import { fetchUserData, fetchAllMelanomaSpotData } from "../../services/server";
+import { fetchAllMelanomaSpotData } from "../../services/server";
 import { useAuth } from "../../context/UserAuthContext";
 import { MoleSelectorScreen } from "./moleSelector";
 import { AssistantSelectorScreen } from "./assistantSelector";
-import { SpotData, UserData } from "../../utils/types";
-import { UserData_Default } from "../../utils/initialValues";
+import { SpotData } from "../../utils/types";
 
 export const ManualAdd_Moles = ({
     closeAction,
     navigation
-}) => {
-
-    const [ selectedSide, setSelectedSide] = useState("front")
-    const [ userData, setUserData] = useState<UserData>(UserData_Default)
+}) => {    
     const [ selectedMoles, setSelectedMoles ] = useState([])
     const [melanomaData, setMelanomaData] = useState([])
     const [riskyMelanomaData, setRiskyMelanomaData] = useState([])
@@ -30,20 +26,12 @@ export const ManualAdd_Moles = ({
         
     }
 
-    const fetchAllUserData = async () => {
-        const response = await fetchUserData({
-            userId:currentuser.uid
-        })
-        setUserData(response)
-        fetchAllMelanomaData(response.gender)
-    }
-
-    const fetchAllMelanomaData = async (gender) => {
+    const fetchAllMelanomaData = async () => {
         if (currentuser) {
             try {
                 const response = await fetchAllMelanomaSpotData({
                     userId: currentuser.uid,
-                    gender
+                    gender: currentuser.gender,
                 });
                 if(response != false){
                     response.forEach((data:SpotData) => {
@@ -63,7 +51,7 @@ export const ManualAdd_Moles = ({
     };
     
     useEffect(() => {
-        fetchAllUserData()
+        fetchAllMelanomaData()
     },[])
 
     return(
@@ -78,7 +66,7 @@ export const ManualAdd_Moles = ({
                     melanomaData={melanomaData}
                     closeAction={closeAction}
                     setProgress={setProgress}
-                    userData={userData}
+                    userData={currentuser}
                     allMelanomaData={[...melanomaData,...unfinishedMelanomaData,...riskyMelanomaData]}
                 />
             }

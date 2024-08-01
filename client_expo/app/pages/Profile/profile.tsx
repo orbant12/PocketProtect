@@ -1,17 +1,13 @@
-import { View,Text,StyleSheet,Image,TouchableOpacity, SafeAreaView, ScrollView, Modal, Pressable } from "react-native"
-import React, { useEffect, useState, useRef, useCallback } from 'react';
-import UserDiagnosis from "./tabs/userDiagnosis"
+import { View,Text,StyleSheet,Image,TouchableOpacity, Modal } from "react-native"
+import React, { useState, useRef } from 'react';
 import UserSavedPage from "./tabs/userSavedPage"
 import { Tabs} from 'react-native-collapsible-tab-view'
 import Entypo from 'react-native-vector-icons/Entypo';
 import { useAuth } from "../../context/UserAuthContext";
-import { changeProfilePicture, fetchUserData } from "../../services/server";
+import { changeProfilePicture } from "../../services/server";
 import { Icon } from 'react-native-elements';
-import AssistPanel from "./tabs/userAssistPanel"
 import DetectionLibary from "../Libary/detection"
 import { Horizontal_Navbar } from "../../components/LibaryPage/mainNav";
-import { UserData } from "../../utils/types";
-import { UserData_Default } from "../../utils/initialValues";
 import { HeaderContainer } from "../../components/Common/headerContainer";
 import { NavBar_TwoOption } from "../../components/Common/navBars";
 import { ImageLoaderComponent } from "../Libary/Melanoma/slugAnalasis";
@@ -27,10 +23,10 @@ const Profile = ({navigation,handleSettings}) => {
 
 //<==================<[ Variables ]>====================>
 
-const [userData, setUserData] = useState<UserData>(UserData_Default);
-const { currentuser } = useAuth()
-const [isProfileChangeActive, setProfileChangeActive] = useState(false);  
-const [profileUrl, setProfileUrl] = useState("");
+
+const { currentuser, handleAuthHandler } = useAuth()
+const [isProfileChangeActive, setIsProfileChangeActive] = useState(false);  
+const [profileUrl, setProfileUrl] = useState(currentuser.profileUrl);
 const [isCameraActive, setIsCameraActive] = useState(false);
 
 const maleDefault = Image.resolveAssetSource(require("../../assets/male.png")).uri;
@@ -51,26 +47,9 @@ const positions = useRef({
 
 //<==================<[ Functions ]>====================>
 
-const fetchAllUserData = async() => {
-    if(currentuser){
-        const response = await fetchUserData({
-            userId:currentuser.uid
-        })
-        if(response){
-            setUserData(response); 
-        }
-    }
-}
-
-useEffect(() => {    
-    fetchAllUserData();
-}, []);
-
-
 const handleSettingsNavigation = () => {
     navigation.navigate("SettingsPage")
 }
-
 
 const handlePictureUpload = async() => {        
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -92,8 +71,8 @@ const handleChangeProfile = async() => {
         profileBlob:profileBlob
     })
     if(respose == true){
-        setProfileChangeActive(false);
-        fetchAllUserData();
+        setIsProfileChangeActive(false);
+        handleAuthHandler("fetch");
     }
 }
 
@@ -106,17 +85,17 @@ const handleChangeProfile = async() => {
                 renderHeader={() => 
                     <>
                     <NavBar_TwoOption
-                        title={userData.fullname}
+                        title={currentuser.fullname}
                         icon_right={{name:"menu",size:25,action:handleSettingsNavigation}}
                         icon_left_component={() => 
-                            <TouchableOpacity onPress={() => setProfileChangeActive(true)}>
-                                {userData.profileUrl != "" ?
+                            <TouchableOpacity onPress={() => setIsProfileChangeActive(true)}>
+                                {currentuser.profileUrl != "" ?
                                     <ImageLoaderComponent 
                                         w={50}
                                         h={50}
                                         imageStyle={{borderRadius:50,borderColor:"magenta",borderWidth:2}}
                                         style={{borderRadius:50,borderColor:"magenta",borderWidth:1}}
-                                        data={{melanomaPictureUrl:userData.profileUrl}}
+                                        data={{melanomaPictureUrl:currentuser.profileUrl}}
                                     />
                                     :
                                     <View style={{width:50,height:50, borderRadius:50,borderColor:"magenta",borderWidth:2}} />
@@ -196,13 +175,13 @@ const handleChangeProfile = async() => {
             </Tabs.Container>     
             <Modal animationType="slide" visible={isProfileChangeActive} presentationStyle="formSheet">
             <>
-                <View style={{flexDirection:"column",justifyContent:"center",width:"90%",height:50,borderRadius:10,backgroundColor:"black",borderWidth:3,borderColor:"white",alignItems:"center",position:"absolute",top:20,alignSelf:"center"}}>
+                <TouchableOpacity onPress={() => {setIsProfileChangeActive(!isProfileChangeActive);setProfileUrl(currentuser.profileUrl)}} style={{flexDirection:"column",justifyContent:"center",width:"90%",height:50,borderRadius:10,backgroundColor:"black",borderWidth:3,borderColor:"white",alignItems:"center",position:"absolute",top:20,alignSelf:"center"}}>
                         <MaterialCommunityIcons 
                             name="close"
                             size={25}
                             color={"white"}
                         />
-                    </View>
+                    </TouchableOpacity>
                 <View style={styles.startScreen}>
                     <View style={{marginTop:0,alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,padding:10,width:"90%"}}>  
                         <Text style={{marginBottom:0,fontWeight:"700",fontSize:23,textAlign:"left"}}>Select or upload your profile picture !</Text>

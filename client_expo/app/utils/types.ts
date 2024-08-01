@@ -75,7 +75,7 @@ export type Gender = "female" | "male";
 
 
 export type UserData = {
-    id:string;
+    uid:string;
     fullname:string;
     gender: Gender;
     birth_date: Date;
@@ -201,10 +201,10 @@ export type ContextToggleType = {
 
 export type UserContextType = {
     useBloodWork:null | string,
-    useUvIndex:null | "",
+    useUvIndex:null | string,
     useMedicalData:null | "",
     useBMI:null | "",
-    useWeatherEffect:null | ""
+    useWeatherEffect:null | string
 }
 
 export type WeatherAPIResponse = {
@@ -247,6 +247,6 @@ export type WeatherAPIResponse = {
       uvi?: number
 };
 
-export type keys_types = "uvi" 
+export type keys_types = "uvi" | "temp" | "pressure" | "humidity" | "weather" | "clouds" | "pop"
 
 export type WeatherSortedResponse =  Record<keys_types, any>;

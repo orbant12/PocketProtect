@@ -44,15 +44,56 @@ const WeatherProvider = ({ children, part }: WeatherProviderProps) => {
             setError(null);
             try {
                 console.log('Fetching weather data');
-                const response = await getWeatherData({ part, lat, lon });
-                if (response === null) {
-                    setWeatherData(null);
-                    return;
-                }
+                // const response = await getWeatherData({ part, lat, lon });
+                // if (response === null) {
+                //     setWeatherData(null);
+                //     return;
+                // }
+                const response = {
+                    daily: [
+                        {
+                            dt: 0,
+                            sunrise: 0,
+                            sunset: 0,
+                            temp: {
+                                day: 0,
+                                min: 0,
+                                max: 0,
+                                night: 0,
+                                eve: 0,
+                                morn: 0,
+                            },
+                            feels_like: {
+                                day: 0,
+                                night: 0,
+                                eve: 0,
+                                morn: 0,
+                            },
+                            pressure: 0,
+                            humidity: 0,
+                            dew_point: 0,
+                            wind_speed: 0,
+                            wind_deg: 0,
+                            weather: [
+                                {
+                                    id: 0,
+                                    main: "",
+                                    description: "",
+                                    icon: "",
+                                },
+                            ],
+                            clouds: 0,
+                            pop: 0,
+                            uvi: 10.09,
+                        },
+                    ],
+                };
                 const result = await preprocessWeatherData({
-                    keys:["uvi"],
+                    keys:["uvi","temp","pressure","humidity","weather","clouds","pop"],
                     wData:response
                 });
+   
+                
                 setWeatherData(result); 
                 console.log(result);
                 console.log('Weather data fetched');

@@ -7,7 +7,7 @@ import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { melanomaMetaDataUpload, updateCompletedParts, fetchCompletedParts, fetchUserData } from "../../../../services/server"
+import { melanomaMetaDataUpload, updateCompletedParts, fetchCompletedParts } from "../../../../services/server"
 import { SelectionPage } from "../../../../components/Common/SelectableComponents/selectPage";
 import { SelectionPage_Binary } from "../../../../components/Common/SelectableComponents/selectPage_Binary";
 import { FactScreenType_1 } from "../../../../components/Common/FactScreenComponents/factScreenType1";
@@ -58,7 +58,6 @@ const MelanomaFullProcess = ({navigation}) => {
         detected_relative:"none",
 
     })
-    const [ userData, setUserData] = useState<UserData>(UserData_Default)
 
     //SKIN BURN
     const [haveBeenBurned, setHaveBeenBurned] = useState(false)
@@ -188,19 +187,9 @@ const MelanomaFullProcess = ({navigation}) => {
         handleSlugMemoryChange()     
     }, [completedParts]); 
 
-    const fetchAllUserData = async () => {
-        const reponse = await fetchUserData({
-            userId: currentuser.uid
-        })
-        if(reponse != null){
-            setUserData(reponse)
-        }
-    }
-
     useFocusEffect(
         useCallback(() => {
-            fetchCompletedSlugs()  
-            fetchAllUserData()          
+            fetchCompletedSlugs()       
         return () => {};
         }, [])
     );
@@ -240,7 +229,7 @@ const MelanomaFullProcess = ({navigation}) => {
                     setSelectedBurnSide={setSelectedBurnSide}
                     addMoreBurn={addMoreBurn}
                     deleteSunburn={deleteSunburn}
-                    userData={userData}
+                    userData={currentuser}
                 />
             }
             {round(progress,1) === 0.4 && 
@@ -269,7 +258,7 @@ const MelanomaFullProcess = ({navigation}) => {
             }          
             {round(progress,1) === 0.7 && 
                 <ThirdScreen 
-                    userData={userData}
+                    userData={currentuser}
                     melanomaMetaData={melanomaMetaData}
                     setProgress={setProgress}
                     progress={progress}
@@ -292,7 +281,7 @@ const MelanomaFullProcess = ({navigation}) => {
                     completedParts={completedParts}
                     melanomaMetaData={melanomaMetaData}
                     completedAreaMarker={completedAreaMarker}
-                    userData={userData}
+                    userData={currentuser}
                     currentSide={currentSide}
                     navigation={navigation}
                     setIsModalUp={setIsModalUp}

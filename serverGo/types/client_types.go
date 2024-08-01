@@ -13,7 +13,7 @@ type (
 		ProfileUrl string    `json:"profileUrl"`
 		Gender     string    `json:"gender"`
 		BirthDate  time.Time `json:"birth_date"`
-		ID         string    `json:"id"`
+		UID        string    `json:"uid"`
 		UserSince  string    `json:"user_since"`
 	}
 

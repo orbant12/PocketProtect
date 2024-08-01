@@ -27,14 +27,14 @@ const RegOnBoarding = ({navigation}) => {
 
     const maleDefault = Image.resolveAssetSource(require("../../../assets/male.png")).uri;
     const femaleDefault = Image.resolveAssetSource(require("../../../assets/female.png")).uri;
-
+    
 
     // <===> Variable <====> 
 
     const [ progress, setProgress] = useState(0)
     const [gender, setGender ] = useState(null)
     const [birthDate, setBirthDate] = useState(new Date(2098051730000));
-    const {currentuser} = useAuth()
+    const {currentuser, handleAuthHandler} = useAuth()
     const [profileUrl, setProfileUrl] = useState(maleDefault)
     const [isCameraActive, setIsCameraActive] = useState(false)
 
@@ -57,7 +57,7 @@ const RegOnBoarding = ({navigation}) => {
             profileBlob:profileBlob
         })
         if (response == true && response2 == true && response3 == true) {
-            navigation.navigate("Home")
+            handleAuthHandler("fetch_w_main")
         } else {
             alert("Something went wrong !")
         }

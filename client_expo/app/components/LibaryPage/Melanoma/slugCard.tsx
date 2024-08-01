@@ -5,7 +5,9 @@ import { styles_shadow } from "../../../styles/shadow_styles";
 import { BodyPart, SkinType, Slug, SpotData, UserData } from "../../../utils/types";
 import { BodyPartPath } from "../../../pages/Libary/Melanoma/components/selectedSlugDots";
 
+
 export type numberOfMolesOnSlugs = {Slug: number}[];
+
 
 
 const getSlugCount = (slug,numberOfMolesOnSlugs:numberOfMolesOnSlugs) => {
@@ -13,7 +15,7 @@ const getSlugCount = (slug,numberOfMolesOnSlugs:numberOfMolesOnSlugs) => {
     return slugObject ? slugObject[slug] : 0;
 };
 
-const dotSelectOnPart = (bodyPart:BodyPart,userData:UserData,melanomaData:SpotData[],skin_type:SkinType) => {
+const dotSelectOnPart = (bodyPart:BodyPart,melanomaData:SpotData[],skin_type:SkinType,userData:UserData) => {
     return (
         <Svg preserveAspectRatio="xMidYMid meet" height={200} width={350} > 
             {bodyPart != null ? (
@@ -47,19 +49,19 @@ export const SlugCard = ({
     completedParts,
     handleNavigation,
     numberOfMolesOnSlugs,
-    userData,
     melanomaData,
     index,
-    skin_type
+    skin_type,
+    userData
 }:{
     bodyPart:BodyPart;
     completedParts: Slug[];
     handleNavigation:(path:string,data:any) => void;
     numberOfMolesOnSlugs: {Slug: number}[];
-    userData: UserData;
     melanomaData: SpotData[];
     index:number;
     skin_type:SkinType;
+    userData:UserData;
 }) => {
     return(
         <View style={[Mstyles.melanomaBox,styles_shadow.hightShadowContainer,!completedParts.includes(bodyPart.slug) ? {borderColor:"red"} : {borderColor:"lightgreen"}]} >
@@ -67,7 +69,7 @@ export const SlugCard = ({
         <Text style={{fontSize:15,fontWeight:"500",opacity:0.7,color:"white",marginBottom:10}}>Birthmarks: {getSlugCount(bodyPart.slug,numberOfMolesOnSlugs)}</Text>
         
         <View style={styles_shadow.hightShadowContainer}>
-            {dotSelectOnPart(bodyPart,userData,melanomaData,skin_type)}
+            {dotSelectOnPart(bodyPart,melanomaData,skin_type,userData)}
         </View>
         <TouchableOpacity style={[Mstyles.showMoreBtn,styles_shadow.shadowContainer]} onPress={() => handleNavigation("SlugAnalasis",bodyPart)}>
             <Text style={{fontSize:15,fontWeight:"500",opacity:0.7,color:"white"}}>See More</Text>

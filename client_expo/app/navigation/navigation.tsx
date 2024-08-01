@@ -33,16 +33,14 @@ export const Navigation_SingleSpotAnalysis = ({
     melanomaId,
     gender,
     skin_type,
-    userData,
     navigation
 }: MelanomaNavigationParams) => {
 
-    if (melanomaId && gender && skin_type !== undefined && userData) {
+    if (melanomaId && gender && skin_type !== undefined) {
         navigation.navigate("SinglePartAnalasis", { 
             melanomaId: melanomaId,
             gender: gender,
             skin_type: skin_type,
-            userData: userData
         });        
     } else {
         alert("Something went wrong");
@@ -51,30 +49,26 @@ export const Navigation_SingleSpotAnalysis = ({
 
 export const Navigation_SlugAnalysis = ({
     bodyPartSlug,
-    userData,
     skin_type,
     navigation
 }:MelanomaNavigationParams) => {
     if ( navigation != undefined ) {
         navigation.navigate("SlugAnalasis",{
             bodyPartSlug: bodyPartSlug,
-            userData:userData,
             skin_type:skin_type,
         })
     }
 }
 
 export const Navigation_AddSlugSpot = ({
-    userData,
     bodyPartSlug,
     skin_type = 0,   
     type,
     navigation
 }: MelanomaNavigationParams) => {
 
-    if (userData && bodyPartSlug && skin_type !== undefined && type) {
+    if (bodyPartSlug && skin_type !== undefined && type) {
         navigation.navigate("MelanomaAdd",{ 
-            userData: userData,
             skin_type: skin_type,
             bodyPartSlug:bodyPartSlug,
             type:type
@@ -85,12 +79,10 @@ export const Navigation_AddSlugSpot = ({
 };
 
 export const Navigation_MoleUpload_1 = ({
-    gender,
     skin_type,
     navigation
 }:MelanomaNavigationParams) => {
     navigation.navigate("MelanomaAllAdd", {         
-        gender: gender,
         skin_type: skin_type,
     });        
 }

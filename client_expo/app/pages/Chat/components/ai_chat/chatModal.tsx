@@ -50,8 +50,8 @@ export const ChatBot_Modal = ({
                     bgColor={"black"}
                     title={"Chat Log"}
                     id={"session_10232"}
-                    right_icon={{type:"icon",name:"comment-question"}}
-                    right_action={() => setSelectedType("questions")}
+                    right_icon={{type:"icon",name:"eye"}}
+                    right_action={() => setSelectedType("context")}
                 />
                 <View style={{justifyContent:"space-between",marginTop:"0%",width:"100%",height:"88%",borderWidth:3}}>
                     <ChatLogView 

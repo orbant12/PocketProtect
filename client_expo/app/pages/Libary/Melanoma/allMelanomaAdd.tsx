@@ -4,7 +4,7 @@ import React, {useState,useEffect,useCallback} from "react";
 import { useAuth } from "../../../context/UserAuthContext";
 import Body from "../../../components/LibaryPage/Melanoma/BodyParts/index";
 import ProgressBar from 'react-native-progress/Bar';
-import {updateCompletedParts, fetchCompletedParts, fetchUserData,fetchSkinType } from '../../../services/server';
+import {updateCompletedParts, fetchCompletedParts,fetchSkinType } from '../../../services/server';
 import { spotUploadStyle } from "../../../styles/libary_style";
 import { SideSwitch } from "../../../components/LibaryPage/Melanoma/sideSwitch";
 import { decodeParts } from "../../../utils/melanoma/decodeParts";
@@ -25,7 +25,6 @@ const AllMelanomaAdd = ({route,navigation}) => {
     const [completedParts, setCompletedParts] = useState<{slug:Slug}[]>([])
     const [completedAreaMarker, setCompletedAreaMarker] = useState([])
     const [bodyProgress, setBodyProgress] = useState(0)
-    const [userData, setUserData] = useState<UserData>(UserData_Default)
     const [skinType, setSkinType] = useState<SkinType>(0)
 
     const completedArea = async (sessionMemory:{slug:Slug}[]) => {
@@ -63,12 +62,7 @@ const AllMelanomaAdd = ({route,navigation}) => {
         }
     }
 
-    const fetchAllUserData = async () =>{
-        const response = await fetchUserData({
-            userId:currentuser.uid
-        })
-        setUserData(response)
-    }
+
 
     const fetchUserSkinType = async () => {
         const response = await fetchSkinType({
@@ -88,16 +82,7 @@ const AllMelanomaAdd = ({route,navigation}) => {
             fetchUserSkinType()
         }
 
-        if (route.params.gender != undefined){
-            setUserData(
-                {
-                    ...userData,
-                    gender:route.params.gender
-                }
-            )
-        } else {
-            fetchAllUserData()
-        }
+        
     }
 
     const handleSlugMemoryChange = async () => {
@@ -133,13 +118,13 @@ const AllMelanomaAdd = ({route,navigation}) => {
                 <View style={styles_shadow.shadowContainer}>
                 <Body
                     data={completedAreaMarker}
-                    gender={userData.gender}
+                    gender={currentuser.gender}
                     side={selectedSide}
                     scale={scaleFactor}
                     colors={['#A6FF9B']}
                     onBodyPartPress={(slug) => Navigation_MoleUpload_2({
                         bodyPartSlug: slug,
-                        gender: userData.gender,
+                        gender: currentuser.gender,
                         completedArray:completedParts,
                         progress:null,
                         skin_type: skinType,

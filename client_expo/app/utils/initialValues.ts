@@ -2,7 +2,7 @@ import { BloodWorkData, BloodWorkDoc } from "../services/server";
 import { Gender, Success_Purchase_Client_Checkout_Data } from "./types";
 
 export const UserData_Default = {
-        id:"default",
+        uid:"default",
         birth_date: new Date(),
         gender: "male" as Gender,
         profileUrl:"",

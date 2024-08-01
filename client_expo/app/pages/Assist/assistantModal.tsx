@@ -32,9 +32,6 @@ export const AssistModal = ({
 
     const scrollRef = useRef(null)
     const paymentModalRef = useRef(null)
-
-    const { currentuser } = useAuth()
-
     const session_UID = "session_" + generateNumericalUID(12)
 
     const [checkOutData, setCheckOutData] = useState<Success_Purchase_Client_Checkout_Data>({
@@ -85,7 +82,7 @@ export const AssistModal = ({
                 },
                 clientData: {
                     fullname: userData.fullname,
-                    id: currentuser.uid,
+                    id: userData.uid,
                     profileUrl: userData.profileUrl,
                     email: userData.email,
                     gender: userData.gender,

@@ -5,7 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../../context/UserAuthContext';
 import Calendar from '../../components/HomePage/Callendar/HorizontalCallendar';
 import {useTimer}  from '../../components/HomePage/timer';
-import { fetchUserData, fetchSpecialSpots, } from '../../services/server';
+import { fetchSpecialSpots, } from '../../services/server';
 import { styles } from "../../styles/home_style";
 import { TodayScreen } from '../../components/HomePage/3_types/Today';
 import { DateToString, splitDate, parseDateToMidnight } from '../../utils/date_manipulations';
@@ -55,8 +55,6 @@ const [refreshing, setRefreshing] = useState<boolean>(false);
 const [outdatedMelanomaData, setOutdatedMelanomaData] = useState<SpotData[]>([]);
 const [riskyMelanomaData, setRiskyMelanomaData] = useState<SpotData[]>([]);
 const [unfinishedMelanomaData, setUnfinishedMelanomaData] = useState<SpotData[]>([]);
-const [userData, setUserData] = useState<UserData>(UserData_Default);
-
 
 //<==================<[ Functions ]>====================>
 
@@ -66,8 +64,6 @@ const [userData, setUserData] = useState<UserData>(UserData_Default);
         } else if ( path == "risk" || path == ""  || path == "unfinished" ){
             Navigation_SingleSpotAnalysis({
                 melanomaId: data.melanomaId,
-                userData: userData,
-                gender: userData.gender,
                 skin_type: 0,
                 navigation
             })
@@ -106,7 +102,7 @@ const [userData, setUserData] = useState<UserData>(UserData_Default);
         if(currentuser){
             const response = await fetchSpecialSpots({
                 userId: currentuser.uid,    
-                gender: userData.gender,        
+                gender: currentuser.gender,        
             });
             if (response != null){
                 setOutdatedMelanomaData(response.outdated);
@@ -120,16 +116,8 @@ const [userData, setUserData] = useState<UserData>(UserData_Default);
         }
     }
 
-    const fetchAllUserData = async () =>{
-        const response = await fetchUserData({
-            userId:currentuser.uid
-        })
-        setUserData(response)
-    }
-
     const handleLoadPage = () => {
         fetchAllSpots()
-        fetchAllUserData()
     }
 
     useEffect(() =>{

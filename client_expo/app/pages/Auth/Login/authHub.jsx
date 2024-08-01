@@ -1,5 +1,4 @@
 import { View,Text,Pressable,StyleSheet, Modal } from "react-native"
-import { useNavigation } from "@react-navigation/core";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAuth } from '../../../context/UserAuthContext'
 import { auth,} from '../../../services/firebase';
@@ -14,7 +13,7 @@ import RegisterPage from "../register";
 
 WebBrowser.maybeCompleteAuthSession();
 
-const AuthHub = () => {
+const AuthHub = ({navigation}) => {
 
     const [ selectedAuth, setSelectedAuth] = useState(null)
 
@@ -35,8 +34,7 @@ const AuthHub = () => {
 
     //USER | LOGIN
     const {GoogleLogin, user} = useAuth()
-    //NAVIGATION
-const navigation = useNavigation();
+
 
     const handleNavigation = (path) => {
         navigation.navigate(path)
@@ -83,6 +81,7 @@ const navigation = useNavigation();
         <AuthSheetModal 
             selectedAuth={selectedAuth}
             setSelectedAuth={setSelectedAuth}
+            navigation={navigation}
         />
         </>
     )
@@ -128,14 +127,16 @@ export default AuthHub
 
 
 
-const AuthSheetModal = ({selectedAuth,setSelectedAuth}) => {
+const AuthSheetModal = ({selectedAuth,setSelectedAuth,navigation}) => {
     return(
         <Modal presentationStyle="formSheet" animationType="slide"  visible={selectedAuth != null} >
             {selectedAuth == "login" && <LoginPage 
                 handleClose={() => setSelectedAuth(null)}
+                navigation={navigation}
             /> }
             {selectedAuth == "register" && <RegisterPage 
                 handleClose={() => setSelectedAuth(null)}
+                navigation={navigation}
             /> }
         </Modal>
     )

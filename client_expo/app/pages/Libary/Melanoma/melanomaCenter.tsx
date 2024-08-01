@@ -8,7 +8,7 @@ import {bodyFemaleBack} from "../../../components/LibaryPage/Melanoma/BodyParts/
 import {bodyFront} from "../../../components/LibaryPage/Melanoma/BodyParts/bodyFront"
 import {bodyBack} from "../../../components/LibaryPage/Melanoma/BodyParts/bodyBack"
 import { useAuth } from '../../../context/UserAuthContext';
-import { fetchAllMelanomaSpotData, fetchUserData,fetchCompletedParts, fetchNumberOfMolesOnSlugs } from '../../../services/server';
+import { fetchAllMelanomaSpotData,fetchCompletedParts, fetchNumberOfMolesOnSlugs } from '../../../services/server';
 import { useFocusEffect } from '@react-navigation/native';
 import { SkinModal } from "../../../components/LibaryPage/Melanoma/modals";
 import { Mstyles } from "../../../styles/libary_style";
@@ -18,8 +18,7 @@ import { Navigation_MoleUpload_1,Navigation_SlugAnalysis } from "../../../naviga
 import { AssistantAdvertBox } from "../../../components/LibaryPage/Melanoma/Assistance/assistantAdvert";
 import { styles_shadow } from "../../../styles/shadow_styles";
 import { NavBar_TwoOption } from "../../../components/Common/navBars";
-import { UserData_Default } from "../../../utils/initialValues";
-import { BodyPart, Gender, SkinType, Slug, SpotData, UserData } from "../../../utils/types";
+import { BodyPart, SkinType, Slug, SpotData, UserData} from "../../../utils/types";
 import { SkinNumber_Convert } from "../../../utils/skinConvert";
 import { OneOptionBox } from "../../../components/LibaryPage/Melanoma/boxes/oneOptionBox";
 import { SunBurnScreen } from "./ModalScreens/sunBurnScreen";
@@ -40,7 +39,6 @@ const SingleFeature = ({navigation}) => {
 //<==================<[ Variables ]>====================>
 
     const { currentuser } = useAuth();
-    const [userData , setUserData] = useState<UserData>(UserData_Default);
     const [bodySlugs, setBodySlugs] = useState<BodyPart[]>(null)
     const [ affectedSlugs,setAffectedSlugs ] = useState<{slug: Slug}[]>([])
     const [selectedSide, setSelectedSide] = useState<"front" | "back">("front");
@@ -64,11 +62,11 @@ const SingleFeature = ({navigation}) => {
 
 //<==================<[ Functions ]>====================>
 
-    const fetchAllMelanomaData = async (gender:Gender) => {
+    const fetchAllMelanomaData = async () => {
         if(currentuser){
             const response = await fetchAllMelanomaSpotData({
                 userId: currentuser.uid,
-                gender
+                gender:currentuser.gender
             });
             if(response != false){
                 setMelanomaData(response);
@@ -78,15 +76,7 @@ const SingleFeature = ({navigation}) => {
         }
     }
 
-    const fetchAllUserData = async () => {
-        if(currentuser){
-            const response = await fetchUserData({
-                userId: currentuser.uid,
-            });           
-            setUserData(response);
-            fetchAllMelanomaData(response.gender)
-        }
-    }
+
 
     const fetchAllCompletedParts = async () => {
         if(currentuser){
@@ -104,20 +94,20 @@ const SingleFeature = ({navigation}) => {
         if(currentuser){
             const response = await fetchNumberOfMolesOnSlugs({
                 userId: currentuser.uid,
-                gender: userData.gender
+                gender: currentuser.gender
             });
             setNumberOfMolesOnSlugs(response)
         }
     }
 
     const BodySvgSelector = () => {
-        if(userData.gender == "male" && selectedSide == 'front'){
+        if(currentuser.gender == "male" && selectedSide == 'front'){
             setBodySlugs(bodyFront(SkinNumber_Convert(melanomaMetaData.skin_type)));
-        } else if ( userData.gender == "female" && selectedSide == 'front' ){
+        } else if ( currentuser.gender == "female" && selectedSide == 'front' ){
             setBodySlugs(bodyFemaleFront(SkinNumber_Convert(melanomaMetaData.skin_type)));
-        } else if ( userData.gender == "male" && selectedSide == 'back' ){
+        } else if ( currentuser.gender == "male" && selectedSide == 'back' ){
             setBodySlugs(bodyBack(SkinNumber_Convert(melanomaMetaData.skin_type)));
-        } else if ( userData.gender == "female" && selectedSide == 'back' ){
+        } else if ( currentuser.gender == "female" && selectedSide == 'back' ){
             setBodySlugs(bodyFemaleBack(SkinNumber_Convert(melanomaMetaData.skin_type)));
         }
     }
@@ -139,7 +129,6 @@ const SingleFeature = ({navigation}) => {
 
     const handleAddMelanoma = () => {
         Navigation_MoleUpload_1({
-            gender:userData.gender,
             skin_type: melanomaMetaData.skin_type as SkinType,
             navigation: navigation
         })
@@ -168,7 +157,7 @@ const SingleFeature = ({navigation}) => {
     const handleRefresh = () => {
         BodySvgSelector()
         AffectedSlugMap(); 
-        fetchAllUserData();
+        fetchAllMelanomaData();
         fetchAllCompletedParts();
         fetchAllNumberOfMoleOnSlug();
     }
@@ -177,7 +166,6 @@ const SingleFeature = ({navigation}) => {
         if ( path ==  "SlugAnalasis"){
             Navigation_SlugAnalysis({
                 bodyPartSlug: data,
-                userData: userData,
                 skin_type: melanomaMetaData.skin_type as SkinType,
                 navigation
             })
@@ -194,7 +182,7 @@ const SingleFeature = ({navigation}) => {
     useEffect(() => {
         BodySvgSelector()
         AffectedSlugMap()
-    }, [userData, selectedSide,melanomaData]);
+    }, [currentuser, selectedSide,melanomaData]);
     
     const onRefresh = useCallback(() => {
         setRefreshing(true);
@@ -249,7 +237,7 @@ const SingleFeature = ({navigation}) => {
                     setSelectedSide={setSelectedSide}
                     melanomaMetaData={melanomaMetaData}
                     setSkinModal={setSkinModal}
-                    userData={userData}
+                    userData={currentuser}
                     melanomaData={melanomaData}
                     bodySlugs={bodySlugs}
                     completedParts={completedParts}
@@ -281,7 +269,7 @@ const SingleFeature = ({navigation}) => {
                     handleMelanomaDataChange={handleMelanomaDataChange}
                     melanomaMetaData={melanomaMetaData}
                     setMelanomaMetaData={setMelanomaMetaData}
-                    gender={userData.gender}
+                    gender={currentuser.gender}
                 /> }
                 </>
             </Modal>
@@ -317,9 +305,9 @@ const MelanomaContent = ({
     melanomaMetaData:MelanomaMetaData;
     setSkinModal:Function;
     skinModal:boolean;
-    userData:UserData;
     melanomaData:SpotData[];
     bodySlugs:BodyPart[];
+    userData:UserData;
     completedParts: Slug[];
     handleAddMelanoma:() => void;
     handleNavigation:(path:string,data:any) => void;
@@ -350,7 +338,6 @@ const MelanomaContent = ({
                 colors={['#FF0000','#A6FF9B','#FFA8A8']}
                 onBodyPartPress={(slug) => Navigation_SlugAnalysis({
                     bodyPartSlug: slug,
-                    userData: userData,
                     skin_type: melanomaMetaData.skin_type as SkinType,
                     navigation
                 })}
@@ -403,9 +390,9 @@ const MelanomaContent = ({
                         <SlugCard 
                             handleNavigation={handleNavigation}
                             bodyPart={bodyPart}
+                            userData={userData}
                             completedParts={completedParts}
                             numberOfMolesOnSlugs={numberOfMolesOnSlugs}
-                            userData={userData}
                             melanomaData={melanomaData}
                             index={index}
                             key={`box_${bodyPart.slug}_${index}`}

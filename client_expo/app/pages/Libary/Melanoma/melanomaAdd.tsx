@@ -52,7 +52,7 @@ const MelanomaAdd = ({ route , navigation }) => {
         setIsScreenLoading(true)
         try{
             const ID = generateNumericalUID(4)
-            const storageLocation = `users/${userData.id}/melanomaImages/${spotId.id}_updated#${ID}`;
+            const storageLocation = `users/${userData.uid}/melanomaImages/${spotId.id}_updated#${ID}`;
 
             const pictureUrl = await convertImageToBase64(uploadedSpotPicture);
 

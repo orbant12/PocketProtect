@@ -7,6 +7,7 @@ import { TagContainer } from "../Common/tagContainer";
 import { styles_shadow } from "../../styles/shadow_styles";
 import diagnsisBG from "../../assets/features/diagn.png"
 import { actionNavigationTypes } from "./explainModal";
+import { Navigation_AI_Assistant, Navigation_AI_Diagnosis } from "../../navigation/navigation";
 
 export type addTypes = "Melanoma Monitor" | "Medical AI Assistant" | "Diagnosis AI"
 
@@ -48,6 +49,7 @@ export const ExploreView = ({navigation,setSelected}) => {
                             },
                         ]}
                         setSelected={setSelected}
+                        navigation={navigation}
                     />
                 </View>
                 <Text style={{fontWeight:"800",fontSize:24,margin:15,alignSelf:"flex-start"}}>AI Features</Text>
@@ -75,11 +77,13 @@ export const ExploreView = ({navigation,setSelected}) => {
                             },
                         ]}
                         setSelected={setSelected}
+                        navigation={navigation}
                     />
                     <FeatureBox 
                         icon={{name:"stethoscope",size:30}}
                         backgroundImage={diagnsisBG}
                         title={"Diagnosis AI"}
+
                         labels={[
                             {
                                 text:"Real Dermotologis",
@@ -99,6 +103,7 @@ export const ExploreView = ({navigation,setSelected}) => {
                             },
                         ]}
                         setSelected={setSelected}
+                        navigation={navigation}
                     />
                 </View>
         
@@ -120,7 +125,8 @@ const FeatureBox = ({
     backgroundImage,
     title,
     labels,
-    setSelected
+    setSelected,
+    navigation
 }) => {
     const actionList:actionListType = {
         melanoma:[ 
@@ -139,9 +145,9 @@ const FeatureBox = ({
         if ( title == "Melanoma Monitor") {
             setSelected(actionList.melanoma)
         } else if ( title == "Medical AI Assistant") {
-            setSelected(actionList.blood_work)
+            Navigation_AI_Assistant({navigation:navigation})
         } else if ( title == "Diagnosis AI") {
-            setSelected(actionList.blood_work)
+            Navigation_AI_Diagnosis({navigation:navigation})
         }
     }
 

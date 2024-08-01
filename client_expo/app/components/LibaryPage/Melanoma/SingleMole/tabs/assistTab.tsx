@@ -3,7 +3,7 @@ import { AssistantAdvertBox } from "../../Assistance/assistantAdvert"
 import { AssistantBioBox } from "../../Assistance/assistantBio"
 import { AssistModal } from "../../../../../pages/Assist/assistantModal"
 import { useState,useEffect } from "react"
-import { fetchAssistantsByField, fetchUserData } from "../../../../../services/server"
+import { fetchAssistantsByField } from "../../../../../services/server"
 import { AssistanceFields, AssistantData, SpotData, UserData } from "../../../../../utils/types"
 import { useAuth } from "../../../../../context/UserAuthContext"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
@@ -20,7 +20,6 @@ export const AssistTab = ({
 }) => {
 
     const [ selectedAssistant, setSelectedAssistant] = useState<AssistantData | null>(null)
-    const [ userData, setUserData] = useState<UserData | null>(null)
     const [ properAssistants, setProperAssistants] = useState<AssistantData[]>([])
     const { currentuser } = useAuth()
 
@@ -38,27 +37,19 @@ export const AssistTab = ({
         }
     }
 
-    const fetchAllUserData = async () => {
-        const userData = await fetchUserData({
-            userId:currentuser.uid
-        })
-        setUserData(userData)
-    }
 
     useEffect(() => {        
         fetchAssistants()
-        fetchAllUserData()
     },[])
 
     const handlePress = async (url) => {
         const supported = await Linking.canOpenURL(url);
-    
         if (supported) {
-          await Linking.openURL(url);
+            await Linking.openURL(url);
         } else {
-          Alert.alert(`Don't know how to open this URL: ${url}`);
+            Alert.alert(`Don't know how to open this URL: ${url}`);
         }
-      };
+    };
 
     return(
         <View style={{width:"100%",height:"100%",alignItems:"center"}}>
@@ -117,7 +108,7 @@ export const AssistTab = ({
                     setSelectedAssistant={setSelectedAssistant}
                     bodyPart={bodyPart != null ? bodyPart : null}
                     navigation={navigation}
-                    userData={userData}
+                    userData={currentuser}
                 />
             </Modal>
             }

@@ -5,11 +5,12 @@ import "react-native-gesture-handler"
 import { NavBar_AssistantModal } from '../../components/Assist/navbarAssistantModal';
 import { useAuth } from '../../context/UserAuthContext';
 import { Navigation_AI_Chat } from '../../navigation/navigation';
-import { ContextToggleType, UserContextType, UserData } from '../../utils/types';
-import { UserData_Default } from '../../utils/initialValues';
-import { BloodWorkCategory, fetchBloodWork, fetchUserData } from '../../services/server';
+import { ContextToggleType, UserContextType } from '../../utils/types';
+import { BloodWorkCategory, fetchBloodWork } from '../../services/server';
 import { BottomOptionsModal } from './components/ai_chat/bottomOptionsModal';
 import { AiAssistant } from './components/ai_chat/aiWelcomePage';
+import { useWeather } from '../../context/WeatherContext';
+import { convertWeatherDataToString } from '../../utils/melanoma/weatherToStringConvert';
 
 
 
@@ -21,15 +22,16 @@ const AssistantPage = ({navigation}) => {
 //<==================<[ Variables ]>====================>
 
 const { currentuser } = useAuth()
-const [userData, setUserData] = useState<UserData>(UserData_Default);
+const { weatherData } = useWeather()
+
 const [selectedType, setSelectedType] = useState<null | "context" | "help" | "questions">(null);
 
 const [userContexts, setUserContexts] = useState<null | UserContextType>({
   useBloodWork:null,
-  useUvIndex:"",
+  useUvIndex:weatherData != null ? `UV Index: ${weatherData.uvi}` : null,
   useMedicalData:null,
   useBMI:null,
-  useWeatherEffect:"",
+  useWeatherEffect:weatherData != null ? convertWeatherDataToString(weatherData) : null,
 })
 
 //<==================<[ Functions ]>====================>
@@ -44,7 +46,7 @@ const [ contextToggles , setContextToggles ] = useState<ContextToggleType>({
 
 const placeholders = {
   useBloodWork:"[ Blood Work Provided ]",
-  useUvIndex:"[ UV Index Provided ]",
+  useUvIndex:`[ UV Index of ${userContexts.useUvIndex} Provided ]`,
   useMedicalData:"[ Medical Data Provided ]",
   useBMI:"[ BMI Provided ]",
   useWeatherEffect:"[ Weather Data Provided ]"
@@ -74,13 +76,6 @@ const handleStartChat = (e:"get_started" | string,c_t:"blood_work" | "uv" | "med
   setSelectedType(null)
 }
 
-const fetchAllUserData = async () => {
-  const response = await fetchUserData({
-    userId: currentuser.uid
-  })
-  setUserData(response)
-}
-
 function convertBloodWorkCategoriesToString(categories: BloodWorkCategory[]): string {
   return categories.map(category => {
       const dataStrings = category.data.map(item => `${item.type}: ${item.number}`).join(', ');
@@ -105,9 +100,10 @@ const generateBYCT = (c_t:"blood_work" | "uv" | "medical" | "bmi" | "weather") =
 }
 
 useEffect(() => {
-  fetchAllUserData()
   fetchContextDatas()
 },[])
+
+
 
 
 //<==================<[ Main Return ]>====================>
@@ -127,7 +123,7 @@ return (
         <AiAssistant 
           setSelectedType={setSelectedType}
           handleStartChat={handleStartChat}
-          userData={userData}
+          userData={currentuser}
           />      
         <BottomOptionsModal 
           selectedType={selectedType}

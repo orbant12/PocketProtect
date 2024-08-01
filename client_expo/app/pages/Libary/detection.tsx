@@ -3,7 +3,7 @@ import { View, Text, Pressable, ScrollView,StyleSheet,TouchableOpacity,Dimension
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import React, {useEffect, useState, useRef,useCallback} from 'react';
 import { useAuth } from '../../context/UserAuthContext';
-import { fetchAllDiagnosis, fetchUserData,fetchNumberOfMoles } from '../../services/server';
+import { fetchAllDiagnosis,fetchNumberOfMoles } from '../../services/server';
 import { MainBloodBox, MainMelanomaBox, MainDiagnosisBox } from '../../components/LibaryPage/mainBoxes';
 import { styles } from '../../styles/libary_style';
 import { Horizontal_Navbar} from '../../components/LibaryPage/mainNav';
@@ -39,7 +39,7 @@ const { width } = Dimensions.get('window');
 const [currentPage, setCurrentPage] = useState(0);
 //REFRESH
 const [refreshing, setRefreshing] = useState(false);
-const [userData, setUserData] = useState(UserData_Default)
+
 //SkinCancer
 const [skinCancerProgress, setSkinCancerProgress] = useState(0)
 const [ skinCancerData, setSkinCancerData] = useState({
@@ -81,15 +81,7 @@ const fetchMoles = async (gender:Gender) => {
 
 }
 
-const fetchAllUserData = async () => {
-    if(currentuser){
-        const response = await fetchUserData({
-            userId:currentuser.uid,
-        })
-        setUserData(response)
-        fetchMoles(response.gender)        
-    }
-}
+
 
 const handleNavigation = (path) => {
     if( path == "MelanomaCenter"){
@@ -124,8 +116,7 @@ const onRefresh = useCallback(() => {
     setRefreshing(true);
     //
     fetchDiagnosis()
-    fetchMoles(userData.gender)
-    fetchAllUserData()
+    fetchMoles(currentuser.gender)
     setTimeout(() => {
         setRefreshing(false);
     }, 2000); // Example: setTimeout for simulating a delay
@@ -133,7 +124,6 @@ const onRefresh = useCallback(() => {
 
 useEffect(() => {      
     fetchDiagnosis()    
-    fetchAllUserData()
 
     setTimeout(() => {
         skinCancerRef.current.measure((x, y, width, height, pageX, pageY) => {
@@ -158,7 +148,6 @@ useEffect(() => {
 useFocusEffect(
     useCallback(() => {
         fetchDiagnosis()    
-        fetchAllUserData()
     return () => {};
     }, [])
 );

@@ -57,6 +57,7 @@ return(
                 q={data.q}
                 icon={data.icon}
                 handlePreQuestion={handlePreQuestion}
+                key={index}
             />
         ))}
     </View>
@@ -77,7 +78,7 @@ return(
             title={"Blood Work"}
             boxes={[
               {title:"Insight",q:"Can you give me insight on my blood work ?",icon:"water-alert"},
-              {title:"Explain",q:"Can you explain what my blood results mean ?",icon:"chart-waterfall"},
+              {title:"Explain",q:"Can you explain what my blood results mean ?",icon:"human-male-board-poll"},
               {title:"Abnormalities",q:"Any blood abnormalities to discuss with a doctor?",icon:"water-remove"},
               {title:"Supplements",q:"Any supplements needed based on my blood test ?",icon:"pill"}
             ]}
@@ -92,7 +93,7 @@ return(
               {title:"SPF Level",q:"What SPF sunscreen is recommended for today ?",icon:"sun-thermometer"}
             ]}
           />
-        <QuestionContainer 
+        {/* <QuestionContainer 
             handlePreQuestion={(e) => handlePreQuestion(e,"medical")}
             title={"Medical Data"}
             boxes={[
@@ -101,8 +102,8 @@ return(
               {title:"Abnormalities",q:"Any blood abnormalities to discuss with a doctor?",icon:"water"},
               {title:"Blood Work Explain",q:"Can you explain what my blood results mean ?",icon:"doctor"}
             ]}
-          />
-        <QuestionContainer 
+          /> */}
+        {/* <QuestionContainer 
             handlePreQuestion={(e) => handlePreQuestion(e,"bmi")}
             title={"BMI"}
             boxes={[
@@ -111,15 +112,15 @@ return(
               {title:"Healthy BMI",q:"BMI range for someone of my age and height !",icon:"human-male-board-poll"},
               {title:"Potential Risks",q:"Risks I should be aware of based on my BMI ?",icon:"badge-account-alert"}
             ]}
-          />
+          /> */}
         <QuestionContainer 
             handlePreQuestion={(e) => handlePreQuestion(e,"weather")}
             title={"Weather Data"}
             boxes={[
-              {title:"Insight",q:"Provide some insights based on my BMI score !",icon:"water"},
-              {title:"Explain",q:"Can you explain what my blood results mean ?",icon:"doctor"},
-              {title:"Abnormalities",q:"Any blood abnormalities to discuss with a doctor?",icon:"water"},
-              {title:"Blood Work Explain",q:"Can you explain what my blood results mean ?",icon:"doctor"}
+              {title:"Migraine",q:"How might today's weather affect migraines?",icon:"head-snowflake-outline"},
+              {title:"Mood",q:"How might today’s weather affect mood and well-being?",icon:"emoticon-confused"},
+              {title:"Sensitivity",q:"What should weather-sensitive people watch for today?",icon:"jquery"},
+              {title:"Respiratory Issues",q:"What should those with respiratory issues watch for today?",icon:"lungs"}
             ]}
           />
       </ScrollView>

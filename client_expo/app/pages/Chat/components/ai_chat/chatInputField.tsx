@@ -109,9 +109,9 @@ export const AI_InpitField = ({
                 </View>
               {inputValue === "" ?(
                 
-                <TouchableOpacity onPress={() => setSelectedType("context")} style={{ padding: 10, backgroundColor: "magenta", justifyContent: 'center', alignItems:"center", borderRadius: 10,marginLeft:20,height:50,width:50,borderWidth:0,borderColor:"lightgray" }}>
+                <TouchableOpacity onPress={() => setSelectedType("questions")} style={{ padding: 10, backgroundColor: "rgba(250,0,250,0.5)", justifyContent: 'center', alignItems:"center", borderRadius: 10,marginLeft:20,height:50,width:50,borderColor:"magenta",borderWidth:2 }}>
                     <MaterialCommunityIcons
-                    name={"eye"}
+                    name={"comment-question"}
                     size={23}
                     color={"white"}
                     />
