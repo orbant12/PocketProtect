@@ -436,6 +436,7 @@ const RelatedBoxesContainer = ({navigation,setSelectedModalItem}) => {
             image={require("../../../assets/type.png")}
             bgColor={"black"}
             textColor={"white"}
+            id="skin_data"
         />
 
         <OneOptionBox 
@@ -447,6 +448,7 @@ const RelatedBoxesContainer = ({navigation,setSelectedModalItem}) => {
             image={require("../../../assets/burn.png")}
             bgColor={"orange"}
             onClick={() => setSelectedModalItem("sunburn")}
+            id="sun_burn"
         />
 
         <OneOptionBox 
@@ -456,6 +458,7 @@ const RelatedBoxesContainer = ({navigation,setSelectedModalItem}) => {
             mainTitle="Our AI Model"
             image={require("../../../assets/ai.png")}
             bgColor="white"
+            id="ai_model"
         />
 
         <AssistantAdvertBox 
@@ -485,6 +488,7 @@ const LearnBoxesContainer = ({navigation}) => {
             mainTitle="Detect Skin Cancer"
             image={require("../../../assets/abcde.png")}
             bgColor="white"
+            id="abcde"
         />
 
         <OneOptionBox 
@@ -494,6 +498,7 @@ const LearnBoxesContainer = ({navigation}) => {
             mainTitle="Our AI Model"
             image={require("../../../assets/ai.png")}
             bgColor="white"
+            id="ai_model"
         />
 
         <OneOptionBox 
@@ -505,6 +510,7 @@ const LearnBoxesContainer = ({navigation}) => {
             image={require("../../../assets/type.png")}
             bgColor={"black"}
             textColor={"white"}
+            id="skin_data"
         />
 
     </View>

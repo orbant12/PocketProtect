@@ -381,6 +381,7 @@ const RegOnBoarding = ({navigation}) => {
                             image={require("../../../assets/abcde.png")}
                             bgColor="white"
                             onClick={() => alert("Complete your onboarding to access this feature")}
+                            id="abcde"
                         />
 
 
@@ -394,6 +395,7 @@ const RegOnBoarding = ({navigation}) => {
                             bgColor={"black"}
                             textColor={"white"}
                             onClick={() => alert("Complete your onboarding to access this feature")}
+                            id="skin_data"
                         />
 
                         <OneOptionBox 
@@ -404,6 +406,7 @@ const RegOnBoarding = ({navigation}) => {
                             image={require("../../../assets/ai.png")}
                             bgColor="white"
                             onClick={() => alert("Complete your onboarding to access this feature")}
+                            id="ai_model"
                         />
 
                         <OneOptionBox 
@@ -415,6 +418,7 @@ const RegOnBoarding = ({navigation}) => {
                             image={require("../../../assets/burn.png")}
                             bgColor={"orange"}
                             onClick={() => alert("Complete your onboarding to access this feature")}
+                            id="sun_burn"
                         />
                     </ScrollView>
                 </View>

@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "pocket-protect",
-    "slug": "pocket-protect",
+    "name": "PocketProtect",
+    "slug": "PocketProtect",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,23 +16,42 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.orbant12.LupodyMobile"
+      "bundleIdentifier": "com.orbant12.LupodyMobile",
+      "googleServicesFile": "./ios/GoogleService-Info.plist",
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "com.googleusercontent.apps.105227228098447358160"
+        }
+      },
+      "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.567381254436-1mi5rsbhrhfe3lhf7if2nhqmf6fnuf22"
+            ]
+          }
+        ]
+      }
     },
+    "plugins": [
+      "@react-native-google-signin/google-signin"
+    ],
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.orbant12.LupodyMobile"
+      "package": "com.orbant12.LupodyMobile",
+      "googleServicesFile": "./s_key.json"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
+    "scheme": "com.orbant12.LupodyMobile",
     "extra": {
       "eas": {
         "projectId": "a35bcd0b-613e-4f10-bf36-4c0bb8d499b6"
       }
-    },
-    "scheme":"pocket-protect"
+    }
   }
 }

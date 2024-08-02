@@ -1,0 +1,6 @@
+framework module Pods_LupodyMobile {
+  umbrella header "Pods-LupodyMobile-umbrella.h"
+
+  export *
+  module * { export * }
+}

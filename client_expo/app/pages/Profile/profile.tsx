@@ -93,12 +93,12 @@ const handleChangeProfile = async() => {
                                     <ImageLoaderComponent 
                                         w={50}
                                         h={50}
-                                        imageStyle={{borderRadius:50,borderColor:"magenta",borderWidth:2}}
-                                        style={{borderRadius:50,borderColor:"magenta",borderWidth:1}}
+                                        imageStyle={{borderRadius:10,borderColor:"magenta",borderWidth:2}}
+                                        style={{borderRadius:10,borderColor:"magenta",borderWidth:1}}
                                         data={{melanomaPictureUrl:currentuser.profileUrl}}
                                     />
                                     :
-                                    <View style={{width:50,height:50, borderRadius:50,borderColor:"magenta",borderWidth:2}} />
+                                    <View style={{width:50,height:50, borderRadius:50,borderColor:"magenta",borderWidth:2,backgroundColor:"black"}} />
                                 }
                             </TouchableOpacity>
                         }

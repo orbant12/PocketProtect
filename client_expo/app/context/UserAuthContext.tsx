@@ -9,7 +9,7 @@ import { useContext, createContext, useEffect, useState } from "react"
 import { useNavigation } from "@react-navigation/core";
 
 //FIREBASE AUTH
-import { AuthErrorCodes, createUserWithEmailAndPassword, onAuthStateChanged,signInWithEmailAndPassword,sendEmailVerification  } from "firebase/auth";
+import { AuthErrorCodes, createUserWithEmailAndPassword, onAuthStateChanged,signInWithEmailAndPassword,sendEmailVerification, signInWithCredential, GoogleAuthProvider  } from "firebase/auth";
 
 //FIREBASE
 import { auth,db} from "../services/firebase";
@@ -18,14 +18,16 @@ import { UserData } from "../utils/types";
 import { RootStackNavigationProp } from "../../App";
 import { fetchUserData } from "../services/server";
 import { Alert } from "react-native";
+import * as Google from "expo-auth-session/providers/google";
+import * as WebBrowser from "expo-web-browser";
 
-
-
+WebBrowser.maybeCompleteAuthSession();
 export interface AuthContextType {
   currentuser: UserData| null;
   Login: (email: string, password: string) => Promise<boolean>;
   SignUp: (email: string, password: string,FullName:string) => Promise<boolean>;
   handleAuthHandler: (type:"disconnect" | "fetch" | "fetch_w_main") => void;
+  handleGoogleAuth: () => void;
   error:any;
 }
 
@@ -39,10 +41,17 @@ const UserAuthContext = ({ children }) => {
 
 //<********************VARIABLES************************>
 
+
 const [currentuser, setuser] = useState<UserData| null>(null)
 const [error, setError] = useState("")
 const navigation = useNavigation<RootStackNavigationProp>();
 const [isRegisterLoading, setIsRegisterLoading] = useState<boolean | "onboard" | "reset">(false);
+
+const [request, response, promptAsync] = Google.useAuthRequest({
+  androidClientId: "567381254436-b0cqltfecu40o0skrmiq77iiqp2h9njl.apps.googleusercontent.com",
+  iosClientId: "567381254436-1mi5rsbhrhfe3lhf7if2nhqmf6fnuf22.apps.googleusercontent.com",
+  webClientId: "567381254436-lihbplsc0fnmkqcs54460gg3ve93p1rg.apps.googleusercontent.com",
+});
 
 
 //<********************FUNCTIONS************************>
@@ -56,6 +65,7 @@ useEffect(() => {
         const userData = await fetchUserData({ userId: user.uid });
         if (userData == null) {
           navigation.navigate("AuthHub");
+          console.log("You are not logged in");
         } else {
           setuser(userData);
           console.log("You are logged in");
@@ -102,6 +112,7 @@ const Login = async (email:string,password:string):Promise<boolean> => {
     .then((userCredential) => {
       // Signed in 
       const user = userCredential.user;
+      setIsRegisterLoading(false);
     })
     return true
   } catch(error) {
@@ -196,6 +207,83 @@ const handleAuthHandler = (type:"disconnect" | "fetch" | "fetch_w_main") => {
 }
 
 
+const checkIfNewUser = async (uid) => {
+  const userRef = doc(db, "users", uid);
+  const userDoc = await getDoc(userRef);
+  return !userDoc.exists();
+};
+
+
+const handleMore = async ({credential}) => {
+  try {
+      const userCredential = await signInWithCredential(auth, credential);
+      
+      const user = userCredential.user;
+      const isNewUser = await checkIfNewUser(user.uid);
+
+      const userData = {
+          email: user.email,
+          fullname: user.displayName,
+          profileUrl: user.photoURL,
+          uid: user.uid,
+          gender:"",
+          user_since: new Date().toLocaleDateString(),
+          birth_date: null,
+      };
+      if (isNewUser) {
+          await saveUserToDatabase(userData);
+          console.log("New user registered and saved to database");
+          navigation.navigate("RegOnBoarding");
+          handleAuthHandler("fetch")
+      } else {
+          console.log("Existing user logged in");
+          handleAuthHandler("fetch_w_main")
+      }
+
+      // You can perform additional actions here, like updating UI or navigating to a new screen
+    } catch (error) {
+      console.error("Error during sign-in:", error);
+      alert(`Error during sign-in: ${error.message}`);
+    }
+}
+
+const saveUserToDatabase = async (userData) => {
+  const colRef = collection(db, "users")
+  await setDoc(doc(colRef, userData.uid), userData);
+};
+
+
+const handleGoogleAuth = async () => {
+  try {
+      console.log("Starting Google Auth");
+      await promptAsync();
+  } catch (error) {
+    console.error("Error during Google Auth:", error);
+    alert(`Error during Google Auth: ${error.message}`);
+  }
+};
+
+useEffect(() => {
+  if(response !== null){
+  if (response.type === "success") {
+      console.log("Full result.params:", JSON.stringify(response, null, 2));
+
+      if (!response.params.id_token) {
+          throw new Error("No ID token received from Google");
+      }
+      const credential = GoogleAuthProvider.credential(response.params.id_token);
+      console.log("Credential created");
+      handleAuthHandler("disconnect") 
+      handleMore({credential:credential});
+}
+}
+},[response])
+
+
+
+
+
+
 //<********************RETURN************************>
 
 const value = {
@@ -203,7 +291,8 @@ const value = {
     error,
     currentuser,
     Login,
-    handleAuthHandler
+    handleAuthHandler,
+    handleGoogleAuth
 }
 
 return (
@@ -213,3 +302,7 @@ return (
 )}
 
 export default UserAuthContext
+
+
+
+
