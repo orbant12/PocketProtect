@@ -905,6 +905,17 @@ func SetupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 
 		if err != nil {
 			log.Printf("Error uploading melanoma metadata: %v", err)
+			//SET DOCUMENTS
+			if err.Error() == "rpc error: code = NotFound desc = no such document" {
+				_, err := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("skin_data").Set(context.Background(), map[string]interface{}{
+					"completedArray": formattedCompletedArray,
+				}, firestore.MergeAll)
+
+				if err != nil {
+					log.Printf("Error uploading melanoma metadata: %v", err)
+					return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+				}
+			}
 			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 		}
 

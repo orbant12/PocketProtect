@@ -68,21 +68,20 @@ export const SelectionPage: React.FC<SelectionPageProps> = ({
 }) => {
   return (
     <View style={[styles.startScreen, pageStyle]}>
-      
-        <View style={{marginTop:0,alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,padding:10,width:"90%"}}>  
-                        <Text style={{marginBottom:0,fontWeight:"700",fontSize:23,textAlign:"left"}}>{pageTitle}</Text>
-                        {desc != undefined &&
-                        <View style={{width:"100%",backgroundColor:"rgba(0,0,0,0.1)",padding:7,borderRadius:5,marginTop:15,flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
-                            <MaterialCommunityIcons 
-                                name="information"
-                                color={"black"}
-                                size={30}
-                                style={{width:"10%",opacity:0.6}}
-                            />
-                            <Text style={{textAlign:"left",fontWeight:"600",opacity:0.6,fontSize:11,width:"87%"}}>{desc}</Text>
-                        </View>
-                        }
-                    </View>
+      <View style={{marginTop:0,alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,padding:10,width:"90%"}}>  
+        <Text style={{marginBottom:0,fontWeight:"700",fontSize:23,textAlign:"left"}}>{pageTitle}</Text>
+        {desc != undefined &&
+        <View style={{width:"100%",backgroundColor:"rgba(0,0,0,0.1)",padding:7,borderRadius:5,marginTop:15,flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
+            <MaterialCommunityIcons 
+                name="information"
+                color={"black"}
+                size={30}
+                style={{width:"10%",opacity:0.6}}
+            />
+            <Text style={{textAlign:"left",fontWeight:"600",opacity:0.6,fontSize:11,width:"87%"}}>{desc}</Text>
+        </View>
+        }
+      </View>
       
       {selectableOption === 'box' && (
         <OptionsBoxes

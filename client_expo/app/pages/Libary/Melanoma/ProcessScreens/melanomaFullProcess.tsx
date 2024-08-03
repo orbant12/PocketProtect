@@ -1,27 +1,24 @@
 import { View,Text,StyleSheet,Pressable,Image,ScrollView,TouchableOpacity,PixelRatio,Dimensions, Modal } from "react-native"
-import React, {useState,useEffect,useRef,useCallback} from "react";
-import ProgressBar from 'react-native-progress/Bar';
+import React, {useState,useEffect,useCallback} from "react";
 import { useAuth } from "../../../../context/UserAuthContext";
-import Body from "../../../../components/LibaryPage/Melanoma/BodyParts/index";
-import {BottomSheetModal,BottomSheetModalProvider} from '@gorhom/bottom-sheet';
-import "react-native-gesture-handler"
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { melanomaMetaDataUpload, updateCompletedParts, fetchCompletedParts } from "../../../../services/server"
-import { SelectionPage } from "../../../../components/Common/SelectableComponents/selectPage";
-import { SelectionPage_Binary } from "../../../../components/Common/SelectableComponents/selectPage_Binary";
-import { FactScreenType_1 } from "../../../../components/Common/FactScreenComponents/factScreenType1";
-import { FactScreenType_2 } from "../../../../components/Common/FactScreenComponents/factScreenType2";
 import { useFocusEffect } from '@react-navigation/native';
 import { decodeParts } from "../../../../utils/melanoma/decodeParts";
-import { Navigation_MoleUpload_2 } from "../../../../navigation/navigation";
-import { BodyPart, Slug, UserData } from "../../../../utils/types";
+import {Slug } from "../../../../utils/types";
 import { MelanomaMetaData } from "../melanomaCenter";
-import { Icon } from "react-native-elements";
-import { ImageLoaderComponent } from "../slugAnalasis";
 import { styles_shadow } from "../../../../styles/shadow_styles";
-import { UserData_Default } from "../../../../utils/initialValues";
 import { Assist_Onboard } from "../../../../components/AddPage/onBoardings/assistantBoard";
+import { ProgressRow } from "../../../../components/ExplainPages/explainPage";
+import { FirstScreen } from "./Fullprocess/welcome_full";
+import { FactScreen } from "./Fullprocess/dlFact_full";
+import { SkinBurnScreen } from "./Fullprocess/burnInput";
+import { SkinTypeScreen } from "./Fullprocess/skinSelect";
+import { FamilyTreeScreen } from "./Fullprocess/family_full";
+import { AlertScreen } from "./Fullprocess/checkPoint";
+import { ThirdScreen } from "./Fullprocess/frontBody_full";
+import { FourthScreen } from "./Fullprocess/backBody_full";
+import { FifthScreen } from "./Fullprocess/final_full";
 
 const { width } = Dimensions.get('window');
 const scaleFactor = width < 380 ? 1 : 1.2;
@@ -63,21 +60,71 @@ const MelanomaFullProcess = ({navigation}) => {
     const [haveBeenBurned, setHaveBeenBurned] = useState(false)
     const [selectedBurnSide, setSelectedBurnSide] = useState<"front" | "back">("front")
 
+    const frontParts = [
+        "abs",
+        "head",
+        "left-arm",
+        "right-arm",
+        "chest",
+        "upper-leg-right",
+        "upper-leg-left",
+        "lower-leg-right",
+        "lower-leg-left",
+        "left-feet",
+        "right-feet",
+        "right-hand",
+        "left-hand",
+    ]; // 13
+
+    const backParts = [
+        "back",
+        "head(back)",
+        "left-arm(back)",
+        "right-arm(back)",
+        "left-leg(back)",
+        "right-leg(back)",
+        "left-feet(back)",
+        "right-feet(back)",
+        "right-palm",
+        "left-palm",
+        "gluteal",
+    ]; // 11
+    
+
 //<===============> Functions  <===============> 
 
-    const completedArea = async (sessionMemory:CompletedParts_Array) => {
-        setCompletedAreaMarker([])
-        const response = sessionMemory.map((data,index) =>{
-                return { slug: data.slug, intensity: 0, key: index }
-        })
-        setCompletedAreaMarker(response)
-        if(currentSide == "front"){
-            setBodyProgress(response.length / 13)
-        } else if (currentSide == "back"){
-            setBodyProgressBack(response.length / 11)
+
+    const completedArea = async (sessionMemory: CompletedParts_Array) => {
+        setCompletedAreaMarker([]);
+    
+        let response;
+        let totalParts;
+    
+        if (round(progress, 1) === 0.7) {
+            // Filtering front parts
+            response = sessionMemory.filter(data => frontParts.includes(data.slug))
+            totalParts = 13;
+        } else if (round(progress, 1) === 0.8) {
+            // Filtering back parts
+            response = sessionMemory.filter(data => backParts.includes(data.slug))
+            totalParts = 11;
         }
-        return sessionMemory   
-    }
+    
+        if (response) {
+            setCompletedAreaMarker(response.map((data, index) => ({
+                slug: data.slug,
+                intensity: 0,
+                key: index
+            })));
+            const progressFraction = response.length / totalParts;
+            if (totalParts === 13) {
+                setBodyProgress(progressFraction);
+            } else if (totalParts === 11) {
+                setBodyProgressBack(progressFraction);
+            }
+        }
+        return sessionMemory  
+    };
 
     const updateCompletedSlug = async (completedArray:CompletedParts_Array) => {
         if(currentuser){
@@ -130,9 +177,9 @@ const MelanomaFullProcess = ({navigation}) => {
     const handleBack = (permission:boolean) => {
         if (round(progress,1) == 0.1 || permission == true){
             navigation.goBack()
-        } else if (haveBeenBurned != true && round(progress,1) != 0.9) {    
+        } else if (haveBeenBurned != true && round(progress,1) != 0.8) {    
             setProgress(progress - 0.1)                          
-        }  else if (round(progress,1) == 0.9){
+        }  else if (round(progress,1) == 0.8){
             setCurrentSide("front")
             setProgress(progress - 0.1)   
         } else {
@@ -184,8 +231,10 @@ const MelanomaFullProcess = ({navigation}) => {
     }
 
     useEffect(() => {
+        if(round(progress,1) == 0.7 || round(progress,1) == 0.8){
         handleSlugMemoryChange()     
-    }, [completedParts]); 
+        }
+    }, [completedParts,progress]); 
 
     useFocusEffect(
         useCallback(() => {
@@ -202,7 +251,10 @@ const MelanomaFullProcess = ({navigation}) => {
 
     return(    
         <View style={styles.container}>
-            <ProgressRow handleBack={(e) => handleBack(e)} progress={progress} />
+            <ProgressRow 
+                handleBack={(e) => handleBack(e)} 
+                progress={progress}
+            />
             {round(progress,1) === 0.1 && 
                 <FirstScreen 
                     setProgress={setProgress} 
@@ -230,6 +282,7 @@ const MelanomaFullProcess = ({navigation}) => {
                     addMoreBurn={addMoreBurn}
                     deleteSunburn={deleteSunburn}
                     userData={currentuser}
+                    styles={styles}
                 />
             }
             {round(progress,1) === 0.4 && 
@@ -238,6 +291,7 @@ const MelanomaFullProcess = ({navigation}) => {
                     progress={progress}
                     handleMelanomaDataChange={handleMelanomaDataChange}
                     melanomaMetaData={melanomaMetaData}
+                    styles={styles}
                 />
             }
             {round(progress,1) === 0.5 && 
@@ -246,6 +300,7 @@ const MelanomaFullProcess = ({navigation}) => {
                     progress={progress}
                     handleMelanomaDataChange={handleMelanomaDataChange}
                     melanomaMetaData={melanomaMetaData}
+                    styles={styles}
                 />
             }
             {round(progress,1) === 0.6 && 
@@ -260,7 +315,7 @@ const MelanomaFullProcess = ({navigation}) => {
                 <ThirdScreen 
                     userData={currentuser}
                     melanomaMetaData={melanomaMetaData}
-                    setProgress={setProgress}
+                    setProgress={(e) => {setProgress(e); setCurrentSide("back");handleSlugMemoryChange()}}
                     progress={progress}
                     completedParts={completedParts}
                     updateCompletedSlug={updateCompletedSlug}
@@ -271,6 +326,9 @@ const MelanomaFullProcess = ({navigation}) => {
                     setIsModalUp={setIsModalUp}
                     isModalUp={isModalUp}
                     setCurrentSide={setCurrentSide}
+                    styles={styles}
+                    scaleFactor={scaleFactor}
+                    setCompletedAreaMarker={setCompletedAreaMarker}
                 />
             }
             {round(progress,1) === 0.8 && 
@@ -287,11 +345,15 @@ const MelanomaFullProcess = ({navigation}) => {
                     setIsModalUp={setIsModalUp}
                     isModalUp={isModalUp}
                     setCurrentSide={setCurrentSide}
+                    styles={styles}
+                    scaleFactor={scaleFactor}
+                    setCompletedAreaMarker={setCompletedAreaMarker}
                 />
             }
             {round(progress,1) === 0.9 && 
                 <FifthScreen 
                     navigation={navigation}
+                    styles={styles}
                 />
             }
             <Information_Modal 
@@ -305,12 +367,11 @@ const MelanomaFullProcess = ({navigation}) => {
 const styles = StyleSheet.create({
     container:{
         flex:1,
-        alignItems:"center",
         width:"100%",
         height:"100%",
-        borderWidth:0,
-        justifyContent:"center",
-        backgroundColor:"white"
+        alignItems:"center",
+        flexDirection:"column",   
+        backgroundColor:"white" 
     },
     startScreen:{
         borderWidth:0,
@@ -355,13 +416,9 @@ const styles = StyleSheet.create({
     ProgressBar:{
         width:"95%",
         alignItems:"center",
-        borderWidth:0,
-        padding:10,
-        position:"absolute",
-        top:0,
-        backgroundColor:"transparent",
+        position:"relative",
         flexDirection:"row",
-        justifyContent:"space-between"
+        justifyContent:"space-between",
     },
     saveButtonActive: {
         backgroundColor: 'blue',
@@ -499,51 +556,6 @@ const styles = StyleSheet.create({
         borderRadius:30,
         padding:20,
     },
-    modalBox:{
-        position:"absolute",
-        flexDirection:"column",
-        justifyContent:"space-between",
-        backgroundColor:"white",
-        alignItems:"center",
-        width:300,
-        height:180,
-        borderWidth:1,
-        borderRadius:10,
-        padding:0,
-        shadowColor: '#171717',
-        shadowOffset: {width: 4, height: -1},
-        shadowOpacity: 0.6,
-        shadowRadius: 3,
-    },
-    modalYesBtn:{
-        padding:5,
-        backgroundColor:"black",
-        justifyContent:"center",
-        borderRadius:10,
-        width:60,
-        height:40,
-        alignItems:"center",
-        marginLeft:30,
-
-    },
-    modalNoBtn:{
-        padding:5,
-        backgroundColor:"white",
-        borderRadius:10,
-        alignItems:"center",
-        borderWidth:1,
-        width:60,
-        height:40,
-        justifyContent:"center",
-    },
-    modalOverlay:{
-        alignItems:"center",
-        justifyContent:"center",
-        position:"absolute",
-        width:"100%",
-        height:"100%",
-        backgroundColor: "rgba(0, 0, 0, 0.5)",
-    },
     positionSwitch: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -598,688 +610,6 @@ const styles = StyleSheet.create({
 
 export default MelanomaFullProcess
 
-
-const ProgressRow = ({
-    handleBack,
-    progress}
-) => {
-    return(
-        <View style={styles.ProgressBar}>
-        <TouchableOpacity onPress={handleBack} style={{backgroundColor:"#eee",borderRadius:30}}>
-            <MaterialCommunityIcons 
-                name="arrow-left"
-                size={20}
-                style={{padding:6}}
-            />
-        </TouchableOpacity>
-
-        <ProgressBar progress={progress} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
-        <TouchableOpacity onPress={() => handleBack(true)} style={{backgroundColor:"#eee",borderRadius:30}}>
-            <MaterialCommunityIcons 
-                name="close"
-                size={20}
-                style={{padding:6}}
-            />
-        </TouchableOpacity>
-    </View>
-    )
-}
-
-
-function FirstScreen({setProgress,progress}){
-    return(
-        <FactScreenType_2 
-            title={"Why complete this report ?"}
-            descriptionRows={[
-                {
-                    icon_name:"magnify-scan",
-                    icon_size:20,
-                    text:"Most diaseses can be detected by tracking reccourant symtoms daily"
-                },
-                {
-                    icon_name:"creation",
-                    icon_size:20,
-                    text:"Designed by medical researchers and doctors"
-                },
-                {
-                    icon_name:"calendar-today",
-                    icon_size:20,
-                    text:"We can monitor and keep track of your health and potential reoccuring symptoms"
-                },
-                {
-                    icon_name:"doctor",
-                    icon_size:20,
-                    text:"Our Ai Model can see your daily reports and use them for more accurate analasis and health advice"
-                }
-            ]}
-            boxText={"Imagine visiting your doctor daily, reporting your health that can be used to make analasis today and can be used in the future"}
-            buttonAction={{type:"next",actionData:{progress:progress,increment_value:0.1}}}
-            setProgress={setProgress}
-
-        />
-    )
-}
-
-function FactScreen({alertTeam,setProgress,progress}){
-    return(
-        <FactScreenType_1 
-            title={"Deep Learning Neural Network"}
-            descriptionRows={
-                [
-                    {desc:() => <Text style={{fontWeight:"600",fontSize:12,maxWidth:"90%",opacity:0.9,marginTop:0,textAlign:"justify",color:"white",backgroundColor:"rgba(255,255,255,0.05)",padding:10,borderRadius:10}}>Our AI model can detect malignant moles with a <Text style={{color:"magenta",fontWeight:"600"}}>95%</Text> accuracy which is <Text style={{color:"magenta",fontWeight:"600"}}>+20% </Text>better then the accuracy of dermotologists </Text>},
-                    {desc:() => <Text style={{fontWeight:"600",fontSize:12,maxWidth:"90%",opacity:0.9,marginTop:10,textAlign:"justify",color:"white",backgroundColor:"rgba(255,255,255,0.05)",padding:10,borderRadius:10}}>Your moles can be supervised by both <Text style={{color:"magenta",fontWeight:"800"}}>AI & Dermotologist</Text> to be as protected as possible and alert you to consult a possible removal with your dermotologist</Text>},
-                ]
-            }
-            imageSource={alertTeam}
-            buttonAction={{type:"next",actionData:{progress:progress,increment_value:0.1}}}
-            setProgress={setProgress}
-            imageStyle={{borderRadius:10,borderWidth:2,borderColor:"lightgray"}}
-        />
-    )
-}
-
-function SkinBurnScreen({
-    setProgress,
-    progress,
-    handleMelanomaDataChange,
-    melanomaMetaData,
-    setMelanomaMetaData,
-    haveBeenBurned,
-    setHaveBeenBurned,
-    selectedBurnSide,
-    setSelectedBurnSide,
-    addMoreBurn,
-    deleteSunburn,
-    userData
-}){
-    const Stage1SVG = Image.resolveAssetSource(require('../../../../assets/skinburn/3.png')).uri;
-    const stage2SVG  = Image.resolveAssetSource(require('../../../../assets/skinburn/2.png')).uri;
-    const stage3SVG  = Image.resolveAssetSource(require('../../../../assets/skinburn/1.png')).uri;
-
-    return(
-        <>
-        {!haveBeenBurned ?   
-            <SelectionPage 
-                buttonAction={{type:"next",actionData:{progress:progress,increment_value:0.1}}}
-                specialValues={[1,2,3]}
-                desc="Sunburn is a form of radiation burn that affects living tissue, such as skin, that results from an overexposure to ultraviolet (UV) radiation, commonly from the sun."
-                pageTitle={"Have you been sunburnt ?"}
-                selectableOption="box"
-                selectableData={
-                    [
-                        {
-                            title:"Never",
-                            type:0,
-                            icon:{
-                                type:"icon",
-                                metaData:{
-                                    name:"cancel",
-                                    size:50
-                                }
-                            }
-                        },
-                        {
-                            title:"Stage 1",
-                            type:1,
-                            icon:{
-                                type:"image",
-                                metaData:{
-                                    name:Stage1SVG,
-                                    size:100
-                                }
-                            }
-                        },
-                        {
-                            title:"Stage 2",
-                            type:2,
-                            icon:{
-                                type:"image",
-                                metaData:{
-                                    name:stage3SVG,
-                                    size:100
-                                }
-                            }
-                        },
-                        {
-                            title:"Stage 3",
-                            type:3,
-                            icon:{
-                                type:"image",
-                                metaData:{
-                                    name:stage2SVG,
-                                    size:100
-                                }
-                            }
-                        },
-                    ]
-                }
-                setOptionValue={(type) => handleMelanomaDataChange("stage",type)}
-                optionValue={melanomaMetaData.sunburn[0]?.stage}
-                setProgress={(e) => setProgress(e)}
-                pageStyle={{height:"90%",marginTop:"10%"}}
-                handleEvent={() => setHaveBeenBurned(!haveBeenBurned)}
-            />
-            :
-            <View style={styles.startScreen}>
-                    <ScrollView centerContent style={{width:"100%"}}>
-                        <View style={{width:"100%",alignItems:"center"}}>
-                            <View style={{marginTop:50,alignItems:"center"}}>  
-                                <Text style={{marginBottom:10,fontWeight:"800",fontSize:18,backgroundColor:"white",textAlign:"center"}}>Select where the sunburn has occured ?</Text>
-                            </View>
-                            <View style={{flexDirection:"column",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:-10}}>
-                                    <Body 
-                                        data={[{slug: melanomaMetaData.sunburn[0].slug, color:"lightgreen",pathArray:[]}]}
-                                        side={selectedBurnSide}
-                                        gender={userData.gender}
-                                        scale={0.8}
-                                        onBodyPartPress={(slug) => handleMelanomaDataChange("slug",slug.slug)}
-                                        skinColor={melanomaMetaData.skin_type}
-                                    />
-                                    <View style={styles.positionSwitch}>
-                                        <Pressable onPress={() => setSelectedBurnSide("front")}>
-                                            <Text style={selectedBurnSide == "front" ? {fontWeight:"600"}:{opacity:0.5}}>Front</Text>
-                                        </Pressable>
-                                        <Text>|</Text>
-                                        <Pressable onPress={() => setSelectedBurnSide("back")}>
-                                            <Text style={selectedBurnSide == "back" ? {fontWeight:"600"}:{opacity:0.5}}>Back</Text>
-                                        </Pressable>
-                                    </View>
-                            </View>                  
-                {melanomaMetaData.sunburn.map((data,index) => (                  
-                    <>
-                {index == 0 && <Text style={{fontWeight:"800",opacity:0.2,top:15,color:"magenta"}}>Current</Text>}
-                    <View key={index} style={[{width:"80%",borderWidth:0.3,padding:15,margin:20,borderRadius:10,flexDirection:"row",alignItems:"center",justifyContent:"space-between"},index == 0 &&{ borderWidth:2,borderColor:"magenta"}]}>
-                        <MaterialCommunityIcons 
-                            name="chart-box"
-                            size={25}
-                        />
-                        <View style={{marginLeft:0}}> 
-                        <Text style={{marginBottom:8,fontWeight:"400"}}>Stage: <Text style={{opacity:1,fontWeight:"800"}}>{data.stage}</Text></Text>
-                        <Text style={{fontWeight:"400",}}>Where: <Text style={{opacity:1,fontWeight:"800"}}>{data.slug}</Text></Text>
-                        </View>   
-                        <MaterialCommunityIcons 
-                            name="delete"
-                            size={25}
-                            color={"red"}
-                            style={{opacity:0.4}}
-                            onPress={() => deleteSunburn(index)}
-                        />                
-                    </View>
-                    </>  
-                ))}
-                <View style={{width:"100%",alignItems:"center",marginBottom:20,marginTop:50}}>
-                    {melanomaMetaData.sunburn[0].slug != "" ? 
-                        <Pressable onPress={() => {setProgress(0.5)}} style={[styles.startButton,{marginBottom:0,position:"relative"}]}>
-                            <Text style={{padding:15,fontWeight:"600",color:"white"}}>Done</Text>
-                        </Pressable>
-                        :
-                        <Pressable style={styles.startButtonNA}>
-                            <Text style={{padding:15,fontWeight:"600"}}>Not Selected Yet</Text>
-                        </Pressable>
-                    }
-                    <Pressable onPress={() => addMoreBurn()} style={{marginTop:0}}>
-                        <Text style={{padding:13,fontWeight:"600",color:"black",fontSize:17 }}>+ Add More</Text>
-                    </Pressable>
-                </View>
-                </View>
-                </ScrollView>
-            </View> 
-            
-        }
-        </>
-    )
-}
-
-function SkinTypeScreen({
-    setProgress,
-    progress,
-    handleMelanomaDataChange,
-    melanomaMetaData
-}){
-    return(          
-        <View style={[styles.startScreen,{height:"90%",marginTop:"10%",justifyContent:"space-between"}]}>                                    
-                <View style={{marginTop:0,alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,padding:10,width:"90%"}}>  
-                    <Text style={{marginBottom:0,fontWeight:"700",fontSize:23,textAlign:"left"}}>What is your skin type ?</Text>
-                    
-                    <View style={{width:"100%",backgroundColor:"rgba(0,0,0,0.1)",padding:7,borderRadius:5,marginTop:15,flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
-                        <MaterialCommunityIcons 
-                            name="information"
-                            color={"black"}
-                            size={30}
-                            style={{width:"10%",opacity:0.6}}
-                        />
-                        <Text style={{textAlign:"left",fontWeight:"600",opacity:0.6,fontSize:11,width:"87%"}}>Different skin type are more volnurable to UV exposere</Text>
-                    </View>
-                    
-                </View>
-                <View style={{marginTop:0}}>
-                    <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:30}}>
-                            <Pressable onPress={() => handleMelanomaDataChange("skin_type",0)} style={[{ backgroundColor:"#fde3ce"}, melanomaMetaData.skin_type == 0 ? styles.skinTypeOptionButtonA : styles.skinTypeOptionButton]} />                                
-                            <Pressable onPress={() => handleMelanomaDataChange("skin_type",1)} style={[{ backgroundColor:"#fbc79d"},melanomaMetaData.skin_type  == 1 ? styles.skinTypeOptionButtonA : styles.skinTypeOptionButton]} />                                    
-                    </View>
-
-                    <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:0}}>
-                        <Pressable onPress={() => handleMelanomaDataChange("skin_type",2)} style={[{ backgroundColor:"#934506"},melanomaMetaData.skin_type  == 2 ? styles.skinTypeOptionButtonA: styles.skinTypeOptionButton]} />                            
-                        <Pressable onPress={() => handleMelanomaDataChange("skin_type",3)} style={[{ backgroundColor:"#311702"},melanomaMetaData.skin_type == 3 ? styles.skinTypeOptionButtonA : styles.skinTypeOptionButton]} />                                        
-                    </View>
-                </View>
-                <View style={{width:"100%",alignItems:"center",marginBottom:0}}>
-                {melanomaMetaData.skin_type != null ? 
-                    <Pressable onPress={() => setProgress(progress + 0.1)} style={[styles.startButton,{position:"relative",marginBottom:0,marginTop:0}]}>
-                        <Text style={{padding:15,fontWeight:"600",color:"white"}}>Next</Text>
-                    </Pressable>
-                    :
-                    <Pressable style={[styles.startButtonNA,{marginTop:0}]}>
-                        <Text style={{padding:15,fontWeight:"600"}}>Not Selected Yet</Text>
-                    </Pressable>
-                }        
-                </View>
-
-            </View>                
-        
-        
-    )
-}
-
-function FamilyTreeScreen({
-    handleMelanomaDataChange,
-    melanomaMetaData,
-    setProgress,
-    progress,
-
-}){
-
-        
-    const familyMemberOptions = [
-        {
-            member:"father",
-            icon: "face-man",
-        },
-        {
-            member:"grandfather",
-            icon:"human-cane"
-        },
-        {
-            member:"mother",
-            icon:"face-woman"
-        },
-        {
-            member:"sibling",
-            icon:"face-woman-shimmer-outline"
-        },
-        {
-            member:"grandmother",
-            icon:"human-female-dance"
-        },
-        {
-            member:"other",
-            icon:"apple-keyboard-command"
-        }
-    ]
-    const bottomSheetRef = useRef(null);
-
-    const handleOpenBottomSheet = (state:"open" | "hide") => {
-        if(state == "open"){
-            bottomSheetRef.current.present();
-        } else if (state == "hide"){
-            bottomSheetRef.current.close();
-            setProgress(progress + 0.1)
-        }
-    }
-
-    return(
-    <GestureHandlerRootView style={{ flex: 1,zIndex:-1,width:"100%" }}>
-        <BottomSheetModalProvider>
-            <SelectionPage_Binary 
-                pageTitle={{text:() => <Text style={{fontWeight:"700",fontSize:21,textAlign:"center",}}>Has anyone in your family been diagnosed with <Text style={{color:"magenta"}}>Melanoma </Text> before ?</Text>}}                    
-                setProgress={(e) => e == true ? handleOpenBottomSheet("open"):setProgress(progress + 0.1)}
-            />
-
-            <BottomSheetModal
-                    ref={bottomSheetRef}
-                    snapPoints={["65%"]}
-                    enablePanDownToClose={true}
-                    handleStyle={{backgroundColor:"black",borderTopLeftRadius:5,borderTopRightRadius:5,borderBottomWidth:2,height:40}}
-                    handleIndicatorStyle={{backgroundColor:"white"}}
-                    containerStyle={{height:"100%",width:"100%"}}
-                >
-                    <View style={{width:"100%",alignItems:"center",flexDirection:"column",backgroundColor:"#fff",padding:10,marginTop:"10%",height:"90%",justifyContent:"space-between"}}>
-                        <View style={{backgroundColor:"rgba(0,0,0,0.1)",padding:10,borderRadius:10}}>
-                            <Text style={{fontWeight:"700",textAlign:"center",fontSize:20}}>Please select whom from your family had been diagnosed ...</Text>
-                        </View>
-                        <ScrollView horizontal style={{width:"100%",marginTop:30}} contentContainerStyle={{height:10}} showsHorizontalScrollIndicator={false}>
-                            {familyMemberOptions.map((data) => (
-                                <Pressable key={data.member} onPress={() => handleMelanomaDataChange("detected_relative",data.member)} style={melanomaMetaData.detected_relative == data.member ? styles.selectableBubbleA : styles.selectableBubble} >
-                                    <MaterialCommunityIcons
-                                        name={data.icon}
-                                        size={25}
-                                        style={{marginBottom:10}}
-                                        color={"white"}
-                                    />
-                                    <Text style={{fontWeight:"700",color:"white",fontSize:16}}>{data.member}</Text>
-                                </Pressable>
-                            ))}
-                        </ScrollView>
-                        <Pressable onPress={() => handleOpenBottomSheet("hide")} style={{marginTop:0,borderWidth:1,borderRadius:8,width:"80%",height:50,alignItems:"center",justifyContent:"center",backgroundColor:"black"}}>
-                            <Text style={{fontWeight:"700",color:"white"}}>Done</Text>
-                        </Pressable>
-                    </View>
-                </BottomSheetModal>
-        </BottomSheetModalProvider>
-    </GestureHandlerRootView >
-    )
-}
-
-function AlertScreen({
-    setProgress,
-    progress,
-    melanomaMetaData,
-    uploadMetaData
-}){
-    const alertMelanoma  = Image.resolveAssetSource(require('../../../../assets/skinburn/Melanoma.png')).uri;
-
-    return(
-        <View style={{width:"100%",marginTop:"10%"}} >
-            <ScrollView contentContainerStyle={{height:650}} style={{marginBottom:20}}>
-            <View style={{width:"100%",alignItems:"center",marginTop:"10%",height:"100%",justifyContent:"space-between"}}>
-                    <View style={{width:"100%",alignItems:"center"}}>
-                    <ImageLoaderComponent 
-                        w={250}
-                        h={250}
-                        data={{melanomaPictureUrl:alertMelanoma}}
-                        style={[{borderRadius:200,borderWidth:2,borderColor:"lightgray",marginTop:0},styles_shadow.shadowContainer]}
-                        imageStyle={{borderRadius:200}}
-
-                    />
-                    <Text style={{fontWeight:"700",fontSize:20,maxWidth:"80%",textAlign:"center",marginTop:50}}>Great ! Now let's build your body's mole map</Text>  
-                    <View style={{backgroundColor:"rgba(0,0,0,0.9)",marginTop:20,padding:15,borderRadius:10,opacity:0.95}}>
-                        <Text style={{fontWeight:"700",fontSize:12,maxWidth:"95%",textAlign:"justify",opacity:0.9,color:"white",}}>You will mark the location of your mole and upload them to Pocket Protect Cloud. Where our <Text style={{fontWeight:"700",color:"magenta"}}>AI model</Text> and <Text style={{fontWeight:"700",color:"magenta"}}>Professional Dermotologists</Text> can determine wheter your moles are malignant or beningn</Text> 
-                    </View>
-                    </View>
-                        
-                        <View style={{width:"100%",flexDirection:"column",alignSelf:"center",alignItems:"center",marginBottom:"10%"}}>
-                            <TouchableOpacity onPress={() => {setProgress(progress + 0.1);uploadMetaData(melanomaMetaData)}} style={{width:"80%",padding:5,flexDirection:"row",alignItems:"center",borderWidth:0,backgroundColor:"black",borderRadius:40,marginTop:0}}>
-                                <View style={{backgroundColor:"white",padding:10,borderRadius:30}}>
-                                    <MaterialCommunityIcons 
-                                        name="account-arrow-right"
-                                        size={25}
-                                        color={"black"}
-                                    />
-                                </View>         
-                                <Text style={{marginLeft:20,fontSize:15,color:"white",fontWeight:"600",opacity:0.9,textAlign:"center"}}>Ready !</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={{width:"80%",padding:5,flexDirection:"row",alignItems:"center",borderWidth:0.3,backgroundColor:"white",borderRadius:40,marginTop:10}}>
-                                <View style={{backgroundColor:"black",padding:10,borderRadius:30}}>
-                                    <MaterialCommunityIcons 
-                                        name="account-arrow-right"
-                                        size={25}
-                                        color={"white"}
-                                    />
-                                </View>                             
-                                <Text style={{marginLeft:20,fontSize:15,color:"black",fontWeight:"700",opacity:0.9,textAlign:"center"}}>How the process works ?</Text>
-                            </TouchableOpacity>
-                        </View>
-            </View>
-            </ScrollView>
-        </View>
-    )
-}
-
-function ThirdScreen({
-    userData,
-    melanomaMetaData,
-    setProgress,
-    progress,
-    completedParts,
-    updateCompletedSlug,
-    navigation,
-    completedAreaMarker,
-    currentSide,
-    bodyProgress,
-    setIsModalUp,
-    isModalUp,
-    setCurrentSide
-}){
-    return(
-        <>
-                <View style={[styles.startScreen,{height:"90%",marginTop:20,justifyContent:"space-between"}]}>
-                    <View style={{marginTop:0,alignItems:"center"}}>  
-                        <Text style={{marginBottom:20,fontWeight:"700",fontSize:20}}>Press the body part to monitor:</Text>
-                        <ProgressBar progress={bodyProgress} width={150} height={10} color={"lightgreen"}backgroundColor={"white"} />
-                        <View style={{marginTop:20}}>
-                            <Body
-                                    data={completedAreaMarker}
-                                    gender={userData.gender}
-                                    side={currentSide}
-                                    scale={scaleFactor}
-                                    //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
-                                    colors={['#A6FF9B']}
-                                    onBodyPartPress={(slug) => 
-                                        Navigation_MoleUpload_2({
-                                            bodyPartSlug:slug,
-                                            gender: userData.gender,
-                                            skin_type: melanomaMetaData.skin_type,
-                                            progress: progress,
-                                            completedArray: completedParts,
-                                            navigation: navigation
-                                        })}               
-                                    skinColor={melanomaMetaData.skin_type}              
-                                />
-                        </View>        
-
-                            <View style={styles.colorExplain}>
-                                <View style={styles.colorExplainRow} >
-                                <View style={styles.redDot} />
-                                    <Text style={{position:"relative",marginLeft:10,fontWeight:"500",opacity:0.8}}>Empty</Text>
-                                </View>
-
-                                <View style={styles.colorExplainRow}>
-                                    <View style={styles.greenDot} />
-                                    <Text style={{position:"relative",marginLeft:10,fontWeight:"500",opacity:0.8}}>Complete</Text>
-                                </View>
-                            </View>
-                    </View>
-
-                    <Pressable onPress={() => bodyProgress == 1 ? setProgress(progress + 0.1) : setIsModalUp(!isModalUp)} style={bodyProgress == 1 ? styles.startButton : {opacity:0.85,borderWidth:1,alignItems:"center",width:"90%",borderRadius:30,marginBottom:10,backgroundColor:"black",marginTop:20}}>
-                        <Text style={{padding:15,fontWeight:"600",color:"white"}}>Next</Text>
-                    </Pressable>
-
-                </View >
-            {isModalUp ?
-                <NotAllSlugModal 
-                    isModalUp={isModalUp}
-                    setCurrentSide={setCurrentSide}
-                    setProgress={setProgress}
-                    progress={progress}
-                    setIsModalUp={setIsModalUp}
-                />
-            :null
-            }
-        </>
-    )
-}
-
-function FourthScreen({
-    bodyProgressBack,
-    setProgress,
-    progress,
-    completedParts,
-    melanomaMetaData,
-    completedAreaMarker,
-    userData,
-    currentSide,
-    navigation,
-    setIsModalUp,
-    isModalUp,
-    setCurrentSide
-}){
-    return(
-        <>
-        <View style={[styles.startScreen,{height:"90%",marginTop:20,justifyContent:"space-between"}]}>
-            <View style={{marginTop:0,alignItems:"center"}}>  
-                <Text style={{marginBottom:20,fontWeight:"700",fontSize:20}}>Press the body part to monitor:</Text>
-                <ProgressBar progress={bodyProgressBack} width={150} height={10} color={"lightgreen"}backgroundColor={"white"} />
-                <View style={{marginTop:20}}>
-                <Body
-                    data={completedAreaMarker}
-                    gender={userData.gender}
-                    side={currentSide}
-                    scale={scaleFactor}
-                    //RED COLOR INTESITY - 2 = Light Green color hash --> #00FF00
-                    colors={['#A6FF9B']}                       
-                    onBodyPartPress={(slug) => 
-                        Navigation_MoleUpload_2({
-                            bodyPartSlug:slug,
-                            gender: userData.gender,
-                            skin_type: melanomaMetaData.skin_type,
-                            progress: progress,
-                            completedArray: completedParts,
-                            navigation: navigation
-                        })}
-                    skinColor={melanomaMetaData.skin_type}
-                />
-                </View>
-
-            <View style={styles.colorExplain}>
-                <View style={styles.colorExplainRow} >
-                    <View style={styles.redDot} />
-                        <Text style={{position:"relative",marginLeft:10,fontWeight:"500",opacity:0.8}}>Empty</Text>
-                    </View>
-
-                    <View style={styles.colorExplainRow}>
-                        <View style={styles.greenDot} />
-                        <Text style={{position:"relative",marginLeft:10,fontWeight:"500",opacity:0.8}}>Complete</Text>
-                    </View>
-                </View>
-            </View>
-
-            <Pressable onPress={() => bodyProgressBack == 1 ? setProgress(1) : setIsModalUp(!isModalUp)} style={bodyProgressBack == 1 ? styles.startButton : {opacity:0.85,borderWidth:1,alignItems:"center",width:"90%",borderRadius:30,marginBottom:0,backgroundColor:"black",marginTop:20}}>
-                <Text style={{padding:15,fontWeight:"600",color:"white"}}>Next</Text>
-            </Pressable>
-        </View>
-        {isModalUp ?
-            <NotAllSlugModal 
-                isModalUp={isModalUp}
-                setCurrentSide={setCurrentSide}
-                setProgress={setProgress}
-                progress={progress}
-                setIsModalUp={setIsModalUp}
-            />
-        :null
-        }
-    </>
-    )
-}
-
-function FifthScreen({navigation}){
-
-    const doctorImage = Image.resolveAssetSource(require('../../../../assets/doc.jpg')).uri;
-
-    return(
-        <View style={[styles.startScreen,{height:"90%",marginTop:"10%",backgroundColor:"transparent"}]}>
-            <ScrollView style={{width:"100%",marginBottom:0,backgroundColor:"transparent"}}>
-                <View style={{marginTop:0,alignItems:"center"}}>  
-                    <View style={{marginTop:0,alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,padding:10,width:"90%"}}>  
-                        <Text style={{marginBottom:0,fontWeight:"700",fontSize:23,textAlign:"left"}}>You're all set !</Text>
-                        
-                        <View style={{width:"100%",backgroundColor:"rgba(0,0,0,0.1)",padding:7,borderRadius:5,marginTop:15,flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
-                            <MaterialCommunityIcons 
-                                name="information"
-                                color={"black"}
-                                size={30}
-                                style={{width:"10%",opacity:0.6}}
-                            />
-                            <Text style={{textAlign:"left",fontWeight:"600",opacity:0.6,fontSize:11,width:"87%"}}>Congratulations your birtmarks are being monitored !</Text>
-                        </View>
-                        
-                    </View>
-                    <Image 
-                        source={{uri:doctorImage}}
-                        style={{width:200,height:200,marginTop:0,zIndex:-1}}
-                    />
-                    <View style={{borderWidth:0.5,width:"100%",borderColor:"lightgray"}} />
-                    <View style={{padding:10,backgroundColor:"rgba(0,0,0,0.1)",marginTop:20,borderRadius:10,width:"80%",alignItems:"center"}}> 
-                        <Text style={{fontWeight:"700",fontSize:20}}>What's next ?</Text> 
-                    </View>
-                    <View style={[{width:"90%",height:270,borderWidth:3,borderRadius:10,marginTop:20,padding:10,alignItems:"center"},styles_shadow.shadowContainer]}>
-                        <MaterialCommunityIcons 
-                            name="microscope"
-                            size={30}
-                            style={{margin:10}}
-                        />
-                        <Text style={{fontWeight:"800",fontSize:20}}>Analise with AI</Text>                    
-                        <View style={{width:"100%",margin:10,backgroundColor:"rgba(0,0,0,0.9)",padding:10,borderRadius:10,marginTop:20}}>                           
-                            <Text style={{marginBottom:15, fontWeight:"600",color:"white",opacity:0.8}}>• Get a 90% accurate prediction</Text>
-                            <Text style={{marginBottom:15, fontWeight:"600",color:"white",opacity:0.8}}>• AI will predict wheter it finds your mole malignant or benign</Text>
-                            <Text style={{fontWeight:"600",color:"white",opacity:0.8}}>• We strive towards 100% transparency about our model so we made it open source which you can find on our github</Text>
-                        </View>        
-                    </View> 
-                    <View style={[{width:"90%",height:280,borderWidth:3,borderRadius:10,marginTop:20,padding:10,alignItems:"center"},styles_shadow.shadowContainer]}>
-                        <MaterialCommunityIcons 
-                            name="doctor"
-                            size={30}
-                            style={{margin:10}}
-                        />
-                        <Text style={{fontWeight:"800",fontSize:20}}>Get Professional Help</Text>                    
-                        <View style={{width:"100%",margin:10,backgroundColor:"rgba(0,0,0,0.9)",padding:10,borderRadius:10,marginTop:20}}>                           
-                            <Text style={{marginBottom:15, fontWeight:"600",color:"white",opacity:0.8}}>• Let a certified dermotologist look at your mole and make a professional analasis</Text>
-                            <Text style={{marginBottom:15, fontWeight:"600",color:"white",opacity:0.8}}>• You'll recive a pdf of the analasis explaining the process in detail</Text>
-                            <Text style={{fontWeight:"600",color:"white",opacity:0.8}}>• You will get access to chat with your selected dermotologist</Text>
-                        </View>        
-                    </View> 
-
-                    <View style={[{width:"90%",height:270,borderWidth:3,borderRadius:10,marginTop:20,padding:10,alignItems:"center",marginBottom:100},styles_shadow.shadowContainer]}>
-                        <MaterialCommunityIcons 
-                            name="calendar"
-                            size={30}
-                            style={{margin:10}}
-                        />
-                        <Text style={{fontWeight:"800",fontSize:20}}>Reminders for new imaging</Text>                    
-                        <View style={{width:"100%",margin:10,backgroundColor:"rgba(0,0,0,0.9)",padding:10,borderRadius:10,marginTop:20}}>                           
-                            <Text style={{marginBottom:15, fontWeight:"600",color:"white",opacity:0.8}}>• Revaluating each mole's risk</Text>
-                            <Text style={{marginBottom:15, fontWeight:"600",color:"white",opacity:0.8}}>• Comparing their growth & change to past images</Text>
-                            <Text style={{fontWeight:"600",color:"white",opacity:0.8}}>• You can access and show your dermotologist about each mole's evolution over an endless period of time</Text>
-                        </View>        
-                    </View>        
-                </View>        
-            </ScrollView>
-            <Pressable onPress={() => {navigation.goBack()}} style={[styles.startButton,{marginBottom:10,position:"absolute",bottom:0}]}>
-                    <Text style={{padding:15,fontWeight:"600",color:"white"}}>Finish</Text>
-                </Pressable>
-        </View>
-    )
-}
-
-// --- Modal ---
-function NotAllSlugModal({
-    isModalUp,
-    setIsModalUp,
-    setProgress,
-    progress,
-    setCurrentSide
-}){
-    return(
-        <View style={styles.modalOverlay}> 
-        <View style={styles.modalBox}>
-            <View style={{alignItems:"center",padding:20}}>
-                <Text style={{fontWeight:"700",fontSize:18,marginTop:10}}>Not all body parts completed</Text>
-                <Text style={{fontWeight:"400",fontSize:15,marginTop:10}}>Sure you want to proceed ?</Text>
-            </View>
-            <View style={{flexDirection:"row-reverse",width:"100%",borderTopWidth:1,padding:10,paddingRight:20}}>
-
-                <Pressable style={styles.modalYesBtn} onPress={() => setIsModalUp(!isModalUp)}>
-                    <Text style={{fontWeight:"700",color:"white"}}>No</Text>
-                </Pressable>
-
-                <Pressable onPress={() => {setProgress(progress + 0.1);setIsModalUp(!isModalUp);setCurrentSide("back")}} style={styles.modalNoBtn}>
-                    <Text style={{fontWeight:"700"}}>Yes</Text>
-                </Pressable>
-
-            </View>
-        </View>
-    </View>
-    )
-}
 
 
 const Information_Modal = ({infoModal,setInfoModal}) => {

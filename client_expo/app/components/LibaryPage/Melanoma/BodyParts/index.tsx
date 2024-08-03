@@ -12,8 +12,6 @@ import { BodyPart, SkinType } from "../../../../utils/types";
 import { SkinNumber_Convert } from "../../../../utils/skinConvert";
 
 
-
-
 type Props = {
   colors?: ReadonlyArray<string>;
   data: ReadonlyArray<BodyPart>;

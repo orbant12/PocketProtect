@@ -1,7 +1,14 @@
-import {  View,StyleSheet, Text, Image } from "react-native";
+import {  View,StyleSheet, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { PagerComponent } from "../Common/pagerComponent";
 import { styles_shadow } from "../../styles/shadow_styles";
+import { HeaderContainer } from "../Common/headerContainer";
+import ProgressBar from 'react-native-progress/Bar';
+import { ImageLoaderComponent } from "../../pages/Libary/Melanoma/slugAnalasis";
+
+const toolImage = Image.resolveAssetSource(require("../../assets/assist/proTool.png")).uri;
+const chatImage = Image.resolveAssetSource(require("../../assets/assist/chat.png")).uri;
+const pdfImage = Image.resolveAssetSource(require("../../assets/assist/pdf.png")).uri;
 
 export const ExplainPageComponent_Type1 = ({
     style,
@@ -54,6 +61,63 @@ export const ExplainPageComponent_Type1 = ({
     )
 };
 
+export const ExplainPageComponent_Type2 = ({data,title,desc} : {
+    data:{icon_name:string,title:string,images:{image:string}[]}[];
+    title:string;
+    desc?:string;
+}) => {
+    return(
+        <View style={[styles.startScreen,{height:"100%",marginTop:10}]}>
+        <ScrollView contentContainerStyle={{alignItems:"center",paddingBottom:100}} style={{width:"100%",height:"100%"}}>
+        <View style={{marginTop:0,alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,padding:10,width:"90%",marginBottom:10}}>  
+            <Text style={{marginBottom:0,fontWeight:"700",fontSize:23,textAlign:"left"}}>{title}</Text>
+            {desc != undefined && (
+            <View style={{width:"100%",backgroundColor:"rgba(0,0,0,0.1)",padding:7,borderRadius:5,marginTop:15,flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
+                <MaterialCommunityIcons 
+                    name="information"
+                    color={"black"}
+                    size={30}
+                    style={{width:"10%",opacity:0.6}}
+                />
+                <Text style={{textAlign:"left",fontWeight:"600",opacity:0.6,fontSize:11,width:"87%"}}>{desc}</Text>
+            </View>
+            )}
+        </View>
+            {data.map((item, index) => (
+                <View key={index} style={[{width:"80%",borderWidth:0.3,height:350,borderRadius:10,marginTop:50},styles_shadow.hightShadowContainer,item.images.length == 1 ? {marginTop:80} : {}]}>
+                    <View style={{width:"100%",borderWidth:2,height:50,flexDirection:"row",justifyContent:"space-between",alignItems:"center",backgroundColor:"rgba(0,0,0,0.9)",paddingHorizontal:10,borderTopLeftRadius:10,borderTopRightRadius:10}}>
+                        <Text style={{fontSize:15,fontWeight:"700",color:"white",opacity:0.9,width:"90%"}}>{item.title}</Text>
+                        <MaterialCommunityIcons 
+                            name={item.icon_name}
+                            color={"white"}
+                            size={25}
+                        />
+                    </View>
+                <PagerComponent 
+                    indicator_position={[{backgroundColor:"black",padding:15},item.images.length == 1 ? {display:"none"} : {}]}
+                    dotColor={"white"}
+                    pagerStyle={[{height:300,borderWidth:1}]}
+                    pages={item.images.map((image, index) => ({
+                        pageComponent:() => (
+                            <ImageLoaderComponent
+                                w={"100%"}
+                                h={300}
+                                imageStyle={{borderRadius:0}}
+                                
+                                data={{melanomaPictureUrl:image.image}}
+                            />
+                        )}
+                    ))}
+                        
+                />
+                </View>
+            ))}
+        </ScrollView>
+
+    </View>
+    )
+}
+
 
 const styles = StyleSheet.create({
     container:{
@@ -65,12 +129,11 @@ const styles = StyleSheet.create({
         height:"100%"
     },
     ProgressBar:{
-        width:"100%",
+        width:"95%",
         alignItems:"center",
-        padding:15,
-        position:"absolute",
-        top:0,
-        borderWidth:0,
+        position:"relative",
+        flexDirection:"row",
+        justifyContent:"space-between",
     },
     startScreen:{
         borderWidth:0,
@@ -124,3 +187,43 @@ const styles = StyleSheet.create({
         opacity:0.3
     },
 })
+
+
+export const ProgressRow = ({
+    handleBack,
+    progress}
+) => {
+    return(
+        <>
+        {
+            HeaderContainer({
+                content:() => (
+                    <>
+                    <View style={styles.ProgressBar}>
+                        <TouchableOpacity onPress={handleBack} style={{backgroundColor:"#eee",borderRadius:30}}>
+                            <MaterialCommunityIcons 
+                                name="arrow-left"
+                                size={20}
+                                style={{padding:6}}
+                            />
+                        </TouchableOpacity>
+
+                        <ProgressBar progress={progress} width={250} height={5} color={"magenta"} backgroundColor={"white"} borderColor={"magenta"} />
+                        <TouchableOpacity onPress={() => handleBack(true)} style={{backgroundColor:"#eee",borderRadius:30}}>
+                            <MaterialCommunityIcons 
+                                name="close"
+                                size={20}
+                                style={{padding:6}}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                    </>
+                ),
+                outerBg:"white",
+
+            })
+        }
+
+    </>
+    )
+}

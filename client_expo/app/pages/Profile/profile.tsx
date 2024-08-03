@@ -36,7 +36,7 @@ const femaleDefault = Image.resolveAssetSource(require("../../assets/female.png"
 //Libary 
 const [isSelected, setIsSelected ] = useState<NavbarValues>("ai_vision")
 const scrollViewRef = useRef(null);
-const [activeTab, setActiveTab] = useState("libary")
+const [activeTab, setActiveTab] = useState<string>("C")
 const positions = useRef({
     skinCancer: 0,
     bloodAnalysis: 0,
@@ -82,6 +82,7 @@ const handleChangeProfile = async() => {
     return ( 
         <View style={styles.container}>        
             <Tabs.Container
+                onTabChange={(tab) => setActiveTab(tab.tabName)}
                 renderHeader={() => 
                     <>
                     <NavBar_TwoOption
@@ -104,7 +105,7 @@ const handleChangeProfile = async() => {
                         }
                         style={{marginBottom:20,borderWidth:0,borderColor:"white",position:"relative",zIndex:300}}
                     />
-                    {activeTab == "libary" &&
+                    {activeTab == "C" &&
                     <Horizontal_Navbar 
                         isSelected={isSelected}
                         setIsSelected={setIsSelected}
@@ -147,7 +148,6 @@ const handleChangeProfile = async() => {
                         <DetectionLibary 
                             navigation={navigation}
                             scrollViewRef={scrollViewRef}
-                            isSelected={isSelected}
                             positions={positions}
                             setIsSelected={setIsSelected}
                         />

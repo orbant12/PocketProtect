@@ -54,7 +54,9 @@ export const OneOptionBox = (
 
     <Modal visible={activeModal != null} presentationStyle="overFullScreen" animationType="slide">
         {activeModal == "abcde" &&
-            <ABCDE_Modal_View />
+            <ABCDE_Modal_View 
+                handleClose={() => setActiveModal(null)}
+            />
         }
     </Modal>
     </>

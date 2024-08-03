@@ -26,29 +26,30 @@ export const FactScreenType_2 = ({
 }) => {
     return(
         <View style={[styles.startScreen,pageStyle]}>
-        <View style={{marginTop:60,alignItems:"center",justifyContent:"space-between",height:"70%"}}>  
+        
             <Text style={{marginBottom:10,fontWeight:"700",fontSize:24,backgroundColor:"white"}}>{title}</Text>
-            <View style={{width:"80%",marginTop:50,height:200,justifyContent:"space-between"}}>
-                {descriptionRows.map((desc) => (
+            <View style={{width:"80%",height:220,justifyContent:"space-between",marginRight:10}}>
+                {descriptionRows.map((desc,index) => (
                     <FactRow 
                         icon_name={desc.icon_name}
                         icon_size={desc.icon_size}
                         text={desc.text}
+                        key={index}
                     /> 
                 ))
                 }                             
             </View>
 
-            <View style={{width:"80%",borderRadius:5,backgroundColor:"lightgray",padding:10,marginTop:60,opacity:0.8}}>
-                <Text style={{marginLeft:10,fontWeight:"600",fontSize:13,}}>{boxText}</Text>
+            <View style={{width:"80%",borderRadius:5,backgroundColor:"rgba(0,0,0,0.1)",padding:12,marginTop:60,opacity:0.8}}>
+                <Text style={{marginLeft:0,fontWeight:"600",fontSize:13,opacity:0.9,textAlign:"left"}}>{boxText}</Text>
             </View>
-        </View>
-            <Pressable 
+        
+        <Pressable 
                 onPress={() => {
                     buttonAction.type == "next" && setProgress(buttonAction.actionData.progress + buttonAction.actionData.increment_value);
                     buttonAction.type == "trigger" && buttonAction.actionData.triggerAction();
                 }}
-                style={[styles.startButton,{marginBottom:20}]}
+                style={[styles.startButton,{marginBottom:0}]}
             >
             <Text style={{padding:14,fontWeight:"600",color:"white"}}>Start Now</Text>
         </Pressable>
@@ -64,9 +65,10 @@ const styles = StyleSheet.create({
         padding:5,
         width:"100%",
         alignItems:"center",
-        height:"100%",
+        height:"80%",
+        marginTop:"10%",
         justifyContent:"space-between",
-        marginBottom:0,
+        marginBottom:"10%",
         backgroundColor:"white",
         zIndex:-1
     },
@@ -76,8 +78,7 @@ const styles = StyleSheet.create({
         width:"90%",
         borderRadius:10,        
         backgroundColor:"black",
-        position:"absolute",
-        bottom:20
+        position:"relative"
     },
 })
 
