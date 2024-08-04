@@ -4,6 +4,9 @@ const medic = require('../../../../assets/abcde.png');
 import { Navigation_AssistCenter } from "../../../../navigation/navigation"
 import { styles_shadow } from "../../../../styles/shadow_styles"
 import { ABCDE_Modal_View } from "../../../ExplainPages/abcdeModal";
+import { Ai_Modal_View } from "../../../ExplainPages/outAiModal";
+import { SkinData_Modal_View } from "../../../ExplainPages/skinDataModal";
+import { SunBurn_Modal_View } from "../../../ExplainPages/sunBurnModal";
 
 
 export const OneOptionBox = (
@@ -35,7 +38,7 @@ export const OneOptionBox = (
         id:"skin_data" | "sun_burn" | "ai_model" | "abcde";
     }) => {
 
-    const [activeModal, setActiveModal] = useState(null);
+    const [activeModal, setActiveModal] = useState<"skin_data" | "sun_burn" | "ai_model" | "abcde" | null>(null);
 
     return(
         <>
@@ -56,6 +59,21 @@ export const OneOptionBox = (
         {activeModal == "abcde" &&
             <ABCDE_Modal_View 
                 handleClose={() => setActiveModal(null)}
+            />
+        }
+        {activeModal == "ai_model" &&
+             <Ai_Modal_View 
+                handleClose={() => setActiveModal(null)}
+             />
+        }
+        {activeModal == "skin_data" && 
+            <SkinData_Modal_View 
+                handleClose={() => setActiveModal(null)}
+            />
+        }
+        {activeModal == "sun_burn" &&
+            <SunBurn_Modal_View 
+                handleClose={() => setActiveModal(null)}
             />
         }
     </Modal>

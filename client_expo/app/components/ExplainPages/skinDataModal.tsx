@@ -1,9 +1,10 @@
+
 import { View,StyleSheet, Text, TouchableOpacity } from "react-native"
 import { useState } from "react";
 import { ExplainPageComponent_Type1, ExplainPageComponent_Type2, ProgressRow } from "./explainPage";
 
 
-export const ABCDE_Modal_View = ({handleClose}) => {
+export const SkinData_Modal_View = ({handleClose}) => {
 
     const [progress, setProgress] = useState(0.1);
 
@@ -25,21 +26,20 @@ export const ABCDE_Modal_View = ({handleClose}) => {
             <ProgressRow handleBack={(e) => handleBack(e)} progress={progress / 0.6}   />
                 <View style={{width:"100%",height:"80%",flexDirection:"column",justifyContent:"space-between"}}>
                     {round(progress,1) == 0.1 &&<ExplainPageComponent_Type1 
-                        noTitle={false}
                         data={[
                             {
                                 imageUri:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg",
                                 textComponent: () => (
                                     <>
-                                        <Text style={{color:"white",fontSize:14,fontWeight:"600",opacity:0.8,marginBottom:7}}>ABCDE stands for <Text style={{color:"magenta",fontWeight:"700"}}>Asymmetry</Text> , <Text style={{color:"magenta",fontWeight:"700"}}>Border</Text>,  <Text style={{color:"magenta",fontWeight:"700"}}>Color</Text>,  <Text style={{color:"magenta",fontWeight:"700"}}>Diameterr</Text> and  <Text style={{color:"magenta",fontWeight:"700"}}>Evolving</Text> </Text>
+                                        <Text style={{color:"white",fontSize:12,fontWeight:"600",opacity:0.8,marginBottom:0}}>In this module you will learn how AI can <Text style={{color:"magenta",fontWeight:"700"}}>detect malignant</Text> moles and why you <Text style={{color:"magenta",fontWeight:"700"}}>should choose</Text> our own trained model</Text>
                                     </>
                                 )
                             },
                         ]}
                         style={{marginTop:40}}
-                        title="ABCDE rule"
+                        title="Your skin and skin cancer"
                         
-                        desc="Guide to the usual signs of melanoma. Looks for changes in the size, shape, color, or feel of an existing mole or the appearance of a new spot."
+                        desc="Avoid skin cancer with our AI Model which has 85% accuracy & beats the average dermatologist's 70% accuracy "
                     />
                     }
                     {round(progress,1) == 0.2 && <ExplainPageComponent_Type2 
@@ -52,21 +52,21 @@ export const ABCDE_Modal_View = ({handleClose}) => {
                             {icon_name:"information",title:"Detection",images:[{image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"}]},
                             {icon_name:"information",title:"Detection",images:[{image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"}]},
                         ]}
-                        title="Asymetry"
+                        title="Select your skin type"
                         desc="The ABCDE rule is a guide to the usual signs of melanoma. Be aware of any changes in the size, shape, color, or feel of an existing mole or the appearance of a new spot."
                     />
                     }
                     {round(progress,1) == 0.3 && <ExplainPageComponent_Type2 
                         data={[
-                            {icon_name:"information",title:"Asymetry",images:[
+                            {icon_name:"information",title:"Achivements",images:[
                                 {image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"},
                                 {image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"},
                             ],
                         },
-                            {icon_name:"information",title:"Detection",images:[{image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"}]},
-                            {icon_name:"information",title:"Asymetry",images:[{image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"}]},
+                            {icon_name:"information",title:"Achivements",images:[{image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"}]},
+                            {icon_name:"information",title:"Accuracy",images:[{image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"}]},
                         ]}
-                        title="Border"
+                        title="How prone your skin is to cancer"
                         desc="The ABCDE rule is a guide to the usual signs of melanoma. Be aware of any changes in the size, shape, color, or feel of an existing mole or the appearance of a new spot."
                     />
                     }
@@ -80,7 +80,8 @@ export const ABCDE_Modal_View = ({handleClose}) => {
                             {icon_name:"information",title:"Asymetry",images:[{image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"}]},
                             {icon_name:"information",title:"Asymetry",images:[{image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"}]},
                         ]}
-                        title="Color"
+                        
+                        title="How to avoid by protection"
                         desc="The ABCDE rule is a guide to the usual signs of melanoma. Be aware of any changes in the size, shape, color, or feel of an existing mole or the appearance of a new spot."
                     />
                     }
@@ -94,21 +95,7 @@ export const ABCDE_Modal_View = ({handleClose}) => {
                             {icon_name:"information",title:"Asymetry",images:[{image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"}]},
                             {icon_name:"information",title:"Asymetry",images:[{image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"}]},
                         ]}
-                        title="Diameter"
-                        desc="The ABCDE rule is a guide to the usual signs of melanoma. Be aware of any changes in the size, shape, color, or feel of an existing mole or the appearance of a new spot."
-                    />
-                    }
-                    {round(progress,1) == 0.5 && <ExplainPageComponent_Type2 
-                        data={[
-                            {icon_name:"information",title:"Asymetry",images:[
-                                {image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"},
-                                {image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"},
-                            ],
-                        },
-                            {icon_name:"information",title:"Asymetry",images:[{image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"}]},
-                            {icon_name:"information",title:"Asymetry",images:[{image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"}]},
-                        ]}
-                        title="Evolving"
+                        title="Power of Open Source"
                         desc="The ABCDE rule is a guide to the usual signs of melanoma. Be aware of any changes in the size, shape, color, or feel of an existing mole or the appearance of a new spot."
                     />
                     }

@@ -13,34 +13,38 @@ const pdfImage = Image.resolveAssetSource(require("../../assets/assist/pdf.png")
 export const ExplainPageComponent_Type1 = ({
     style,
     containerStyle,
-    noTitle,
-    data
+    data,
+    title,
+    desc
 }:{
     style?:any;
     containerStyle?:any;
-    noTitle:boolean;
     data: {imageUri:string,textComponent:() => JSX.Element}[];
+    title?:string;
+    desc?:string;
 }) => {
     return(
         <View style={[styles.startScreen,{height:"90%"},style]}>
         {
-            noTitle == false && (
+            title != undefined  && (
             <View style={{alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,padding:10,width:"90%",marginBottom:10}}>  
-                    <Text style={{marginBottom:0,fontWeight:"700",fontSize:23,textAlign:"left"}}>Skin Cancer Monitoring</Text>
-                    <View style={{width:"100%",backgroundColor:"rgba(0,0,0,0.1)",padding:7,borderRadius:5,marginTop:15,flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
-                        <MaterialCommunityIcons 
-                            name="information"
-                            color={"black"}
-                            size={30}
-                            style={{width:"10%",opacity:0.6}}
-                        />
-                        <Text style={{textAlign:"left",fontWeight:"600",opacity:0.6,fontSize:11,width:"87%"}}>Take your time to explore the app and it's features ...</Text>
-                    </View>
+                    <Text style={{marginBottom:0,fontWeight:"700",fontSize:23,textAlign:"left"}}>{title}</Text>
+                    {desc != undefined && (
+                        <View style={{width:"100%",backgroundColor:"rgba(0,0,0,0.1)",padding:7,borderRadius:5,marginTop:15,flexDirection:"row",justifyContent:"space-between",alignItems:"center"}}>
+                            <MaterialCommunityIcons 
+                                name="information"
+                                color={"black"}
+                                size={30}
+                                style={{width:"10%",opacity:0.6}}
+                            />
+                            <Text style={{textAlign:"left",fontWeight:"600",opacity:0.6,fontSize:11,width:"87%"}}>{desc}</Text>
+                        </View>
+                    )}
             </View>
-       )}
+    )}
         <View style={[{width:"100%",height:"80%",alignItems:"center",zIndex:-1},containerStyle]}>
             <PagerComponent 
-                indicator_position={{backgroundColor:"rgba(0,0,0,0.9)",padding:15,marginTop:-10,borderRadius:10,borderTopLeftRadius:30,borderTopRightRadius:30}}
+                indicator_position={[{backgroundColor:"rgba(0,0,0,0.9)",padding:15,marginTop:-10,borderRadius:10,borderTopLeftRadius:30,borderTopRightRadius:30},data.length <= 1 && {display:"none"}]}
                 dotColor={"white"}
                 pagerStyle={[{height:320,borderWidth:0,width:"90%"},styles_shadow.shadowContainer]}
                 pages={data.map((item, index) => ({
