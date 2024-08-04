@@ -159,7 +159,7 @@ const handleChangeProfile = async() => {
                 >
                 
                     <Tabs.ScrollView>
-                        <UserSavedPage />
+                        <UserSavedPage navigation={navigation}/>
                     </Tabs.ScrollView>
                 </Tabs.Tab>
                 {/* COMMUNITY PAGE */}
@@ -168,7 +168,7 @@ const handleChangeProfile = async() => {
                     label={() => <Entypo name={'bell'} size={25} color={"white"} />}
                 >
                     <Tabs.ScrollView>
-                        <UserSavedPage />
+                        
                     </Tabs.ScrollView>
                 </Tabs.Tab>
 

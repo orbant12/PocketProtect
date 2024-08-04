@@ -522,6 +522,28 @@ export const fetchSkinType = async ({
     }
 }
 
+export const updateSkinType = async ({
+    userId,
+    newType
+}:{
+    userId:string;
+    newType:SkinType
+}):Promise<boolean> => {
+    const response = await fetch(`${DOMAIN}/client/update/skin-type`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId,newType }),
+    });
+
+    if(response.ok){
+        return true;
+    } else {
+        return false
+    }
+}
+
 //DONE
 export const fetchSingleMoleById = async ({
     userId,

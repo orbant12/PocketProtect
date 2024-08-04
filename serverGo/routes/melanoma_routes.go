@@ -1025,6 +1025,48 @@ func SetupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 		return c.JSON(http.StatusNotFound, map[string]string{"error": "Skin type not found"})
 	})
 
+	e.POST("client/update/skin-type", func(c echo.Context) error {
+		type SkinUpdateReq struct {
+			UserId  string `json:"userId"`
+			NewType int    `json:"newType"`
+		}
+
+		var req SkinUpdateReq
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		var updates []firestore.Update
+
+		updates = append(updates, firestore.Update{
+			Path:  "skin_type",
+			Value: req.NewType,
+		})
+
+		_, err := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("skin_data").Update(context.Background(), updates)
+
+		if err != nil {
+			log.Printf("Error uploading melanoma metadata: %v", err)
+			//SET DOCUMENTS
+			if err.Error() == "rpc error: code = NotFound desc = no such document" {
+				_, err := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("skin_data").Set(context.Background(), map[string]interface{}{
+					"skin_type": req.NewType,
+				}, firestore.MergeAll)
+
+				if err != nil {
+					log.Printf("Error uploading melanoma metadata: %v", err)
+					return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+				}
+			}
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		return c.NoContent(http.StatusNoContent)
+
+	})
+
 	e.POST("client/get/melanoma--by-id", func(c echo.Context) error {
 		type GetMelanomaByIdRequest struct {
 			UserId string `json:"userId"`

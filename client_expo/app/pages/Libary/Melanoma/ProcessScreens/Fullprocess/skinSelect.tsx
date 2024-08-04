@@ -1,13 +1,13 @@
 import { Pressable } from "react-native";
 import { Text, View } from "react-native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { styles } from "../../../../../styles/full_melanoma_styles"
 
 export function SkinTypeScreen({
     setProgress,
     progress,
     handleMelanomaDataChange,
-    melanomaMetaData,
-    styles
+    melanomaMetaData
 }){
     return(          
         <View style={[styles.startScreen,{height:"85%",marginTop:"5%",justifyContent:"space-between"}]}>                                    

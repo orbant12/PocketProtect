@@ -6,7 +6,7 @@ import Onboarding from 'react-native-onboarding-swiper';
 import "react-native-gesture-handler"
 import { changePersonalData, changeProfilePicture } from "../../../services/server"
 import { useAuth } from "../../../context/UserAuthContext";
-import DateTimePicker from '@react-native-community/datetimepicker';
+
 import { NavBar_OneOption, NavBar_TwoOption } from "../../../components/Common/navBars";
 import { DateToString } from "../../../utils/date_manipulations";
 import { SelectionPage } from "../../../components/Common/SelectableComponents/selectPage";
@@ -21,6 +21,8 @@ import { opacity } from "react-native-reanimated/lib/typescript/reanimated2/Colo
 import { convertImageToBase64 } from "../../../utils/imageConvert";
 import { SkinCancerMonitor_Onboard } from "../../../components/AddPage/onBoardings/skinCancerMonitorBoard";
 import { Assist_Onboard } from "../../../components/AddPage/onBoardings/assistantBoard";
+import { styles } from "../../../styles/onBoard_styles";
+import { DateInputPage } from "../OnBoarding_Components/dateInput";
 
 
 const RegOnBoarding = ({navigation}) => {
@@ -78,25 +80,7 @@ const RegOnBoarding = ({navigation}) => {
 
      // <===> Child Component <====> 
 
-    function FirstScreen(){
-        return(
-            <View style={styles.startScreen}>
-                <View style={{marginTop:0,alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,padding:10}}>  
-                    <Text style={{fontSize:10,textAlign:"left",alignSelf:"flex-start",opacity:0.3,borderBottomWidth:1,fontWeight:"700"}}>DD/M/YYYY</Text>
-                    <Text style={{marginBottom:0,fontWeight:"700",fontSize:23}}>When were you born ?</Text>
-                </View>
-                <View style={{width:"100%",alignItems:"center"}}>
-                    <View style={{borderWidth:3,borderColor:"magenta",backgroundColor:"rgba(0,0,0,1)",borderRadius:5,marginBottom:30}}>
-                        {!(DateToString(birthDate) == "2036-06-26") ? <Text style={{padding:10,color:"white",fontSize:18,fontWeight:"700"}}>{DateToString(birthDate)}</Text> : <Text style={{padding:10,color:"white",fontSize:18,fontWeight:"700"}}>Empty</Text>}
-                    </View>
-                    <DateTimePicker display="spinner"  onChange={onDateChange} value={birthDate} mode="date" style={{marginTop:0}} />
-                </View>
-                <Pressable onPress={() => setProgress(progress + 0.2)} style={[styles.startButton,{marginBottom:0}]}>
-                    <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
-                </Pressable>
-            </View>
-        )
-    }
+
 
     function SecoundScreen(){
         
@@ -515,7 +499,13 @@ const RegOnBoarding = ({navigation}) => {
                 <View style={styles.ProgressBar} >
                     <ProgressBar progress={progress} width={350} height={5} color={"magenta"}backgroundColor={"white"} />
                 </View>
-                {round(progress) == 0 ? FirstScreen():null}
+                {round(progress) == 0 ? <DateInputPage 
+                    title={"When were you born ?"}
+                    date={birthDate}
+                    setProgress={setProgress}
+                    progress={progress}
+                    setBirthDate={setBirthDate}
+                />:null}
                 {round(progress) == 0.2 ? SecoundScreen():null}
                 {round(progress) == 0.4 ? ProfileScreen():null}
                 {round(progress) == 0.6 ? ThirdScreen():null}
@@ -525,74 +515,6 @@ const RegOnBoarding = ({navigation}) => {
     )
 }
 
-const styles = StyleSheet.create({
-    container:{
-        flex:1,
-        alignItems:"center",
-        justifyContent:"flex-end",
-        width:"100%",
-        backgroundColor:"white",
-        height:"100%"
-    },
-    ProgressBar:{
-        width:"100%",
-        alignItems:"center",
-        padding:15,
-        position:"absolute",
-        top:0,
-        borderWidth:0,
-    },
-    startScreen:{
-        borderWidth:0,
-        padding:5,
-        width:"100%",
-        alignItems:"center",
-        backgroundColor:"white",
-        zIndex:-1,
-        justifyContent:"space-between",
-        height:"90%",
-        marginBottom:"5%"
-    },
-    startButton:{
-        borderWidth:1,
-        alignItems:"center",
-        width:"90%",
-        borderRadius:10,
-        marginBottom:2,
-        backgroundColor:"black",
-    },
-    TopSection:{
-        marginTop:100
-    },
-    genderOptionButtonA:{
-        flexDirection:"column",
-        width:150,
-        alignItems:"center",
-        justifyContent:"center",
-        height:150,
-        borderWidth:1,
-        borderRadius:30,
-        padding:20,
-        backgroundColor:"lightblue"
-    },
-    genderOptionButton:{
-        flexDirection:"column",
-        width:150,
-        alignItems:"center",
-        justifyContent:"center",
-        height:150,
-        borderWidth:1,
-        borderRadius:30,
-        padding:20,
-    },
-    startButtonNA:{
-        borderWidth:1,
-        alignItems:"center",
-        width:"90%",
-        borderRadius:20,
-        marginBottom:10,
-        opacity:0.3
-    },
-})
+
 
 export default RegOnBoarding;

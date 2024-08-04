@@ -6,7 +6,7 @@ import {bodyFemaleBack} from "../../../components/LibaryPage/Melanoma/BodyParts/
 import {bodyFront} from "../../../components/LibaryPage/Melanoma/BodyParts/bodyFront"
 import {bodyBack} from "../../../components/LibaryPage/Melanoma/BodyParts/bodyBack"
 import { useAuth } from '../../../context/UserAuthContext';
-import { fetchAllMelanomaSpotData,fetchCompletedParts, fetchNumberOfMolesOnSlugs } from '../../../services/server';
+import { fetchAllMelanomaSpotData,fetchCompletedParts, fetchNumberOfMolesOnSlugs, fetchSkinType, updateSkinType } from '../../../services/server';
 import { useFocusEffect } from '@react-navigation/native';
 import { SkinModal } from "../../../components/LibaryPage/Melanoma/modals";
 import { numberOfMolesOnSlugs } from "../../../components/LibaryPage/Melanoma/slugCard";
@@ -146,12 +146,32 @@ const SingleFeature = ({navigation}) => {
             });
     };
 
+    const handleFetchSkinType = async () => {
+        const response = await fetchSkinType({userId:currentuser.uid})
+        if (response) {
+            setMelanomaMetaData(prevState => ({
+                ...prevState,
+                skin_type: response
+            }));
+        } else {
+            console.error('No response received or response is empty');
+        }
+    }
+
+    const handleSaveSkinType = async () => {
+        await updateSkinType({
+            newType:melanomaMetaData.skin_type,
+            userId: currentuser.uid
+        })
+    }
+
     const handleRefresh = () => {
         BodySvgSelector()
         AffectedSlugMap(); 
         fetchAllMelanomaData();
         fetchAllCompletedParts();
         fetchAllNumberOfMoleOnSlug();
+        handleFetchSkinType();
     }
 
     const handleNavigation = (path:string,data:any) => {
@@ -246,7 +266,7 @@ const SingleFeature = ({navigation}) => {
                 />           
             </ScrollView>
             <SkinModal 
-                setSkinModal={setSkinModal}
+                setSkinModal={(e) => {setSkinModal(e);handleSaveSkinType()}}
                 visible={skinModal}
                 handleMelanomaDataChange={handleMelanomaDataChange}
                 melanomaMetaData={melanomaMetaData}

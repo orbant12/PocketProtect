@@ -138,6 +138,7 @@ const styles = StyleSheet.create({
         position:"relative",
         flexDirection:"row",
         justifyContent:"space-between",
+        alignSelf:"center"
     },
     startScreen:{
         borderWidth:0,

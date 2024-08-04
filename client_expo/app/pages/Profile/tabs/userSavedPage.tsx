@@ -8,20 +8,16 @@ import { fetchBloodWork } from '../../../services/server';
 import { useAuth } from '../../../context/UserAuthContext';
 import { convertWeatherDataToString } from '../../../utils/melanoma/weatherToStringConvert';
 import { styles } from '../../../styles/chatBot_style';
+import { Modal } from 'react-native';
+import BloodWorkPage from '../../Libary/BloodCenter/bloodWork';
+import { Navigation_AddBloodWork } from '../../../navigation/navigation';
 
 
-const UserSavedPage = () => {
+const UserSavedPage = ({navigation}) => {
 
     const { weatherData } = useWeather()
     const { currentuser } = useAuth()
-
-    const [ contextToggles , setContextToggles ] = useState({
-        useBloodWork:false,
-        useUvIndex:false,
-        useMedicalData:false,
-        useBMI:false,
-        useWeatherEffect:false,
-      })
+    const [selectedData, setSelectedData] = useState<string>(null)
 
       const [userContexts, setUserContexts] = useState({
         useBloodWork:null,
@@ -122,7 +118,7 @@ return (
                   {data.title}
               </Text>
               </View>
-              <Pressable style={[{flexDirection:"row",alignItems:"center",borderWidth:0,borderColor:"magenta",borderRadius:5,padding:8,justifyContent:"center",backgroundColor:"white"}, !data.stateName ? {borderColor:"magenta"} : {borderColor:"lightgreen"}]}>
+              <Pressable onPress={() => data.stateID == "useBloodWork" ? Navigation_AddBloodWork({navigation:navigation,type:"first"}) : setSelectedData(data.stateID)} style={[{flexDirection:"row",alignItems:"center",borderWidth:0,borderColor:"magenta",borderRadius:5,padding:8,justifyContent:"center",backgroundColor:"white"}, !data.stateName ? {borderColor:"magenta"} : {borderColor:"lightgreen"}]}>
                   <Text style={{color:"black",marginRight:10,fontWeight:"600"}}>Add Data To Access</Text>
                   <MaterialCommunityIcons 
                     name='arrow-right'
@@ -131,7 +127,7 @@ return (
                   />
               </Pressable>
             </View>
-            <View style={[styles.cardLeft,  !data.stateName && {}]}>
+            <View style={[styles.cardLeft,!data.stateName && {}]}>
               <MaterialCommunityIcons 
                 name='lock'
                 color={"white"}
@@ -145,7 +141,13 @@ return (
       </>
   
     ))
-    }   
+    }
+
+    <DataModal 
+      selectedData={selectedData}
+      setSelectedData={setSelectedData}
+    />
+
     </View>
 )}
 
@@ -197,3 +199,14 @@ const Cstyles = StyleSheet.create({
   });
 
 export default UserSavedPage;
+
+
+const DataModal = ({selectedData,setSelectedData}) => {
+  return (
+    <Modal visible={selectedData != null}>
+      {selectedData === "blood_work" && 
+      <></>
+      }
+    </Modal>
+  )
+}

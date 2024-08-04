@@ -221,3 +221,15 @@ export const Navigation_Diag_Center = ({
         navigation.navigate("DiagnosisCenter",{diagnosisData:diagnosisData,navigationType:navigationType})
     }
 }
+
+export const Navigation_AddBloodWork = ({
+    navigation,
+    type
+}:{
+    navigation:any,
+    type:"first" | "update"
+}) => {
+    if ( navigation != undefined){
+        navigation.navigate("Add_BloodWork",{type:type})
+    }
+}
