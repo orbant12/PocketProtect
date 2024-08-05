@@ -159,7 +159,7 @@ const OutdatedMelanomaBox = ({
     const [loading,setLoading] = useState<boolean>(false);
 
     return(
-        <View style={{width:"100%",borderBottomWidth:1,borderColor:"gray",alignItems:"center",flexDirection:"row",paddingBottom:20,padding:10,borderRadius:0,marginBottom:10,justifyContent:"space-between"}}>
+        <View style={{width:"100%",borderBottomWidth:1,borderColor:"magenta",alignItems:"center",flexDirection:"row",paddingBottom:20,padding:10,borderRadius:0,marginBottom:10,justifyContent:"space-between"}}>
         <View style={{width:"70%",flexDirection:"row",alignItems:"center"}}>
             <ImageLoaderComponent 
                 data={data}
@@ -214,12 +214,12 @@ const SpecialMelanomaDataComponent = ({ MelanomaData, handleNavigation,type }) =
 
     return (
         MelanomaData.length !== 0 &&
-        <View style={{ margin: 0, width: "90%", borderBottomWidth: 0, borderColor: "white", paddingBottom: 10, alignItems: "center", marginRight: "auto", marginLeft: "auto",marginTop:20 }}>
-            <View style={{width:"100%",flexDirection:"row",alignItems:"center",justifyContent:"space-between"}}>
-                {type == "unfinished" && <Text style={{ color: "white", fontWeight: "700", opacity: 0.4, margin: 10, alignSelf: "flex-start" }}>Unfinished Moles</Text>}
-                {type == "" && <Text style={{ color: "white", fontWeight: "700", opacity: 0.4, margin: 10, alignSelf: "flex-start" }}>Outdated Moles</Text>}
-                {type == "risk" && <Text style={{ color: "white", fontWeight: "700", opacity: 0.4, margin: 10, alignSelf: "flex-start" }}>Risky Moles</Text>}
-                <Text style={{ color: "white", fontWeight: "700", opacity: 0.4, margin: 10, alignSelf: "flex-start" }}>{MelanomaData.length}</Text>
+        <View style={{ margin: 0, width: "90%", paddingBottom: 10, alignItems: "center", marginRight: "auto", marginLeft: "auto",marginTop:20,backgroundColor:"rgba(250,0,250,0.3)",borderWidth:2,borderColor:"magenta",borderRadius:5 }}>
+            <View style={{width:"100%",flexDirection:"row",alignItems:"center",justifyContent:"space-between",paddingHorizontal:10,paddingTop:10}}>
+                {type == "unfinished" && <Text style={{ color: "white", fontWeight: "700", opacity: 0.8, margin: 10, alignSelf: "flex-start",fontSize:16 }}>Unfinished Moles</Text>}
+                {type == "" && <Text style={{ color: "white", fontWeight: "700", opacity: 0.8, margin: 10, alignSelf: "flex-start",fontSize:16 }}>Outdated Moles</Text>}
+                {type == "risk" && <Text style={{ color: "white", fontWeight: "700", opacity: 0.8, margin: 10, alignSelf: "flex-start", fontSize:16 }}>Risky Moles</Text>}
+                <Text style={{ color: "white", fontWeight: "700", opacity: 0.8, margin: 10, alignSelf: "flex-start" }}>{MelanomaData.length}</Text>
             </View>
             <View style={{ width: "95%", marginTop: 10, alignItems: "center" }}>
                 {MelanomaData.length !== 0 ? (
@@ -237,12 +237,12 @@ const SpecialMelanomaDataComponent = ({ MelanomaData, handleNavigation,type }) =
                     />
                 ):null}
                 {MelanomaData.length > 3 && ( 
-                    <>
-                    <Text style={{fontWeight:"500",fontSize:10,opacity:0.4,color:"white",marginBottom:5}}>{MelanomaData.length - 3} moles hidden</Text>
-                        <TouchableOpacity onPress={toggleShowAll} >
-                            {showAll ? <Text style={{fontWeight:"400",color:"magenta",opacity:0.5,fontSize:15}}>Hide</Text> : <Text style={{fontWeight:"400",color:"magenta",opacity:0.5,fontSize:15}}>Click to load all</Text>}
-                        </TouchableOpacity>
-                    </>
+                    <TouchableOpacity onPress={toggleShowAll} style={{width:"100%",alignItems:"center",backgroundColor:"rgba(0,0,0,0.8)",margin:-5,padding:10,borderRadius:5}}>
+                    <Text style={{fontWeight:"500",fontSize:10,opacity:0.4,color:"white",marginBottom:5,}}>{MelanomaData.length - 3} moles hidden</Text>
+                        <View>
+                            {showAll ? <Text style={{fontWeight:"600",color:"white",opacity:0.5,fontSize:15}}>Hide</Text> : <Text style={{fontWeight:"700",color:"white",opacity:0.7,fontSize:15}}>Click to load all</Text>}
+                        </View>
+                    </TouchableOpacity>
                 )}
             </View>
         </View>
