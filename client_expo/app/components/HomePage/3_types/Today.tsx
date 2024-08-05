@@ -47,7 +47,7 @@ export const TodayScreen = ({
     return(    
         <>
             <UviWidget 
-                weatherData={weatherData != null ? weatherData : WeatherData_Default.daily[0]}
+                weatherData={locationPermissionGranted ? (weatherData != null ? weatherData : WeatherData_Default) : false}
                 today={today}
                 location={locationString}
             />
