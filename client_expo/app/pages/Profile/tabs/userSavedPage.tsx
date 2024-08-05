@@ -76,10 +76,10 @@ const UserSavedPage = ({navigation}) => {
 return (
     <View style={{width:"100%",alignItems:"center"}}>
     {ContextOptions.map((data,index)=>(
-      <>
+      <View key={index} style={{width:"100%",alignItems:"center"}}>
       {data.stateName != null ?
         (
-          <View key={index} style={[Cstyles.contextBox,{backgroundColor:"lightgreen"}]}>
+          <View  style={[Cstyles.contextBox,{backgroundColor:"lightgreen"}]}>
           <View style={[Cstyles.cardRight, !data.stateName && {}]}>
           <View>
               <Text style={{color:"lightgreen",fontWeight:"500",fontSize:10}}>Provided</Text>
@@ -107,7 +107,7 @@ return (
           </View>
           </View>
         ):(
-          <View key={index} style={[styles.contextBox, {backgroundColor:"rgba(255,0,0,0.7)"} ]}>
+          <View  style={[styles.contextBox, {backgroundColor:"rgba(255,0,0,0.7)"} ]}>
             <View style={[styles.cardRight, !data.stateName && {}]}>
               <View>
 
@@ -138,7 +138,7 @@ return (
             </View>
         )
       }
-      </>
+      </View>
   
     ))
     }

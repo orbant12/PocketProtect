@@ -11,6 +11,7 @@ interface WeatherContextType {
     loading: boolean;
     error: string | null;
     locationPermissionGranted: boolean;
+    locationString: string | null;
 }
 
 const WeatherContext = createContext<WeatherContextType | undefined>(undefined);
@@ -35,6 +36,7 @@ const WeatherProvider = ({ children, part }: WeatherProviderProps) => {
     const [locationPermissionGranted, setLocationPermissionGranted] = useState<boolean>(false);
     const [lat, setLat] = useState<number | null>(null);
     const [lon, setLon] = useState<number | null>(null);
+    const [locationString, setLocationString] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchWeatherData = async () => {
@@ -92,8 +94,6 @@ const WeatherProvider = ({ children, part }: WeatherProviderProps) => {
                     keys:["uvi","temp","pressure","humidity","weather","clouds","pop"],
                     wData:response
                 });
-   
-                
                 setWeatherData(result); 
                 console.log(result);
                 console.log('Weather data fetched');
@@ -121,11 +121,14 @@ const WeatherProvider = ({ children, part }: WeatherProviderProps) => {
             let location = await Location.getCurrentPositionAsync({});
             setLat(location.coords.latitude);
             setLon(location.coords.longitude);
+            //CITY
+            let city = await Location.reverseGeocodeAsync({latitude:location.coords.latitude,longitude:location.coords.longitude})
+            setLocationString(city[0].city);
         })();
     }, []);
 
     return (
-        <WeatherContext.Provider value={{ weatherData, loading, error, locationPermissionGranted }}>
+        <WeatherContext.Provider value={{ weatherData, loading, error, locationPermissionGranted,locationString }}>
             {children}
         </WeatherContext.Provider>
     );

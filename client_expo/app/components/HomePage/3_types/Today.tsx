@@ -11,78 +11,57 @@ import React, { useRef, useState } from 'react';
 import { ImageLoaderComponent } from "../../../pages/Libary/Melanoma/slugAnalasis";
 import { useWeather } from "../../../context/WeatherContext";
 import { WeatherData_Default } from "../../../utils/initialValues";
-import { getUvIndexCategory } from "../../../utils/melanoma/uvIndexEval";
+import { getUvIndexCategory } from "../../../utils/uvi/uvIndexEval";
+import { UviWidget } from "../../Widgets/uviWidget";
+import moment from "moment";
 
 export const TodayScreen = ({
-    allReminders,
     handleNavigation,
     handleScrollReminder,
-    handleScroll,
-    currentPageReminder,
     currentPage,
-    format,
     outdatedMelanomaData,
     riskyMelanomaData,
     unfinishedMelanomaData,
-    navigation
+    navigation,
+    date,
+
 }:
 {
     handleNavigation:({path,data}:{path:Home_Navigation_Paths,data:SpotData}) => void;
     handleScrollReminder:(e:any) => void;
-    handleScroll:(e:any) => void;
-    currentPageReminder:number;
     currentPage:number;
-    format:string;
     allReminders:any[];
     outdatedMelanomaData:SpotData[];
     riskyMelanomaData:any[];
     unfinishedMelanomaData:any[];
     navigation:any;
+    date:string;
+    
 }
 ) => {
 
-    const { weatherData, loading, error,locationPermissionGranted } = useWeather();
-
+    const { weatherData, locationPermissionGranted,locationString } = useWeather();
+    const day = moment(date).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') ? moment(date).format('dd'):moment(date).format('dd')
+    const withoutYear = moment(date).format('DD.MM');
+    const today = day + " " + withoutYear; 
     return(    
         <>
-            <UvMonitor 
+            <UviWidget 
                 weatherData={weatherData != null ? weatherData : WeatherData_Default.daily[0]}
+                today={today}
+                location={locationString}
             />
             <Text style={{color:"black"}}>{locationPermissionGranted == true ? "true" : "false"}</Text>
             <TouchableOpacity onPress={() => navigation.navigate("RegOnBoarding")}>
                 <Text>Click to open on boarding</Text>
             </TouchableOpacity>
-            <View style={[styles.TodaySection,styles_shadow.hightShadowContainer]}>
-                <View style={styles.titleRow}>
-                    <Text style={styles.title}>Melanoma Monitor</Text>
-                    <View style={styles.titleLeft}>
-                        <MaterialCommunityIcons 
-                            name='liquid-spot'
-                            color={"white"}
-                            size={30}
-                        />
-                    </View>
-                </View>
-
-                <SpecialMelanomaDataComponent
-                    MelanomaData={outdatedMelanomaData}
-                    handleNavigation={handleNavigation}
-                    type={""}
-                />
-                <SpecialMelanomaDataComponent
-                    MelanomaData={riskyMelanomaData}
-                    handleNavigation={handleNavigation}
-                    type={"risk"}
-                />
-                <SpecialMelanomaDataComponent
-                    MelanomaData={unfinishedMelanomaData}
-                    handleNavigation={handleNavigation}
-                    type={"unfinished"}
-                />
-
-            </View>           
-
-   
+            
+            <Melanoma_WidgetBox 
+                riskyMelanomaData={riskyMelanomaData}
+                unfinishedMelanomaData={unfinishedMelanomaData}
+                handleNavigation={handleNavigation}
+                outdatedMelanomaData={outdatedMelanomaData}
+            />          
 
             <View style={[styles.DataSection]}>
                 <View style={{}}>
@@ -276,5 +255,44 @@ const UvMonitor = ({weatherData}:{weatherData:WeatherAPIResponse}) => {
         <View>
             <Text>{getUvIndexCategory(Math.round(weatherData.uvi))}</Text>
         </View>
+    )
+}
+
+const Melanoma_WidgetBox = ({
+    outdatedMelanomaData,
+    handleNavigation,
+    riskyMelanomaData,
+    unfinishedMelanomaData
+}) => {
+    return(
+        <View style={[styles.TodaySection,styles_shadow.hightShadowContainer]}>
+        <View style={styles.titleRow}>
+            <Text style={styles.title}>Melanoma Monitor</Text>
+            <View style={styles.titleLeft}>
+                <MaterialCommunityIcons 
+                    name='liquid-spot'
+                    color={"white"}
+                    size={30}
+                />
+            </View>
+        </View>
+
+        <SpecialMelanomaDataComponent
+            MelanomaData={outdatedMelanomaData}
+            handleNavigation={handleNavigation}
+            type={""}
+        />
+        <SpecialMelanomaDataComponent
+            MelanomaData={riskyMelanomaData}
+            handleNavigation={handleNavigation}
+            type={"risk"}
+        />
+        <SpecialMelanomaDataComponent
+            MelanomaData={unfinishedMelanomaData}
+            handleNavigation={handleNavigation}
+            type={"unfinished"}
+        />
+
+    </View> 
     )
 }
