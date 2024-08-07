@@ -129,25 +129,34 @@ const WeatherProvider = ({ children, part }: WeatherProviderProps) => {
         })();
     }
 
-    // useEffect(() => {
-    //     (async () => {
-    //         let { status } = await Location.requestForegroundPermissionsAsync();
-    //         if (status !== 'granted') {
-    //             setError('Permission to access location was denied');
-    //             setLocationPermissionGranted(false);
-    //             setLoading(false);
-    //             return;
-    //         }
+    const checkLocationAccess = async () => {
+        // Check current permission status
+        let { status } = await Location.getForegroundPermissionsAsync();
+    
+        if (status !== 'granted') {
+            setError('Permission to access location was denied');
+            setLocationPermissionGranted(false);
+            setLoading(false);
+            return;
+        }
+    
+        // Permission is granted, proceed with getting location
+        setLocationPermissionGranted(true);
+        let location = await Location.getCurrentPositionAsync({});
+        setLat(location.coords.latitude);
+        setLon(location.coords.longitude);
+    
+        // Reverse geocode to get city
+        let city = await Location.reverseGeocodeAsync({
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude
+        });
+        setLocationString(city[0].city);
+    };
 
-    //         setLocationPermissionGranted(true);
-    //         let location = await Location.getCurrentPositionAsync({});
-    //         setLat(location.coords.latitude);
-    //         setLon(location.coords.longitude);
-    //         //CITY
-    //         let city = await Location.reverseGeocodeAsync({latitude:location.coords.latitude,longitude:location.coords.longitude})
-    //         setLocationString(city[0].city);
-    //     })();
-    // }, []);
+    useEffect(() => {
+        checkLocationAccess();
+    },[]);
 
     return (
         <WeatherContext.Provider value={{ weatherData, loading, error, locationPermissionGranted,locationString, LocationAccessAsk }}>

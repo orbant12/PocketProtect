@@ -1,5 +1,5 @@
 
-import { View, Text,ScrollView ,StyleSheet,Pressable} from 'react-native';
+import { View, Text,ScrollView ,StyleSheet,Pressable, TouchableOpacity} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import React,{useState,useEffect} from 'react';
 import { useWeather } from '../../../context/WeatherContext';
@@ -11,24 +11,37 @@ import { styles } from '../../../styles/chatBot_style';
 import { Modal } from 'react-native';
 import BloodWorkPage from '../../Libary/BloodCenter/bloodWork';
 import { Navigation_AddBloodWork } from '../../../navigation/navigation';
+import { UviWidget } from '../../../components/Widgets/uviWidget';
+import { WeatherData_Default } from '../../../utils/initialValues';
+import moment from 'moment';
+import { DateToString } from '../../../utils/date_manipulations';
+import { WeatherWidget } from '../../../components/Widgets/weatherWidget';
+import { MedicalData_Add_View } from '../../../components/ExplainPages/medicalData';
+
+type selectableDataTypes = "useBloodWork" | "useUvIndex" | "useMedicalData" | "useBMI" | "useWeatherEffect"
 
 
 const UserSavedPage = ({navigation}) => {
 
-    const { weatherData } = useWeather()
+    const { weatherData, locationString, locationPermissionGranted } = useWeather()
     const { currentuser } = useAuth()
-    const [selectedData, setSelectedData] = useState<string>(null)
+    const [selectedData, setSelectedData] = useState<selectableDataTypes>(null)
 
       const [userContexts, setUserContexts] = useState({
         useBloodWork:null,
-        useUvIndex:weatherData != null ? `UV Index: ${weatherData.uvi}` : null,
+        useUvIndex:locationPermissionGranted ? (weatherData != null ? `UV Index: ${weatherData.uvi}` : null) : null,
         useMedicalData:null,
         useBMI:null,
         useWeatherEffect:weatherData != null ? convertWeatherDataToString(weatherData) : null,
       })
 
+      const todayDate: Date = new Date();
+      const date = DateToString(todayDate);
+      const day = moment(date).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') ? moment(date).format('dd'):moment(date).format('dd')
+      const withoutYear = moment(date).format('DD.MM');
+      const today = day + " " + withoutYear; 
 
-      const ContextOptions = [
+      const ContextOptions:{title:string,stateName:any,stateID:selectableDataTypes}[] = [
         {
           title:"Blood Work",
           stateName:userContexts.useBloodWork,
@@ -88,7 +101,7 @@ return (
               </Text>
           </View>
   
-          <Pressable style={[{flexDirection:"row",alignItems:"center",borderWidth:0,borderColor:"magenta",borderRadius:5,padding:8,justifyContent:"center",backgroundColor:"white"}, {borderColor:"lightgreen"}]}>
+          <Pressable onPress={() => setSelectedData(data.stateID)} style={[{flexDirection:"row",alignItems:"center",borderWidth:0,borderColor:"magenta",borderRadius:5,padding:8,justifyContent:"center",backgroundColor:"white"}, {borderColor:"lightgreen"}]}>
               <Text style={{color:"black",marginRight:10,fontWeight:"600"}}>See Data</Text>
               <MaterialCommunityIcons 
                   name='arrow-right'
@@ -98,12 +111,10 @@ return (
           </Pressable>
           </View>
           <View style={[Cstyles.cardLeft,!data.stateName && {}]}>
-              
               <>
                   <Text style={{color:"white",fontSize:9,maxWidth:80,fontWeight:"800",opacity:0.7}}>Last updated:</Text>
                   <Text style={{color:"white",fontSize:10,maxWidth:70,marginTop:5,opacity:0.5}}>2003.11.17</Text>
               </>
-              
           </View>
           </View>
         ):(
@@ -116,9 +127,14 @@ return (
 
                 <Text style={{color:"rgba(255,0,0,0.8)",fontWeight:"700",fontSize:20}}>
                   {data.title}
-              </Text>
+                </Text>
               </View>
-              <Pressable onPress={() => data.stateID == "useBloodWork" ? Navigation_AddBloodWork({navigation:navigation,type:"first"}) : setSelectedData(data.stateID)} style={[{flexDirection:"row",alignItems:"center",borderWidth:0,borderColor:"magenta",borderRadius:5,padding:8,justifyContent:"center",backgroundColor:"white"}, !data.stateName ? {borderColor:"magenta"} : {borderColor:"lightgreen"}]}>
+              <Pressable 
+                onPress={() => data.stateID == "useBloodWork" ? 
+                  Navigation_AddBloodWork({navigation:navigation,type:"first"}) : setSelectedData(data.stateID)
+                }
+                style={[{flexDirection:"row",alignItems:"center",borderWidth:0,borderColor:"magenta",borderRadius:5,padding:8,justifyContent:"center",backgroundColor:"white"}, !data.stateName ? {borderColor:"magenta"} : {borderColor:"lightgreen"}]}
+              >
                   <Text style={{color:"black",marginRight:10,fontWeight:"600"}}>Add Data To Access</Text>
                   <MaterialCommunityIcons 
                     name='arrow-right'
@@ -146,6 +162,15 @@ return (
     <DataModal 
       selectedData={selectedData}
       setSelectedData={setSelectedData}
+      uviData={
+        {
+          locationString:locationString,
+          weatherData:weatherData,
+          today:today,
+          locationPermissionGranted:locationPermissionGranted
+        }
+      }
+      userContexts={userContexts}
     />
 
     </View>
@@ -201,12 +226,62 @@ const Cstyles = StyleSheet.create({
 export default UserSavedPage;
 
 
-const DataModal = ({selectedData,setSelectedData}) => {
+const DataModal = ({selectedData,setSelectedData,uviData,userContexts}:{
+  selectedData:selectableDataTypes,
+  setSelectedData:React.Dispatch<React.SetStateAction<selectableDataTypes>>,
+  uviData:{
+    locationString:string,
+    weatherData:any,
+    today:string,
+    locationPermissionGranted:boolean
+  }
+  userContexts:{
+    useBloodWork:any,
+    useUvIndex:any,
+    useMedicalData:any,
+    useBMI:any,
+    useWeatherEffect:any
+  }
+}) => {
   return (
-    <Modal visible={selectedData != null}>
-      {selectedData === "blood_work" && 
-      <></>
+    <Modal presentationStyle="formSheet" animationType='slide' visible={selectedData != null}>
+        <TouchableOpacity onPress={() =>setSelectedData(null)} style={{flexDirection:"row",alignItems:"center",justifyContent:"center",backgroundColor:"rgba(0,0,0,0.86)",borderWidth:2,borderColor:"gray",paddingVertical:10,borderRadius:10,width:"100%",alignSelf:"center",borderBottomLeftRadius:0,borderBottomRightRadius:0}}>
+          <MaterialCommunityIcons 
+            name='close'
+            size={25}
+            color={"white"}
+          />
+          <Text style={{color:"white",fontWeight:"800",fontSize:16,marginLeft:10,marginRight:10}}>Close</Text>
+        </TouchableOpacity>
+      {selectedData == "useUvIndex" && 
+      <ScrollView contentContainerStyle={{paddingBottom:50}} style={{width:"100%",height:"100%",backgroundColor:"rgba(0,0,0,0.1)"}} >
+          <UviWidget 
+            weatherData={uviData.locationPermissionGranted ? (uviData.weatherData != null ? uviData.weatherData : WeatherData_Default) : false}
+            today={uviData.today}
+            location={uviData.locationString}
+          />
+      </ScrollView>
+      }
+      {selectedData == "useWeatherEffect" && 
+            <ScrollView contentContainerStyle={{paddingBottom:50}} style={{width:"100%",height:"100%",backgroundColor:"rgba(0,0,0,0.1)"}} >
+              <WeatherWidget 
+                weatherData={uviData.locationPermissionGranted ? (uviData.weatherData != null ? uviData.weatherData : WeatherData_Default) : false}
+                today={uviData.today}
+                location={uviData.locationString}
+              />
+          </ScrollView>
+      }
+      {selectedData == "useMedicalData" &&
+        userContexts["useMedicalData"] != null ?
+        <View>
+
+        </View>
+        :
+        <MedicalData_Add_View 
+          handleClose={() => setSelectedData(null)}
+        />
       }
     </Modal>
   )
 }
+

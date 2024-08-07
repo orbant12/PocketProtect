@@ -98,33 +98,23 @@ const styles = StyleSheet.create({
 export default AssistCenter;
 
 
-const Navbar_Selectable = ({
+export const Navbar_Selectable = ({
     setActiveItem,
     activeItem,
-    setSelectedProduct
+    navItems = [{value:"skin",title:"Skin Cancer"},{value:"blood",title:"Blood Check"},{value:"soon",title:"Coming More Soon ..."}]
 }) => {
     return(
         <View style={{width:"100%",height:80}}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{width:"100%",height:80}}>
             <View style={{width:"100%",alignItems:"center",flexDirection:"row",marginRight:20,height:80,borderWidth:0}}>
+                {navItems.map((data,index) => (
                 <NavItem 
                     setActiveItem={setActiveItem}
-                    value={"skin"}
-                    title={"Skin Cancer"}
+                    value={data.value}
+                    title={data.title}
                     activeItem={activeItem}
                 />
-                <NavItem 
-                    setActiveItem={setActiveItem}
-                    value={"blood"}
-                    title={"Blood Check"}
-                    activeItem={activeItem}
-                />
-                <NavItem 
-                    setActiveItem={setActiveItem}
-                    value={"soon"}
-                    title={"Coming More Soon ..."}
-                    activeItem={activeItem}
-                />
+                ))}
             </View>
             </ScrollView>
         </View>

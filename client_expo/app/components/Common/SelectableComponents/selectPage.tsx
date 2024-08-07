@@ -3,6 +3,7 @@ import { View, Text, Pressable, StyleSheet, ViewStyle, TextStyle } from 'react-n
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { OptionsBoxes } from './optionBoxes';
 import { SelectableBars } from './selectableBars';
+import { Navbar_Selectable } from '../../../pages/Assist/assistCenter';
 
 interface IconMetaData {
   name: string;
@@ -17,7 +18,7 @@ interface SelectableDataItem {
   icon: 
     | { type: "icon", metaData:{name:string ,size?:number,color?:string,style?:{}}}
     | { type: "image", metaData:{name:string ,size?:number,color?:string,style?:{}}};
-  
+  container?:any;
 }
 
 interface ButtonActionNext {
@@ -50,6 +51,13 @@ interface SelectionPageProps {
   specialValues?: number[];
   handleEvent?: () => void;
   desc?: string;
+  showButton?: boolean;
+  isMap?: boolean;
+  topPager?:{
+    activeItem:any;
+    setActiveItem:(item:any) => void;
+    navItems:{value:string,title:string}[];
+  }
 }
 
 export const SelectionPage: React.FC<SelectionPageProps> = ({
@@ -64,7 +72,10 @@ export const SelectionPage: React.FC<SelectionPageProps> = ({
   setProgress,
   specialValues = [],
   handleEvent,
-  desc
+  desc,
+  showButton = true,
+  isMap = false,
+  topPager, 
 }) => {
   return (
     <View style={[styles.startScreen, pageStyle]}>
@@ -82,13 +93,19 @@ export const SelectionPage: React.FC<SelectionPageProps> = ({
         </View>
         }
       </View>
-      
+      {topPager != undefined && <Navbar_Selectable 
+            activeItem={topPager.activeItem}
+            setActiveItem={(item) => {topPager.setActiveItem(item)}}
+            navItems={topPager.navItems}
+        />}
       {selectableOption === 'box' && (
         <OptionsBoxes
           items={selectableData}
           setOptionValue={setOptionValue}
           optionValue={optionValue}
           style={selectableStyle}
+          isMap={isMap}
+          pagerActive={topPager.activeItem}
         />
       )}
       {selectableOption === 'bar' && (
@@ -99,6 +116,7 @@ export const SelectionPage: React.FC<SelectionPageProps> = ({
           style={selectableStyle}
         />
       )}
+      {(showButton != false && showButton != undefined) &&
       <View style={{ width: '100%', alignItems: 'center' }}>
         {optionValue != null ? ( 
           <Pressable
@@ -119,6 +137,7 @@ export const SelectionPage: React.FC<SelectionPageProps> = ({
           </Pressable>
         )}
       </View>
+}
     </View>
   );
 };

@@ -51,7 +51,6 @@ export const TodayScreen = ({
                 today={today}
                 location={locationString}
             />
-            <Text style={{color:"black"}}>{locationPermissionGranted == true ? "true" : "false"}</Text>
             <TouchableOpacity onPress={() => navigation.navigate("RegOnBoarding")}>
                 <Text>Click to open on boarding</Text>
             </TouchableOpacity>

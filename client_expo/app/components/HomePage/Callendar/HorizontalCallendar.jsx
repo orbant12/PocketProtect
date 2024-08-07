@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { StyleSheet, Text, View, ScrollView } from 'react-native'
 import moment from 'moment'
 import Date from './Date'
+import { HeaderContainer } from "../../../components/Common/headerContainer";
 
 export const Calendar = ({ onSelectDate, selected, today, todayDate,affectedDays }) => {
         
@@ -58,11 +59,16 @@ export const Calendar = ({ onSelectDate, selected, today, todayDate,affectedDays
 
 return (
 <>
-    <View style={styles.dateTitle}>
-        { selected == today ? <Text style={styles.title}>Today •</Text> : null}
-        <Text style={styles.title}>{currentMonth}</Text>
-        <Text style={styles.title}>{currentYear}</Text>
-    </View>
+    {HeaderContainer({
+        content:() => (
+            <View style={[styles.dateTitle,{opacity:0.6}]}>
+            { selected == today ? <Text style={styles.title}>Today •</Text> : null}
+            <Text style={styles.title}>{currentMonth}</Text>
+            <Text style={styles.title}>{currentYear}</Text>
+        </View>        
+        ),
+        outerBgColor: 'white',
+    })}
     <View style={styles.dateSection}>
         <View style={styles.scroll}>
             <ScrollView

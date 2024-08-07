@@ -45,7 +45,7 @@ const UserAuthContext = ({ children }) => {
 const [currentuser, setuser] = useState<UserData| null>(null)
 const [error, setError] = useState("")
 const navigation = useNavigation<RootStackNavigationProp>();
-const [isRegisterLoading, setIsRegisterLoading] = useState<boolean | "onboard" | "reset">(false);
+const [isRegisterLoading, setIsRegisterLoading] = useState<boolean | "onboard" | "reset">("reset");
 
 const [request, response, promptAsync] = Google.useAuthRequest({
   androidClientId: "567381254436-b0cqltfecu40o0skrmiq77iiqp2h9njl.apps.googleusercontent.com",
@@ -62,6 +62,7 @@ useEffect(() => {
   const unsubscribe = onAuthStateChanged(auth, async (user) => {
     if (user && isRegisterLoading == false) {
       try {
+        //WE HAVE USER & HE IS LOGGED IN
         const userData = await fetchUserData({ userId: user.uid });
         if (userData == null) {
           navigation.navigate("AuthHub");
@@ -76,6 +77,7 @@ useEffect(() => {
         navigation.navigate("AuthHub");
       }
     } else if (user && isRegisterLoading == "onboard"){
+      //WE HAVE USER & HE IS Freshly REGISTERED
       try {
         const userData = await fetchUserData({ userId: user.uid });
         if (userData == null) {
@@ -90,8 +92,9 @@ useEffect(() => {
       }
       setIsRegisterLoading("reset")
     } else if (user && isRegisterLoading == "reset"){
-
+      //FOR USEEFFECT CLEANUP
     } else if (user == null) {
+      //WE DONT HAVE USER
       navigation.navigate("AuthHub");
       setuser(null);
     }
@@ -100,6 +103,10 @@ useEffect(() => {
   // Cleanup subscription on unmount
   return () => unsubscribe();
 }, [isRegisterLoading]);
+
+useEffect(() => {
+  setIsRegisterLoading(false)
+},[])
 
 
 // <====> LOGIN HANDLER <====>

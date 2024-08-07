@@ -15,13 +15,16 @@ interface Item {
   icon:
   | {metaData:{name:string ,size?:number,color?:string,style?:{}}, type: "icon"}
   | {metaData:{name:string ,size?:number,color?:string,style?:{}}, type: "image"};
+  container?:any;
 }
 
 interface OptionsBoxesProps {
   items: Item[];
   setOptionValue: (value: string) => void;
-  optionValue: string;
+  optionValue: string | Array<string>;
   style?: StyleProp<ViewStyle>;
+  isMap?: boolean;
+  pagerActive?: any;
 }
 
 
@@ -30,15 +33,18 @@ export const OptionsBoxes: React.FC<OptionsBoxesProps> = ({
   setOptionValue,
   optionValue,
   style = {},
+  isMap,
+  pagerActive
 }) => {
   return (
     <ScrollView style={[{ width: '100%' }, style]} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }} showsVerticalScrollIndicator={false}>
       <View style={[{ flexDirection: 'row', width: '90%', flexWrap: 'wrap', justifyContent: 'space-between', marginRight: 'auto', marginLeft: 'auto' }]}>
         {items.map((data) => (
+          (pagerActive == data.container || data.container == undefined || data.container == "all") &&
           <SelectableBox
             key={data.type}
             setOptionValue={setOptionValue}
-            optionValue={optionValue}
+            optionValue={isMap == false ? optionValue : optionValue[optionValue.indexOf(String(data.type))]}
             title={data.title}
             type={data.type}
             icon={{ type: data.icon.type, metaData:data.icon.metaData, }}
@@ -88,7 +94,7 @@ const SelectableBox = ({
   title:string;
   type: string | number;
   setOptionValue:(type:string | number) => void;
-  optionValue: string | number;
+  optionValue: string | number | Array<string | number>;
   icon:
   | { type: "icon", metaData:{name:string ,size?:number,color?:string,style?:{}}}
   | { type: "image", metaData:{name:string ,size?:number,color?:string,style?:{}}};

@@ -70,10 +70,6 @@ const [unfinishedMelanomaData, setUnfinishedMelanomaData] = useState<SpotData[]>
         } 
     }
 
-    const handleScroll = (e:CustomScrollEvent) => {
-        const page = Math.round(e.nativeEvent.position);
-        setCurrentPageReminder(page);
-    }
 
     const handleScrollReminder = (e: CustomScrollEvent) => {
         const page = Math.round(e.nativeEvent.position);
