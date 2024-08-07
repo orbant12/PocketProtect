@@ -963,7 +963,7 @@ export const fetchChat = async({sessionId,clientId}:{sessionId:string,clientId:s
     }
 }
 
-//WETAHER API
+//<============== | WETAHER API | ===============>
 
 export const getWeatherData = async({
     lat,
@@ -985,3 +985,44 @@ export const getWeatherData = async({
         return null;
     }
 }
+
+
+//<============== | Meta Data | ===============>
+
+export const fetchAllergies =  async ({userId}:{userId:string}):Promise <{"allergiesArray":string[]}> => {
+    const response = await fetch(`${DOMAIN}/client/get/allergies`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+    });
+
+    if(response.ok){
+        const data :  {"allergiesArray":string[]} = await response.json();
+        if(data.allergiesArray != null){
+            return data;
+        } else {
+            return {"allergiesArray":[]}
+        } 
+    } else {
+        return {"allergiesArray":[]}
+    }
+}
+
+export const updateAllergies =  async ({userId,newData}:{userId:string,newData:string[]}):Promise <boolean> => {
+    const response = await fetch(`${DOMAIN}/client/update/allergies`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId, newData }),
+    });
+
+    if(response.ok){
+        return true;
+    } else {
+        return false
+    }
+}
+ 

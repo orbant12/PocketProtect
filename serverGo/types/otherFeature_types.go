@@ -48,4 +48,8 @@ type (
 		Id         string              `json:"id"`
 		Risk       bool                `json:"risk"`
 	}
+
+	AllergiesDoc struct {
+		AllergiesArray []string `json:"allergiesArray"`
+	}
 )

@@ -4,14 +4,19 @@ import { useEffect, useState } from "react";
 import { ExplainPageComponent_Type1, ExplainPageComponent_Type2, ProgressRow } from "./explainPage";
 import { SkinTypeScreen } from "../../pages/Libary/Melanoma/ProcessScreens/Fullprocess/skinSelect";
 import { SkinType } from "../../utils/types";
-import { fetchSkinType, updateSkinType } from "../../services/server";
+import { fetchAllergies, fetchSkinType, updateAllergies, updateSkinType } from "../../services/server";
 import { useAuth } from "../../context/UserAuthContext";
-import { SelectionPage } from "../Common/SelectableComponents/selectPage";
+import { SelectableDataItem, SelectionPage } from "../Common/SelectableComponents/selectPage";
+
+type allergieData = {title:string,icon:{type:string,metaData:{name:string,size:30} },type:string,container:ContainerTypes}
+
+type ContainerTypes = "active" | "food" | "enviroment" | "contant" | "seasonal" | "drug" | "other" | "all"
 
 
-export const MedicalData_Add_View = ({handleClose}) => {
+export const MedicalData_Add_View = ({handleClose,allergiesData,setAllergiesData}) => {
 
     const AllergieArray = [
+        {value:"active",title:"Selected"},
         {value:"food",title:"Food Allergies"},
         {value:"enviroment",title:"Enviroment Allergies"},
         {value:"contant",title:"Contact Allergies"},
@@ -20,17 +25,56 @@ export const MedicalData_Add_View = ({handleClose}) => {
         {value:"other",title:"Other Allergies"},
     ]
 
+    const foodAllergies: SelectableDataItem[] = [
+        {title:"Peanuts",icon:{type:"icon",metaData:{name:"peanut-outline",size:30} },type:"peanuts",container:"food"},
+        {title:"Tree nuts",icon:{type:"icon",metaData:{name:"nutrition",size:30} },type:"tree_nuts",container:"food"},
+        {title:"See Food",icon:{type:"icon",metaData:{name:"jellyfish-outline",size:30} },type:"see_food",container:"food"},
+        {title:"Fish",icon:{type:"icon",metaData:{name:"fish",size:30} },type:"fish",container:"food"},
+        {title:"Milk",icon:{type:"icon",metaData:{name:"bottle-soda-classic-outline",size:30} },type:"milk",container:"food"},
+        {title:"Eggs",icon:{type:"icon",metaData:{name:"egg-fried",size:30} },type:"eggs",container:"food"},
+        {title:"Soy",icon:{type:"icon",metaData:{name:"soy-sauce",size:30} },type:"soy",container:"food"},
+        {title:"Wheat",icon:{type:"icon",metaData:{name:"grass",size:30} },type:"wheat",container:"food"},
+    ]
+
+    const drugAllergies:SelectableDataItem[] = [
+        {title:"Penicillin",icon:{type:"icon",metaData:{name:"pill",size:30} },type:"penicillin",container:"drug"},
+        {title:"Sulfa drugs",icon:{type:"icon",metaData:{name:"pill",size:30} },type:"sulfa",container:"drug"},
+        {title:"Anesthetics",icon:{type:"icon",metaData:{name:"medical-bag",size:30} },type:"aneshetics",container:"drug"},
+        {title:"Aspirin",icon:{type:"icon",metaData:{name:"pill",size:30} },type:"aspirin",container:"drug"},
+    ]
+
+    const enviromentAllergies:SelectableDataItem[] = [
+        {title:"Pollen",icon:{type:"icon",metaData:{name:"flower",size:30} },type:"pollen",container:"enviroment"},
+        {title:"Dust mites",icon:{type:"icon",metaData:{name:"home",size:30} },type:"dust_mites",container:"enviroment"},
+        {title:"Mold",icon:{type:"icon",metaData:{name:"mushroom",size:30} },type:"mold",container:"enviroment"},
+        {title:"Pet dander",icon:{type:"icon",metaData:{name:"dog",size:30} },type:"pet_dander",container:"enviroment"},
+        {title:"Insect stings",icon:{type:"icon",metaData:{name:"bee",size:30} },type:"insect_stings",container:"enviroment"},
+    ]
+
+    const contantAllergies:SelectableDataItem[] = [
+        {title:"Latex",icon:{type:"icon",metaData:{name:"hand-back-left",size:30} },type:"latex",container:"contant"},
+        {title:"Certain metals",icon:{type:"icon",metaData:{name:"diamond-stone",size:30} },type:"nickel",container:"contant"},
+        {title:"Fragrances",icon:{type:"icon",metaData:{name:"spray",size:30} },type:"fragrances",container:"contant"},
+        {title:"Specific chemicals",icon:{type:"icon",metaData:{name:"flask-empty",size:30} },type:"specific_chemicals",container:"contant"},
+    ]
+
+    const seasonalAllergies:SelectableDataItem[] = [
+        {title:"Ragweed",icon:{type:"icon",metaData:{name:"flower",size:30} },type:"ragweed",container:"seasonal"},
+        {title:"Grass",icon:{type:"icon",metaData:{name:"grass",size:30} },type:"grass",container:"seasonal"},
+        {title:"Tree pollen",icon:{type:"icon",metaData:{name:"tree",size:30} },type:"tree_pollen",container:"seasonal"},
+    ]
+
+    const otherAllergies:SelectableDataItem[] = [
+        {title:"Food additives",icon:{type:"icon",metaData:{name:"food-apple",size:30} },type:"food_additives",container:"other"},
+        {title:"Certain preservatives",icon:{type:"icon",metaData:{name:"food-apple",size:30} },type:"preservatives",container:"other"},
+    ]
+
     const [progress, setProgress] = useState(0.1);
     const { currentuser } = useAuth()
     const [activeNavItem, setActiveNavItem] = useState(AllergieArray[0].value)
 
 
 
-    const [medicalData, setMedicalData] = useState({
-        allergies:[
-     
-        ],
-    })
 
     function round(value: number, decimals: number): number {
         const factor = Math.pow(10, decimals);
@@ -39,33 +83,50 @@ export const MedicalData_Add_View = ({handleClose}) => {
 
     const handleBack = (permission:boolean) => {
         if (round(progress,1) == 0.1 || permission == true){
-            handleClose()
+            handleClose("back")
         } else {
             setProgress(round(progress,1) - 0.1)
         }
     }
 
     const handleSaveData = async () => {
-        await updateMedicalData({
-            newData: medicalData,
+        const response = await updateAllergies({
+            newData: allergiesData,
             userId: currentuser.uid
         })
+
+        if(response == true){
+            handleClose("save")
+        }
     }
 
-    const handleLoad = async ()  => {
-        const response = await fetchMedicalData({
-            userId: currentuser.uid
-        })
-        setMedicalData(response)
-    }
 
-    useEffect(() => {
-        handleLoad()
-    },[])
+
+    const setOptionValue = (value:string) => {
+        
+        if (!allergiesData.includes(value)) {
+            if (value === "none") {
+                // Set the state to just ["none"]
+                setAllergiesData(["none"]);
+            } else if (allergiesData.includes("none")) {
+                // Replace "none" with the new value
+                setAllergiesData([value]);
+            } else {
+                // Add the new value to the array
+                setAllergiesData([...allergiesData, value]);
+            }
+        } else {
+            // Value exists, need to remove it
+            setAllergiesData(allergiesData.filter(item => item !== value));
+        }
+    
+    };
+    
+
 
     return(
         <View style={[styles.container,{height:"80%",justifyContent:"space-between",marginBottom:"5%"}]}>
-                <View style={[{width:"100%",height:"85%",flexDirection:"column",justifyContent:"space-between"}]}>
+                <View style={[{width:"100%",height:"92%",flexDirection:"column",justifyContent:"space-between"}]}>
                     {round(progress,1) == 0.1 && <SelectionPage 
                         pageTitle="Allergies"
                         selectableOption="box"
@@ -74,53 +135,20 @@ export const MedicalData_Add_View = ({handleClose}) => {
                         selectableData={[
                             {title:"None",icon:{type:"icon",metaData:{name:"close",size:30} },type:"none",container:"all"},
                             //FOOG ALLERGIES
-                            {title:"Peanuts",icon:{type:"icon",metaData:{name:"peanut-outline",size:30} },type:"peanuts",container:"food"},
-                            {title:"Tree nuts",icon:{type:"icon",metaData:{name:"nutrition",size:30} },type:"tree_nuts",container:"food"},
-                            {title:"See Food",icon:{type:"icon",metaData:{name:"jellyfish-outline",size:30} },type:"see_food",container:"food"},
-                            {title:"Fish",icon:{type:"icon",metaData:{name:"fish",size:30} },type:"fish",container:"food"},
-                            {title:"Milk",icon:{type:"icon",metaData:{name:"bottle-soda-classic-outline",size:30} },type:"milk",container:"food"},
-                            {title:"Eggs",icon:{type:"icon",metaData:{name:"egg-fried",size:30} },type:"eggs",container:"food"},
-                            {title:"Soy",icon:{type:"icon",metaData:{name:"soy-sauce",size:30} },type:"soy",container:"food"},
-                            {title:"Wheat",icon:{type:"icon",metaData:{name:"grass",size:30} },type:"wheat",container:"food"},
+                            ...foodAllergies,
                             //DRUG ALLERGIES
-                            {title:"Penicillin",icon:{type:"icon",metaData:{name:"pill",size:30} },type:"penicillin",container:"drug"},
-                            {title:"Sulfa drugs",icon:{type:"icon",metaData:{name:"pill",size:30} },type:"sulfa",container:"drug"},
-                            {title:"Anesthetics",icon:{type:"icon",metaData:{name:"medical-bag",size:30} },type:"aneshetics",container:"drug"},
-                            {title:"Aspirin",icon:{type:"icon",metaData:{name:"pill",size:30} },type:"aspirin",container:"drug"},
+                            ...drugAllergies,
                             //ENVIROMENT ALLERGIES
-                            {title:"Pollen",icon:{type:"icon",metaData:{name:"flower",size:30} },type:"pollen",container:"enviroment"},
-                            {title:"Dust mites",icon:{type:"icon",metaData:{name:"home",size:30} },type:"dust_mites",container:"enviroment"},
-                            {title:"Mold",icon:{type:"icon",metaData:{name:"mushroom",size:30} },type:"mold",container:"enviroment"},
-                            {title:"Pet dander",icon:{type:"icon",metaData:{name:"dog",size:30} },type:"pet_dander",container:"enviroment"},
-                            {title:"Insect stings",icon:{type:"icon",metaData:{name:"bee",size:30} },type:"insect_stings",container:"enviroment"},
+                            ...enviromentAllergies,
                             //CONTACT ALLERGIES
-                            {title:"Latex",icon:{type:"icon",metaData:{name:"hand-back-left",size:30} },type:"latex",container:"contant"},
-                            {title:"Certain metals",icon:{type:"icon",metaData:{name:"diamond-stone",size:30} },type:"nickel",container:"contant"},
-                            {title:"Fragrances",icon:{type:"icon",metaData:{name:"spray",size:30} },type:"fragrances",container:"contant"},
-                            {title:"Specific chemicals",icon:{type:"icon",metaData:{name:"flask-empty",size:30} },type:"specific_chemicals",container:"contant"},
+                            ...contantAllergies,
                             //SEASONAL ALLERGIES
-                            {title:"Ragweed",icon:{type:"icon",metaData:{name:"flower",size:30} },type:"ragweed",container:"seasonal"},
-                            {title:"Grass",icon:{type:"icon",metaData:{name:"grass",size:30} },type:"grass",container:"seasonal"},
-                            {title:"Tree pollen",icon:{type:"icon",metaData:{name:"tree",size:30} },type:"tree_pollen",container:"seasonal"},
+                            ...seasonalAllergies,
                             //OTHER ALLERGIES
-                            {title:"Food additives",icon:{type:"icon",metaData:{name:"food-apple",size:30} },type:"food_additives",container:"other"},
-                            {title:"Certain preservatives",icon:{type:"icon",metaData:{name:"food-apple",size:30} },type:"preservatives",container:"other"},
-
-
+                            ...otherAllergies,
                         ]}
-                        setOptionValue={(value) => !medicalData.allergies.includes(value) ?  (
-                            value == "none" ? setMedicalData({...medicalData,allergies:["none"]}) : 
-                                medicalData.allergies.includes("none") ? setMedicalData({...medicalData,allergies:[value]}) : setMedicalData({...medicalData,allergies:[...medicalData.allergies,value]})
-                            )
-                                :
-                            (
-                                //DELETE EXISTING VALUE FROM ARRAY
-                                medicalData.allergies.splice(medicalData.allergies.indexOf(value),1),
-                                setMedicalData({...medicalData,allergies:medicalData.allergies})
-                                    
-                            )
-                            }
-                        optionValue={medicalData.allergies}
+                        setOptionValue={setOptionValue}
+                        optionValue={allergiesData}
                         setProgress={setProgress}
                         buttonAction={{type:"next",actionData:{progress:progress,increment_value:0.1}}}
                         showButton={false}
@@ -191,14 +219,12 @@ export const MedicalData_Add_View = ({handleClose}) => {
                     />
                     }
                 </View>
-                <View style={{width:"100%",alignItems:"center"}}>
-                    <TouchableOpacity onPress={() => setProgress(progress + 0.1)} style={{width:"90%",padding:15,flexDirection:"column",justifyContent:"center",alignItems:"center",backgroundColor:"magenta",borderRadius:10}}>
-                        <Text style={{fontWeight:"700",fontSize:14,color:"white"}} >Next</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => setProgress(progress - 0.1)} style={{width:"90%",padding:10,flexDirection:"column",justifyContent:"center",alignItems:"center",backgroundColor:"transparent",borderRadius:10,marginTop:10,borderWidth:0.3}}>
-                        <Text style={{fontWeight:"700",fontSize:14,color:"black"}} >Back</Text>
-                    </TouchableOpacity>
-                </View>
+                
+                <TouchableOpacity onPress={() => handleSaveData()} style={{width:"90%",padding:15,flexDirection:"column",justifyContent:"center",alignItems:"center",backgroundColor:"magenta",borderRadius:10}}>
+                    <Text style={{fontWeight:"700",fontSize:14,color:"white"}} >Update</Text>
+                </TouchableOpacity>
+                
+                
         </View>
     )
 }

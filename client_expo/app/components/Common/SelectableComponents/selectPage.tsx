@@ -12,7 +12,7 @@ interface IconMetaData {
   style?: {};
 }
 
-interface SelectableDataItem {
+export interface SelectableDataItem {
   title: string;
   type: number | string;
   icon: 

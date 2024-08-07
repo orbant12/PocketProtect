@@ -319,6 +319,63 @@ func SetupBloodRoutes(e *echo.Echo, client *firestore.Client) {
 
 		return c.JSON(http.StatusOK, historyData)
 	})
+
+	e.POST("client/get/allergies", func(c echo.Context) error {
+		type GetAllergiesReq struct {
+			UserId string `json:"userId"`
+		}
+
+		var req GetAllergiesReq
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		doc, err := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("allergies").Get(context.Background())
+
+		if err != nil {
+			log.Printf("Error getting allergies document from firestore: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		if doc.Exists() {
+			var data route_types.AllergiesDoc
+			if err := doc.DataTo(&data); err != nil {
+				log.Printf("Error converting document to AllergiesDoc: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			}
+
+			return c.JSON(http.StatusOK, data)
+		} else {
+			log.Printf("No such document!")
+			return c.JSON(http.StatusNotFound, map[string]string{"error": "No such document!"})
+		}
+	})
+
+	e.POST("client/update/allergies", func(c echo.Context) error {
+		type UpdateAllergiesReq struct {
+			UserId  string   `json:"userId"`
+			NewData []string `json:"newData"`
+		}
+
+		var req UpdateAllergiesReq
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request data: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request data"})
+		}
+
+		_, err := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("allergies").Set(context.Background(), map[string]interface{}{
+			"allergiesArray": req.NewData,
+		}, firestore.MergeAll)
+
+		if err != nil {
+			log.Printf("Error updating allergies document: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+		return c.NoContent(http.StatusNoContent)
+	})
 }
 
 type Date struct {

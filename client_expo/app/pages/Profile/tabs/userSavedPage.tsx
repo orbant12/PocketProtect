@@ -4,7 +4,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import React,{useState,useEffect} from 'react';
 import { useWeather } from '../../../context/WeatherContext';
 import { UserContextType } from '../../../utils/types';
-import { fetchBloodWork } from '../../../services/server';
+import { fetchAllergies, fetchBloodWork } from '../../../services/server';
 import { useAuth } from '../../../context/UserAuthContext';
 import { convertWeatherDataToString } from '../../../utils/melanoma/weatherToStringConvert';
 import { styles } from '../../../styles/chatBot_style';
@@ -70,6 +70,28 @@ const UserSavedPage = ({navigation}) => {
       ]
 
       const fetchContextDatas = async () => {
+        await handleBloodWorkFetch()
+        await handleAllergiesFetch()
+      }
+    
+      const handleAllergiesFetch = async () => {
+        const response: {"allergiesArray": string[]} = await fetchAllergies({
+          userId: currentuser.uid
+        })
+        if (response.allergiesArray.length > 0){
+          setUserContexts({
+            ...userContexts,
+            useMedicalData:[...response.allergiesArray]
+          })
+        } else if (response.allergiesArray.length == 0){ 
+          setUserContexts({
+            ...userContexts,
+            useMedicalData:null
+          })
+        }
+      }
+
+      const handleBloodWorkFetch = async () => {
         const response = await fetchBloodWork({
           userId: currentuser.uid
         })
@@ -171,6 +193,8 @@ return (
         }
       }
       userContexts={userContexts}
+      setUserContexts={setUserContexts}
+      handleAllergiesFetch={handleAllergiesFetch}
     />
 
     </View>
@@ -226,7 +250,7 @@ const Cstyles = StyleSheet.create({
 export default UserSavedPage;
 
 
-const DataModal = ({selectedData,setSelectedData,uviData,userContexts}:{
+const DataModal = ({selectedData,setSelectedData,uviData,userContexts,setUserContexts,handleAllergiesFetch}:{
   selectedData:selectableDataTypes,
   setSelectedData:React.Dispatch<React.SetStateAction<selectableDataTypes>>,
   uviData:{
@@ -241,7 +265,9 @@ const DataModal = ({selectedData,setSelectedData,uviData,userContexts}:{
     useMedicalData:any,
     useBMI:any,
     useWeatherEffect:any
-  }
+  },
+  setUserContexts:React.Dispatch<React.SetStateAction<UserContextType>>;
+  handleAllergiesFetch:Function
 }) => {
   return (
     <Modal presentationStyle="formSheet" animationType='slide' visible={selectedData != null}>
@@ -272,13 +298,10 @@ const DataModal = ({selectedData,setSelectedData,uviData,userContexts}:{
           </ScrollView>
       }
       {selectedData == "useMedicalData" &&
-        userContexts["useMedicalData"] != null ?
-        <View>
-
-        </View>
-        :
         <MedicalData_Add_View 
-          handleClose={() => setSelectedData(null)}
+          handleClose={(e:"save" | "back") => {e != "save" ? setSelectedData(null) : setSelectedData(null),handleAllergiesFetch()}}
+          allergiesData={userContexts["useMedicalData"] == null ? [] : userContexts["useMedicalData"]}
+          setAllergiesData={(data) => setUserContexts({...userContexts,useMedicalData:data})}
         />
       }
     </Modal>
