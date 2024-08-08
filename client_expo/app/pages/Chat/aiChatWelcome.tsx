@@ -6,11 +6,12 @@ import { NavBar_AssistantModal } from '../../components/Assist/navbarAssistantMo
 import { useAuth } from '../../context/UserAuthContext';
 import { Navigation_AI_Chat } from '../../navigation/navigation';
 import { ContextToggleType, UserContextType } from '../../utils/types';
-import { BloodWorkCategory, fetchBloodWork } from '../../services/server';
+import { BloodWorkCategory, fetchAllergies, fetchBloodWork } from '../../services/server';
 import { BottomOptionsModal } from './components/ai_chat/bottomOptionsModal';
 import { AiAssistant } from './components/ai_chat/aiWelcomePage';
 import { useWeather } from '../../context/WeatherContext';
 import { convertWeatherDataToString } from '../../utils/melanoma/weatherToStringConvert';
+import { DataModal, generateTodayForWidget, selectableDataTypes } from '../Profile/tabs/userSavedPage';
 
 
 
@@ -22,9 +23,10 @@ const AssistantPage = ({navigation}) => {
 //<==================<[ Variables ]>====================>
 
 const { currentuser } = useAuth()
-const { weatherData } = useWeather()
+const { weatherData,locationString,locationPermissionGranted } = useWeather()
 
 const [selectedType, setSelectedType] = useState<null | "context" | "help" | "questions">(null);
+const [selectedData, setSelectedData] = useState<null | selectableDataTypes>(null);
 
 const [userContexts, setUserContexts] = useState<null | UserContextType>({
   useBloodWork:null,
@@ -76,14 +78,24 @@ const handleStartChat = (e:"get_started" | string,c_t:"blood_work" | "uv" | "med
   setSelectedType(null)
 }
 
-function convertBloodWorkCategoriesToString(categories: BloodWorkCategory[]): string {
-  return categories.map(category => {
-      const dataStrings = category.data.map(item => `${item.type}: ${item.number}`).join(', ');
-      return `${category.title}: ${dataStrings}`;
-  }).join('\n');
+const handleAllergiesFetch = async () => {
+  const response: {"allergiesArray": string[]} = await fetchAllergies({
+    userId: currentuser.uid
+  })
+  if (response.allergiesArray.length > 0){
+    setUserContexts({
+      ...userContexts,
+      useMedicalData:[...response.allergiesArray]
+    })
+  } else if (response.allergiesArray.length == 0){ 
+    setUserContexts({
+      ...userContexts,
+      useMedicalData:null
+    })
+  }
 }
 
-const fetchContextDatas = async () => {
+const handleBloodWorkFetch = async () => {
   const response = await fetchBloodWork({
     userId: currentuser.uid
   })
@@ -93,6 +105,18 @@ const fetchContextDatas = async () => {
       useBloodWork:convertBloodWorkCategoriesToString(response.data)
     })
   } 
+}
+
+function convertBloodWorkCategoriesToString(categories: BloodWorkCategory[]): string {
+  return categories.map(category => {
+      const dataStrings = category.data.map(item => `${item.type}: ${item.number}`).join(', ');
+      return `${category.title}: ${dataStrings}`;
+  }).join('\n');
+}
+
+const fetchContextDatas = async () => {
+  await handleBloodWorkFetch()
+  await handleAllergiesFetch()
 }
 
 const generateBYCT = (c_t:"blood_work" | "uv" | "medical" | "bmi" | "weather") => {
@@ -132,6 +156,21 @@ return (
           setContextToggles={setContextToggles}
           handleStartChat={handleStartChat}
           userContexts={userContexts}
+        />
+        <DataModal 
+          selectedData={selectedData}
+          setSelectedData={setSelectedData}
+          uviData={
+            {
+              locationString:locationString,
+              weatherData:weatherData,
+              today:generateTodayForWidget(),
+              locationPermissionGranted:locationPermissionGranted
+            }
+          }
+          userContexts={userContexts}
+          setUserContexts={setUserContexts}
+          handleAllergiesFetch={handleAllergiesFetch}
         />
       </View>
   </>

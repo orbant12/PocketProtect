@@ -19,6 +19,7 @@ export interface SelectableDataItem {
     | { type: "icon", metaData:{name:string ,size?:number,color?:string,style?:{}}}
     | { type: "image", metaData:{name:string ,size?:number,color?:string,style?:{}}};
   container?:any;
+  active?:boolean;
 }
 
 interface ButtonActionNext {

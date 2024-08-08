@@ -99,7 +99,7 @@ const Cstyles = StyleSheet.create({
         stateID:"useUvIndex"
       },
       {
-        title:"Medical Data",
+        title:"Allergies",
         stateName:contextToggles.useMedicalData,
         stateID:"useMedicalData"
       },

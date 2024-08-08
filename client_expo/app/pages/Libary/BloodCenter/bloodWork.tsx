@@ -128,7 +128,8 @@ const BloodWorkPage = ({navigation,route}) => {
                         selectableData={[{
                             title:"Upload",
                             type:"upload",
-                            icon:{type:"icon",metaData:{name:"upload",size:30}}
+                            icon:{type:"icon",metaData:{name:"upload",size:30}},
+                            active:false
                         },
                         {
                             title:"Manual",
@@ -158,7 +159,7 @@ const BloodWorkPage = ({navigation,route}) => {
                     <ManualBloodAddPage
                         setProgress={setProgress}
                         handleBloodWorkDataChange={handleBloodWorkDataChange}
-                        handleUpload={() => {}}
+                        handleUpload={() => {alert("hey")}}
                         bloodWorkData={bloodWorkData}
                         progress={progress}
                         initialProgress={initialProgress}

@@ -160,4 +160,37 @@ func SetupClientRoutes(e *echo.Echo, client *firestore.Client, storageClient *st
 		//Return no content
 		return c.NoContent(http.StatusNoContent)
 	})
+
+	e.POST("client/register/user-data", func(c echo.Context) error {
+		type NewUserRegisterReq struct {
+			Data   route_types.UserData `json:"data"`
+			UserId string               `json:"userId"`
+		}
+
+		var req NewUserRegisterReq
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		userData := map[string]interface{}{
+			"uid":        req.Data.UID,
+			"fullname":   req.Data.FullName,
+			"profileUrl": req.Data.ProfileUrl,
+			"gender":     req.Data.Gender,
+			"user_since": req.Data.UserSince,
+			"birth_date": req.Data.BirthDate,
+			"email":      req.Data.Email,
+		}
+
+		_, err := client.Collection("users").Doc(req.UserId).Set(context.Background(), userData)
+
+		if err != nil {
+			log.Printf("Error saving user data: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to save user data"})
+		}
+
+		return c.NoContent(http.StatusOK)
+	})
 }

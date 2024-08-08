@@ -9,7 +9,7 @@ import { getWeatherAPIKey } from "../../key";
 //export const FLASK_DOMAIN = "http://51.21.97.54:5001"
 //const DOMAIN = "http://51.21.97.54:3001";
 
-const DOMAIN = "http://localhost:3001";
+export const DOMAIN = "http://localhost:3001";
 export const FLASK_DOMAIN =  "http://localhost:5001";
 
 type SpotDeleteTypes = "history" | "latest"
@@ -240,32 +240,32 @@ export const fetchSelectedMole = async ({
 }
 
 // DONE
-export const fetchAllMelanomaSpotData = async ({
-    userId,
-    gender,
-}:API_Melanoma) => {
-    try{
-        const response = await fetch(`${DOMAIN}/client/get/all-melanoma`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                userId,
-                gender
-            })
-        });
+// export const fetchAllMelanomaSpotData = async ({
+//     userId,
+//     gender,
+// }:API_Melanoma) => {
+//     try{
+//         const response = await fetch(`${DOMAIN}/client/get/all-melanoma`, {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json",
+//             },
+//             body: JSON.stringify({
+//                 userId,
+//                 gender
+//             })
+//         });
 
-        if(response.ok){
-            const data = await response.json();
-            return data as SpotData[];
-        } else {
-            return []
-        }
-    } catch (error) {
-        return false
-    }
-}
+//         if(response.ok){
+//             const data = await response.json();
+//             return data as SpotData[];
+//         } else {
+//             return []
+//         }
+//     } catch (error) {
+//         return false
+//     }
+// }
 
 // DONE
 export const fetchSlugMelanomaData = async ({
@@ -415,28 +415,28 @@ export const fetchNumberOfMoles = async ({
 }
 
 //DONE
-export const fetchNumberOfMolesOnSlugs = async ({
-    userId, 
-    gender
-}:API_Melanoma):Promise <numberOfMolesOnSlugs | []> =>{
-    const response = await fetch(`${DOMAIN}/client/get/number-of-melanoma-on-slug`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            userId,
-            gender
-        })}
-    );
+// export const fetchNumberOfMolesOnSlugs = async ({
+//     userId, 
+//     gender
+// }:API_Melanoma):Promise <numberOfMolesOnSlugs | []> =>{
+//     const response = await fetch(`${DOMAIN}/client/get/number-of-melanoma-on-slug`, {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({
+//             userId,
+//             gender
+//         })}
+//     );
 
-    if(response.ok){
-        const data = await response.json();
-        return [data] as numberOfMolesOnSlugs;
-    } else {
-        return []
-    }
-}
+//     if(response.ok){
+//         const data = await response.json();
+//         return [data] as numberOfMolesOnSlugs;
+//     } else {
+//         return []
+//     }
+// }
 
 // DONE
 export const updateCompletedParts = async ({
@@ -459,24 +459,24 @@ export const updateCompletedParts = async ({
 }
 
 // DONE
-export const fetchCompletedParts = async ({
-    userId
-}:API_Melanoma): Promise<{slug:Slug}[] | null> => {
-    const response = await fetch(`${DOMAIN}/client/get/completed-parts`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId }),
-    });
+// export const fetchCompletedParts = async ({
+//     userId
+// }:API_Melanoma): Promise<{slug:Slug}[] | null> => {
+//     const response = await fetch(`${DOMAIN}/client/get/completed-parts`, {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({ userId }),
+//     });
     
-    if(response.ok){
-        const data = await response.json();
-        return data;
-    } else {
-        return null
-    }
-}
+//     if(response.ok){
+//         const data = await response.json();
+//         return data;
+//     } else {
+//         return null
+//     }
+// }
 
 //DONE
 export const fetchSpecialSpots = async ({
@@ -503,46 +503,46 @@ export const fetchSpecialSpots = async ({
 }
 
 //DONE
-export const fetchSkinType = async ({
-    userId
-}:API_Melanoma):Promise <SkinType | null> => {
-    const response = await fetch(`${DOMAIN}/client/get/skin-type`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId }),
-    });
+// export const fetchSkinType = async ({
+//     userId
+// }:API_Melanoma):Promise <SkinType | null> => {
+//     const response = await fetch(`${DOMAIN}/client/get/skin-type`, {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({ userId }),
+//     });
 
-    if(response.ok){
-        const data = await response.json();
-        return data as SkinType;
-    } else {
-        return null
-    }
-}
+//     if(response.ok){
+//         const data = await response.json();
+//         return data as SkinType;
+//     } else {
+//         return null
+//     }
+// }
 
-export const updateSkinType = async ({
-    userId,
-    newType
-}:{
-    userId:string;
-    newType:SkinType
-}):Promise<boolean> => {
-    const response = await fetch(`${DOMAIN}/client/update/skin-type`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userId,newType }),
-    });
+// export const updateSkinType = async ({
+//     userId,
+//     newType
+// }:{
+//     userId:string;
+//     newType:SkinType
+// }):Promise<boolean> => {
+//     const response = await fetch(`${DOMAIN}/client/update/skin-type`, {
+//         method: "POST",
+//         headers: {
+//             "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify({ userId,newType }),
+//     });
 
-    if(response.ok){
-        return true;
-    } else {
-        return false
-    }
-}
+//     if(response.ok){
+//         return true;
+//     } else {
+//         return false
+//     }
+// }
 
 //DONE
 export const fetchSingleMoleById = async ({
@@ -614,26 +614,26 @@ export const changeMelanomaPicture = async ({
 //<===> USER <====>
 
 //DONE
-export const fetchUserData = async ({
-    userId
-}: { userId: string }): Promise<UserData | null> => { 
-    try {
-        const response = await fetch(`${DOMAIN}/client/get/user-data`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ userId }),
-        });
-        if(response.ok){
-            const data = await response.json();
-            return data;
-        }
-        return null;
-    } catch (error) {
-        return null;
-    }
-};
+// export const fetchUserData = async ({
+//     userId
+// }: { userId: string }): Promise<UserData | null> => { 
+//     try {
+//         const response = await fetch(`${DOMAIN}/client/get/user-data`, {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json",
+//             },
+//             body: JSON.stringify({ userId }),
+//         });
+//         if(response.ok){
+//             const data = await response.json();
+//             return data;
+//         }
+//         return null;
+//     } catch (error) {
+//         return null;
+//     }
+// };
 
 //DONE - Not Tested
 export const changePersonalData = async ({

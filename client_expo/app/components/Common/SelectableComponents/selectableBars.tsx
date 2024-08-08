@@ -15,7 +15,7 @@ interface SelectableDataItem {
   icon: 
     | { type: "icon", metaData:{name:string ,size?:number,color?:string,style?:{}}}
     | { type: "image", metaData:{name:string ,size?:number,color?:string,style?:{}}};
-  
+  active?:boolean;
 }
 
 interface SelectableBarsProps {
@@ -52,18 +52,27 @@ export const SelectableBars: React.FC<SelectableBarsProps> = ({
           type={data.type}
           title={data.title}
           icon={data.icon}
+          active={data.active}
         />
       ))}
     </ScrollView>
   );
 };
 
-const SelectableBar: React.FC<SelectableBarProps> = ({
+const SelectableBar = ({
   setOptionValue,
   optionValue,
   type,
   title,
   icon,
+  active
+}:{
+  setOptionValue:any;
+  optionValue:any;
+  type:any;
+  title:string;
+  icon:any;
+  active?:boolean
 }) => {
   return (
     <TouchableOpacity
@@ -79,7 +88,8 @@ const SelectableBar: React.FC<SelectableBarProps> = ({
           alignSelf: 'center',
           marginTop: 20,
         },
-        optionValue === type && { borderColor: 'magenta' },
+        optionValue === type && active != false && { borderColor: 'magenta' },
+        active != undefined && active == false && {opacity:0.4}
       ]}
     >
       {icon.type === 'icon' && (
@@ -93,13 +103,13 @@ const SelectableBar: React.FC<SelectableBarProps> = ({
               borderTopRightRadius: 0,
               borderBottomRightRadius: 0,
             },
-            optionValue === type && { borderColor: 'magenta' },
+            optionValue === type && active != false && { borderColor: 'magenta' },
           ]}
         >
           <MaterialCommunityIcons
             name={icon.metaData.name}
             size={icon.metaData.size}
-            color={optionValue === type ? 'magenta' : 'black'}
+            color={optionValue === type && active != false ? 'magenta' : 'black'}
           />
         </View>
       )}

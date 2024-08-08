@@ -18,8 +18,16 @@ import { DateToString } from '../../../utils/date_manipulations';
 import { WeatherWidget } from '../../../components/Widgets/weatherWidget';
 import { MedicalData_Add_View } from '../../../components/ExplainPages/medicalData';
 
-type selectableDataTypes = "useBloodWork" | "useUvIndex" | "useMedicalData" | "useBMI" | "useWeatherEffect"
+export type selectableDataTypes = "useBloodWork" | "useUvIndex" | "useMedicalData" | "useWeatherEffect";
 
+export const generateTodayForWidget = () => {
+  const todayDate: Date = new Date();
+  const date = DateToString(todayDate);
+  const day = moment(date).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') ? moment(date).format('dd'):moment(date).format('dd')
+  const withoutYear = moment(date).format('DD.MM');
+  const today = day + " " + withoutYear; 
+  return today
+}
 
 const UserSavedPage = ({navigation}) => {
 
@@ -31,15 +39,8 @@ const UserSavedPage = ({navigation}) => {
         useBloodWork:null,
         useUvIndex:locationPermissionGranted ? (weatherData != null ? `UV Index: ${weatherData.uvi}` : null) : null,
         useMedicalData:null,
-        useBMI:null,
         useWeatherEffect:weatherData != null ? convertWeatherDataToString(weatherData) : null,
       })
-
-      const todayDate: Date = new Date();
-      const date = DateToString(todayDate);
-      const day = moment(date).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') ? moment(date).format('dd'):moment(date).format('dd')
-      const withoutYear = moment(date).format('DD.MM');
-      const today = day + " " + withoutYear; 
 
       const ContextOptions:{title:string,stateName:any,stateID:selectableDataTypes}[] = [
         {
@@ -53,14 +54,9 @@ const UserSavedPage = ({navigation}) => {
           stateID:"useUvIndex"
         },
         {
-          title:"Medical Data",
+          title:"Allergies",
           stateName:userContexts.useMedicalData,
           stateID:"useMedicalData"
-        },
-        {
-          title:"BMI",
-          stateName:userContexts.useBMI,
-          stateID:"useBMI"
         },
         {
           title:"Weather Effects",
@@ -188,7 +184,7 @@ return (
         {
           locationString:locationString,
           weatherData:weatherData,
-          today:today,
+          today:generateTodayForWidget(),
           locationPermissionGranted:locationPermissionGranted
         }
       }
@@ -250,7 +246,7 @@ const Cstyles = StyleSheet.create({
 export default UserSavedPage;
 
 
-const DataModal = ({selectedData,setSelectedData,uviData,userContexts,setUserContexts,handleAllergiesFetch}:{
+export const DataModal = ({selectedData,setSelectedData,uviData,userContexts,setUserContexts,handleAllergiesFetch}:{
   selectedData:selectableDataTypes,
   setSelectedData:React.Dispatch<React.SetStateAction<selectableDataTypes>>,
   uviData:{
@@ -263,7 +259,6 @@ const DataModal = ({selectedData,setSelectedData,uviData,userContexts,setUserCon
     useBloodWork:any,
     useUvIndex:any,
     useMedicalData:any,
-    useBMI:any,
     useWeatherEffect:any
   },
   setUserContexts:React.Dispatch<React.SetStateAction<UserContextType>>;

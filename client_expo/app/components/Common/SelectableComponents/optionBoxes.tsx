@@ -38,9 +38,9 @@ export const OptionsBoxes: React.FC<OptionsBoxesProps> = ({
 }) => {
   return (
     <ScrollView style={[{ width: '100%' }, style]} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }} showsVerticalScrollIndicator={false}>
-      <View style={[{ flexDirection: 'row', width: '90%', flexWrap: 'wrap', justifyContent: 'space-between', marginRight: 'auto', marginLeft: 'auto' }]}>
+      <View style={[{ flexDirection: 'row', width: '100%', flexWrap: 'wrap', marginRight: 'auto', marginLeft: 'auto', justifyContent:"center" }]}>
         {items.map((data) => (
-          (pagerActive == data.container || data.container == undefined || data.container == "all") &&
+          (pagerActive == data.container || data.container == undefined || (data.container == "all" && pagerActive != "active")  || (pagerActive == "active" && isMap == false ? optionValue == data.type : optionValue.includes(data.type) ) ) &&
           <SelectableBox
             key={data.type}
             setOptionValue={setOptionValue}
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     borderWidth: 0.3,
     borderRadius: 10,
     padding: 20,
-    marginBottom: 30,
+    margin:10,
     alignSelf: 'center',
   },
   genderOptionButtonA: {
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 15,
     padding: 20,
-    marginBottom: 10,
+    margin:10,
     backgroundColor: 'rgba(0,0,0,0.03)',
     borderColor: 'magenta',
     alignSelf: 'center',

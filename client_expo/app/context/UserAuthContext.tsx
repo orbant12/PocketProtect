@@ -9,17 +9,16 @@ import { useContext, createContext, useEffect, useState } from "react"
 import { useNavigation } from "@react-navigation/core";
 
 //FIREBASE AUTH
-import { AuthErrorCodes, createUserWithEmailAndPassword, onAuthStateChanged,signInWithEmailAndPassword,sendEmailVerification, signInWithCredential, GoogleAuthProvider  } from "firebase/auth";
+import { AuthErrorCodes, createUserWithEmailAndPassword, onAuthStateChanged,signInWithEmailAndPassword,signInWithCredential, GoogleAuthProvider  } from "firebase/auth";
 
 //FIREBASE
 import { auth,db} from "../services/firebase";
 import { collection, doc, setDoc,getDoc} from "firebase/firestore";
 import { UserData } from "../utils/types";
 import { RootStackNavigationProp } from "../../App";
-import { fetchUserData } from "../services/server";
-import { Alert } from "react-native";
 import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from "expo-web-browser";
+import { User } from "../models/User";
 
 WebBrowser.maybeCompleteAuthSession();
 export interface AuthContextType {
@@ -45,7 +44,7 @@ const UserAuthContext = ({ children }) => {
 const [currentuser, setuser] = useState<UserData| null>(null)
 const [error, setError] = useState("")
 const navigation = useNavigation<RootStackNavigationProp>();
-const [isRegisterLoading, setIsRegisterLoading] = useState<boolean | "onboard" | "reset">("reset");
+const [isRegisterLoading, setIsRegisterLoading] = useState<boolean | "update" | "reset">("reset");
 
 const [request, response, promptAsync] = Google.useAuthRequest({
   androidClientId: "567381254436-b0cqltfecu40o0skrmiq77iiqp2h9njl.apps.googleusercontent.com",
@@ -56,41 +55,53 @@ const [request, response, promptAsync] = Google.useAuthRequest({
 
 //<********************FUNCTIONS************************>
 
-// <====> Auth State Listener <====>
+
+
+const handleLogin = async (uid:string) => {
+  try {
+    //WE HAVE USER & HE IS LOGGED IN
+    const user = new User(uid)
+    await user.fetchUserData()
+    const userData = user.getUserData()
+    if (userData == null) {
+      navigation.navigate("AuthHub");
+      console.log("You are not logged in");
+    } else {
+      setuser(userData);
+      console.log("You are logged in");
+      navigation.navigate("Main");
+    }
+  } catch (error) {
+    console.error("Error fetching user data: ", error);
+    navigation.navigate("AuthHub");
+  }
+}
+
+const handleUserContextUpdate  = async (uid:string) => {
+  try {
+    const user = new User(uid)
+    await user.fetchUserData()
+    const userData = user.getUserData()
+    if (userData == null) {
+      navigation.navigate("AuthHub");
+    } else {
+      setuser(userData);
+      console.log("You are onboard");
+    }
+  } catch (error) {
+    console.error("Error fetching user data: ", error);
+    navigation.navigate("AuthHub");
+  }
+  setIsRegisterLoading("reset")
+}
 
 useEffect(() => {
   const unsubscribe = onAuthStateChanged(auth, async (user) => {
     if (user && isRegisterLoading == false) {
-      try {
-        //WE HAVE USER & HE IS LOGGED IN
-        const userData = await fetchUserData({ userId: user.uid });
-        if (userData == null) {
-          navigation.navigate("AuthHub");
-          console.log("You are not logged in");
-        } else {
-          setuser(userData);
-          console.log("You are logged in");
-          navigation.navigate("Main");
-        }
-      } catch (error) {
-        console.error("Error fetching user data: ", error);
-        navigation.navigate("AuthHub");
-      }
-    } else if (user && isRegisterLoading == "onboard"){
+      await handleLogin(user.uid)
+    } else if (user && isRegisterLoading == "update"){
       //WE HAVE USER & HE IS Freshly REGISTERED
-      try {
-        const userData = await fetchUserData({ userId: user.uid });
-        if (userData == null) {
-          navigation.navigate("AuthHub");
-        } else {
-          setuser(userData);
-          console.log("You are onboard");
-        }
-      } catch (error) {
-        console.error("Error fetching user data: ", error);
-        navigation.navigate("AuthHub");
-      }
-      setIsRegisterLoading("reset")
+      await handleUserContextUpdate(user.uid)
     } else if (user && isRegisterLoading == "reset"){
       //FOR USEEFFECT CLEANUP
     } else if (user == null) {
@@ -100,7 +111,6 @@ useEffect(() => {
     }
   });
 
-  // Cleanup subscription on unmount
   return () => unsubscribe();
 }, [isRegisterLoading]);
 
@@ -117,8 +127,6 @@ const Login = async (email:string,password:string):Promise<boolean> => {
   try {
     await signInWithEmailAndPassword(auth,logEmail,logPass)
     .then((userCredential) => {
-      // Signed in 
-      const user = userCredential.user;
       setIsRegisterLoading(false);
     })
     return true
@@ -130,40 +138,6 @@ const Login = async (email:string,password:string):Promise<boolean> => {
 }
 
 
-// <====> GOOGLE HANDLER <====>
-
-const GoogleLogin = async (result:any) => {
-  const user = result.user;
-  console.log(user)
-}
-
-// <====> REGISTER HANDLER <====>
-
-const RegisterUserData = async ({
-  userId,
-  userFullName,
-  regEmail,
-}):Promise<void> => {
-  try {
-    const colRef = collection(db, "users");
-    await setDoc(doc(colRef, userId),{
-      uid: userId,
-      fullname: userFullName,
-      email: regEmail,
-      profileUrl: "",
-      user_since: new Date().toLocaleDateString(),
-      gender: "",
-      birth_date: null,
-    });
-    console.log("Document successfully added!");
-    await sendEmailVerification(regEmail)
-    return
-  } catch (error) {
-    console.error("Error adding document: ", error);
-    return
-  };
-}
-
 const SignUp = async (email:string, password:string, FullName:string) : Promise<boolean> => {
   
   const userFullName = FullName;
@@ -173,17 +147,14 @@ const SignUp = async (email:string, password:string, FullName:string) : Promise<
   try {
     setIsRegisterLoading(true);
     const result = await createUserWithEmailAndPassword(auth, regEmail, userPassword);
-
     const signeduser = result.user;
     const userId = signeduser.uid;
-
-    await RegisterUserData({
-      userId: userId,
-      userFullName: userFullName,
-      regEmail: regEmail,
-    });
-    setIsRegisterLoading("onboard");
-    return true
+    const user = new User(userId)
+    const resultData = await user.registerUser(userFullName,regEmail)
+    if(resultData == true){
+      setIsRegisterLoading("update");
+    } 
+    return resultData;
   } catch(err) {
     //ERROR IF ITS IN ALREADY USE
     if (err.code === "auth/email-already-in-use") {
@@ -207,7 +178,7 @@ const handleAuthHandler = (type:"disconnect" | "fetch" | "fetch_w_main") => {
   if (type == "disconnect") {
     setIsRegisterLoading(true);
   } else if (type == "fetch") {
-    setIsRegisterLoading("onboard");
+    setIsRegisterLoading("update");
   } else if (type == "fetch_w_main") {
     setIsRegisterLoading(false);
   }
@@ -219,7 +190,6 @@ const checkIfNewUser = async (uid) => {
   const userDoc = await getDoc(userRef);
   return !userDoc.exists();
 };
-
 
 const handleMore = async ({credential}) => {
   try {
@@ -285,10 +255,6 @@ useEffect(() => {
 }
 }
 },[response])
-
-
-
-
 
 
 //<********************RETURN************************>

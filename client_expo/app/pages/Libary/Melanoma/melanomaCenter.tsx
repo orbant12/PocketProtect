@@ -6,23 +6,22 @@ import {bodyFemaleBack} from "../../../components/LibaryPage/Melanoma/BodyParts/
 import {bodyFront} from "../../../components/LibaryPage/Melanoma/BodyParts/bodyFront"
 import {bodyBack} from "../../../components/LibaryPage/Melanoma/BodyParts/bodyBack"
 import { useAuth } from '../../../context/UserAuthContext';
-import { fetchAllMelanomaSpotData,fetchCompletedParts, fetchNumberOfMolesOnSlugs, fetchSkinType, updateSkinType } from '../../../services/server';
 import { useFocusEffect } from '@react-navigation/native';
 import { SkinModal } from "../../../components/LibaryPage/Melanoma/modals";
 import { numberOfMolesOnSlugs } from "../../../components/LibaryPage/Melanoma/slugCard";
 import { Navigation_MoleUpload_1,Navigation_SlugAnalysis } from "../../../navigation/navigation";
 import { styles_shadow } from "../../../styles/shadow_styles";
 import { NavBar_TwoOption } from "../../../components/Common/navBars";
-import { BodyPart, SkinType, Slug, SpotData} from "../../../utils/types";
+import { BodyPart, DetectableRealatives, SkinType, Slug, SpotData, SunBurnData} from "../../../utils/types";
 import { SkinNumber_Convert } from "../../../utils/skinConvert";
-import { SunBurnScreen } from "./ModalScreens/sunBurnScreen";
 import { MelanomaContent } from "./components/center/melanomaContent";
+import { Melanoma } from "../../../models/Melanoma";
 
 
 export type MelanomaMetaData = {
-    sunburn: { stage: number; slug: Slug }[];
+    sunburn: SunBurnData;
     skin_type: SkinType;
-    detected_relative: string;
+    detected_relative: DetectableRealatives;
 };
 
 export type MelanomaModalOptions = "skin_type" | "detected_relative" | "slug" | "stage" | "sunburn" ;
@@ -32,12 +31,13 @@ export type MelanomaModalOptions = "skin_type" | "detected_relative" | "slug" | 
 const SingleFeature = ({navigation}) => {
 
 //<==================<[ Variables ]>====================>
-
     const { currentuser } = useAuth();
+    const melanoma = new Melanoma(currentuser.uid,currentuser.gender)
+
+    const [melanomaData, setMelanomaData] = useState<SpotData[]>([])
     const [bodySlugs, setBodySlugs] = useState<BodyPart[]>(null)
     const [ affectedSlugs,setAffectedSlugs ] = useState<{slug: Slug}[]>([])
     const [selectedSide, setSelectedSide] = useState<"front" | "back">("front");
-    const [melanomaData, setMelanomaData] = useState<SpotData[]>([])
     const [ completedParts, setCompletedParts] = useState([])
     const [numberOfMolesOnSlugs,setNumberOfMolesOnSlugs] = useState<numberOfMolesOnSlugs>([])
     const [ melanomaMetaData, setMelanomaMetaData] = useState<MelanomaMetaData>({
@@ -56,40 +56,14 @@ const SingleFeature = ({navigation}) => {
 
 //<==================<[ Functions ]>====================>
 
-    const fetchAllMelanomaData = async () => {
-        if(currentuser){
-            const response = await fetchAllMelanomaSpotData({
-                userId: currentuser.uid,
-                gender:currentuser.gender
-            });
-            if(response != false){
-                setMelanomaData(response);
-            } else {
-                setMelanomaData([])
-            }
-        }
-    }
-
     const fetchAllCompletedParts = async () => {
-        if(currentuser){
-            const response = await fetchCompletedParts({
-                userId: currentuser.uid,
-            });
-            if(response != undefined){
-                const completedSlugs = response.map(part => part.slug);     
-                setCompletedParts(completedSlugs)
-            }
-        }
+        const response = await melanoma.fetchCompletedParts()
+        setCompletedParts(response)
     }
 
     const fetchAllNumberOfMoleOnSlug = async () => {
-        if(currentuser){
-            const response = await fetchNumberOfMolesOnSlugs({
-                userId: currentuser.uid,
-                gender: currentuser.gender
-            });
-            setNumberOfMolesOnSlugs(response)
-        }
+        const response = await melanoma.numberOfMolesOnSlugsArray()
+        setNumberOfMolesOnSlugs(response)
     }
 
     const BodySvgSelector = () => {
@@ -147,41 +121,29 @@ const SingleFeature = ({navigation}) => {
     };
 
     const handleFetchSkinType = async () => {
-        const response = await fetchSkinType({userId:currentuser.uid})
-        if (response) {
-            setMelanomaMetaData(prevState => ({
-                ...prevState,
-                skin_type: response
-            }));
-        } else {
-            console.error('No response received or response is empty');
-        }
+        const response = await melanoma.fetchSkinType()
+        setMelanomaMetaData(prevState => ({
+            ...prevState,
+            skin_type: response
+        }));
     }
 
-    const handleSaveSkinType = async () => {
-        await updateSkinType({
-            newType:melanomaMetaData.skin_type,
-            userId: currentuser.uid
-        })
+    const fetchAllMelanomaData = async () => {
+        const response = await melanoma.fetchAllMelanomaData()
+        setMelanomaData(response)
+    }
+
+    function handleSkinModalClose(e){
+        setSkinModal(e);
+        melanoma.updateSkinType(melanomaMetaData.skin_type)
     }
 
     const handleRefresh = () => {
         BodySvgSelector()
         AffectedSlugMap(); 
-        fetchAllMelanomaData();
         fetchAllCompletedParts();
         fetchAllNumberOfMoleOnSlug();
         handleFetchSkinType();
-    }
-
-    const handleNavigation = (path:string,data:any) => {
-        if ( path ==  "SlugAnalasis"){
-            Navigation_SlugAnalysis({
-                bodyPartSlug: data,
-                skin_type: melanomaMetaData.skin_type as SkinType,
-                navigation
-            })
-        }
     }
 
     useFocusEffect(
@@ -194,6 +156,7 @@ const SingleFeature = ({navigation}) => {
     useEffect(() => {
         BodySvgSelector()
         AffectedSlugMap()
+        fetchAllMelanomaData()
     }, [currentuser, selectedSide,melanomaData]);
     
     const onRefresh = useCallback(() => {
@@ -260,13 +223,17 @@ const SingleFeature = ({navigation}) => {
                     bodySlugs={bodySlugs}
                     completedParts={completedParts}
                     handleAddMelanoma={handleAddMelanoma}
-                    handleNavigation={handleNavigation}
+                    handleNavigation={(path,data) => Navigation_SlugAnalysis({
+                        bodyPartSlug: data,
+                        skin_type: melanomaMetaData.skin_type as SkinType,
+                        navigation
+                    })}
                     skinModal={skinModal}
                     numberOfMolesOnSlugs={numberOfMolesOnSlugs}
                 />           
             </ScrollView>
             <SkinModal 
-                setSkinModal={(e) => {setSkinModal(e);handleSaveSkinType()}}
+                setSkinModal={(e) => {handleSkinModalClose(e)}}
                 visible={skinModal}
                 handleMelanomaDataChange={handleMelanomaDataChange}
                 melanomaMetaData={melanomaMetaData}

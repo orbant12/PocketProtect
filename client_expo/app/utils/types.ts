@@ -66,6 +66,19 @@ export type SpotArrayData = {
     color:string
 }
 
+export type CompletedParts = Slug[]
+
+export type SunBurnData = {slug:string, stage: 0 | 1 | 2 | 3}[]
+
+export type DetectableRealatives = "none" | "mother" | "father" | "sibling" | "grandmother" | "grandfather" | "other";
+
+export type SkinDataType = {
+    completedArray: CompletedParts,
+    detected_relatives: DetectableRealatives,
+    skin_type: SkinType,
+    sunburn: SunBurnData,
+}
+
 
 export type SkinType = 0 | 1 | 2 | 3;
 
@@ -202,8 +215,7 @@ export type ContextToggleType = {
 export type UserContextType = {
     useBloodWork:null | string,
     useUvIndex:null | string,
-    useMedicalData:null | "",
-    useBMI:null | "",
+    useMedicalData:null | any[],
     useWeatherEffect:null | string
 }
 

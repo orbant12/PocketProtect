@@ -1,4 +1,4 @@
-import { View,Text,StyleSheet,Image,TouchableOpacity, Modal } from "react-native"
+import { View,Text,StyleSheet,Image,TouchableOpacity, Modal, ActivityIndicator } from "react-native"
 import React, { useState, useRef } from 'react';
 import UserSavedPage from "./tabs/userSavedPage"
 import { Tabs} from 'react-native-collapsible-tab-view'
@@ -16,6 +16,7 @@ import * as ImagePicker from 'expo-image-picker';
 import ProfileCameraScreenView from "../Auth/cameraModal";
 import { styles_shadow } from "../../styles/shadow_styles";
 import { convertImageToBase64 } from "../../utils/imageConvert";
+import { User } from "../../models/User";
 
 type NavbarValues = "ai_vision" | "blood_work" | "diagnosis" | "soon"
 
@@ -28,7 +29,7 @@ const { currentuser, handleAuthHandler } = useAuth()
 const [isProfileChangeActive, setIsProfileChangeActive] = useState(false);  
 const [profileUrl, setProfileUrl] = useState(currentuser.profileUrl);
 const [isCameraActive, setIsCameraActive] = useState(false);
-
+const [loading, setLoading] = useState(false)
 const maleDefault = Image.resolveAssetSource(require("../../assets/male.png")).uri;
 const femaleDefault = Image.resolveAssetSource(require("../../assets/female.png")).uri;
 
@@ -65,15 +66,14 @@ const handlePictureUpload = async() => {
 };
 
 const handleChangeProfile = async() => {
-    const profileBlob = await convertImageToBase64(profileUrl);
-    const respose = await changeProfilePicture({
-        userId:currentuser.uid,
-        profileBlob:profileBlob
-    })
-    if(respose == true){
+    setLoading(true)
+    const user = new User(currentuser.uid);
+    const response = await user.changeProfileUrl(profileUrl);
+    if(response == true){
         setIsProfileChangeActive(false);
         handleAuthHandler("fetch");
     }
+    setLoading(false)
 }
 
 
@@ -175,6 +175,8 @@ const handleChangeProfile = async() => {
             </Tabs.Container>     
             <Modal animationType="slide" visible={isProfileChangeActive} presentationStyle="formSheet">
             <>
+                {!loading ?
+                <>
                 <TouchableOpacity onPress={() => {setIsProfileChangeActive(!isProfileChangeActive);setProfileUrl(currentuser.profileUrl)}} style={{flexDirection:"column",justifyContent:"center",width:"90%",height:50,borderRadius:10,backgroundColor:"black",borderWidth:3,borderColor:"white",alignItems:"center",position:"absolute",top:20,alignSelf:"center"}}>
                         <MaterialCommunityIcons 
                             name="close"
@@ -249,6 +251,16 @@ const handleChangeProfile = async() => {
                         }}
                     />  
                 </Modal>
+                </>
+                :
+                <View style={{width:"100%",height:"100%",alignItems:"center",justifyContent:"center",flexDirection:"row"}}>
+                    <ActivityIndicator size={20} />
+                    <Text style={{fontWeight:"700"}}> Uploading</Text>
+                    <TouchableOpacity onPress={() => setLoading(false)} style={{position:"absolute",bottom:10,alignItems:"center",padding:15,width:"80%",backgroundColor:"black",borderRadius:10}}>
+                        <Text style={{color:"white",fontWeight:"700"}}>Close while uploading</Text>
+                    </TouchableOpacity>
+                </View>
+                }
             </>
             </Modal>
         </View>   
