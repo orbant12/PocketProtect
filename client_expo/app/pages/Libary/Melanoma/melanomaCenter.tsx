@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity,ScrollView,RefreshControl,Modal } from "react-native"
+import { View, Text, TouchableOpacity,ScrollView,RefreshControl } from "react-native"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import React, {useEffect, useState, useRef,useCallback} from 'react';
 import {bodyFemaleFront} from "../../../components/LibaryPage/Melanoma/BodyParts/bodyFemaleFront"
@@ -8,14 +8,13 @@ import {bodyBack} from "../../../components/LibaryPage/Melanoma/BodyParts/bodyBa
 import { useAuth } from '../../../context/UserAuthContext';
 import { useFocusEffect } from '@react-navigation/native';
 import { SkinModal } from "../../../components/LibaryPage/Melanoma/modals";
-import { numberOfMolesOnSlugs } from "../../../components/LibaryPage/Melanoma/slugCard";
 import { Navigation_MoleUpload_1,Navigation_SlugAnalysis } from "../../../navigation/navigation";
 import { styles_shadow } from "../../../styles/shadow_styles";
 import { NavBar_TwoOption } from "../../../components/Common/navBars";
-import { BodyPart, DetectableRealatives, SkinType, Slug, SpotData, SunBurnData} from "../../../utils/types";
+import { BodyPart, DetectableRealatives, MolePerSlugNumber, SkinType, Slug, SpotData, SunBurnData} from "../../../utils/types";
 import { SkinNumber_Convert } from "../../../utils/skinConvert";
 import { MelanomaContent } from "./components/center/melanomaContent";
-import { Melanoma } from "../../../models/Melanoma";
+import { MolePerSlugNumber_Default } from "../../../utils/initialValues";
 
 
 export type MelanomaMetaData = {
@@ -39,7 +38,7 @@ const SingleFeature = ({navigation}) => {
     const [ affectedSlugs,setAffectedSlugs ] = useState<{slug: Slug}[]>([])
     const [selectedSide, setSelectedSide] = useState<"front" | "back">("front");
     const [ completedParts, setCompletedParts] = useState([])
-    const [numberOfMolesOnSlugs,setNumberOfMolesOnSlugs] = useState<numberOfMolesOnSlugs>([])
+    const [numberOfMolesOnSlugs,setNumberOfMolesOnSlugs] = useState<MolePerSlugNumber>(MolePerSlugNumber_Default)
     const [ melanomaMetaData, setMelanomaMetaData] = useState<MelanomaMetaData>({
         sunburn:[{
             stage:0,
@@ -57,8 +56,8 @@ const SingleFeature = ({navigation}) => {
 //<==================<[ Functions ]>====================>
 
     const fetchAllCompletedParts = async () => {
-        const response = await melanoma.fetchCompletedParts()
-        setCompletedParts(response)
+        await melanoma.fetchCompletedParts()
+        setCompletedParts(melanoma.getCompletedParts())
     }
 
     const fetchAllNumberOfMoleOnSlug = async () => {

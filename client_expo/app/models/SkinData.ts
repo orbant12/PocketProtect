@@ -1,12 +1,13 @@
 import { DOMAIN } from "../services/server";
-import { SkinType, SunBurnData } from "../utils/types";
+import { CompletedParts, DetectableRealatives, SkinType, Slug, SunBurnData } from "../utils/types";
 
 
 export class SkinData {
 
-    private skinType: string;
-    private detectedRelative: string;
+    private skinType: SkinType;
+    private detectedRelative: DetectableRealatives;
     private sunBurn: SunBurnData;
+    private completedParts: CompletedParts;
 
     constructor(protected userId: string){}
 
@@ -27,6 +28,40 @@ export class SkinData {
         }
     }
 
+    async fetchCompletedParts():Promise<void> {
+        const response = await fetch(`${DOMAIN}/client/get/completed-parts`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId:this.userId }),
+        });
+        
+        if(response.ok && response != undefined){
+            const data = await response.json();
+            const completedSlugs = data.map(part => part.slug);
+            this.completedParts = completedSlugs as CompletedParts;
+        } else {
+            this.completedParts = [];
+        }
+    }
+
+    async updateCompletedParts(completedArray:{slug: Slug}[]):Promise<void>{
+        const response = await fetch(`${DOMAIN}/client/update/completed-parts`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId:this.userId, completedArray:completedArray }),
+        });
+    
+        if(response.ok){
+            this.completedParts = completedArray.map(part => part.slug) as CompletedParts;
+        } else {
+            alert("Failed to update completed parts on the databse")
+        }
+    }
+
     async updateSkinType(newType:SkinType):Promise<void>{
         const response = await fetch(`${DOMAIN}/client/update/skin-type`, {
             method: "POST",
@@ -42,5 +77,9 @@ export class SkinData {
             return 
         }
     }
+
+    getSkinType():SkinType{ return this.skinType; }
+
+    getCompletedParts():CompletedParts{ return this.completedParts; }
 
 }

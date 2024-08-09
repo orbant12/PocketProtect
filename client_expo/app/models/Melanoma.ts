@@ -1,10 +1,10 @@
 
 // models/CurrentUser.ts
-import { CompletedParts, Gender, Slug, SpotData, UserData } from "../utils/types";
+import { CompletedParts, Gender, MolePerSlugNumber, Slug, SpotData, UserData } from "../utils/types";
 import { DOMAIN } from "../services/server";
-import { numberOfMolesOnSlugs } from "../components/LibaryPage/Melanoma/slugCard";
 import { SkinData } from "./SkinData";
 import { convertImageToBase64 } from "../utils/imageConvert";
+import { MolePerSlugNumber_Default } from "../utils/initialValues";
 
 export class Melanoma extends SkinData {
     
@@ -38,44 +38,58 @@ export class Melanoma extends SkinData {
         }
     }
 
-    async fetchCompletedParts(): Promise <CompletedParts | []> {
-        const response = await fetch(`${DOMAIN}/client/get/completed-parts`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ userId:this.userId }),
-        });
+    public async numberOfMolesOnSlugsArray(): Promise <MolePerSlugNumber> {
+        try {
+            const slugValues: string[] = [];
         
-        if(response.ok && response != undefined){
-            const data = await response.json();
-            const completedSlugs = data.map(part => part.slug);
-            return completedSlugs as CompletedParts;
-        } else {
-            return [];
+            for (const doc of this.allMelanomaData) {
+                const spotData: SpotData = doc as SpotData;
+        
+                if (spotData.melanomaDoc.spot.slug !== "" && spotData.gender === this.gender) {
+                    slugValues.push(spotData.melanomaDoc.spot.slug);
+                }
+            }
+        
+            const slugCount: Record<string, number> = {};
+        
+            for (const slug of slugValues) {
+                if (slugCount[slug]) {
+                    slugCount[slug]++;
+                } else {
+                    slugCount[slug] = 1;
+                }
+            }
+            console.log(slugCount)
+            return slugCount as MolePerSlugNumber;
+        
+        } catch (err) {
+        console.error(err);
+            return MolePerSlugNumber_Default as MolePerSlugNumber;
         }
-    }
-
-    async numberOfMolesOnSlugsArray(): Promise <numberOfMolesOnSlugs | []> {
-        const response = await fetch(`${DOMAIN}/client/get/number-of-melanoma-on-slug`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                userId:this.userId,
-                gender:this.gender
-            })}
-        );
+        
+        // const response = await fetch(`${DOMAIN}/client/get/number-of-melanoma-on-slug`, {
+        //     method: "POST",
+        //     headers: {
+        //         "Content-Type": "application/json",
+        //     },
+        //     body: JSON.stringify({
+        //         userId:this.userId,
+        //         gender:this.gender
+        //     })}
+        // );
     
-        if(response.ok){
-            const data = await response.json();
-            return [data] as numberOfMolesOnSlugs;
-        } else {
-            return []
-        }
+        // if(response.ok){
+        //     const data = await response.json();
+        //     return [data] as numberOfMolesOnSlugs;
+        // } else {
+        //     return []
+        // }
     }
 
+
+
+    //SPOT
+    
     public async updateLatestMole({newData,melanomaBlob}:{newData:SpotData,melanomaBlob:string}): Promise<boolean> {
         const response = await fetch(`${DOMAIN}/client/update/melanoma-data`, {
             method: "POST",
@@ -120,35 +134,7 @@ export class Melanoma extends SkinData {
         } else {
             return "NoHistory";
         }
-    }
-
-    private handleSwitchCurrentToNewLatest({newData}:{newData:SpotData}): void {
-        for (let index = 0; index < this.allMelanomaData.length; index++){
-            if(this.allMelanomaData[index].melanomaId == newData.melanomaId){
-                this.allMelanomaData[index] = newData;
-            }
-        }
-    }
-
-    private async deleteMoleByIdFromArray(id:string){
-        for (let index = 0; index < this.allMelanomaData.length; index++){
-            if(this.allMelanomaData[index].melanomaId == id){
-                this.allMelanomaData.splice(index,1);
-                return;
-            }
-        }
-    }
-
-    private handleChangeSpotField = ({ field, spotId, newData }: { field: "risk" | "melanomaPictureUrl", spotId: string, newData: any }): void => {
-        for (let index = 0; index < this.allMelanomaData.length; index++) {
-            if (this.allMelanomaData[index].melanomaId === spotId) {
-
-                (this.allMelanomaData[index] as any)[field] = newData;
-                break;
-            }
-        }
-    };
-    
+    }  
 
     public async deleteSpotWithHistoryReset({melanomaId,deleteType,storage_name,newLatest}:{melanomaId: string,deleteType:"latest" | "history",storage_name:string,newLatest:SpotData}): Promise<{firestore:{success:boolean,message:string},storage:{success:boolean,message:string}}> {
         const response = await fetch(`${DOMAIN}/client/delete/melanoma-with-history-reset`, {
@@ -219,9 +205,36 @@ export class Melanoma extends SkinData {
   
     }
 
+    //PRIVATE METHODS
     
+    private handleSwitchCurrentToNewLatest({newData}:{newData:SpotData}): void {
+        for (let index = 0; index < this.allMelanomaData.length; index++){
+            if(this.allMelanomaData[index].melanomaId == newData.melanomaId){
+                this.allMelanomaData[index] = newData;
+            }
+        }
+    }
 
-    //GET MELANOMA DATA BY ID
+    private async deleteMoleByIdFromArray(id:string){
+        for (let index = 0; index < this.allMelanomaData.length; index++){
+            if(this.allMelanomaData[index].melanomaId == id){
+                this.allMelanomaData.splice(index,1);
+                return;
+            }
+        }
+    }
+
+    private handleChangeSpotField = ({ field, spotId, newData }: { field: "risk" | "melanomaPictureUrl", spotId: string, newData: any }): void => {
+        for (let index = 0; index < this.allMelanomaData.length; index++) {
+            if (this.allMelanomaData[index].melanomaId === spotId) {
+
+                (this.allMelanomaData[index] as any)[field] = newData;
+                break;
+            }
+        }
+    };
+
+    //GETTERS
 
     public getAllMelanomaData():SpotData[] {
         return this.allMelanomaData;

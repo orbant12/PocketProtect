@@ -1,8 +1,7 @@
 import React,{ useState,useCallback, useEffect, useRef } from "react";
-import { View, ScrollView,Text, Pressable,TouchableOpacity,RefreshControl,Image, ActivityIndicator, Animated } from "react-native";
+import { View, ScrollView,Text, Pressable,TouchableOpacity,RefreshControl } from "react-native";
 import { useAuth } from "../../../context/UserAuthContext";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {fetchSlugMelanomaData,updateCompletedParts } from "../../../services/server";
 import { dotsSelectOnPart } from "./components/selectedSlugDots";
 import { Navigation_SingleSpotAnalysis, Navigation_AddSlugSpot,Navigation_MoleUpload_2 } from "../../../navigation/navigation"
 import { useFocusEffect } from '@react-navigation/native';
@@ -42,8 +41,7 @@ const SlugAnalasis = ({ route,navigation }) => {
 
     const fetchAllCompletedParts = async () => {
         if(currentuser){
-            const response = await melanoma.fetchCompletedParts()
-            setCompletedParts(response)      
+            setCompletedParts(melanoma.getCompletedParts())      
         }
     }
 
@@ -67,10 +65,7 @@ const SlugAnalasis = ({ route,navigation }) => {
         const response = updatedCompletedParts.map(slug => {                
             return { slug: slug };
         });
-        await updateCompletedParts({
-            userId: currentuser.uid,
-            completedArray: response
-        });
+        await melanoma.updateCompletedParts(response);
             
         setCompletedParts(updatedCompletedParts);
     };

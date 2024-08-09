@@ -2,17 +2,17 @@ import { Mstyles } from "../../../styles/libary_style"
 import { View,Text,TouchableOpacity } from "react-native"
 import Svg, { Circle, Path } from 'react-native-body-highlighter/node_modules/react-native-svg';
 import { styles_shadow } from "../../../styles/shadow_styles";
-import { BodyPart, SkinType, Slug, SpotData, UserData } from "../../../utils/types";
+import { BodyPart, MolePerSlugNumber, SkinType, Slug, SpotData, UserData } from "../../../utils/types";
 import { BodyPartPath } from "../../../pages/Libary/Melanoma/components/selectedSlugDots";
 
 
-export type numberOfMolesOnSlugs = {Slug: number}[];
 
 
 
-const getSlugCount = (slug,numberOfMolesOnSlugs:numberOfMolesOnSlugs) => {
-    const slugObject = numberOfMolesOnSlugs.find(item => Object.keys(item)[0] === slug);
-    return slugObject ? slugObject[slug] : 0;
+
+const getSlugCount = (slug,numberOfMolesOnSlugs:MolePerSlugNumber) => {
+    const slugObject = numberOfMolesOnSlugs[slug];
+    return slugObject ? slugObject : 0;
 };
 
 const dotSelectOnPart = (bodyPart:BodyPart,melanomaData:SpotData[],skin_type:SkinType,userData:UserData) => {
@@ -57,7 +57,7 @@ export const SlugCard = ({
     bodyPart:BodyPart;
     completedParts: Slug[];
     handleNavigation:(path:string,data:any) => void;
-    numberOfMolesOnSlugs: {Slug: number}[];
+    numberOfMolesOnSlugs: MolePerSlugNumber;
     melanomaData: SpotData[];
     index:number;
     skin_type:SkinType;

@@ -1,5 +1,5 @@
 import { ScrollView, Text, TouchableOpacity, View, Pressable } from "react-native";
-import { BodyPart, SkinType, Slug, SpotData, UserData } from "../../../../../utils/types";
+import { BodyPart, MolePerSlugNumber, SkinType, Slug, SpotData, UserData } from "../../../../../utils/types";
 import { MelanomaMetaData } from "../../melanomaCenter";
 import { Mstyles } from "../../../../../styles/libary_style";
 import { OneOptionBox } from "../../../../../components/LibaryPage/Melanoma/boxes/oneOptionBox";
@@ -41,7 +41,7 @@ export const MelanomaContent = ({
     completedParts: Slug[];
     handleAddMelanoma:() => void;
     handleNavigation:(path:string,data:any) => void;
-    numberOfMolesOnSlugs: {Slug: number}[];
+    numberOfMolesOnSlugs: MolePerSlugNumber;
 }) => {
 
     return(

@@ -79,6 +79,37 @@ export type SkinDataType = {
     sunburn: SunBurnData,
 }
 
+export type MolePerSlugNumber = {
+    abs: number;
+    head: number;
+    leftArm: number;
+    rightArm: number;
+    chest: number;
+    upperLegRight: number;
+    upperLegLeft: number;
+    lowerLegRight: number;
+    lowerLegLeft: number;
+    leftFeet: number;
+    rightFeet: number;
+    rightHand: number;
+    leftHand: number;
+    back: number;
+    headBack: number;
+    leftArmBack: number;
+    rightArmBack: number;
+    leftLegBack: number;
+    rightLegBack: number;
+    leftFeetBack: number;
+    rightFeetBack: number;
+    rightPalm: number;
+    leftPalm: number;
+    legs: number;
+    torso: number;
+    feet: number;
+    gluteal: number;
+};
+
+
 
 export type SkinType = 0 | 1 | 2 | 3;
 
