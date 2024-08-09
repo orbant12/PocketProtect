@@ -58,8 +58,8 @@ export const DiagnosisProcessModal = ({
 
     return(
         <Modal visible={loading != null} animationType="fade" transparent >
-            <View style={{width:"100%",height:"100%",backgroundColor:"rgba(0,0,0,0.9)",display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",position:"absolute"}}>
-            <View style={[loading === "first_loaded" || loading == "repeat_loaded" ? {width:300,height:420,justifyContent:"space-between",padding:10} : loading === "loading" ? {width:300,height:420,justifyContent:"space-between",padding:10} : {width:300,height:400,justifyContent:"space-between",padding:10},{backgroundColor:"white",display:"flex",flexDirection:"column",alignItems:"center",borderRadius:30},styles_shadow.hightShadowContainer]}>
+            <View style={{width:"100%",height:"100%",backgroundColor:"rgba(0,0,0,0.93)",display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",position:"absolute"}}>
+            <View style={[loading === "first_loaded" || loading == "repeat_loaded" ? {width:300,height:430,justifyContent:"space-between",padding:10} : loading === "loading" ? {width:300,height:430,justifyContent:"space-between",padding:10} : {width:300,height:420,justifyContent:"space-between",padding:10},{backgroundColor:"white",display:"flex",flexDirection:"column",alignItems:"center",borderRadius:10},styles_shadow.hightShadowContainer]}>
             {!(loading == "loading") ? (
             <>
             {(selectedMelanoma != null) && (

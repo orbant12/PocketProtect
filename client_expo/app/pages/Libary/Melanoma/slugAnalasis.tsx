@@ -2,7 +2,7 @@ import React,{ useState,useCallback, useEffect, useRef } from "react";
 import { View, ScrollView,Text, Pressable,TouchableOpacity,RefreshControl,Image, ActivityIndicator, Animated } from "react-native";
 import { useAuth } from "../../../context/UserAuthContext";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {fetchSlugMelanomaData,updateCompletedParts,fetchCompletedParts } from "../../../services/server";
+import {fetchSlugMelanomaData,updateCompletedParts } from "../../../services/server";
 import { dotsSelectOnPart } from "./components/selectedSlugDots";
 import { Navigation_SingleSpotAnalysis, Navigation_AddSlugSpot,Navigation_MoleUpload_2 } from "../../../navigation/navigation"
 import { useFocusEffect } from '@react-navigation/native';
@@ -13,6 +13,7 @@ import { styles_shadow } from "../../../styles/shadow_styles";
 import { BodyPart, Gender, SkinType, UserData,Slug, SpotData  } from "../../../utils/types";
 import { LinearGradient } from "expo-linear-gradient";
 import LottieView from "lottie-react-native";
+import { ImageLoaderComponent } from "../../../components/Common/imageLoader";
 
 
 const SlugAnalasis = ({ route,navigation }) => {
@@ -23,42 +24,26 @@ const SlugAnalasis = ({ route,navigation }) => {
     const [highlighted, setHighlighted] = useState(null);
     const [completedParts, setCompletedParts] = useState<Slug[]>([])
     const [refreshing, setRefreshing] = useState<boolean>(false);
-    const { currentuser } = useAuth();   
+    const { currentuser,melanoma } = useAuth();   
 
     const bodyPartSlug: BodyPart = route.params.bodyPartSlug;
     const skin_type: SkinType = route.params.skin_type;
-    const userData: UserData = route.params.userData;
-    const gender:Gender = userData.gender
-
-
+    
 //<==================<[ Functions ]>====================>
 
     const fetchAllMelanomaData = async () => {
         if(currentuser){
-            const response = await fetchSlugMelanomaData({
-                userId: currentuser.uid,
-                gender,
-                slug: bodyPartSlug.slug
-            });
-            const melanomaData = response;
-            if(melanomaData != undefined){
-                setMelanomaData(melanomaData);
-                setHighlighted(melanomaData[0] != undefined && melanomaData[0].melanomaId);
-            } else {
-                setMelanomaData([]);
-            }
+            const response = melanoma.getMelanomaDataBySlug(bodyPartSlug.slug)
+            setMelanomaData(response)
         }
+
+
     }
 
     const fetchAllCompletedParts = async () => {
         if(currentuser){
-            const response = await fetchCompletedParts({
-                userId: currentuser.uid,
-            });
-            if(response != undefined){
-                const completedSlugs = response.map(part => part.slug);     
-                setCompletedParts(completedSlugs)       
-            }     
+            const response = await melanoma.fetchCompletedParts()
+            setCompletedParts(response)      
         }
     }
 
@@ -92,9 +77,7 @@ const SlugAnalasis = ({ route,navigation }) => {
     
     const handleSpotOpen = (bodyPart:SpotData) => {
         Navigation_SingleSpotAnalysis({
-            melanomaId: bodyPart.melanomaId,
-            userData:userData,
-            gender:gender,
+            melanomaId: bodyPart.melanomaId,            
             skin_type:skin_type,
             navigation
         })
@@ -103,7 +86,7 @@ const SlugAnalasis = ({ route,navigation }) => {
     const handleAddMelanoma = () => {
         Navigation_MoleUpload_2({
             bodyPartSlug:bodyPartSlug,
-            gender:userData.gender,
+            gender:currentuser.gender,
             skin_type: skin_type,
             navigation,
             completedArray:decodeParts(completedParts),
@@ -141,7 +124,7 @@ return(
             {melanomaData != null ? dotsSelectOnPart({
                 bodyPart: bodyPartSlug,
                 melanomaData: melanomaData,
-                gender,
+                gender: currentuser.gender,
                 highlighted,
                 skin_type
             }):null}
@@ -247,37 +230,3 @@ const MoleBar = ({
 }
 
 
-export const ImageLoaderComponent = ({ data,w,h,style,imageStyle  }:{data:SpotData | {melanomaPictureUrl:string}; w:number | string; h:number | string;style?:any,imageStyle?:any}) => {
-
-    const [loading, setLoading] = useState<boolean>(true);
-
-    const imageLoad = useRef(null);
-
-    return(
-        <View style={[{ position: 'relative', width: w, height: h,borderColor:"black",borderWidth:0.3,borderRadius:10,display:"flex",flexDirection:"column",justifyContent:"center",alignItems:"center",backgroundColor:"#ebebeb" },style]}>
-        {/* Animated Gradient Loader */}
-        {loading && (
-            <LottieView
-                autoPlay
-                ref={imageLoad}
-                style={{
-                    width: typeof w === 'string' ? w : w - 8,
-                    height: typeof h === 'string' ? h : h - 8,
-                    borderRadius:10,
-                    backgroundColor: '#fffff',
-                }}
-                source={require('../../../components/Common/AnimationSheets/lotties/imageLoad.json')}
-            />
-        )}
-        
-        {/* Image */}
-        <Image 
-            source={{ uri: data.melanomaPictureUrl }}
-            style={[{ width: w , height: h, borderWidth: 0.3, borderRadius: 10, position: 'absolute' },imageStyle]}
-            onLoadEnd={() => setLoading(false)}
-            onLoadStart={() => setLoading(true)}
-        />
-
-    </View>
-    )
-}

@@ -31,10 +31,10 @@ export type MelanomaModalOptions = "skin_type" | "detected_relative" | "slug" | 
 const SingleFeature = ({navigation}) => {
 
 //<==================<[ Variables ]>====================>
-    const { currentuser } = useAuth();
-    const melanoma = new Melanoma(currentuser.uid,currentuser.gender)
+    const { currentuser, melanoma } = useAuth();
 
     const [melanomaData, setMelanomaData] = useState<SpotData[]>([])
+
     const [bodySlugs, setBodySlugs] = useState<BodyPart[]>(null)
     const [ affectedSlugs,setAffectedSlugs ] = useState<{slug: Slug}[]>([])
     const [selectedSide, setSelectedSide] = useState<"front" | "back">("front");
@@ -129,8 +129,7 @@ const SingleFeature = ({navigation}) => {
     }
 
     const fetchAllMelanomaData = async () => {
-        const response = await melanoma.fetchAllMelanomaData()
-        setMelanomaData(response)
+        setMelanomaData(melanoma.getAllMelanomaData())
     }
 
     function handleSkinModalClose(e){

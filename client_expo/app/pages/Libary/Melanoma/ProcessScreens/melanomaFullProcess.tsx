@@ -2,7 +2,7 @@ import { View,Text,StyleSheet,Pressable,Image,ScrollView,TouchableOpacity,PixelR
 import React, {useState,useEffect,useCallback} from "react";
 import { useAuth } from "../../../../context/UserAuthContext";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { melanomaMetaDataUpload, updateCompletedParts, fetchCompletedParts } from "../../../../services/server"
+import { melanomaMetaDataUpload, updateCompletedParts } from "../../../../services/server"
 import { useFocusEffect } from '@react-navigation/native';
 import { decodeParts } from "../../../../utils/melanoma/decodeParts";
 import {Slug } from "../../../../utils/types";
@@ -20,6 +20,7 @@ import { ThirdScreen } from "./Fullprocess/frontBody_full";
 import { FourthScreen } from "./Fullprocess/backBody_full";
 import { FifthScreen } from "./Fullprocess/final_full";
 import { styles } from "../../../../styles/full_melanoma_styles";
+import { Melanoma } from "../../../../models/Melanoma";
 
 const { width } = Dimensions.get('window');
 const scaleFactor = width < 380 ? 1 : 1.2;
@@ -34,8 +35,10 @@ const MelanomaFullProcess = ({navigation}) => {
 
     //<===============> Variables  <===============> 
     const alertTeam  = Image.resolveAssetSource(require('../../../../assets/skinburn/5.png')).uri;
-    
     const {currentuser} = useAuth()
+
+    const melanoma = new Melanoma(currentuser.uid,currentuser.gender)
+
     //Progress Trackers
     const [progress, setProgress] = useState(0.1)
     const [bodyProgress, setBodyProgress] = useState(1)
@@ -141,9 +144,7 @@ const MelanomaFullProcess = ({navigation}) => {
 
     const fetchCompletedSlugs = async () => {
         if(currentuser){
-            const response = await fetchCompletedParts({
-                userId: currentuser.uid,
-            });
+            const response = await melanoma.fetchCompletedParts()
             const completedSlugs = response.map(part => part.slug); 
             const decoded = decodeParts(completedSlugs)
             setCompletedParts(decoded)  
@@ -353,7 +354,6 @@ const MelanomaFullProcess = ({navigation}) => {
             {round(progress,1) === 0.9 && 
                 <FifthScreen 
                     navigation={navigation}
-                    styles={styles}
                 />
             }
             <Information_Modal 

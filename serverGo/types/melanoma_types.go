@@ -47,9 +47,9 @@ type (
 	}
 
 	UpdateMelanomaRiskRequest struct {
-		UserId string  `json:"userId"`
-		SpotId string  `json:"spotId"`
-		Risk   float32 `json:"risk"`
+		UserId string   `json:"userId"`
+		SpotId string   `json:"spotId"`
+		Risk   *float32 `json:"risk"`
 	}
 	UpdateMelanomaDataRequest struct {
 		UserId       string   `json:"userId"`

@@ -1,20 +1,22 @@
 
 // models/CurrentUser.ts
-import { CompletedParts, Gender, SpotData, UserData } from "../utils/types";
+import { CompletedParts, Gender, Slug, SpotData, UserData } from "../utils/types";
 import { DOMAIN } from "../services/server";
 import { numberOfMolesOnSlugs } from "../components/LibaryPage/Melanoma/slugCard";
 import { SkinData } from "./SkinData";
+import { convertImageToBase64 } from "../utils/imageConvert";
 
 export class Melanoma extends SkinData {
     
     private gender: Gender;
+    private allMelanomaData: SpotData[] = [];
 
     constructor(userId: string,gender: Gender) {
         super(userId); 
         this.gender = gender;
     }
 
-    async fetchAllMelanomaData(): Promise<SpotData[] | []> {
+    public async fetchAllMelanomaData(): Promise<void> {
         const response = await fetch(`${DOMAIN}/client/get/all-melanoma`, {
             method: "POST",
             headers: {
@@ -27,10 +29,12 @@ export class Melanoma extends SkinData {
         });
 
         if(response.ok){
+            console.log("ok")
             const data = await response.json();
-            return data as SpotData[];
+            this.allMelanomaData = data as SpotData[];
         } else {
-            return [];
+            console.log("nah")
+            this.allMelanomaData = [];
         }
     }
 
@@ -70,6 +74,194 @@ export class Melanoma extends SkinData {
         } else {
             return []
         }
+    }
+
+    public async updateLatestMole({newData,melanomaBlob}:{newData:SpotData,melanomaBlob:string}): Promise<boolean> {
+        const response = await fetch(`${DOMAIN}/client/update/melanoma-data`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                userId:this.userId,
+                spotId: newData.melanomaId,
+                newData: newData,
+                melanomaBlob:melanomaBlob
+            }),
+        });
+
+  
+    
+        if(response.ok){
+            this.handleSwitchCurrentToNewLatest({newData:newData});
+
+            return true;
+        } else {
+            return false
+        }
+    }
+
+    public async fetchMoleHistoryById(melanomaId: string): Promise<SpotData[] | "NoHistory"> {
+        const response = await fetch(`${DOMAIN}/client/get/melanoma-history`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId:this.userId, spotId:melanomaId }),
+        });
+    
+        if(response.ok){
+            const data:SpotData[] = await response.json();
+            if (data != null){
+                return data;
+            } else {
+                return "NoHistory";
+            }
+        } else {
+            return "NoHistory";
+        }
+    }
+
+    private handleSwitchCurrentToNewLatest({newData}:{newData:SpotData}): void {
+        for (let index = 0; index < this.allMelanomaData.length; index++){
+            if(this.allMelanomaData[index].melanomaId == newData.melanomaId){
+                this.allMelanomaData[index] = newData;
+            }
+        }
+    }
+
+    private async deleteMoleByIdFromArray(id:string){
+        for (let index = 0; index < this.allMelanomaData.length; index++){
+            if(this.allMelanomaData[index].melanomaId == id){
+                this.allMelanomaData.splice(index,1);
+                return;
+            }
+        }
+    }
+
+    private handleChangeSpotField = ({ field, spotId, newData }: { field: "risk" | "melanomaPictureUrl", spotId: string, newData: any }): void => {
+        for (let index = 0; index < this.allMelanomaData.length; index++) {
+            if (this.allMelanomaData[index].melanomaId === spotId) {
+
+                (this.allMelanomaData[index] as any)[field] = newData;
+                break;
+            }
+        }
+    };
+    
+
+    public async deleteSpotWithHistoryReset({melanomaId,deleteType,storage_name,newLatest}:{melanomaId: string,deleteType:"latest" | "history",storage_name:string,newLatest:SpotData}): Promise<{firestore:{success:boolean,message:string},storage:{success:boolean,message:string}}> {
+        const response = await fetch(`${DOMAIN}/client/delete/melanoma-with-history-reset`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId:this.userId, spotId:melanomaId, deleteType:deleteType, storage_name:storage_name }),
+        });
+
+    
+    
+        if(response.ok){
+            if(newLatest == null){
+                await this.deleteMoleByIdFromArray(melanomaId);
+            } else if (newLatest != null){
+                this.handleSwitchCurrentToNewLatest({newData:newLatest});
+            }
+            const data:{firestore:{message:string,success:boolean},storage:{message:string, success:boolean}} = await response.json();
+            return { firestore: data.firestore, storage: data.storage };
+        } else {
+            return { firestore: { success: false, message: "Firestore deletion failed" }, storage: { success: false, message: "Storage deletion failed" } };
+        }
+    }
+
+    public async updateSpotRisk({spotId,riskToUpdate}:{spotId:string,riskToUpdate:{risk:number}}): Promise<boolean> {
+        const response = await fetch(`${DOMAIN}/client/update/melanoma-risk`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                userId: this.userId,
+                spotId: spotId,
+                risk: riskToUpdate.risk,
+            }),
+        });
+
+    
+        if(response.ok){
+            this.handleChangeSpotField({
+                field:"risk",
+                spotId:spotId,
+                newData:riskToUpdate.risk
+            })
+            return true;
+        } else {
+            return false
+        }
+    }
+
+    public async updateSpotPicture({spotId,pictureToUpdate}:{spotId:string,pictureToUpdate:string}): Promise<void> {
+        const pictureBase64 = await convertImageToBase64(pictureToUpdate);
+        const response = await fetch(`${DOMAIN}/client/change/melanoma-picture`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId:this.userId, melanomaBlob:pictureBase64, spotId:spotId }),
+        });
+    
+        
+        this.handleChangeSpotField({
+            field:"melanomaPictureUrl",
+            spotId:spotId,
+            newData:pictureToUpdate
+        })
+  
+    }
+
+    
+
+    //GET MELANOMA DATA BY ID
+
+    public getAllMelanomaData():SpotData[] {
+        return this.allMelanomaData;
+    }
+
+    public getMelanomaDataBySlug(slug: Slug): SpotData[] {
+        const filteredData = this.allMelanomaData.filter(data => data.melanomaDoc.spot.slug === slug);
+        return filteredData;
+    }
+
+    public getMelanomaDataById(id:string): SpotData | null {
+        
+        for (let index = 0; index < this.allMelanomaData.length; index++){
+            if(this.allMelanomaData[index].melanomaId == id){
+                
+                return this.allMelanomaData[index]
+            }
+        }
+        return null
+    }
+
+    public getSpecialMoles(): {risky:SpotData[],outdated:SpotData[],unfinished:SpotData[]} {
+        let risky:SpotData[] = [];
+        let outdated:SpotData[] = [];
+        let unfinished:SpotData[] = [];
+        
+        this.allMelanomaData.forEach(data => {
+            if(data.risk > 0.5){
+                risky.push(data);
+            } 
+            //180 days is outdated
+      
+
+            if(data.risk == null){
+                unfinished.push(data);
+            }
+        });
+        
+
+        return {risky:risky,outdated:outdated,unfinished:unfinished};
     }
 
 }

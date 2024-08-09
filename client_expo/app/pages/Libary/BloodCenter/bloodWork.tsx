@@ -15,6 +15,7 @@ import { SelectionPage } from "../../../components/Common/SelectableComponents/s
 import { DateInputPage } from "../../Auth/OnBoarding_Components/dateInput";
 import { ManualBloodAddPage } from "./Blood_Add_Components/manual_b_add";
 import { DateToString } from "../../../utils/date_manipulations";
+import { FifthScreen } from "../Melanoma/ProcessScreens/Fullprocess/final_full";
 
 const BloodWorkPage = ({navigation,route}) => {
 
@@ -113,7 +114,7 @@ const BloodWorkPage = ({navigation,route}) => {
             <View style={add_styles.container}>            
                 <ProgressRow 
                     handleBack={(e) => handleBack(e)} 
-                    progress={progress / 1.1}
+                    progress={progress / 1.2}
                 />
                 {round(progress,1) == 0 &&
                     <FirstScreen
@@ -155,7 +156,7 @@ const BloodWorkPage = ({navigation,route}) => {
                         
                     />
                 }
-                {(round(progress,1) >= 0.3 && round(progress,1) < 1.1) && (
+                {(round(progress,1) >= 0.3 && round(progress,1) <= 1.1) && (
                     <ManualBloodAddPage
                         setProgress={setProgress}
                         handleBloodWorkDataChange={handleBloodWorkDataChange}
@@ -167,8 +168,10 @@ const BloodWorkPage = ({navigation,route}) => {
                     />
                 )
                 }
-                {round(progress,1) == 1.1 && 
-                    <></>
+                {round(progress,1) == 1.2 && 
+                    <FifthScreen 
+                        navigation={navigation}
+                    />
                 }
             </View>
             <SaveModal

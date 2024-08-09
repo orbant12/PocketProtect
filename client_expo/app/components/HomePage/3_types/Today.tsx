@@ -8,12 +8,12 @@ import { styles_shadow } from "../../../styles/shadow_styles";
 import { BodyPart, SpotData, WeatherAPIResponse } from "../../../utils/types";
 import { Home_Navigation_Paths } from "../../../pages/Home/home";
 import React, { useRef, useState } from 'react';
-import { ImageLoaderComponent } from "../../../pages/Libary/Melanoma/slugAnalasis";
 import { useWeather } from "../../../context/WeatherContext";
 import { WeatherData_Default } from "../../../utils/initialValues";
 import { getUvIndexCategory } from "../../../utils/uvi/uvIndexEval";
 import { UviWidget } from "../../Widgets/uviWidget";
 import moment from "moment";
+import { ImageLoaderComponent } from "../../Common/imageLoader";
 
 export const TodayScreen = ({
     handleNavigation,
@@ -154,8 +154,6 @@ const OutdatedMelanomaBox = ({
     handleNavigation:({path,data}:{path:Home_Navigation_Paths, data:SpotData}) => void;
 }) => {
     
-    const imageLoad = useRef<any>(null);
-    const [loading,setLoading] = useState<boolean>(false);
 
     return(
         <View style={{width:"100%",borderBottomWidth:1,borderColor:"magenta",alignItems:"center",flexDirection:"row",paddingBottom:20,padding:10,borderRadius:0,marginBottom:10,justifyContent:"space-between"}}>

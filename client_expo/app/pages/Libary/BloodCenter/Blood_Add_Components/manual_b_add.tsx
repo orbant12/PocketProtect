@@ -20,81 +20,81 @@ export const ManualBloodAddPage = ({
         {
             q:"Basic Health Indicators",
             component: <BloodWorkComponent 
-                index={0}
+                indexPass={0}
                 setFocused={setFocused}
-                handleBloodWorkDataChange={handleBloodWorkDataChange}
+                handleBloodWorkDataChange={(title,type,e) => handleBloodWorkDataChange(title,type,e)}
                 bloodWorkData={bloodWorkData}
             />
         },
         {
             q:"Lipid Panel",
             component:<BloodWorkComponent 
-                index={1}
+                indexPass={1}
                 setFocused={setFocused}
-                handleBloodWorkDataChange={handleBloodWorkDataChange}
+                handleBloodWorkDataChange={(title,type,e) => handleBloodWorkDataChange(title,type,e)}
                 bloodWorkData={bloodWorkData}
             />
         },
         {
             q:"Metabolic Panel",
             component:<BloodWorkComponent 
-                index={2}
+                indexPass={2}
                 setFocused={setFocused}
-                handleBloodWorkDataChange={handleBloodWorkDataChange}
+                handleBloodWorkDataChange={(title,type,e) => handleBloodWorkDataChange(title,type,e)}
                 bloodWorkData={bloodWorkData}
             />
         },
         {
             q:"Liver Function Tests",
             component:<BloodWorkComponent 
-                index={3}
+                indexPass={3}
                 setFocused={setFocused}
-                handleBloodWorkDataChange={handleBloodWorkDataChange}
+                handleBloodWorkDataChange={(title,type,e) => handleBloodWorkDataChange(title,type,e)}
                 bloodWorkData={bloodWorkData}
             />
         },
         {
             q:"Thyroid Panel",
             component:<BloodWorkComponent 
-                index={4}
+                indexPass={4}
                 setFocused={setFocused}
-                handleBloodWorkDataChange={handleBloodWorkDataChange}
+                handleBloodWorkDataChange={(title,type,e) => handleBloodWorkDataChange(title,type,e)}
                 bloodWorkData={bloodWorkData}
             />
         },
         {
             q:"Iron Studies",
             component:<BloodWorkComponent 
-                index={5}
+                indexPass={5}
                 setFocused={setFocused}
-                handleBloodWorkDataChange={handleBloodWorkDataChange}
+                handleBloodWorkDataChange={(title,type,e) => handleBloodWorkDataChange(title,type,e)}
                 bloodWorkData={bloodWorkData}
             />
         },
         {
             q:"Vitamins and Minerals",
             component:<BloodWorkComponent 
-                index={6}
+                indexPass={6}
                 setFocused={setFocused}
-                handleBloodWorkDataChange={handleBloodWorkDataChange}
+                handleBloodWorkDataChange={(title,type,e) => handleBloodWorkDataChange(title,type,e)}
                 bloodWorkData={bloodWorkData}
             />
         },
         {
             q:"Inflammatory Markers",
             component:<BloodWorkComponent 
-                index={7}
+                indexPass={7}
                 setFocused={setFocused}
-                handleBloodWorkDataChange={handleBloodWorkDataChange}
+                handleBloodWorkDataChange={(title,type,e) => handleBloodWorkDataChange(title,type,e)}
                 bloodWorkData={bloodWorkData}
             />
         },
         {
             q:"Hormonal Panel",
             component:<BloodWorkComponent 
-                index={8}
+                indexPass={8}
                 setFocused={setFocused}
-                handleBloodWorkDataChange={handleBloodWorkDataChange}
+                handleBloodWorkDataChange={(title,type,e) => handleBloodWorkDataChange(title,type,e)}
                 bloodWorkData={bloodWorkData}
             />
         }
@@ -103,21 +103,15 @@ export const ManualBloodAddPage = ({
     return(
         <>
         {
-        (focused) ?
+        focused ?
             <Pressable onPress={() => Keyboard.dismiss()} style={{width:"100%",height:"90%",alignItems:"center",justifyContent:"space-between",borderWidth:0,marginBottom:"20%"}}>
                 <View style={{width:"90%",alignItems:"center",backgroundColor:"#eee",justifyContent:"center",padding:20,borderRadius:10,marginTop:10}}>
                     <Text style={{fontWeight:"700",fontSize:20,width:"100%",textAlign:"center"}}>{manual[initialProgress].q}</Text>            
                 </View> 
             {manual[initialProgress].component}
-            {initialProgress == 8 ?
-                <TouchableOpacity onPress={() => {/*handleUpload(methodSelected)*/{handleUpload()}}} style={[add_styles.startButton,{marginBottom:10}]}>                        
-                    <Text style={{padding:14,fontWeight:"600",color:"white"}}>Upload</Text>
-                </TouchableOpacity>
-                :
-                <TouchableOpacity onPress={() => {setProgress(progress + 0.1),setInitialProgress(initialProgress + 1),handleUpload()}} style={[add_styles.startButton,{marginBottom:10}]}>                        
-                    <Text style={{padding:14,fontWeight:"600",color:"white"}}>Upload & Next</Text>
-                </TouchableOpacity>
-            } 
+                <TouchableOpacity onPress={() => {setProgress(progress + 0.1),setInitialProgress(initialProgress + 1)}} style={[add_styles.startButton,{marginBottom:10}]}>                        
+                    <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
+                </TouchableOpacity> 
             </Pressable>
             :
             <View style={{width:"100%",height:"90%",alignItems:"center",justifyContent:"space-between",borderWidth:0,marginBottom:"20%"}}>
@@ -125,15 +119,10 @@ export const ManualBloodAddPage = ({
                     <Text style={{fontWeight:"700",fontSize:20,width:"100%",textAlign:"center"}}>{manual[initialProgress].q}</Text>            
                 </View> 
             {manual[initialProgress].component}
-            {initialProgress == 8 ?
-                <TouchableOpacity onPress={() => {/*handleUpload(methodSelected)*/{handleUpload()}}} style={[add_styles.startButton,{marginBottom:10}]}>                        
-                    <Text style={{padding:14,fontWeight:"600",color:"white"}}>Upload</Text>
+                <TouchableOpacity onPress={() => {setProgress(progress + 0.1),setInitialProgress(initialProgress + 1)}} style={[add_styles.startButton,{marginBottom:10}]}>                        
+                    <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>
                 </TouchableOpacity>
-                :
-                <TouchableOpacity onPress={() => {setProgress(progress + 0.1),setInitialProgress(initialProgress + 1),handleUpload()}} style={[add_styles.startButton,{marginBottom:10}]}>                        
-                    <Text style={{padding:14,fontWeight:"600",color:"white"}}>Upload & Next</Text>
-                </TouchableOpacity>
-            } 
+            
             </View>
         }
         </>

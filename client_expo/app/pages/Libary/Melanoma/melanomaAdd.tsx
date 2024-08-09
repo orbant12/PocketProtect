@@ -22,14 +22,13 @@ const MelanomaAdd = ({ route , navigation }) => {
 
     const skin_type:SkinType = route.params.skin_type;
     const spotId:UpdateMethod = route.params.type; 
-    const userData:UserData = route.params.userData    
     const bodyPartSlug: SpotArrayData = route.params.bodyPartSlug
     
     const [redDotLocation, setRedDotLocation] = useState<location>({ x: -100, y: 10 });
     const [uploadedSpotPicture, setUploadedSpotPicture] = useState<string | null>(null);
     const [isStateModalActive, setIsStateModalActive] = useState(false);
     const [isScreenLoading, setIsScreenLoading] = useState<boolean | string>(false);
-    const { currentuser } = useAuth()    
+    const { currentuser, melanoma } = useAuth()    
 
 
     //<==========> Function <============>
@@ -52,26 +51,24 @@ const MelanomaAdd = ({ route , navigation }) => {
         setIsScreenLoading(true)
         try{
             const ID = generateNumericalUID(4)
-            const storageLocation = `users/${userData.uid}/melanomaImages/${spotId.id}_updated#${ID}`;
+            const storageLocation = `users/${currentuser.uid}/melanomaImages/${spotId.id}_updated#${ID}`;
 
             const pictureUrl = await convertImageToBase64(uploadedSpotPicture);
 
             const newData: SpotData = {
                 melanomaDoc: {spot: bodyPartSlug, location: redDotLocation},
-                gender: userData.gender,        
+                gender: currentuser.gender,        
                 melanomaId: spotId.id,
-                melanomaPictureUrl: "",
+                melanomaPictureUrl: uploadedSpotPicture,
                 storage_location: storageLocation,
                 risk:null,
                 storage_name:`${spotId.id}_updated#${ID}`,
                 created_at: new Date()
             }
 
-            const res = await updateSpot({
-                userId: currentuser.uid,
-                spotId: spotId.id,
+            const res = await melanoma.updateLatestMole({
                 newData: newData,
-                melanomaBlob: pictureUrl         
+                melanomaBlob: pictureUrl,
             })
 
             if (res == true){
@@ -115,7 +112,7 @@ const MelanomaAdd = ({ route , navigation }) => {
                 <PickerSection 
                     redDotLocation={redDotLocation}
                     spotId={spotId}
-                    userData={userData}
+                    userData={currentuser}
                     bodyPart={bodyPartSlug}
                     skin_type={skin_type}
                 />

@@ -31,15 +31,13 @@ interface AssistanceNavigationParams {
 
 export const Navigation_SingleSpotAnalysis = ({
     melanomaId,
-    gender,
     skin_type,
     navigation
 }: MelanomaNavigationParams) => {
 
-    if (melanomaId && gender && skin_type !== undefined) {
+    if (melanomaId && skin_type !== undefined) {
         navigation.navigate("SinglePartAnalasis", { 
             melanomaId: melanomaId,
-            gender: gender,
             skin_type: skin_type,
         });        
     } else {

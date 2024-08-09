@@ -1,8 +1,9 @@
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { styles_shadow } from "../../../../../styles/shadow_styles";
+import { styles } from "../../../../../styles/full_melanoma_styles";
 
-export function FifthScreen({navigation,styles}){
+export function FifthScreen({navigation}){
 
     const doctorImage = Image.resolveAssetSource(require('../../../../../assets/doc.jpg')).uri;
 

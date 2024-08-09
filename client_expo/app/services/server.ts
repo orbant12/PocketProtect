@@ -10,7 +10,7 @@ import { getWeatherAPIKey } from "../../key";
 //const DOMAIN = "http://51.21.97.54:3001";
 
 export const DOMAIN = "http://localhost:3001";
-export const FLASK_DOMAIN =  "http://localhost:5001";
+export const FLASK_DOMAIN =  "http://127.0.0.1:5001/";
 
 type SpotDeleteTypes = "history" | "latest"
 
@@ -479,28 +479,28 @@ export const updateCompletedParts = async ({
 // }
 
 //DONE
-export const fetchSpecialSpots = async ({
-    userId,
-    gender
-}:API_Melanoma): Promise <SpecialSpotResponse | null> => {
-    try{
-        const response = await fetch(`${DOMAIN}/client/get/special-moles`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ userId,gender }),
-        });
-        if(response.ok){
-            const data = await response.json();
-            return data;
-        } else {
-            return null
-        }
-    } catch (error) {
-        return null
-    }
-}
+// export const fetchSpecialSpots = async ({
+//     userId,
+//     gender
+// }:API_Melanoma): Promise <SpecialSpotResponse | null> => {
+//     try{
+//         const response = await fetch(`${DOMAIN}/client/get/special-moles`, {
+//             method: "POST",
+//             headers: {
+//                 "Content-Type": "application/json",
+//             },
+//             body: JSON.stringify({ userId,gender }),
+//         });
+//         if(response.ok){
+//             const data = await response.json();
+//             return data;
+//         } else {
+//             return null
+//         }
+//     } catch (error) {
+//         return null
+//     }
+// }
 
 //DONE
 // export const fetchSkinType = async ({

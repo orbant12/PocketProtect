@@ -1,12 +1,10 @@
 import { useState,useRef,useCallback } from "react";
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 import { useAuth } from "../../../context/UserAuthContext";
 import Svg, { Circle } from 'react-native-body-highlighter/node_modules/react-native-svg';
 import { Tabs} from 'react-native-collapsible-tab-view'
 import Entypo from 'react-native-vector-icons/Entypo';
-import { fetchSpotHistory, deleteSpotWithHistoryReset, updateSpotRisk,fetchSelectedMole, FLASK_DOMAIN } from "../../../services/server";
-import { getFunctions } from "firebase/functions";
-import {app} from "../../../services/firebase"
+import { FLASK_DOMAIN } from "../../../services/server";
 import { SingleSlugStyle } from "../../../styles/libary_style";
 import { SureModal } from "../../../components/LibaryPage/Melanoma/modals";
 import { MoleTab } from "../../../components/LibaryPage/Melanoma/SingleMole/tabs/moleTab";
@@ -14,7 +12,7 @@ import { AssistTab } from "../../../components/LibaryPage/Melanoma/SingleMole/ta
 import { useFocusEffect } from '@react-navigation/native';
 import { Navigation_AddSlugSpot } from "../../../navigation/navigation";
 import { NavBar_OneOption } from "../../../components/Common/navBars";
-import { Gender, SkinType, SpotData, UserData } from "../../../utils/types";
+import { SkinType, SpotData} from "../../../utils/types";
 import { convertImageToBase64 } from "../../../utils/imageConvert";
 import { SuccessDeleteAnimationSheet } from "../../../components/Common/AnimationSheets/deleteSuccAnimation";
 import { BodyPartPath } from "./components/selectedSlugDots";
@@ -29,14 +27,11 @@ const SinglePartAnalasis = ({ route,navigation }) => {
 
 //Route Params
 const bodyPartID:string = route.params.melanomaId;
-const gender:Gender = route.params.gender
 const skin_type:SkinType = route.params.skin_type
-const userData:UserData = route.params.userData
 
-const functions = getFunctions(app);
 const moleDataRef = useRef(null)
-const {currentuser} = useAuth()
-const [melanomaHistory, setMelanomaHistory] = useState([])
+const {currentuser,melanoma} = useAuth()
+const [melanomaHistory, setMelanomaHistory] = useState<SpotData[]>([])
 const [bodyPart , setBodyPart ] = useState<SpotData | null>(null)
 const [selectedMelanoma, setSelectedMelanoma] = useState<SpotData | null>(null)
 const [highlight, setHighlighted ]= useState<string | null>(null)
@@ -51,16 +46,10 @@ const [melanomaDeleteState, setMelanomaDeleteState] = useState<boolean | string 
 
     const fetchAllSpotHistory = async (bPart:SpotData) => {
         if(currentuser){
-            const res = await fetchSpotHistory({
-                userId: currentuser.uid,
-                spotId: bodyPartID,            
-            })
+            const res = await melanoma.fetchMoleHistoryById(bodyPartID)
             if (res == "NoHistory"){
                 setMelanomaHistory([])
                 setHighlighted(bPart.storage_name)                
-            } else if (res == false){
-                alert("Something went wrong !")
-                setHighlighted(bPart.storage_name)
             } else {
                 setMelanomaHistory(res)
                 setHighlighted(bPart.storage_name)            
@@ -69,10 +58,7 @@ const [melanomaDeleteState, setMelanomaDeleteState] = useState<boolean | string 
     }
 
     const fetchDataSelectedMole = async () => {
-        const response: SpotData = await fetchSelectedMole({
-            userId:currentuser.uid,
-            spotId: bodyPartID
-        })
+        const response = melanoma.getMelanomaDataById(bodyPartID)
         if( response != null ) {
             setBodyPart(response)
             setSelectedMelanoma(response)
@@ -85,46 +71,50 @@ const [melanomaDeleteState, setMelanomaDeleteState] = useState<boolean | string 
     const handleSpotDelete = async (data:SpotData) => {
         setMelanomaDeleteState(false)
         if(data.storage_name == bodyPart.storage_name){
-            const response = await deleteSpotWithHistoryReset({
-                userId:currentuser.uid,
-                spotId: data.melanomaId,
+            const response = await melanoma.deleteSpotWithHistoryReset({
+                newLatest:melanomaHistory.length > 0 ? melanomaHistory[0] : null,
                 deleteType:"latest",
-                storage_name:data.storage_name
+                storage_name:data.storage_name,
+                melanomaId:data.melanomaId
             })
             if( response.firestore.success == true && response.storage.success == true){
                 setMelanomaDeleteState(true)
                 fetchDataSelectedMole()
                 setDeleteModal(false)
-            } else if ( response.firestore.success != true || response.storage.success != true) {
+            } else {
                 if(response.firestore.success == false){
                     setMelanomaDeleteState(response.firestore.message)
                 } else if (response.storage.success == false){
                     setMelanomaDeleteState(response.storage.message)
+                } else {
+                    setMelanomaDeleteState("Unknown error")
                 }
             }
         } else {
-            const response = await deleteSpotWithHistoryReset({
-                userId:currentuser.uid,
-                spotId: data.melanomaId,
+            const response = await melanoma.deleteSpotWithHistoryReset({
+                newLatest:null,
                 deleteType:"history",
-                storage_name:data.storage_name
+                storage_name:data.storage_name,
+                melanomaId:data.melanomaId
             })
             if( response.firestore.success == true && response.storage.success == true){
                 setMelanomaDeleteState(true)
                 fetchDataSelectedMole()
                 setDeleteModal(false)
                 
-            } else if ( response.firestore.success != true || response.storage.success != true) {
+            } else {
                 if(response.firestore.success == false){
                     setMelanomaDeleteState(response.firestore.message)
                 } else if (response.storage.success == false){
                     setMelanomaDeleteState(response.storage.message)
+                } else {
+                    setMelanomaDeleteState("Unknown error")
                 }
             }
         }
     }
 
-    const evaluate = async (pictureUrl:string):Promise<{'prediction': 'Malignant' | 'Bening', 'confidence': number} | null> => {
+    const evaluate = async (pictureUrl:string):Promise<{'prediction': 'Malignant' | 'Bening', 'confidence': number} | null > => {
         try{
         const pictureBase64 = await convertImageToBase64(pictureUrl);
         const flaskResponse = await fetch(`${FLASK_DOMAIN}/predict`, {
@@ -138,7 +128,8 @@ const [melanomaDeleteState, setMelanomaDeleteState] = useState<boolean | string 
         });
         const response: {'prediction': 'Malignant' | 'Bening', 'confidence': number} = await flaskResponse.json();
         return response
-        } catch {
+        } catch(err){
+            console.log(err)
             return null
         }
     };
@@ -146,15 +137,18 @@ const [melanomaDeleteState, setMelanomaDeleteState] = useState<boolean | string 
     const handleCallNeuralNetwork = async (pictureURL:string,type:"first_loaded" | "repeat_loaded") => {
         setDiagnosisLoading("loading")
         try{            
-            const prediction = await evaluate(pictureURL)   
-            const response = await updateSpotRisk({
-                userId: currentuser.uid,
-                spotId: selectedMelanoma.melanomaId,
-                
-                riskToUpdate: {risk: Math.floor(prediction.confidence * 100) / 100},
+            const prediction = await evaluate(pictureURL)  
+            if(prediction == null){
+                setDiagnosisLoading(null)
+                return Alert.alert("AI model is not available at this time")
+            } 
+            console.log({risk: Math.floor(prediction.confidence * 100) / 100})
+            const response = await melanoma.updateSpotRisk({
+                spotId:bodyPart.melanomaId,
+                riskToUpdate:{risk: Math.floor(prediction.confidence * 100) / 100}
             })
-            if(response == true && bodyPart != null){
-                fetchAllSpotHistory(bodyPart) 
+            console.log(response)
+            if(response == true){
                 fetchDataSelectedMole()
                 setTimeout(() => {
                     setDiagnosisLoading(type)
@@ -162,13 +156,12 @@ const [melanomaDeleteState, setMelanomaDeleteState] = useState<boolean | string 
             }        
         } catch(err) {
             setDiagnosisLoading(err.message)
-            return alert("Prediction failed")
+            return Alert.alert("Prediction failed")
         }
     }
 
     const handleUpdateMole = async () => {        
         Navigation_AddSlugSpot({
-            userData:userData,
             skin_type:skin_type,
             bodyPartSlug:bodyPart.melanomaDoc.spot,
             type:{id:bodyPart.melanomaId,locationX:bodyPart.melanomaDoc.location.x,locationY:bodyPart.melanomaDoc.location.y},
@@ -194,7 +187,7 @@ const [melanomaDeleteState, setMelanomaDeleteState] = useState<boolean | string 
                                 path={path}
                                 index={index}
                                 bodyPart={bodyPart.melanomaDoc.spot}
-                                userData={userData}
+                                userData={currentuser}
                                 skin_type={skin_type}
                                 stroke={"black"}
                             />

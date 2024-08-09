@@ -19,6 +19,8 @@ import { RootStackNavigationProp } from "../../App";
 import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from "expo-web-browser";
 import { User } from "../models/User";
+import { useMelanoma } from "./Melanomacontext";
+import { Melanoma } from "../models/Melanoma";
 
 WebBrowser.maybeCompleteAuthSession();
 export interface AuthContextType {
@@ -28,6 +30,7 @@ export interface AuthContextType {
   handleAuthHandler: (type:"disconnect" | "fetch" | "fetch_w_main") => void;
   handleGoogleAuth: () => void;
   error:any;
+  melanoma: Melanoma | null;
 }
 
 //CREATE CONTEXT
@@ -45,6 +48,8 @@ const [currentuser, setuser] = useState<UserData| null>(null)
 const [error, setError] = useState("")
 const navigation = useNavigation<RootStackNavigationProp>();
 const [isRegisterLoading, setIsRegisterLoading] = useState<boolean | "update" | "reset">("reset");
+const [melanoma, setMelanoma] = useState<Melanoma | null>(null)
+
 
 const [request, response, promptAsync] = Google.useAuthRequest({
   androidClientId: "567381254436-b0cqltfecu40o0skrmiq77iiqp2h9njl.apps.googleusercontent.com",
@@ -54,6 +59,16 @@ const [request, response, promptAsync] = Google.useAuthRequest({
 
 
 //<********************FUNCTIONS************************>
+
+
+const handleSetup = async (currentuser) => {
+  if(currentuser != null){
+      const melanomaObj =             new Melanoma(currentuser.uid,currentuser.gender)
+      await melanomaObj.fetchAllMelanomaData()
+      console.log("Melanoma Data READY")
+      setMelanoma(melanomaObj)
+  }
+}
 
 
 
@@ -70,6 +85,7 @@ const handleLogin = async (uid:string) => {
       setuser(userData);
       console.log("You are logged in");
       navigation.navigate("Main");
+      await handleSetup(userData)
     }
   } catch (error) {
     console.error("Error fetching user data: ", error);
@@ -265,7 +281,8 @@ const value = {
     currentuser,
     Login,
     handleAuthHandler,
-    handleGoogleAuth
+    handleGoogleAuth,
+    melanoma
 }
 
 return (

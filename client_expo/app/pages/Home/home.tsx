@@ -5,15 +5,13 @@ import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../../context/UserAuthContext';
 import Calendar from '../../components/HomePage/Callendar/HorizontalCallendar';
 import {useTimer}  from '../../components/HomePage/timer';
-import { fetchSpecialSpots, } from '../../services/server';
 import { styles } from "../../styles/home_style";
 import { TodayScreen } from '../../components/HomePage/3_types/Today';
-import { DateToString, splitDate, parseDateToMidnight } from '../../utils/date_manipulations';
+import { DateToString, parseDateToMidnight } from '../../utils/date_manipulations';
 import { FutureScreen } from '../../components/HomePage/3_types/Future';
 import { PastScreen } from '../../components/HomePage/3_types/Past';
 import { Navigation_SingleSpotAnalysis } from '../../navigation/navigation';
-import { UserData_Default } from '../../utils/initialValues';
-import { SpotData, UserData } from '../../utils/types';
+import { SpotData } from '../../utils/types';
 
 
 type CustomScrollEvent = {
@@ -34,7 +32,7 @@ export default function TabOneScreen({navigation}) {
 
 //<==================<[ Variables ]>====================>
 
-const { currentuser } = useAuth();
+const { currentuser,melanoma } = useAuth();
 //DATE
 const today: Date = new Date();
 const format = DateToString(today);
@@ -49,7 +47,6 @@ const [affectedDays, setAffectedDays] = useState<any[]>([]);
 const [allReminders, setAllReminders] = useState<any[]>([]);
 //H-SCROLL
 const [currentPage, setCurrentPage] = useState<number>(0);
-const [currentPageReminder, setCurrentPageReminder] = useState<number>(0);
 //REFRESH
 const [refreshing, setRefreshing] = useState<boolean>(false);
 const [outdatedMelanomaData, setOutdatedMelanomaData] = useState<SpotData[]>([]);
@@ -95,20 +92,11 @@ const [unfinishedMelanomaData, setUnfinishedMelanomaData] = useState<SpotData[]>
     }
 
     const fetchAllSpots = async () => {
-        if(currentuser){
-            const response = await fetchSpecialSpots({
-                userId: currentuser.uid,    
-                gender: currentuser.gender,        
-            });
-            if (response != null){
-                setOutdatedMelanomaData(response.outdated);
-                setRiskyMelanomaData(response.risky);
-                setUnfinishedMelanomaData(response.unfinished);
-            } else {
-                setOutdatedMelanomaData([]);
-                setRiskyMelanomaData([]);
-                setUnfinishedMelanomaData([]);
-            }
+        if(melanoma != null){
+            const response = melanoma.getSpecialMoles()
+            setOutdatedMelanomaData(response.outdated);
+            setRiskyMelanomaData(response.risky);
+            setUnfinishedMelanomaData(response.unfinished);
         }
     }
 
@@ -130,7 +118,7 @@ const [unfinishedMelanomaData, setUnfinishedMelanomaData] = useState<SpotData[]>
 
     useEffect(() => {
         handleLoadPage()
-    },[])
+    },[melanoma])
 
 
 //<==================<[ Main Return ]>====================> 
