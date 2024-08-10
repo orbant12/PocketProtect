@@ -2,14 +2,12 @@
 import React, {useEffect, useState} from 'react';
 import { Text, View,Pressable ,ScrollView,Image,TouchableOpacity} from 'react-native';
 import Svg, { Circle, Path } from 'react-native-body-highlighter/node_modules/react-native-svg';
-import {updateSpot} from '../../../services/server';
 import { useAuth } from '../../../context/UserAuthContext';
 import * as ImagePicker from 'expo-image-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { NavBar_SpotAdd } from '../../../components/LibaryPage/Melanoma/navBarRow';
 import { spotUpdateStyle } from '../../../styles/libary_style';
-import { fileUriConverterToBlob } from '../../../utils/melanoma/fileUriConverter';
-import { SkinType, SpotArrayData, SpotData, UserData } from '../../../utils/types';
+import { SkinType, SpotArrayData, SpotData} from '../../../utils/types';
 import { UpdateMethod } from '../../../navigation/navigation';
 import { convertImageToBase64 } from '../../../utils/imageConvert';
 import { SuccessAnimationSheet } from '../../../components/Common/AnimationSheets/successAnimatedSheet';

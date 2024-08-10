@@ -70,7 +70,7 @@ export type CompletedParts = Slug[]
 
 export type SunBurnData = {slug:string, stage: 0 | 1 | 2 | 3}[]
 
-export type DetectableRealatives = "none" | "mother" | "father" | "sibling" | "grandmother" | "grandfather" | "other";
+export type DetectableRealatives = "none" | "mother" | "father" | "sibling" | "grandmother" | "grandfather" | "other" | "none" [];
 
 export type SkinDataType = {
     completedArray: CompletedParts,

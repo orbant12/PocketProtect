@@ -23,7 +23,7 @@ export type MelanomaMetaData = {
     detected_relative: DetectableRealatives;
 };
 
-export type MelanomaModalOptions = "skin_type" | "detected_relative" | "slug" | "stage" | "sunburn" ;
+export type MelanomaModalOptions = "skin_type" | "detected_relative" | "slug" | "stage" | "sunburn"  ;
 
 
 

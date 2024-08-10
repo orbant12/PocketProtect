@@ -106,7 +106,7 @@ export const SelectionPage: React.FC<SelectionPageProps> = ({
           optionValue={optionValue}
           style={selectableStyle}
           isMap={isMap}
-          pagerActive={topPager.activeItem}
+          pagerActive={topPager != undefined ? topPager.activeItem : undefined}
         />
       )}
       {selectableOption === 'bar' && (

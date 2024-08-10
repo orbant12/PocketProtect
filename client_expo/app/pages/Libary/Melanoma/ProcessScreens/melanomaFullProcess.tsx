@@ -1,13 +1,11 @@
-import { View,Text,StyleSheet,Pressable,Image,ScrollView,TouchableOpacity,PixelRatio,Dimensions, Modal } from "react-native"
+import { View,Image,PixelRatio,Dimensions, Modal } from "react-native"
 import React, {useState,useEffect,useCallback} from "react";
 import { useAuth } from "../../../../context/UserAuthContext";
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { melanomaMetaDataUpload, updateCompletedParts } from "../../../../services/server"
 import { useFocusEffect } from '@react-navigation/native';
 import { decodeParts } from "../../../../utils/melanoma/decodeParts";
 import {Slug } from "../../../../utils/types";
 import { MelanomaMetaData } from "../melanomaCenter";
-import { styles_shadow } from "../../../../styles/shadow_styles";
 import { Assist_Onboard } from "../../../../components/AddPage/onBoardings/assistantBoard";
 import { ProgressRow } from "../../../../components/ExplainPages/explainPage";
 import { FirstScreen } from "./Fullprocess/welcome_full";
@@ -20,7 +18,7 @@ import { ThirdScreen } from "./Fullprocess/frontBody_full";
 import { FourthScreen } from "./Fullprocess/backBody_full";
 import { FifthScreen } from "./Fullprocess/final_full";
 import { styles } from "../../../../styles/full_melanoma_styles";
-import { Melanoma } from "../../../../models/Melanoma";
+
 
 const { width } = Dimensions.get('window');
 const scaleFactor = width < 380 ? 1 : 1.2;
@@ -35,9 +33,7 @@ const MelanomaFullProcess = ({navigation}) => {
 
     //<===============> Variables  <===============> 
     const alertTeam  = Image.resolveAssetSource(require('../../../../assets/skinburn/5.png')).uri;
-    const {currentuser} = useAuth()
-
-    const melanoma = new Melanoma(currentuser.uid,currentuser.gender)
+    const {currentuser, melanoma} = useAuth()
 
     //Progress Trackers
     const [progress, setProgress] = useState(0.1)
@@ -56,7 +52,7 @@ const MelanomaFullProcess = ({navigation}) => {
             slug:"" as Slug
         }],
         skin_type: null,
-        detected_relative:"none",
+        detected_relative:["none"],
 
     })
 
@@ -132,21 +128,14 @@ const MelanomaFullProcess = ({navigation}) => {
 
     const updateCompletedSlug = async (completedArray:CompletedParts_Array) => {
         if(currentuser){
-            const response = await updateCompletedParts({
-                userId:currentuser.uid,
-                completedArray
-            })
-            if (response != true){
-                alert("something went wrong")
-            }
+            await melanoma.updateCompletedParts(completedArray)
         }
     }
 
     const fetchCompletedSlugs = async () => {
         if(currentuser){
-            const response = await melanoma.fetchCompletedParts()
-            const completedSlugs = response.map(part => part.slug); 
-            const decoded = decodeParts(completedSlugs)
+            const response = melanoma.getCompletedParts()
+            const decoded = decodeParts(response)
             setCompletedParts(decoded)  
         }
     }
@@ -166,7 +155,7 @@ const MelanomaFullProcess = ({navigation}) => {
                 ...prevState,
                 sunburn: newSunburn,
                 ...(type === "skin_type" && { skin_type: data }),
-                ...(type === "detected_relative" && { detected_relative: data })
+                ...(type === "detected_relative" && { detected_relative: [...melanomaMetaData.detected_relative,data] })
             };
             });
     };
@@ -218,6 +207,10 @@ const MelanomaFullProcess = ({navigation}) => {
             userId: currentuser.uid,
             metaData: metaDataPass
         })
+        await melanoma.updateSkinType(metaDataPass.skin_type)
+        await melanoma.updateDetectedRelative(metaDataPass.detected_relative)
+        await melanoma.updateSunBurn(metaDataPass.sunburn)
+        
         if (res != true){
             alert("Something Went Wrong. Please check your intenet connection or restart the app !")
         }
@@ -232,6 +225,19 @@ const MelanomaFullProcess = ({navigation}) => {
         }
     }
 
+    const handleMetaDataLoad = async () => {
+        const skinResult = await melanoma.getSkinType()
+        const sunResult = await melanoma.getSunBurn()
+        const relativeResult = await melanoma.getDetectedRelative()
+        if (skinResult != null && sunResult != null && relativeResult != null){
+            setMelanomaMetaData({
+                skin_type:skinResult,
+                sunburn:sunResult,
+                detected_relative:["none"]
+            })
+        }
+    }
+
     useEffect(() => {
         if(round(progress,1) == 0.7 || round(progress,1) == 0.8){
         handleSlugMemoryChange()     
@@ -240,7 +246,8 @@ const MelanomaFullProcess = ({navigation}) => {
 
     useFocusEffect(
         useCallback(() => {
-            fetchCompletedSlugs()       
+            fetchCompletedSlugs()
+            handleMetaDataLoad()  
         return () => {};
         }, [])
     );

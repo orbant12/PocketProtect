@@ -1,10 +1,9 @@
 
-import { View,Text,PixelRatio,Dimensions} from "react-native"
+import { View,Text,Dimensions} from "react-native"
 import React, {useState,useEffect,useCallback} from "react";
 import { useAuth } from "../../../context/UserAuthContext";
 import Body from "../../../components/LibaryPage/Melanoma/BodyParts/index";
 import ProgressBar from 'react-native-progress/Bar';
-import {updateCompletedParts, fetchCompletedParts,fetchSkinType } from '../../../services/server';
 import { spotUploadStyle } from "../../../styles/libary_style";
 import { SideSwitch } from "../../../components/LibaryPage/Melanoma/sideSwitch";
 import { decodeParts } from "../../../utils/melanoma/decodeParts";
@@ -12,8 +11,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Navigation_MoleUpload_2 } from "../../../navigation/navigation";
 import { NavBar_OneOption } from "../../../components/Common/navBars";
 import { styles_shadow } from "../../../styles/shadow_styles";
-import { UserData_Default } from "../../../utils/initialValues";
-import { SkinType, Slug, UserData } from "../../../utils/types";
+import { SkinType, Slug } from "../../../utils/types";
 
 const { width, height } = Dimensions.get('window');
 const scaleFactor = width < 380 ? 1.1 : 1.4;
@@ -21,7 +19,7 @@ const scaleFactor = width < 380 ? 1.1 : 1.4;
 const AllMelanomaAdd = ({route,navigation}) => {
 
     const [selectedSide, setSelectedSide] = useState<"back" | "front">("front");
-    const {currentuser} = useAuth()
+    const {currentuser,melanoma} = useAuth()
     const [completedParts, setCompletedParts] = useState<{slug:Slug}[]>([])
     const [completedAreaMarker, setCompletedAreaMarker] = useState([])
     const [bodyProgress, setBodyProgress] = useState(0)
@@ -39,24 +37,15 @@ const AllMelanomaAdd = ({route,navigation}) => {
 
     const updateCompletedSlug = async (completedArray:{slug:Slug}[]) => {
         if(currentuser){
-            const response = await updateCompletedParts({
-                userId:currentuser.uid,
-                completedArray
-            })
-            if (response != true){
-                alert("something went wrong")
-            }
+            await melanoma.updateCompletedParts(completedArray);
         }
     }
     
     const fetchCompletedSlugs = async () => {
         if(currentuser){
-            const response = await fetchCompletedParts({
-                userId: currentuser.uid,
-            });
+            const response = melanoma.getCompletedParts()
             if(response != null){
-                const completedSlugs = response.map(part => part.slug); 
-                const decoded = decodeParts(completedSlugs)
+                const decoded = decodeParts(response)
                 setCompletedParts(decoded)  
             }
         }
@@ -65,14 +54,8 @@ const AllMelanomaAdd = ({route,navigation}) => {
 
 
     const fetchUserSkinType = async () => {
-        const response = await fetchSkinType({
-            userId: currentuser.uid
-        })
-        if(response != null){
-            setSkinType(response)   
-        } else {
-            setSkinType(0)
-        }
+        const response = await melanoma.getSkinType()
+        setSkinType(response)  
     }
 
     const conditionalFetching = () => {
@@ -150,15 +133,15 @@ export default AllMelanomaAdd
 
 const ColorLabels = () => {
     return(
-        <View style={[spotUploadStyle.colorExplain]}>
+        <View style={[spotUploadStyle.colorExplain,{top:150}]}>
         <View style={spotUploadStyle.colorExplainRow} >
         <View style={spotUploadStyle.redDot} />
-            <Text style={{position:"relative",marginLeft:10,fontWeight:"500",opacity:0.8}}>Empty</Text>
+            <Text style={{position:"relative",marginLeft:10,fontWeight:"800",opacity:0.6}}>Empty</Text>
         </View>
 
         <View style={spotUploadStyle.colorExplainRow}>
             <View style={spotUploadStyle.greenDot} />
-            <Text style={{position:"relative",marginLeft:10,fontWeight:"500",opacity:0.8}}>Complete</Text>
+            <Text style={{position:"relative",marginLeft:10,fontWeight:"800",opacity:0.6}}>Complete</Text>
         </View>
     </View>
     )

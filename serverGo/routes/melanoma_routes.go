@@ -1205,4 +1205,177 @@ func SetupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 		}
 
 	})
+
+	e.POST("client/update/detected-relative", func(c echo.Context) error {
+		type UpdateDetectedRelativeRequest struct {
+			UserId           string   `json:"userId"`
+			DetectedRelative []string `json:"detected_relative"`
+		}
+
+		var req UpdateDetectedRelativeRequest
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		// Prepare updates for Firestore
+		var updates []firestore.Update
+
+		updates = append(updates, firestore.Update{
+			Path:  "detected_relative",
+			Value: req.DetectedRelative,
+		})
+
+		// Update Firestore with MelanomaMetaData and skin_data as doc id
+		_, err := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("skin_data").Update(context.Background(), updates)
+
+		if err != nil {
+			log.Printf("Error uploading melanoma metadata: %v", err)
+			//SET DOCUMENTS
+			if err.Error() == "rpc error: code = NotFound desc = no such document" {
+				_, err := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("skin_data").Set(context.Background(), map[string]interface{}{
+					"detected_relative": req.DetectedRelative,
+				}, firestore.MergeAll)
+
+				if err != nil {
+					log.Printf("Error uploading melanoma metadata: %v", err)
+					return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+				}
+			}
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		return c.NoContent(http.StatusNoContent)
+	})
+
+	e.POST("client/get/detected-relative", func(c echo.Context) error {
+		type GetDetectedRelativeRequest struct {
+			UserId string `json:"userId"`
+		}
+
+		var req GetDetectedRelativeRequest
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		detectedRelativeRef := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("skin_data")
+
+		docSnap, err := detectedRelativeRef.Get(context.Background())
+		if err != nil {
+			log.Printf("Error getting detected relative data: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		var detectedRelative []string
+
+		if docSnap.Exists() {
+			if docSnap.Data()["detected_relative"] != nil {
+				detectedRelative = docSnap.Data()["detected_relative"].([]string)
+			}
+		}
+
+		return c.JSON(http.StatusOK, detectedRelative)
+	})
+
+	e.POST("client/update/sunburn", func(c echo.Context) error {
+		type UpdateSunburnRequest struct {
+			UserId  string `json:"userId"`
+			Sunburn []struct {
+				Stage int    `json:"stage"`
+				Slug  string `json:"slug"`
+			} `json:"sunburn"`
+		}
+
+		var req UpdateSunburnRequest
+
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		// Prepare updates for Firestore
+		var updates []firestore.Update
+
+		//FORMAT REQ ARRAY
+
+		var sunburnArray []map[string]interface{}
+		for _, item := range req.Sunburn {
+			data := map[string]interface{}{"stage": item.Stage, "slug": item.Slug}
+			sunburnArray = append(sunburnArray, data)
+		}
+
+		updates = append(updates, firestore.Update{
+			Path:  "sunburn",
+			Value: sunburnArray,
+		})
+
+		// Update Firestore with MelanomaMetaData and skin_data as doc id
+		_, err := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("skin_data").Update(context.Background(), updates)
+
+		if err != nil {
+			log.Printf("Error uploading melanoma metadata: %v", err)
+			//SET DOCUMENTS
+			if err.Error() == "rpc error: code = NotFound desc = no such document" {
+				_, err := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("skin_data").Set(context.Background(), map[string]interface{}{
+					"sunburn": sunburnArray,
+				}, firestore.MergeAll)
+
+				if err != nil {
+					log.Printf("Error uploading melanoma metadata: %v", err)
+					return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+				}
+			}
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		return c.NoContent(http.StatusNoContent)
+	})
+
+	e.POST("client/get/sunburn", func(c echo.Context) error {
+		type GetSunburnRequest struct {
+			UserId string `json:"userId"`
+		}
+
+		var req GetSunburnRequest
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		sunburnRef := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("skin_data")
+
+		docSnap, err := sunburnRef.Get(context.Background())
+		if err != nil {
+			log.Printf("Error getting sunburn data: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+		}
+
+		var sunburnData []struct {
+			Stage int    `json:"stage"`
+			Slug  string `json:"slug"`
+		}
+
+		if docSnap.Exists() {
+			if docSnap.Data()["sunburn"] != nil {
+				sunburnArray := docSnap.Data()["sunburn"].([]interface{})
+				for _, item := range sunburnArray {
+					if m, ok := item.(map[string]interface{}); ok {
+						sunburnData = append(sunburnData, struct {
+							Stage int    `json:"stage"`
+							Slug  string `json:"slug"`
+						}{
+							Stage: m["stage"].(int),
+							Slug:  m["slug"].(string),
+						})
+					} else {
+						log.Printf("Unexpected type in sunburn data: %T", item)
+					}
+				}
+			}
+		}
+
+		return c.JSON(http.StatusOK, sunburnData)
+	})
 }

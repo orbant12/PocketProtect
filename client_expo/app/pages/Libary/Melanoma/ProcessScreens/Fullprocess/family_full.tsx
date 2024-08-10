@@ -4,6 +4,8 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SelectionPage_Binary } from "../../../../../components/Common/SelectableComponents/selectPage_Binary";
 import { ScrollView, Text,Pressable,View } from "react-native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { SkinDataType } from "../../../../../utils/types";
+import { MelanomaMetaData } from "../../melanomaCenter";
 
 
 export function FamilyTreeScreen({
@@ -13,6 +15,12 @@ export function FamilyTreeScreen({
     progress,   
     styles
 
+}:{
+    handleMelanomaDataChange:(type: "detected_relative",value:string) => void;
+    melanomaMetaData:MelanomaMetaData;
+    setProgress:(progress:number) => void;
+    progress:number;
+    styles:any;
 }){
 
         
@@ -75,7 +83,7 @@ export function FamilyTreeScreen({
                         </View>
                         <ScrollView horizontal style={{width:"100%",marginTop:30}} contentContainerStyle={{height:10}} showsHorizontalScrollIndicator={false}>
                             {familyMemberOptions.map((data) => (
-                                <Pressable key={data.member} onPress={() => handleMelanomaDataChange("detected_relative",data.member)} style={melanomaMetaData.detected_relative == data.member ? styles.selectableBubbleA : styles.selectableBubble} >
+                                <Pressable key={data.member} onPress={() => handleMelanomaDataChange("detected_relative",data.member)} style={melanomaMetaData.detected_relative.includes(data.member) ? styles.selectableBubbleA : styles.selectableBubble} >
                                     <MaterialCommunityIcons
                                         name={data.icon}
                                         size={25}

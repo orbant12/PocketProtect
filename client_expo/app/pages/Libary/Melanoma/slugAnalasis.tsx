@@ -1,17 +1,15 @@
-import React,{ useState,useCallback, useEffect, useRef } from "react";
+import React,{ useState,useCallback } from "react";
 import { View, ScrollView,Text, Pressable,TouchableOpacity,RefreshControl } from "react-native";
 import { useAuth } from "../../../context/UserAuthContext";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { dotsSelectOnPart } from "./components/selectedSlugDots";
-import { Navigation_SingleSpotAnalysis, Navigation_AddSlugSpot,Navigation_MoleUpload_2 } from "../../../navigation/navigation"
+import { Navigation_SingleSpotAnalysis,Navigation_MoleUpload_2 } from "../../../navigation/navigation"
 import { useFocusEffect } from '@react-navigation/native';
 import { NavBar_Slug } from "../../../components/LibaryPage/Melanoma/navBarRow";
 import { SlugStyles } from "../../../styles/libary_style";
 import { decodeParts } from "../../../utils/melanoma/decodeParts";
 import { styles_shadow } from "../../../styles/shadow_styles";
-import { BodyPart, Gender, SkinType, UserData,Slug, SpotData  } from "../../../utils/types";
-import { LinearGradient } from "expo-linear-gradient";
-import LottieView from "lottie-react-native";
+import { BodyPart,SkinType,Slug, SpotData  } from "../../../utils/types";
 import { ImageLoaderComponent } from "../../../components/Common/imageLoader";
 
 
@@ -35,8 +33,6 @@ const SlugAnalasis = ({ route,navigation }) => {
             const response = melanoma.getMelanomaDataBySlug(bodyPartSlug.slug)
             setMelanomaData(response)
         }
-
-
     }
 
     const fetchAllCompletedParts = async () => {

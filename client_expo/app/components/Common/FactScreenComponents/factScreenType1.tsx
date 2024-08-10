@@ -2,8 +2,8 @@
 import { ReactNode } from "react";
 import { View,Text,Image,StyleSheet,TouchableOpacity,ScrollView } from "react-native"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { ImageLoaderComponent } from "../../../pages/Libary/Melanoma/slugAnalasis";
 import { styles_shadow } from "../../../styles/shadow_styles";
+import { ImageLoaderComponent } from "../imageLoader";
 
 export const FactScreenType_1 = ({
     pageStyle = {},
@@ -33,7 +33,7 @@ export const FactScreenType_1 = ({
                 <View style={{height:720,justifyContent:"space-between",width:"100%",alignItems:"center"}}>
                     <View style={{width:"100%",alignItems:"center",marginBottom:0,height:500,justifyContent:"space-between"}}>
                         <View style={{width:"100%",alignItems:"center",height:300}}>
-                            <ImageLoaderComponent 
+                            <ImageLoaderComponent
                                 data={{melanomaPictureUrl:imageSource}}
                                 w={230}
                                 h={230}

@@ -3,8 +3,10 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import SampleImage from "../../../../assets/IMG_0626.jpg"
 import { spotUpload_2_styles } from "../../../../styles/libary_style";
 import { ScrollView } from "react-native-gesture-handler";
-import { ImageLoaderComponent } from "../../../../pages/Libary/Melanoma/slugAnalasis";
 import React from "react";
+import { ImageLoaderComponent } from "../../../Common/imageLoader";
+import { Navigation_SingleSpotAnalysis } from "../../../../navigation/navigation";
+import { SkinType } from "../../../../utils/types";
 
 export function SpotUpload({
     uploadedSpotPicture,
@@ -87,7 +89,9 @@ export const AlreadyUploadedSpots = ({
     scrollViewRef,
     setIsModalUp,
     isModalUp,
-    setMoleToDeleteId
+    setMoleToDeleteId,
+    navigation,
+    skin_type
 }:{
     currentSlugMemory:{id:string,picture:string}[];
     highlighted:string;
@@ -96,7 +100,8 @@ export const AlreadyUploadedSpots = ({
     setIsModalUp:(arg:boolean) => void;
     isModalUp:boolean;
     setMoleToDeleteId:(arg:string) => void;
-
+    navigation:any,
+    skin_type:SkinType;
 }) => {
 
     const [loading, setLoading] = React.useState<boolean>(true);
@@ -108,34 +113,27 @@ export const AlreadyUploadedSpots = ({
         {currentSlugMemory.length != 0 &&
             currentSlugMemory.map((data,index) => (
                 <View key={index}>
-                    <View style={[{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:300,borderWidth:0.8,borderColor:"lightgray",padding:10,marginTop:10,borderRadius:20},highlighted == data.id && {position:"absolute",top:-460,backgroundColor:"white",zIndex:100,left:-150}]}>
-                        <ImageLoaderComponent 
+                    <View style={[{flexDirection:"row",alignItems:"center",justifyContent:"space-between",width:340,borderWidth:0.8,borderColor:"lightgray",padding:10,marginTop:10,borderRadius:10},highlighted == data.id && {position:"absolute",top:-460,backgroundColor:"white",zIndex:100,left:-170}]}>
+                        <ImageLoaderComponent
                             w={75}
                             h={75}
-                            setLoading={setLoading}
-                            loading={loading}
-                            imageLoad={imageLoad}
                             style={{borderWidth:1}}
                             data={{melanomaPictureUrl:data.picture}}
                         />
-                        <Text>{data.id}</Text>
-                        <View style={{flexDirection:"row",alignItems:"center"}}>
+                        <View style={{width:120,justifyContent:"center",alignItems:"center"}}>
+                            <Text style={{fontWeight:"700",opacity:0.8,fontSize:13,marginBottom:10}}>{data.id}</Text>
+                        
+                            <TouchableOpacity style={{padding:10,width:120,borderRadius:5,backgroundColor:"black",alignItems:"center",justifyContent:"center"}} onPress={() => Navigation_SingleSpotAnalysis({navigation:navigation,melanomaId:data.id,skin_type:skin_type})} >
+                                <Text style={{color:"white",fontWeight:"700"}}>Open</Text>
+                            </TouchableOpacity>                                       
+                        </View>
+                        <TouchableOpacity onPress={() => {if (data.id == highlighted){setHighlighted(null);}else{setHighlighted(data.id);} scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });}} style={highlighted != data.id ? {padding:10,backgroundColor:"black",borderRadius:5}:{padding:10,backgroundColor:"rgba(0,0,0,0.05)",borderRadius:5,borderWidth:1}}>
                             <MaterialCommunityIcons
                                 name="eye"
                                 size={25}
-                                color={highlighted == data.id ? "red" : "black"}
-                                style={{padding:2}}
-                                onPress={() => {if (data.id == highlighted){setHighlighted(null);}else{setHighlighted(data.id);} scrollViewRef.current.scrollTo({ x: 0, y: 0, animated: true });}}
+                                color={highlighted == data.id ? "red" : "white"}
                             />
-                            <TouchableOpacity onPress={() => {setIsModalUp(!isModalUp);setMoleToDeleteId(data.id)}} >
-                                <MaterialCommunityIcons
-                                    name="delete"
-                                    size={30}
-                                    color="red"
-                                    style={{padding:2,marginLeft:10,opacity:0.4}}
-                                />
-                            </TouchableOpacity>                                       
-                        </View>
+                            </TouchableOpacity>
                     </View>
                 </View>
             ))

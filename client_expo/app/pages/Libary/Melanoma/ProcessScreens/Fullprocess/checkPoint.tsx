@@ -1,8 +1,8 @@
 import { Image, ScrollView, Text, TouchableOpacity } from "react-native";
-import { ImageLoaderComponent } from "../../slugAnalasis";
 import { View } from "react-native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { styles_shadow } from "../../../../../styles/shadow_styles";
+import { ImageLoaderComponent } from "../../../../../components/Common/imageLoader";
 
 export function AlertScreen({
     setProgress,

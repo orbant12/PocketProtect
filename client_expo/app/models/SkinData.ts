@@ -4,7 +4,7 @@ import { CompletedParts, DetectableRealatives, SkinType, Slug, SunBurnData } fro
 
 export class SkinData {
 
-    private skinType: SkinType;
+    private skinType: SkinType = 0;
     private detectedRelative: DetectableRealatives;
     private sunBurn: SunBurnData;
     private completedParts: CompletedParts;
@@ -46,6 +46,40 @@ export class SkinData {
         }
     }
 
+    async getSunBurn():Promise<SunBurnData> {
+        const response = await fetch(`${DOMAIN}/client/get/sunburn`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId:this.userId }),
+        });
+    
+        if(response.ok){
+            const data = await response.json();
+            return data as SunBurnData;
+        } else {
+            return [{stage:0,slug:""}]
+        }
+    }
+    
+    async getDetectedRelative():Promise<DetectableRealatives> {
+        const response = await fetch(`${DOMAIN}/client/get/detected-relative`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId:this.userId }),
+        });
+    
+        if(response.ok){
+            const data = await response.json();
+            return data as DetectableRealatives;
+        } else {
+            return []
+        }
+    }
+
     async updateCompletedParts(completedArray:{slug: Slug}[]):Promise<void>{
         const response = await fetch(`${DOMAIN}/client/update/completed-parts`, {
             method: "POST",
@@ -59,6 +93,38 @@ export class SkinData {
             this.completedParts = completedArray.map(part => part.slug) as CompletedParts;
         } else {
             alert("Failed to update completed parts on the databse")
+        }
+    }
+
+    async updateDetectedRelative(newRelative:DetectableRealatives):Promise<void>{
+        const response = await fetch(`${DOMAIN}/client/update/detected-relative`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId:this.userId,detected_relative:newRelative }),
+        });
+    
+        if(response.ok){
+            return;
+        } else {
+            return
+        }
+    }
+
+    async updateSunBurn(newSunBurn:SunBurnData):Promise<void>{
+        const response = await fetch(`${DOMAIN}/client/update/sunburn`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId:this.userId,sunburn:newSunBurn }),
+        });
+    
+        if(response.ok){
+            return;
+        } else {
+            return
         }
     }
 

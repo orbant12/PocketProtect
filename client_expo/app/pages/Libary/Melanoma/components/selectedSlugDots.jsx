@@ -64,7 +64,7 @@ export const BodyPartPath = (
         key={`${bodyPart.slug}_${index}`} 
         d={path}
         fill={skin_type == 0 ? "#fde3ce" : skin_type == 1 ? "#fbc79d" : skin_type == 2 ? "#934506" : skin_type == 3 ? "#311702":null}
-        stroke={stroke == "undefined" ? "#000" : stroke}
+        stroke={stroke == undefined ? "#000" : stroke}
         strokeWidth="2"
         rotation={
             bodyPart.slug == "right-arm" ? "-20"
@@ -116,11 +116,11 @@ export const BodyPartPath = (
                 :
                 bodyPart.slug == "back" ? `translate(-800 -290)`
                 :
-                bodyPart.slug == "left-arm(back)" ? `translate(-600 -430)`
+                bodyPart.slug == "left-arm(back)" ? `translate(-580 -430)`
                 :
-                bodyPart.slug == "right-arm(back)" ? `translate(-1000 -230)`
+                bodyPart.slug == "right-arm(back)" ? `translate(-1050 -230)`
                 :
-                bodyPart.slug == "gluteal" ? `translate(-900 -590)`
+                bodyPart.slug == "gluteal" ? `translate(-910 -590)`
                 :
                 bodyPart.slug == "right-palm" ? `translate(-1190 -675)`
                 :
@@ -128,7 +128,7 @@ export const BodyPartPath = (
                 :
                 bodyPart.slug == "left-leg(back)" ? `translate(-550 -750)`
                 :
-                bodyPart.slug == "right-leg(back)" ? `translate(-"700" -750)`
+                bodyPart.slug == "right-leg(back)" ? `translate(-690 -750)`
                 :
                 bodyPart.slug == "left-feet(back)" ? `translate(-840 -1230)`
                 :
@@ -233,7 +233,7 @@ export const BodyPartPath = (
                 :
                 bodyPart.slug == "back" ? "0.6"
                 :
-                bodyPart.slug == "left-arm(back)" ? "1"
+                bodyPart.slug == "left-arm(back)" ? "0.6"
                 :
                 bodyPart.slug == "right-arm(back)" ? "0.6"
                 :

@@ -1,14 +1,12 @@
 import { View,Text,ScrollView} from "react-native"
 import React, {useState,useEffect,useRef} from "react";
 import ProgressBar from 'react-native-progress/Bar';
-import { fetchSlugMelanomaData ,melanomaSpotUpload,deleteSpot, checkUniqueBirthmarkId} from '../../../../services/server';
-import LoadingOverlay from "../../../../components/Common/Loading/processing"
+import { melanomaSpotUpload,deleteSpot, checkUniqueBirthmarkId} from '../../../../services/server';
 import { SureModal_MoleUpload } from "../../../../components/LibaryPage/Melanoma/modals";
 import { CameraViewModal } from "../components/cameraModal";
 import { SpotPicker } from "../../../../components/LibaryPage/Melanoma/SpotUpload/spotPicker";
 import { SpotUpload, AlreadyUploadedSpots,UploadButtons } from "../../../../components/LibaryPage/Melanoma/SpotUpload/spotUpload";
 import { spotUpload_2_styles } from "../../../../styles/libary_style";
-import { updateCompletedParts } from "../../../../services/server";
 import { useAuth } from "../../../../context/UserAuthContext";
 import { NavBar_OneOption } from "../../../../components/Common/navBars";
 import { BodyPart, Gender, SkinType, Slug, SpotArrayData } from "../../../../utils/types";
@@ -28,13 +26,12 @@ export type ClientMemory_Spots = {
 const MelanomaSingleSlug = ({route,navigation}) => {
 
     //<==============> VARTIABLES <=============> 
-    const { currentuser } = useAuth()
+    const { currentuser, melanoma } = useAuth()
     //ROUTE DATA
     const progress: Progress = route.params.progress
     const bodyPartSlug : SpotArrayData = route.params.bodyPartSlug
-    const gender : Gender = route.params.gender
     const sessionMemory: {slug:Slug}[] = route.params.completedArray
-    const skinColor:SkinType = route.params.skin_type
+    const skinColor:SkinType = melanoma.getSkinType()
     
     
     const [redDotLocation, setRedDotLocation] = useState<location>({ x: -100, y: 10 });
@@ -52,14 +49,6 @@ const MelanomaSingleSlug = ({route,navigation}) => {
     const scrollViewRef = useRef(null);   
 
     //<==============> Functions <=============> 
-
-    // const animationTestFunction = () => {
-    //     setIsScreenLoading(true)
-    //     setIsStateModalActive(true)
-    //     setTimeout(() => {
-    //         setIsScreenLoading(false)
-    //     }, 4000);
-    // }
 
     const handleMoreBirthmark = async () => {
         const BirthmarkIdGenerator = async () => {
@@ -88,7 +77,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
             const res = await melanomaSpotUpload({
                 userId: currentuser.uid,
                 melanomaDocument: {spot: bodyPartSlug, location: redDotLocation},
-                gender: gender,
+                gender: currentuser.gender,
                 melanomaPictureUrl: "",
                 melanomaBlob: pictureUrl,
                 spotId: ID,
@@ -129,21 +118,14 @@ const MelanomaSingleSlug = ({route,navigation}) => {
             } else if (action === "remove") {
                 updatedSessionMemory = updatedSessionMemory.filter(item => item.slug !== bodyPartSlug.slug);
             }
-            await updateCompletedParts({
-                userId:currentuser.uid,
-                completedArray:updatedSessionMemory
-            })
+            await melanoma.updateCompletedParts(updatedSessionMemory)
             navigation.goBack()
             
         }
     }
 
     const fetchSlugSpots = async () =>{
-        const response = await fetchSlugMelanomaData({
-            userId: currentuser.uid,
-            gender,
-            slug: bodyPartSlug.slug
-        })
+        const response = await melanoma.getMelanomaDataBySlug(bodyPartSlug.slug)
 
         const format = response.map((data) =>{
             return {
@@ -173,22 +155,6 @@ const MelanomaSingleSlug = ({route,navigation}) => {
             uid += Math.floor(Math.random() * 10).toString();
         }
         return uid;
-    }
-
-    const handleSpotDelete = async (id:string) => {
-        const response = await deleteSpot({
-            userId:currentuser.uid,
-            spotId: id
-        })
-        if( response.firestore.success == true && response.storage.success == true){
-            alert("Mole Deleted Sucessfully !")
-            fetchSlugSpots()
-            setHighlighted("")
-            setMoleToDeleteId("")
-            setIsModalUp(!isModalUp)
-        } else if ( response.firestore.success != true || response.storage.success != true) {
-            alert("Deletion failed ...")
-        }
     }
 
     const toggleCameraOverlay = () => {
@@ -223,7 +189,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                             bodyPart={bodyPartSlug}
                             highlighted={highlighted}
                             skinColor={skinColor}
-                            gender={gender}
+                            gender={currentuser.gender}
                             currentSlugMemory={currentSlugMemory}
                         />
 
@@ -242,6 +208,8 @@ const MelanomaSingleSlug = ({route,navigation}) => {
                             highlighted={highlighted}
                             currentSlugMemory={currentSlugMemory}
                             scrollViewRef={scrollViewRef}
+                            navigation={navigation}
+                            skin_type={skinColor}
                         />
 
                         <UploadButtons 
@@ -262,12 +230,12 @@ const MelanomaSingleSlug = ({route,navigation}) => {
             {/* <LoadingOverlay 
                 visible={isScreenLoading}
             />   */}
-            <SureModal_MoleUpload 
+            {/* <SureModal_MoleUpload 
                 visible={isModalUp}
                 setIsModalUp={setIsModalUp}
                 moleToDeleteId={moleToDeleteId}
                 handleSpotDelete={handleSpotDelete}
-            />
+            /> */}
             <SuccessAnimationSheet
                 active={isStateModalActive}
                 loading={isScreenLoading}
