@@ -21,6 +21,7 @@ import * as WebBrowser from "expo-web-browser";
 import { User } from "../models/User";
 import { useMelanoma } from "./Melanomacontext";
 import { Melanoma } from "../models/Melanoma";
+import { Alert } from "react-native";
 
 WebBrowser.maybeCompleteAuthSession();
 export interface AuthContextType {
@@ -79,7 +80,7 @@ const handleLogin = async (uid:string) => {
     await user.fetchUserData()
     const userData = user.getUserData()
     if (userData == null) {
-      navigation.navigate("AuthHub");
+      navigation.navigate("NoInternet");
       console.log("You are not logged in");
     } else {
       setuser(userData);
@@ -135,6 +136,15 @@ useEffect(() => {
 },[])
 
 
+const ErrorClientHandler = (err:string) => {
+  if(err == ""){
+    Alert.alert("Wrong Email or Password")
+  } else if (err == "No Network Detected"){
+    navigation.navigate("NoInternet");
+  }
+}
+
+
 // <====> LOGIN HANDLER <====>
 
 const Login = async (email:string,password:string):Promise<boolean> => {
@@ -147,8 +157,7 @@ const Login = async (email:string,password:string):Promise<boolean> => {
     })
     return true
   } catch(error) {
-    console.log(error)
-    alert("Wrong Email or Password")
+    ErrorClientHandler(error)
     return false
   }
 }

@@ -203,17 +203,9 @@ const MelanomaFullProcess = ({navigation}) => {
     };
 
     const uploadMetaData = async (metaDataPass:MelanomaMetaData) => {   
-        const res = await melanomaMetaDataUpload({
-            userId: currentuser.uid,
-            metaData: metaDataPass
-        })
         await melanoma.updateSkinType(metaDataPass.skin_type)
         await melanoma.updateDetectedRelative(metaDataPass.detected_relative)
         await melanoma.updateSunBurn(metaDataPass.sunburn)
-        
-        if (res != true){
-            alert("Something Went Wrong. Please check your intenet connection or restart the app !")
-        }
     }
 
     const handleSlugMemoryChange = async () => {
@@ -233,7 +225,7 @@ const MelanomaFullProcess = ({navigation}) => {
             setMelanomaMetaData({
                 skin_type:skinResult,
                 sunburn:sunResult,
-                detected_relative:["none"]
+                detected_relative:relativeResult
             })
         }
     }

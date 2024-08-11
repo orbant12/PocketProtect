@@ -1257,7 +1257,7 @@ func SetupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 		var req GetDetectedRelativeRequest
 		if err := c.Bind(&req); err != nil {
 			log.Printf("Error binding request: %v", err)
-			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": "Invalid request payload"})
 		}
 
 		detectedRelativeRef := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("skin_data")
@@ -1265,14 +1265,23 @@ func SetupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 		docSnap, err := detectedRelativeRef.Get(context.Background())
 		if err != nil {
 			log.Printf("Error getting detected relative data: %v", err)
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Failed to retrieve data"})
 		}
 
 		var detectedRelative []string
 
 		if docSnap.Exists() {
-			if docSnap.Data()["detected_relative"] != nil {
-				detectedRelative = docSnap.Data()["detected_relative"].([]string)
+			data := docSnap.Data()
+			if relatives, ok := data["detected_relative"].([]interface{}); ok {
+				// Convert []interface{} to []string
+				for _, item := range relatives {
+					if str, ok := item.(string); ok {
+						detectedRelative = append(detectedRelative, str)
+					}
+				}
+			} else {
+				log.Printf("Error: detected_relative field is not a slice of strings")
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Unexpected data format"})
 			}
 		}
 
