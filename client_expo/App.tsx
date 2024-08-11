@@ -37,12 +37,14 @@ import DiagWelcomePage from "./app/pages/Chat/diagWelcome";
 import { WeatherProvider } from "./app/context/WeatherContext";
 import { MelanomaProvider } from "./app/context/Melanomacontext";
 import NoInternetConnectionPage from "./app/pages/Auth/noWify";
+import NoServerPage from "./app/pages/Auth/noServer";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export type RootStackParamList = {
     AuthHub: undefined;
-    NoInternet: undefined;
+    NoInternet: {uid:string};
+    NoServer:undefined;
     RegOnBoarding: undefined;
     Login: undefined;
     SurveyScreen: undefined;
@@ -86,7 +88,8 @@ return (
                 <Stack.Screen name="MelanomaAllAdd" component={AllMelanomaAdd}   options={({ route }) => ({ title:"+ Mole", headerStyle: { backgroundColor: "#ffff"},headerTintColor: "black", headerShown:false  })} />
                 <Stack.Screen name="MelanomaCenter" component={MelanomaCenter}   options={() => ({ headerStyle: { backgroundColor: "white", },headerTintColor: "black",headerShown:false  })} />
                 <Stack.Screen name="AuthHub" component={AuthHub} options={{ headerShown:false}} />
-                <Stack.Screen name="NoInternet" component={NoInternetConnectionPage} options={{ headerShown:false}} />
+                <Stack.Screen name="NoInternet" component={NoInternetConnectionPage} options={{ headerShown:false}}  />
+                <Stack.Screen name="NoServer" component={NoServerPage} options={{ headerShown:false}} />
                 <Stack.Screen name="RegOnBoarding" component={RegOnBoarding} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerTitle:"Welcome !",headerShown:false}} />
                 <Stack.Screen name="Login" component={LoginPage} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white"}} />
                 <Stack.Screen name="SurveyScreen" component={SurveyScreeen} options={{headerStyle: { backgroundColor: "black"},headerTintColor: "white",headerBackVisible:false,headerShown:false} } />

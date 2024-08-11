@@ -5,9 +5,8 @@
 //<********************************************>
 
 //BASIC IMPORTS
-import { useContext, createContext, useEffect, useState } from "react"
+import { useContext, createContext, useEffect, useState} from "react"
 import { useNavigation } from "@react-navigation/core";
-
 //FIREBASE AUTH
 import { AuthErrorCodes, createUserWithEmailAndPassword, onAuthStateChanged,signInWithEmailAndPassword,signInWithCredential, GoogleAuthProvider  } from "firebase/auth";
 
@@ -19,7 +18,6 @@ import { RootStackNavigationProp } from "../../App";
 import * as Google from "expo-auth-session/providers/google";
 import * as WebBrowser from "expo-web-browser";
 import { User } from "../models/User";
-import { useMelanoma } from "./Melanomacontext";
 import { Melanoma } from "../models/Melanoma";
 import { Alert } from "react-native";
 
@@ -58,6 +56,17 @@ const [request, response, promptAsync] = Google.useAuthRequest({
   webClientId: "567381254436-lihbplsc0fnmkqcs54460gg3ve93p1rg.apps.googleusercontent.com",
 });
 
+const ErrorClientHandler = (err:string,uid:string | null) => {
+  console.log(err)
+  if(err == "Request timed out" && (uid != null || uid != undefined)){
+    setIsRegisterLoading("reset")  
+    navigation.navigate("NoInternet", {uid:uid});
+  } else if (err == "TypeError: Network request failed"){
+    setIsRegisterLoading("reset")  
+    navigation.navigate("NoServer");
+  } 
+}
+
 
 //<********************FUNCTIONS************************>
 
@@ -77,12 +86,12 @@ const handleLogin = async (uid:string) => {
   try {
     //WE HAVE USER & HE IS LOGGED IN
     const user = new User(uid)
-    await user.fetchUserData()
-    const userData = user.getUserData()
-    if (userData == null) {
-      navigation.navigate("NoInternet");
+    const response = await user.fetchUserData()
+    if (response != null) {
       console.log("You are not logged in");
+      ErrorClientHandler(response,uid)
     } else {
+      const userData = user.getUserData()
       setuser(userData);
       console.log("You are logged in");
       navigation.navigate("Main");
@@ -90,8 +99,10 @@ const handleLogin = async (uid:string) => {
     }
   } catch (error) {
     console.error("Error fetching user data: ", error);
+    ErrorClientHandler(error,uid)
     navigation.navigate("AuthHub");
   }
+  setIsRegisterLoading("reset")
 }
 
 const handleUserContextUpdate  = async (uid:string) => {
@@ -122,27 +133,22 @@ useEffect(() => {
     } else if (user && isRegisterLoading == "reset"){
       //FOR USEEFFECT CLEANUP
     } else if (user == null) {
-      //WE DONT HAVE USER
-      navigation.navigate("AuthHub");
+      ErrorClientHandler("TypeError: Network request failed",null)
       setuser(null);
-    }
+    } 
   });
-
+  
   return () => unsubscribe();
 }, [isRegisterLoading]);
+
 
 useEffect(() => {
   setIsRegisterLoading(false)
 },[])
 
 
-const ErrorClientHandler = (err:string) => {
-  if(err == ""){
-    Alert.alert("Wrong Email or Password")
-  } else if (err == "No Network Detected"){
-    navigation.navigate("NoInternet");
-  }
-}
+
+
 
 
 // <====> LOGIN HANDLER <====>
@@ -157,7 +163,7 @@ const Login = async (email:string,password:string):Promise<boolean> => {
     })
     return true
   } catch(error) {
-    ErrorClientHandler(error)
+    ErrorClientHandler(error,null)
     return false
   }
 }

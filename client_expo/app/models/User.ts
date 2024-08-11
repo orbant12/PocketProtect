@@ -12,25 +12,55 @@ export class User {
 
   constructor(private userId: string) {}
 
-    async fetchUserData(): Promise<void> {
+  async fetchUserData(retries = 0): Promise<null | string> {
+    const TIMEOUT_MS = retries == 0 ? 1000 : 1000;
+
+    const timeoutPromise = new Promise<never>((_, reject) => 
+        setTimeout(() => reject(new Error('Request timed out')), TIMEOUT_MS)
+    );
+
+    const fetchWithTimeout = async () => {
         try {
-            const response = await fetch(`${DOMAIN}/client/get/user-data`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ userId:this.userId }),
-            });
-            if(response.ok){
-                const data = await response.json();
-                this.userData = data as UserData;
+            const response = await Promise.race([
+                fetch(`${DOMAIN}/client/get/user-data`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ userId: this.userId }),
+                }),
+                timeoutPromise
+            ]);
+
+            if (response instanceof Response) {
+                if (response.ok) {
+                    const data = await response.json();
+                    this.userData = data as UserData;
+                    return null;
+                } else {
+                    this.userData = null;
+                    return response.statusText;
+                }
             } else {
-                this.userData = null;
+                throw new Error('Unexpected response type');
             }
         } catch (error) {
-            this.userData = null;
+            if (retries > 0) {
+                console.log(`Retrying... (${retries} retries left)`);
+                return await this.fetchUserData(retries - 1); // Retry
+            } else {
+                console.log("Fetch error:", error);
+                this.userData = null;
+                console.log(error.message)
+                return error.message;
+            }
         }
-    }
+    };
+
+    return await fetchWithTimeout();
+}
+
+
 
     async registerUser(userFullName: string, regEmail: string): Promise<boolean> {
         try {

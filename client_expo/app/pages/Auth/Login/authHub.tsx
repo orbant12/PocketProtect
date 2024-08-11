@@ -1,25 +1,27 @@
 import { View,Text,Pressable,StyleSheet, Modal } from "react-native"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAuth } from '../../../context/UserAuthContext'
-import { auth, db,} from '../../../services/firebase';
-import { createUserWithEmailAndPassword, GoogleAuthProvider,signInWithCredential } from "firebase/auth";
-import React, {useState,useEffect} from "react";
+import React, {useState, useCallback} from "react";
 
-
-
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginPage from "../login";
 import RegisterPage from "../register";
-import { collection, doc, getDoc, setDoc } from "firebase/firestore";
-import { UserData } from "../../../utils/types";
-//import { GoogleSignIn } from '@react-native-google-signin/google-signin';
+import { useFocusEffect } from "@react-navigation/native";
+
 
 
 
 const AuthHub = ({navigation}) => {
 
     const [ selectedAuth, setSelectedAuth] = useState(null)
-    const { handleGoogleAuth } = useAuth()
+    const { handleGoogleAuth,handleAuthHandler } = useAuth()
+
+    useFocusEffect(
+        useCallback(() => {
+            handleAuthHandler("fetch_w_main")
+        return () => {};
+        }, [])
+      );
+      
 
     return(
         <>
