@@ -113,6 +113,7 @@ export const Navbar_Selectable = ({
                     value={data.value}
                     title={data.title}
                     activeItem={activeItem}
+                    key={index}
                 />
                 ))}
             </View>

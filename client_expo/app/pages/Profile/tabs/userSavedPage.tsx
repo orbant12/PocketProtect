@@ -9,7 +9,6 @@ import { useAuth } from '../../../context/UserAuthContext';
 import { convertWeatherDataToString } from '../../../utils/melanoma/weatherToStringConvert';
 import { styles } from '../../../styles/chatBot_style';
 import { Modal } from 'react-native';
-import BloodWorkPage from '../../Libary/BloodCenter/bloodWork';
 import { Navigation_AddBloodWork } from '../../../navigation/navigation';
 import { UviWidget } from '../../../components/Widgets/uviWidget';
 import { WeatherData_Default } from '../../../utils/initialValues';

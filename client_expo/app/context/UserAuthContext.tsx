@@ -61,7 +61,7 @@ const ErrorClientHandler = (err:string,uid:string | null) => {
   if(err == "Request timed out" && (uid != null || uid != undefined)){
     setIsRegisterLoading("reset")  
     navigation.navigate("NoInternet", {uid:uid});
-  } else if (err == "TypeError: Network request failed"){
+  } else if (err == "TypeError: Network request failed" || err == "[TypeError: Network request failed]" || err == "Network request failed"){
     setIsRegisterLoading("reset")  
     navigation.navigate("NoServer");
   } 
@@ -73,7 +73,7 @@ const ErrorClientHandler = (err:string,uid:string | null) => {
 
 const handleSetup = async (currentuser) => {
   if(currentuser != null){
-      const melanomaObj =             new Melanoma(currentuser.uid,currentuser.gender)
+      const melanomaObj = new Melanoma(currentuser.uid,currentuser.gender)
       await melanomaObj.fetchAllMelanomaData()
       console.log("Melanoma Data READY")
       setMelanoma(melanomaObj)

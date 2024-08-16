@@ -352,7 +352,36 @@ const MelanomaFullProcess = ({navigation}) => {
             }
             {round(progress,1) === 0.9 && 
                 <FifthScreen 
-                    navigation={navigation}
+                    onFinish={() => navigation.goBack()}
+                    boxDatas={[
+                        {
+                            title:"Analise with AI",
+                            icon_name:"microscope",
+                            desc:{
+                                one:"Get a 90% accurate prediction",
+                                two:"AI will predict wheter it finds your mole malignant or benign",
+                                three:"We strive towards 100% transparency about our model so we made it open source which you can find on our github"
+                            }
+                        },
+                        {
+                            title:"Get Professional Help",
+                            icon_name:"doctor",
+                            desc:{
+                                one:"Let a certified dermotologist look at your mole and make a professional analasis",
+                                two:"You'll recive a pdf of the analasis explaining the process in detail",
+                                three:"You will get access to chat with your selected dermotologist"
+                            }
+                        },
+                        {
+                            title:"Reminders for new imaging",
+                            icon_name:"calendar",
+                            desc:{
+                                one:"Revaluating each mole's risk",
+                                two:"Comparing their growth & change to past images",
+                                three:"You can access and show your dermotologist about each mole's evolution over an endless period of time"
+                            }
+                        }
+                    ]}
                 />
             }
             <Information_Modal 

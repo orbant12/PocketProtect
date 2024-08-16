@@ -1,7 +1,8 @@
 import { View, TouchableOpacity, Text, Image} from "react-native"
 import { AssistPanel_style } from "../../styles/assistance_style"
 import { timeDistanceFromToday } from "../../utils/date_manipulations"
-import { ImageLoaderComponent } from "../../pages/Libary/Melanoma/slugAnalasis"
+import { ImageLoaderComponent } from "../Common/imageLoader"
+
 
 export const SessionBar = ({data,index,setSelectedChat}) => {
     return(

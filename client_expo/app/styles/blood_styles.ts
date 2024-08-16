@@ -49,10 +49,10 @@ export const add_styles = StyleSheet.create({
     },
     modalCard:{
         width:330,
-        height:200,
+        height:300,
         backgroundColor:"white",
         marginBottom:50,
-        borderRadius:20,
+        borderRadius:10,
         justifyContent:"space-between",
         alignItems:"center",
         padding:15

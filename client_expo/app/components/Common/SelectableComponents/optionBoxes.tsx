@@ -40,7 +40,7 @@ export const OptionsBoxes: React.FC<OptionsBoxesProps> = ({
     <ScrollView style={[{ width: '100%' }, style]} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }} showsVerticalScrollIndicator={false}>
       <View style={[{ flexDirection: 'row', width: '100%', flexWrap: 'wrap', marginRight: 'auto', marginLeft: 'auto', justifyContent:"center" }]}>
         {items.map((data) => (
-          (pagerActive == data.container || data.container == undefined || (data.container == "all" && pagerActive != "active")  || (pagerActive == "active" && isMap == false ? optionValue == data.type : optionValue.includes(data.type) ) ) &&
+          ((pagerActive == data.container) || (data.container == undefined )|| (data.container == "all" && pagerActive != "active")  || ((pagerActive == "active" && isMap != false) &&  optionValue.includes(data.type) ) ) &&
           <SelectableBox
             key={data.type}
             setOptionValue={setOptionValue}

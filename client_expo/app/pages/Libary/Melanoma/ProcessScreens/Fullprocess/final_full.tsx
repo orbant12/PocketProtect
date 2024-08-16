@@ -3,12 +3,12 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { styles_shadow } from "../../../../../styles/shadow_styles";
 import { styles } from "../../../../../styles/full_melanoma_styles";
 
-export function FifthScreen({navigation}){
+export function FifthScreen({boxDatas,onFinish}){
 
     const doctorImage = Image.resolveAssetSource(require('../../../../../assets/doc.jpg')).uri;
 
     return(
-        <View style={[styles.startScreen,{height:"85%",marginTop:"10%",backgroundColor:"transparent"}]}>
+        <View style={[styles.startScreen,{height:"90%",marginTop:"0%",backgroundColor:"transparent",paddingBottom:80}]}>
             <ScrollView style={{width:"100%",marginBottom:0,backgroundColor:"transparent"}}>
                 <View style={{marginTop:0,alignItems:"center"}}>  
                     <View style={{marginTop:0,alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,padding:10,width:"90%"}}>  
@@ -33,52 +33,45 @@ export function FifthScreen({navigation}){
                     <View style={{padding:10,backgroundColor:"rgba(0,0,0,0.1)",marginTop:20,borderRadius:10,width:"80%",alignItems:"center"}}> 
                         <Text style={{fontWeight:"700",fontSize:20}}>What's next ?</Text> 
                     </View>
-                    <View style={[{width:"90%",height:270,borderWidth:3,borderRadius:10,marginTop:20,padding:10,alignItems:"center"},styles_shadow.shadowContainer]}>
-                        <MaterialCommunityIcons 
-                            name="microscope"
-                            size={30}
-                            style={{margin:10}}
+                    {boxDatas.map((data,index) => (
+                        <FinishBox 
+                            title={data.title}
+                            icon_name={data.icon_name}
+                            key={index}
+                            desc={
+                                data.desc
+                            }
                         />
-                        <Text style={{fontWeight:"800",fontSize:20}}>Analise with AI</Text>                    
-                        <View style={{width:"100%",margin:10,backgroundColor:"rgba(0,0,0,0.9)",padding:10,borderRadius:10,marginTop:20}}>                           
-                            <Text style={{marginBottom:15, fontWeight:"600",color:"white",opacity:0.8}}>• Get a 90% accurate prediction</Text>
-                            <Text style={{marginBottom:15, fontWeight:"600",color:"white",opacity:0.8}}>• AI will predict wheter it finds your mole malignant or benign</Text>
-                            <Text style={{fontWeight:"600",color:"white",opacity:0.8}}>• We strive towards 100% transparency about our model so we made it open source which you can find on our github</Text>
-                        </View>        
-                    </View> 
-                    <View style={[{width:"90%",height:280,borderWidth:3,borderRadius:10,marginTop:20,padding:10,alignItems:"center"},styles_shadow.shadowContainer]}>
-                        <MaterialCommunityIcons 
-                            name="doctor"
-                            size={30}
-                            style={{margin:10}}
-                        />
-                        <Text style={{fontWeight:"800",fontSize:20}}>Get Professional Help</Text>                    
-                        <View style={{width:"100%",margin:10,backgroundColor:"rgba(0,0,0,0.9)",padding:10,borderRadius:10,marginTop:20}}>                           
-                            <Text style={{marginBottom:15, fontWeight:"600",color:"white",opacity:0.8}}>• Let a certified dermotologist look at your mole and make a professional analasis</Text>
-                            <Text style={{marginBottom:15, fontWeight:"600",color:"white",opacity:0.8}}>• You'll recive a pdf of the analasis explaining the process in detail</Text>
-                            <Text style={{fontWeight:"600",color:"white",opacity:0.8}}>• You will get access to chat with your selected dermotologist</Text>
-                        </View>        
-                    </View> 
-
-                    <View style={[{width:"90%",height:270,borderWidth:3,borderRadius:10,marginTop:20,padding:10,alignItems:"center",marginBottom:100},styles_shadow.shadowContainer]}>
-                        <MaterialCommunityIcons 
-                            name="calendar"
-                            size={30}
-                            style={{margin:10}}
-                        />
-                        <Text style={{fontWeight:"800",fontSize:20}}>Reminders for new imaging</Text>                    
-                        <View style={{width:"100%",margin:10,backgroundColor:"rgba(0,0,0,0.9)",padding:10,borderRadius:10,marginTop:20}}>                           
-                            <Text style={{marginBottom:15, fontWeight:"600",color:"white",opacity:0.8}}>• Revaluating each mole's risk</Text>
-                            <Text style={{marginBottom:15, fontWeight:"600",color:"white",opacity:0.8}}>• Comparing their growth & change to past images</Text>
-                            <Text style={{fontWeight:"600",color:"white",opacity:0.8}}>• You can access and show your dermotologist about each mole's evolution over an endless period of time</Text>
-                        </View>        
-                    </View>        
+                    ))}      
                 </View>        
             </ScrollView>
-            <Pressable onPress={() => {navigation.goBack()}} style={[styles.startButton,{marginBottom:10,position:"absolute",bottom:0}]}>
+            <Pressable onPress={onFinish} style={[styles.startButton,{marginBottom:10,position:"absolute",bottom:0}]}>
 
                     <Text style={{padding:15,fontWeight:"600",color:"white"}}>Finish</Text>
                 </Pressable>
         </View>
+    )
+}
+
+const FinishBox = ({
+    icon_name,
+    title,
+    desc
+}) => {
+    return(
+        <View style={[{width:"90%",borderWidth:3,borderRadius:10,marginTop:20,padding:10,alignItems:"center",backgroundColor:"black",borderColor:"rgba(250,250,255,0.7)"},styles_shadow.shadowContainer]}>
+        <MaterialCommunityIcons 
+            name={icon_name}
+            size={30}
+            style={{margin:10}}
+            color={"white"}
+        />
+        <Text style={{fontWeight:"800",fontSize:20,color:"white",opacity:0.9}}>{title}</Text>                    
+        <View style={{width:"95%",margin:10,backgroundColor:"rgba(250,0,250,0.4)",padding:10,borderRadius:10,marginTop:20,borderWidth:2,borderColor:"magenta",opacity:1}}>                           
+            <Text style={{marginBottom:15, fontWeight:"600",color:"white",opacity:0.8,fontSize:13}}>{desc.one}</Text>
+            <Text style={{marginBottom:15, fontWeight:"600",color:"white",opacity:0.8,fontSize:13}}>{desc.two}</Text>
+            <Text style={{fontWeight:"600",color:"white",opacity:0.8,fontSize:13}}>{desc.three}</Text>
+        </View>        
+    </View> 
     )
 }

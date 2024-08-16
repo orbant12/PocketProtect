@@ -1,7 +1,6 @@
 
-import { View,Text,TouchableOpacity } from "react-native"
+import { View, } from "react-native"
 import React,{useState} from "react"
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAuth } from "../../../context/UserAuthContext";
 import { saveBloodWork, updateBloodWork } from "../../../services/server"
 import { BloodWorkData_Default } from "../../../utils/initialValues";
@@ -96,10 +95,14 @@ const BloodWorkPage = ({navigation,route}) => {
         }    
     }
     
-    const handleBack = (permission:boolean) => {
-        if (round(progress,1) == 0 || permission == true){
+    const handleBack = (permission:boolean | "force") => {
+        if ((round(progress,1) == 0 || permission == true) && bloodWorkData != BloodWorkData_Default) {
+            setIsSaveModalActive(true)
+        } else if ((round(progress,1) == 0 || permission == true) && bloodWorkData == BloodWorkData_Default) {
             navigation.goBack()
-        }  else if (initialProgress > 0) {
+        }  else if (permission == "force") {
+            navigation.goBack()
+        }else if (initialProgress > 0) {
             setProgress(progress - 0.1)
             setInitialProgress(initialProgress - 1)
         } else {
@@ -113,7 +116,7 @@ const BloodWorkPage = ({navigation,route}) => {
         <>
             <View style={add_styles.container}>            
                 <ProgressRow 
-                    handleBack={(e) => handleBack(e)} 
+                    handleBack={(e:boolean | "force") => handleBack(e)} 
                     progress={progress / 1.2}
                 />
                 {round(progress,1) == 0 &&
@@ -170,7 +173,27 @@ const BloodWorkPage = ({navigation,route}) => {
                 }
                 {round(progress,1) == 1.2 && 
                     <FifthScreen 
-                        navigation={navigation}
+                        onFinish={() => handleSaveProgress(type)}
+                        boxDatas={[
+                            {
+                                title:"Get Insight with AI",
+                                icon_name:"doctor",
+                                desc:{
+                                    one:"Can you give me insight on my blood work ?",
+                                    two:"Can you explain what my blood results mean ?",
+                                    three:"Can you point out any abnormalities ?"
+                                }
+                            },
+                            {
+                                title:"Ask specific questions",
+                                icon_name:"microscope",
+                                desc:{
+                                    one:"Any blood abnormalities to discuss with a doctor ?",
+                                    two:"Any supplements needed based on my blood test ?",
+                                    three:"Any dietary change advised based on my blood ?"
+                                }
+                            },
+                        ]}
                     />
                 }
             </View>
@@ -195,26 +218,3 @@ export default BloodWorkPage
 
 
 
-
-
-
-const SelectableBar = ({
-    handleMethodSelect,
-    methodSelected,
-    type,
-    title,
-    icon_name
-}) => {
-    return(
-        <TouchableOpacity onPress={() => handleMethodSelect(type)} style={[{width:"95%",padding:0,flexDirection:"row",alignItems:"center",borderWidth:2,borderRadius:10,marginTop:20,alignSelf:"center"}, methodSelected == type && {borderColor:"magenta"}]}>
-            <View style={[{borderWidth:0,padding:15,borderRightWidth:2,borderRadius:10,borderTopRightRadius:0,borderBottomRightRadius:0},methodSelected == type && {borderColor:"magenta"}]}>
-                <MaterialCommunityIcons 
-                    name={icon_name}
-                    size={30}
-                    color={methodSelected == type ? "magenta" : "black"}
-                />   
-            </View>                       
-            <Text style={{marginLeft:20,fontWeight:"700",fontSize:17,opacity:0.7}}>{title}</Text>     
-        </TouchableOpacity>
-    )
-}

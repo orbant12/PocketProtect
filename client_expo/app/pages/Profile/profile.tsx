@@ -4,19 +4,17 @@ import UserSavedPage from "./tabs/userSavedPage"
 import { Tabs} from 'react-native-collapsible-tab-view'
 import Entypo from 'react-native-vector-icons/Entypo';
 import { useAuth } from "../../context/UserAuthContext";
-import { changeProfilePicture } from "../../services/server";
 import { Icon } from 'react-native-elements';
 import DetectionLibary from "../Libary/detection"
 import { Horizontal_Navbar } from "../../components/LibaryPage/mainNav";
 import { HeaderContainer } from "../../components/Common/headerContainer";
 import { NavBar_TwoOption } from "../../components/Common/navBars";
-import { ImageLoaderComponent } from "../Libary/Melanoma/slugAnalasis";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as ImagePicker from 'expo-image-picker';
 import ProfileCameraScreenView from "../Auth/cameraModal";
 import { styles_shadow } from "../../styles/shadow_styles";
-import { convertImageToBase64 } from "../../utils/imageConvert";
 import { User } from "../../models/User";
+import { ImageLoaderComponent } from "../../components/Common/imageLoader";
 
 type NavbarValues = "ai_vision" | "blood_work" | "diagnosis" | "soon"
 
@@ -91,7 +89,7 @@ const handleChangeProfile = async() => {
                         icon_left_component={() => 
                             <TouchableOpacity onPress={() => setIsProfileChangeActive(true)}>
                                 {currentuser.profileUrl != "" ?
-                                    <ImageLoaderComponent 
+                                    <ImageLoaderComponent
                                         w={50}
                                         h={50}
                                         imageStyle={{borderRadius:10,borderColor:"magenta",borderWidth:2}}

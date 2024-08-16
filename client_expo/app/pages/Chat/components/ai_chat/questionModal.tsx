@@ -79,7 +79,7 @@ return(
             boxes={[
               {title:"Insight",q:"Can you give me insight on my blood work ?",icon:"water-alert"},
               {title:"Explain",q:"Can you explain what my blood results mean ?",icon:"human-male-board-poll"},
-              {title:"Abnormalities",q:"Any blood abnormalities to discuss with a doctor?",icon:"water-remove"},
+              {title:"Abnormalities",q:"Any blood abnormalities to discuss with a doctor ?",icon:"water-remove"},
               {title:"Supplements",q:"Any supplements needed based on my blood test ?",icon:"pill"}
             ]}
           />

@@ -13,7 +13,7 @@ export class User {
   constructor(private userId: string) {}
 
   async fetchUserData(retries = 0): Promise<null | string> {
-    const TIMEOUT_MS = retries == 0 ? 1000 : 1000;
+    const TIMEOUT_MS = retries == 0 ? 5000 : 10000;
 
     const timeoutPromise = new Promise<never>((_, reject) => 
         setTimeout(() => reject(new Error('Request timed out')), TIMEOUT_MS)
