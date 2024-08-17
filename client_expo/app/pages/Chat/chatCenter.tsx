@@ -74,7 +74,7 @@ const ChatCenter = ({navigation}) => {
     },[selectedChat])
 
     return(
-        <View style={AssistPanel_style.container}>
+        <View style={[AssistPanel_style.container,]}>
             <NavBar_OneOption
                 title={"Chats"}
                 icon_left={{name:"arrow-left",action:() => navigation.goBack(),size:24}}
@@ -88,7 +88,8 @@ const ChatCenter = ({navigation}) => {
                 activeBubble={activeBubble}
             />
             <ScrollView 
-                style={{width:"100%",height:"100%",marginBottom:1000}}
+                style={{width:"100%",height:"100%"}}
+                contentContainerStyle={{paddingBottom:337}}
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}

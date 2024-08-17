@@ -39,7 +39,7 @@ export class SkinData {
         
         if(response.ok && response != undefined){
             const data = await response.json();
-            const completedSlugs = data.map(part => part.slug);
+            const completedSlugs = data ? data.map(part => part.slug) : [];
             this.completedParts = completedSlugs as CompletedParts;
         } else {
             this.completedParts = [];

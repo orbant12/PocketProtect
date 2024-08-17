@@ -7,9 +7,8 @@ export function BloodWorkComponent({
     handleBloodWorkDataChange,
     indexPass,
     bloodWorkData,
+    setIsFocused
 }){
-
-    const [isFocused, setIsFocused] = useState(false)
 
     return(
         <ScrollView style={{width:"100%",paddingTop:10,zIndex:9999}}>
@@ -26,13 +25,7 @@ export function BloodWorkComponent({
                                 textAlign="center"      
                                 onFocus={() => setFocused(true)}      
                             /> */}
-                            <Chat_InputField 
-                                inputValue={`${dataFrom.number}`}
-                                setInputValue={(e) => handleBloodWorkDataChange(bloodWorkData[indexPass].title,dataFrom.type,e)}
-                                handleSend={() => setIsFocused(!isFocused)}
-                                isFocused={isFocused}
-                            />
-                            <TouchableOpacity onPress={() => setIsFocused(!isFocused)} style={{width:70,borderWidth:1,padding:9,borderRadius:10,marginLeft:20,alignItems:"center"}}>
+                            <TouchableOpacity onPress={() => setIsFocused({type:dataFrom.type,number:dataFrom.number,indexPass:indexPass})} style={{width:70,borderWidth:1,padding:9,borderRadius:10,marginLeft:20,alignItems:"center"}}>
                                 <Text>{dataFrom.number}</Text>
                             </TouchableOpacity>             
                         </View> 
