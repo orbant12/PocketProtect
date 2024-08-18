@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { ExplainPageComponent_Type1, ExplainPageComponent_Type2, ProgressRow } from "./explainPage";
 import { SkinTypeScreen } from "../../pages/Libary/Melanoma/ProcessScreens/Fullprocess/skinSelect";
 import { SkinType } from "../../utils/types";
-import { fetchAllergies, fetchSkinType, updateAllergies, updateSkinType } from "../../services/server";
+import { fetchAllergies, updateAllergies,  } from "../../services/server";
 import { useAuth } from "../../context/UserAuthContext";
 import { SelectableDataItem, SelectionPage } from "../Common/SelectableComponents/selectPage";
 

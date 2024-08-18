@@ -18,6 +18,7 @@ import { WeatherWidget } from '../../../components/Widgets/weatherWidget';
 import { MedicalData_Add_View } from '../../../components/ExplainPages/medicalData';
 import { BloodWork } from '../../../models/BloodWork';
 import { SingleBloodAnalasis } from '../../Libary/BloodCenter/bloodCenter';
+import { ContextPanelData } from '../../../models/ContextPanel';
 
 export type selectableDataTypes = "useBloodWork" | "useUvIndex" | "useMedicalData" | "useWeatherEffect";
 
@@ -35,75 +36,83 @@ const UserSavedPage = ({navigation}) => {
     const { weatherData, locationString, locationPermissionGranted } = useWeather()
     const { currentuser } = useAuth()
     const [selectedData, setSelectedData] = useState<selectableDataTypes>(null)
+    const contextObj = new ContextPanelData(currentuser.uid,{weatherData:weatherData,locationString:locationString,locationPermissionGranted:locationPermissionGranted})
+    const [ContextOptions, setContextOptions] = useState<{title:string,stateName:any,stateID:selectableDataTypes}[]>([])
 
-      const [userContexts, setUserContexts] = useState({
-        useBloodWork:null,
-        useUvIndex:locationPermissionGranted ? (weatherData != null ? `UV Index: ${weatherData.uvi}` : null) : null,
-        useMedicalData:null,
-        useWeatherEffect:weatherData != null ? convertWeatherDataToString(weatherData) : null,
-      })
+ 
 
-      const ContextOptions:{title:string,stateName:any,stateID:selectableDataTypes}[] = [
-        {
-          title:"Blood Work",
-          stateName:userContexts.useBloodWork,
-          stateID:"useBloodWork"
-        },
-        {
-          title:"Uv Index",
-          stateName:userContexts.useUvIndex,
-          stateID:"useUvIndex"
-        },
-        {
-          title:"Allergies",
-          stateName:userContexts.useMedicalData,
-          stateID:"useMedicalData"
-        },
-        {
-          title:"Weather Effects",
-          stateName:userContexts.useWeatherEffect,
-          stateID:"useWeatherEffect"
-        },
-      ]
+      // const ContextOptions:{title:string,stateName:any,stateID:selectableDataTypes}[] = [
+      //   {
+      //     title:"Blood Work",
+      //     stateName:userContexts.useBloodWork,
+      //     stateID:"useBloodWork"
+      //   },
+      //   {
+      //     title:"Uv Index",
+      //     stateName:userContexts.useUvIndex,
+      //     stateID:"useUvIndex"
+      //   },
+      //   {
+      //     title:"Allergies",
+      //     stateName:userContexts.useMedicalData,
+      //     stateID:"useMedicalData"
+      //   },
+      //   {
+      //     title:"Weather Effects",
+      //     stateName:userContexts.useWeatherEffect,
+      //     stateID:"useWeatherEffect"
+      //   },
+      // ]
 
 
-      const handleAllergiesFetch = async () => {
-        const response: {"allergiesArray": string[]} = await fetchAllergies({
-          userId: currentuser.uid
-        })
-        if (response.allergiesArray.length > 0){
-          setUserContexts({
-            ...userContexts,
-            useMedicalData:[...response.allergiesArray]
-          })
-        } else if (response.allergiesArray.length == 0){ 
-          setUserContexts({
-            ...userContexts,
-            useMedicalData:null
-          })
-        }
-      }
+      // const handleAllergiesFetch = async () => {
+      //   const response: {"allergiesArray": string[]} = await fetchAllergies({
+      //     userId: currentuser.uid
+      //   })
+        
+      //   if (response.allergiesArray.length > 0){
+      //     setUserContexts({
+      //       ...userContexts,
+      //       useMedicalData:[...response.allergiesArray]
+      //     })
+      //   } else if (response.allergiesArray.length == 0){ 
+      //     setUserContexts({
+      //       ...userContexts,
+      //       useMedicalData:null
+      //     })
+      //   }
+      // }
 
-      const handleBloodWorkFetch = async () => {
-        const bloodObj = new BloodWork(currentuser.uid);
-        await bloodObj.fetchBloodWorkData()
-        const response : BloodWorkDoc = bloodObj.getBloodWorkData()
-        if (response != null){
-          setUserContexts({
-            ...userContexts,
-            useBloodWork:response
-          })
-        } 
-      }
+      // const handleBloodWorkFetch = async () => {
+      //   const bloodObj = new BloodWork(currentuser.uid);
+      //   await bloodObj.fetchBloodWorkData()
+      //   const response : BloodWorkDoc = bloodObj.getBloodWorkData()
+      //   if (response != null){
+      //     setUserContexts({
+      //       ...userContexts,
+      //       useBloodWork:response
+      //     })
+      //   } 
+      // }
 
       const fetchContextDatas = async () => {
-        await handleAllergiesFetch()
-        await handleBloodWorkFetch()
+        await contextObj.loadContextData()
+        const response = contextObj.getContextOptions()
+        setContextOptions(response)
+        console.log(response)
       }
     
     useEffect(() => {
       fetchContextDatas()
-    },[])
+    },[])  
+
+    const handleContextDataChange = async (field:selectableDataTypes,data:any[]) => {
+      console.log(field,data)
+      await contextObj.setContextOptions(field,data)
+      const response = contextObj.getContextOptions()
+      console.log(response)
+      setContextOptions(response)
+    }
 
 return (
     <View style={{width:"100%",alignItems:"center"}}>
@@ -195,9 +204,9 @@ return (
           locationPermissionGranted:locationPermissionGranted
         }
       }
-      userContexts={userContexts}
-      setUserContexts={setUserContexts}
-      handleAllergiesFetch={handleAllergiesFetch}
+      userContexts={ContextOptions}
+      setUserContexts={(field,data) => handleContextDataChange(field,data)}
+      handleAllergiesFetch={fetchContextDatas}
     />
 
     </View>
@@ -262,15 +271,14 @@ export const DataModal = ({selectedData,setSelectedData,uviData,userContexts,set
     today:string,
     locationPermissionGranted:boolean
   }
-  userContexts:{
-    useBloodWork:any,
-    useUvIndex:any,
-    useMedicalData:any,
-    useWeatherEffect:any
-  },
-  setUserContexts:React.Dispatch<React.SetStateAction<UserContextType>>;
+  userContexts:{title:string,stateName:any,stateID:selectableDataTypes}[],
+  setUserContexts:any;
   handleAllergiesFetch:Function
 }) => {
+
+  const medicalDataIndex = userContexts.findIndex((option) => option.stateID === "useMedicalData")
+  const bloodWorkIndex = userContexts.findIndex((option) => option.stateID === "useBloodWork")
+
   return (
     <Modal presentationStyle="formSheet" animationType='slide' visible={selectedData != null}>
         <TouchableOpacity onPress={() =>setSelectedData(null)} style={{flexDirection:"row",alignItems:"center",justifyContent:"center",backgroundColor:"rgba(0,0,0,0.86)",borderWidth:2,borderColor:"gray",paddingVertical:10,borderRadius:10,width:"100%",alignSelf:"center",borderBottomLeftRadius:0,borderBottomRightRadius:0}}>
@@ -302,13 +310,13 @@ export const DataModal = ({selectedData,setSelectedData,uviData,userContexts,set
       {selectedData == "useMedicalData" &&
         <MedicalData_Add_View 
           handleClose={(e:"save" | "back") => {e != "save" ? setSelectedData(null) : setSelectedData(null),handleAllergiesFetch()}}
-          allergiesData={userContexts["useMedicalData"] == null ? [] : userContexts["useMedicalData"]}
-          setAllergiesData={(data) => setUserContexts({...userContexts,useMedicalData:data})}
+          allergiesData={userContexts[medicalDataIndex].stateName == null ? [] : userContexts[medicalDataIndex].stateName.allergiesArray}
+          setAllergiesData={(data) => setUserContexts("useMedicalData",data)}
         />
       }
       {selectedData == "useBloodWork" &&
         <SingleBloodAnalasis
-          bloodSelected={userContexts["useBloodWork"]}
+          bloodSelected={userContexts[bloodWorkIndex].stateName == null ? null : userContexts[bloodWorkIndex].stateName}
         />
       }
     </Modal>

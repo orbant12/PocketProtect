@@ -4,43 +4,44 @@ import { BloodWorkDoc, DOMAIN } from "../services/server"
 import { convertWeatherDataToString } from "../utils/melanoma/weatherToStringConvert"
 import { BloodWork } from "./BloodWork"
 
-const { weatherData, locationString, locationPermissionGranted } = useWeather()
+
 
 export class ContextPanelData {
 
-    private contextData = {
-        useBloodWork:null,
-        useUvIndex:locationPermissionGranted ? (weatherData != null ? `UV Index: ${weatherData.uvi}` : null) : null,
-        useMedicalData:null,
-        useWeatherEffect:weatherData != null ? convertWeatherDataToString(weatherData) : null,
-    }
+    // private contextData = {
+    //     useBloodWork:null,
+    //     useUvIndex:locationPermissionGranted ? (weatherData != null ? `UV Index: ${weatherData.uvi}` : null) : null,
+    //     useMedicalData:null,
+    //     useWeatherEffect:weatherData != null ? convertWeatherDataToString(weatherData) : null,
+    // }
+    
 
     private contextOptions:{title:string,stateName:any,stateID:selectableDataTypes}[] = [
         {
             title:"Blood Work",
-            stateName:this.contextData.useBloodWork,
+            stateName: null,
             stateID:"useBloodWork"
         },
         {
             title:"Uv Index",
-            stateName:this.contextData.useUvIndex,
+            stateName: null,
             stateID:"useUvIndex"
         },
         {
             title:"Allergies",
-            stateName:this.contextData.useMedicalData,
+            stateName: null,
             stateID:"useMedicalData"
         },
         {
             title:"Weather Effects",
-            stateName:this.contextData.useWeatherEffect,
+            stateName: null,
             stateID:"useWeatherEffect"
         },
     ]
 
     private userId : string;
 
-    constructor(userId: string){
+    constructor(userId: string, private weatherContext:any){
         this.userId = userId;
     }
 
@@ -52,25 +53,20 @@ export class ContextPanelData {
             },
             body: JSON.stringify({ userId:this.userId }),
         });
+
+        const index = this.contextOptions.findIndex(
+            (option) => option.stateID === "useMedicalData"
+        );
     
         if(response.ok){
             const data :  {"allergiesArray":string[]} = await response.json();
             if(data.allergiesArray != null){
-                this.contextData = {
-                    ...this.contextData,
-                    useMedicalData:data
-                }
+                this.contextOptions[index].stateName = data;
             } else {
-                this.contextData = {
-                    ...this.contextData,
-                    useMedicalData:null
-                }
+                this.contextOptions[index].stateName = null;
             } 
         } else {
-            this.contextData = {
-                ...this.contextData,
-                useMedicalData:null
-            }
+            this.contextOptions[index].stateName = null;
         }
     }
 
@@ -79,18 +75,41 @@ export class ContextPanelData {
         await bloodObj.fetchBloodWorkData()
         const response : BloodWorkDoc = bloodObj.getBloodWorkData()
         if (response != null){
-            this.contextData = {
-                ...this.contextData,
-                useBloodWork:response
-            }
+            const index = this.contextOptions.findIndex(
+                (option) => option.stateID === "useBloodWork"
+            );
+            this.contextOptions[index].stateName = response;
         } 
     } 
+
+    private handleUvIndexFetch = async () => {
+        const index = this.contextOptions.findIndex(
+            (option) => option.stateID === "useUvIndex"
+        );
+        this.contextOptions[index].stateName = this.weatherContext.locationPermissionGranted ? (this.weatherContext.weatherData != null ? `UV Index: ${this.weatherContext.weatherData.uvi}` : null) : null;
+    }
+
+    private handleWeatherFetch = async () => {
+        const index = this.contextOptions.findIndex(
+            (option) => option.stateID === "useWeatherEffect"
+        );
+        this.contextOptions[index].stateName = this.weatherContext.weatherData != null ? convertWeatherDataToString(this.weatherContext.weatherData) : null;
+    }
+
 
     public loadContextData = async ():Promise <void> => {
         await this.handleAllergiesFetch();
         await this.handleBloodWorkFetch();
+        await this.handleWeatherFetch();
+        await this.handleUvIndexFetch();
     }
 
+    public setContextOptions = async (field:selectableDataTypes,data:any) => {
+        const index = this.contextOptions.findIndex(
+            (option) => option.stateID === field
+        );
+        this.contextOptions[index].stateName = {allergiesArray:data};
+    }
 
     public getContextOptions = () => {
         return this.contextOptions
