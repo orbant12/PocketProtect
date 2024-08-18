@@ -4,7 +4,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import React,{useState,useEffect} from 'react';
 import { useWeather } from '../../../context/WeatherContext';
 import { UserContextType } from '../../../utils/types';
-import { fetchAllergies, fetchBloodWork } from '../../../services/server';
+import { BloodWorkData, BloodWorkDoc, fetchAllergies, fetchBloodWork } from '../../../services/server';
 import { useAuth } from '../../../context/UserAuthContext';
 import { convertWeatherDataToString } from '../../../utils/melanoma/weatherToStringConvert';
 import { styles } from '../../../styles/chatBot_style';
@@ -16,6 +16,8 @@ import moment from 'moment';
 import { DateToString } from '../../../utils/date_manipulations';
 import { WeatherWidget } from '../../../components/Widgets/weatherWidget';
 import { MedicalData_Add_View } from '../../../components/ExplainPages/medicalData';
+import { BloodWork } from '../../../models/BloodWork';
+import { SingleBloodAnalasis } from '../../Libary/BloodCenter/bloodCenter';
 
 export type selectableDataTypes = "useBloodWork" | "useUvIndex" | "useMedicalData" | "useWeatherEffect";
 
@@ -64,11 +66,7 @@ const UserSavedPage = ({navigation}) => {
         },
       ]
 
-      const fetchContextDatas = async () => {
-        await handleBloodWorkFetch()
-        await handleAllergiesFetch()
-      }
-    
+
       const handleAllergiesFetch = async () => {
         const response: {"allergiesArray": string[]} = await fetchAllergies({
           userId: currentuser.uid
@@ -87,9 +85,9 @@ const UserSavedPage = ({navigation}) => {
       }
 
       const handleBloodWorkFetch = async () => {
-        const response = await fetchBloodWork({
-          userId: currentuser.uid
-        })
+        const bloodObj = new BloodWork(currentuser.uid);
+        await bloodObj.fetchBloodWorkData()
+        const response : BloodWorkDoc = bloodObj.getBloodWorkData()
         if (response != null){
           setUserContexts({
             ...userContexts,
@@ -98,7 +96,11 @@ const UserSavedPage = ({navigation}) => {
         } 
       }
 
-
+      const fetchContextDatas = async () => {
+        await handleAllergiesFetch()
+        await handleBloodWorkFetch()
+      }
+    
     useEffect(() => {
       fetchContextDatas()
     },[])
@@ -129,8 +131,14 @@ return (
           </View>
           <View style={[Cstyles.cardLeft,!data.stateName && {}]}>
               <>
-                  <Text style={{color:"white",fontSize:9,maxWidth:80,fontWeight:"800",opacity:0.7}}>Last updated:</Text>
-                  <Text style={{color:"white",fontSize:10,maxWidth:70,marginTop:5,opacity:0.5}}>2003.11.17</Text>
+                  {data.stateID == "useBloodWork" ?
+                  <>
+                    <Text style={{color:"white",fontSize:9,maxWidth:80,fontWeight:"800",opacity:0.7}}>Last updated:</Text>
+                    <Text style={{color:"white",fontSize:10,maxWidth:70,marginTop:5,opacity:0.5}}>{data.stateName.created_at}</Text>
+                  </>
+                    :
+                    <Text style={{color:"white",fontSize:10,maxWidth:70,marginTop:5,opacity:0.5}}></Text>
+                  }
               </>
           </View>
           </View>
@@ -296,6 +304,11 @@ export const DataModal = ({selectedData,setSelectedData,uviData,userContexts,set
           handleClose={(e:"save" | "back") => {e != "save" ? setSelectedData(null) : setSelectedData(null),handleAllergiesFetch()}}
           allergiesData={userContexts["useMedicalData"] == null ? [] : userContexts["useMedicalData"]}
           setAllergiesData={(data) => setUserContexts({...userContexts,useMedicalData:data})}
+        />
+      }
+      {selectedData == "useBloodWork" &&
+        <SingleBloodAnalasis
+          bloodSelected={userContexts["useBloodWork"]}
         />
       }
     </Modal>

@@ -34,7 +34,7 @@ export type BloodWorkCategory = {
     title: string;
     data: {
         type: string;
-        number: number;
+        number: string;
     }[];
 };
 

@@ -116,69 +116,7 @@ const BloodCenter = ({navigation}) => {
 
     //<==================<[ Components ]>====================>
 
-    function SingleBloodAnalasis(){
-        return( 
-            <ScrollView style={{width:"100%"}}>                    
-                <View style={{width:"100%",alignItems:"center",marginBottom:30}}>
-                    <View style={[styles.IndicatorContainer]}>
-                        {bloodSelected.data.map((data,index) => (
-                            <View style={[styles.Indicator, { opacity: currentPage === index ? 1 : 0.3 }]} />      
-                        ))
-                        }                                                                        
-                    </View>  
-                    <PagerView style={{marginTop:0,width:"100%",height:2000}} onPageScroll={(e) => handleScrollReminder(e)} initialPage={0}>
-                    {bloodSelected.data.map((dataFrom,index) =>(
-                        <View key={index + 1} style={{width:"100%",alignItems:"center",borderBottomWidth:2,borderTopWidth:0,backgroundColor:"rgba(0,0,0,0)"}}>                    
-                            <View style={{width:"100%",alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",justifyContent:"center",padding:15,borderRadius:0,borderBottomWidth:0.5,marginTop:-15}}>
-                                <Text style={{fontWeight:"700",fontSize:18,width:"100%",textAlign:"center"}}>{dataFrom.title}</Text>            
-                            </View>                             
-                            <View style={{width:"100%",alignItems:"center",marginBottom:30}}>
-                                {dataFrom.data.map((dataFrom2:{type:string,number:number}) =>(
-                                    <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginTop:0,borderBottomWidth:0.5,padding:20,borderRadius:20,backgroundColor:"white"}}>
-                                        <Text style={{fontWeight:"600",width:"70%"}}>{dataFrom2.type}</Text>
-                                        <View style={{borderLeftWidth:2}}>        
-                                            <TextInput 
-                                                keyboardType="numeric"
-                                                style={{width:70,borderWidth:1,padding:9,color:"black",borderRadius:10,marginLeft:20}}                   
-                                                value={`${dataFrom2.number}`}                                                                                        
-                                                textAlign="center"                                                       
-                                            />                   
-                                        </View> 
-                                    </View>
-                                ))
-                                    
-                                }       
-                            </View>                            
-                        </View>   
-                    ))}          
-                        <View style={{width:"100%",alignItems:"center",flexDirection:"row",marginRight:"auto",marginLeft:"auto"}}>
-                            <View style={{height:40,borderWidth:0,justifyContent:"space-between",width:"85%",flexDirection:"row",alignItems:"center",marginRight:"auto",marginLeft:"auto"}}>
-                                <TouchableOpacity style={{width:150,borderWidth:2,flexDirection:"row",alignItems:"center",padding:0,borderRadius:10,marginTop:0}}>
-                                    <View style={{padding:5,borderRightWidth:2,borderLeftWidth:0,borderTopWidth:0,borderBottomWidth:0, borderRadius:0}}>
-                                        <MaterialCommunityIcons
-                                            name="pencil"
-                                            size={25}
-                                        />   
-                                    </View>                    
-                                    <Text style={{fontWeight:"700",marginLeft:10,fontSize:15}}>Edit Data</Text>
-                                </TouchableOpacity>
 
-                                <TouchableOpacity style={{width:150,borderWidth:2,flexDirection:"row",alignItems:"center",padding:0,borderRadius:10,marginTop:0,backgroundColor:"#ff4d4a",opacity:0.5}}>
-                                    <View style={{padding:5,borderRightWidth:2,borderLeftWidth:0,borderTopWidth:0,borderBottomWidth:0}}>
-                                        <MaterialCommunityIcons 
-                                            name="delete"
-                                            size={25}
-                                        />   
-                                    </View>                    
-                                    <Text style={{fontWeight:"700",marginLeft:10,fontSize:15}}>Delete</Text>
-                                </TouchableOpacity>
-                            </View>         
-                    </View>                                      
-                    </PagerView>       
-                </View>                       
-            </ScrollView>          
-        )
-    };
 
     function SingleBloodAnalasisPage(){
         return( 
@@ -519,7 +457,9 @@ const BloodCenter = ({navigation}) => {
                         </View>
                     }
                     >
-                    {bottomSheetSelected == "open" && SingleBloodAnalasis()}
+                    {bottomSheetSelected == "open" && <SingleBloodAnalasis 
+                        bloodSelected={bloodSelected}
+                    /> }
                     {bottomSheetSelected == "insight" && SingleBloodAnalasisPage()}
                     </BottomSheetModal>
     </BottomSheetModalProvider>
@@ -636,3 +576,73 @@ const styles = StyleSheet.create({
 })
 
 export default BloodCenter
+
+export function SingleBloodAnalasis({
+    bloodSelected,
+}){
+    const [currentPage, setCurrentPage] = useState(0);
+
+    const handleScrollReminder = (e:any) => {
+        const page = Math.round(e.nativeEvent.position);
+        setCurrentPage(page);
+    };
+
+    return( 
+        <ScrollView style={{width:"100%"}}>                    
+            <View style={{width:"100%",alignItems:"center",marginBottom:30}}>
+                <View style={[styles.IndicatorContainer]}>
+                    {bloodSelected.data.map((data,index) => (
+                        <View style={[styles.Indicator, { opacity: currentPage === index ? 1 : 0.3 }]} />      
+                    ))
+                    }                                                                        
+                </View>  
+                <PagerView style={{marginTop:0,width:"100%",height:2000}} onPageScroll={(e) => handleScrollReminder(e)} initialPage={0}>
+                {bloodSelected.data.map((dataFrom,index) =>(
+                    <View key={index + 1} style={{width:"100%",alignItems:"center",borderBottomWidth:2,borderTopWidth:0,backgroundColor:"rgba(0,0,0,0)"}}>                    
+                        <View style={{width:"100%",alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",justifyContent:"center",padding:15,borderRadius:0,borderBottomWidth:0.5,marginTop:-15}}>
+                            <Text style={{fontWeight:"700",fontSize:18,width:"100%",textAlign:"center"}}>{dataFrom.title}</Text>            
+                        </View>                             
+                        <ScrollView contentContainerStyle={{alignItems:"center",paddingBottom:1500}} style={{width:"100%",marginBottom:30}}>
+                            {dataFrom.data.map((dataFrom2:{type:string,number:number}) =>(
+                                <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginTop:0,borderBottomWidth:0.5,padding:20,borderRadius:20,backgroundColor:"white"}}>
+                                    <Text style={{fontWeight:"600",width:"70%"}}>{dataFrom2.type}</Text>
+                                    <View style={{borderLeftWidth:2}}>        
+                                        <View style={{width:70,borderWidth:1,padding:9,borderRadius:10,marginLeft:20,alignItems:"center"}}>
+                                            <Text style={{color:"black",fontWeight:"700"}}>{dataFrom2.number}</Text>
+                                        </View>                
+                                    </View> 
+                                </View>
+                            ))
+                                
+                            }       
+                        </ScrollView>                            
+                    </View>   
+                ))}          
+                    <View style={{width:"100%",alignItems:"center",flexDirection:"row",marginRight:"auto",marginLeft:"auto"}}>
+                        <View style={{height:40,borderWidth:0,justifyContent:"space-between",width:"85%",flexDirection:"row",alignItems:"center",marginRight:"auto",marginLeft:"auto"}}>
+                            <TouchableOpacity style={{width:150,borderWidth:2,flexDirection:"row",alignItems:"center",padding:0,borderRadius:10,marginTop:0}}>
+                                <View style={{padding:5,borderRightWidth:2,borderLeftWidth:0,borderTopWidth:0,borderBottomWidth:0, borderRadius:0}}>
+                                    <MaterialCommunityIcons
+                                        name="pencil"
+                                        size={25}
+                                    />   
+                                </View>                    
+                                <Text style={{fontWeight:"700",marginLeft:10,fontSize:15}}>Edit Data</Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity style={{width:150,borderWidth:2,flexDirection:"row",alignItems:"center",padding:0,borderRadius:10,marginTop:0,backgroundColor:"#ff4d4a",opacity:0.5}}>
+                                <View style={{padding:5,borderRightWidth:2,borderLeftWidth:0,borderTopWidth:0,borderBottomWidth:0}}>
+                                    <MaterialCommunityIcons 
+                                        name="delete"
+                                        size={25}
+                                    />   
+                                </View>                    
+                                <Text style={{fontWeight:"700",marginLeft:10,fontSize:15}}>Delete</Text>
+                            </TouchableOpacity>
+                        </View>         
+                </View>                                      
+                </PagerView>       
+            </View>                       
+        </ScrollView>          
+    )
+};

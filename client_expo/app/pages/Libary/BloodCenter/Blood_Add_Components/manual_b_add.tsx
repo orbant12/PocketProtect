@@ -1,7 +1,7 @@
 import { Keyboard, KeyboardAvoidingView, Pressable, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { add_styles } from "../../../../styles/blood_styles";
 import { BloodWorkComponent } from "./bloodWorkComponent";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export const ManualBloodAddPage = ({
@@ -22,7 +22,6 @@ export const ManualBloodAddPage = ({
             component: <BloodWorkComponent 
                 indexPass={0}
                 setIsFocused={setIsFocused}
-                handleBloodWorkDataChange={(title,type,e) => handleBloodWorkDataChange(title,type,e)}
                 bloodWorkData={bloodWorkData}
             />
         },
@@ -31,7 +30,6 @@ export const ManualBloodAddPage = ({
             component:<BloodWorkComponent 
                 indexPass={1}
                 setIsFocused={setIsFocused}
-                handleBloodWorkDataChange={(title,type,e) => handleBloodWorkDataChange(title,type,e)}
                 bloodWorkData={bloodWorkData}
             />
         },
@@ -39,7 +37,6 @@ export const ManualBloodAddPage = ({
             q:"Metabolic Panel",
             component:<BloodWorkComponent 
                 indexPass={2}
-                handleBloodWorkDataChange={(title,type,e) => handleBloodWorkDataChange(title,type,e)}
                 bloodWorkData={bloodWorkData}
                 setIsFocused={setIsFocused}
             />
@@ -47,8 +44,7 @@ export const ManualBloodAddPage = ({
         {
             q:"Liver Function Tests",
             component:<BloodWorkComponent 
-                indexPass={3}
-                handleBloodWorkDataChange={(title,type,e) => handleBloodWorkDataChange(title,type,e)}
+                indexPass={3} 
                 bloodWorkData={bloodWorkData}
                 setIsFocused={setIsFocused}
             />
@@ -57,7 +53,6 @@ export const ManualBloodAddPage = ({
             q:"Thyroid Panel",
             component:<BloodWorkComponent 
                 indexPass={4} 
-                handleBloodWorkDataChange={(title,type,e) => handleBloodWorkDataChange(title,type,e)}
                 bloodWorkData={bloodWorkData}
                 setIsFocused={setIsFocused}
             />
@@ -65,8 +60,7 @@ export const ManualBloodAddPage = ({
         {
             q:"Iron Studies",
             component:<BloodWorkComponent 
-                indexPass={5}
-                handleBloodWorkDataChange={(title,type,e) => handleBloodWorkDataChange(title,type,e)}
+                indexPass={5} 
                 bloodWorkData={bloodWorkData}
                 setIsFocused={setIsFocused}
             />
@@ -75,7 +69,6 @@ export const ManualBloodAddPage = ({
             q:"Vitamins and Minerals",
             component:<BloodWorkComponent 
                 indexPass={6}
-                handleBloodWorkDataChange={(title,type,e) => handleBloodWorkDataChange(title,type,e)}
                 bloodWorkData={bloodWorkData}
                 setIsFocused={setIsFocused}
             />
@@ -84,7 +77,6 @@ export const ManualBloodAddPage = ({
             q:"Inflammatory Markers",
             component:<BloodWorkComponent 
                 indexPass={7}
-                handleBloodWorkDataChange={(title,type,e) => handleBloodWorkDataChange(title,type,e)}
                 bloodWorkData={bloodWorkData}
                 setIsFocused={setIsFocused}
             />
@@ -93,12 +85,19 @@ export const ManualBloodAddPage = ({
             q:"Hormonal Panel",
             component:<BloodWorkComponent 
                 indexPass={8}
-                handleBloodWorkDataChange={(title,type,e) => handleBloodWorkDataChange(title,type,e)}
                 bloodWorkData={bloodWorkData}
                 setIsFocused={setIsFocused}
             />
         }
     ]
+
+    const inputRef = useRef(null)
+
+    useEffect(() => {
+        if(isFocused != null){
+            inputRef.current.focus()
+        }
+    },[isFocused])
 
     return(
         <>
@@ -109,11 +108,38 @@ export const ManualBloodAddPage = ({
                 </View> 
             {manual[initialProgress].component}
             {isFocused != null ?
-                <Chat_InputField 
-                    inputValue={`${isFocused.number}`}
-                    setInputValue={(e) => handleBloodWorkDataChange(bloodWorkData[isFocused.indexPass].title,isFocused.type,e)}
-                    handleSend={() => setIsFocused(null)}
-                />
+                <>
+                <KeyboardAvoidingView
+                    behavior="position"
+                    keyboardVerticalOffset={20} 
+                    style={{width:"100%",backgroundColor:"rgba(0,0,0,0.9)",borderTopRightRadius:10,borderTopLeftRadius:10}} 
+                >
+                    <View style={{flexDirection:"row",width:"100%",justifyContent:"center",alignItems:"center",marginVertical:20}}>
+                    <View style={{ width: '50%', padding: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'rgba(250,0,250,0.5)', alignSelf: 'center', borderRadius: 10,marginBottom:0,zIndex:100,borderWidth:1,borderColor:"magenta"}}>
+        
+                        <View style={{ flexDirection: 'row', alignItems: 'center'  }}>
+                            <TextInput
+                                placeholder="Type in the value ..."
+                                value={`${isFocused.number}`}
+                                keyboardType="number-pad"
+                                onChangeText={(e) => {handleBloodWorkDataChange(bloodWorkData[isFocused.indexPass].title,isFocused.type,e);setIsFocused(focusData => ({...focusData,number:e}))}}
+                                placeholderTextColor={"white"}
+                                style={{ maxWidth: 240, flexWrap: 'wrap',minWidth:170,color:"white",fontWeight:"400",alignSelf:"center",padding:5 }}
+                                multiline={true}
+                                ref={inputRef}
+                            />
+                        </View>
+                    </View>
+                    <TouchableOpacity onPress={() => setIsFocused(null)} style={{ paddingHorizontal: 20, paddingVertical: 8, backgroundColor: 'rgba(250,0,250,1)', alignItems: 'center', justifyContent: 'center', borderRadius: 30, marginLeft:30 }}>
+                            <MaterialCommunityIcons
+                                name={"send"}
+                                size={23}
+                                color={"white"}
+                            />
+                    </TouchableOpacity>
+                    </View>
+                </KeyboardAvoidingView>
+            </>
                 :
                 <TouchableOpacity onPress={() => {setProgress(progress + 0.1),setInitialProgress(initialProgress + 1)}} style={[add_styles.startButton,{marginBottom:10}]}>                        
                     <Text style={{padding:14,fontWeight:"600",color:"white"}}>Next</Text>

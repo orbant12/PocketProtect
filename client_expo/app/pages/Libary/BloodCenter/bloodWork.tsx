@@ -15,6 +15,7 @@ import { DateInputPage } from "../../Auth/OnBoarding_Components/dateInput";
 import { ManualBloodAddPage } from "./Blood_Add_Components/manual_b_add";
 import { DateToString } from "../../../utils/date_manipulations";
 import { FifthScreen } from "../Melanoma/ProcessScreens/Fullprocess/final_full";
+import { BloodWork } from "../../../models/BloodWork";
 
 const BloodWorkPage = ({navigation,route}) => {
 
@@ -29,7 +30,7 @@ const BloodWorkPage = ({navigation,route}) => {
     const [ methodSelected, setMethodSelected] = useState("")
     const [bloodWorkData, setBloodWorkData] = useState<BloodWorkData>(BloodWorkData_Default);
     const [initialProgress, setInitialProgress] = useState(0)
-    
+    const bloodObj = new BloodWork(currentuser.uid)
 
 //<==================<[ Functions ]>====================>
 
@@ -64,35 +65,17 @@ const BloodWorkPage = ({navigation,route}) => {
         return uid;
     }
     
-    const handleSaveProgress = async (type:"first" | "update") => {
+    const handleSaveProgress = async () => {
         const UID = generateUID(16)
-        if(type == "first"){
-            const response = await saveBloodWork({
-                userId: currentuser.uid,
-                data: bloodWorkData,
-                Create_Date: DateToString(creationDate),        
-                id: `Blood_${UID}`,
-                higherRisk: false
-            })
-            if ( response == true){
-                navigation.goBack()
-            } else {
-                console.log(response)
-            }
-        } else if (type == "update"){
-            const response = await updateBloodWork({
-                userId: currentuser.uid,
-                data: bloodWorkData,
-                Create_Date: DateToString(creationDate),      
-                id: `Blood_${UID}`,
-                higherRisk: false
-            })
-            if ( response == true){
-                navigation.goBack()
-            } else {
-                console.log(response)
-            }
-        }    
+
+        const newData = {
+            data: bloodWorkData,
+            Create_Date: DateToString(creationDate),        
+            id: `Blood_${UID}`,
+            higherRisk: false
+        }
+        await bloodObj.updateBloodWorkData(newData) 
+        navigation.goBack()
     }
     
     const handleBack = (permission:boolean | "force") => {
@@ -173,7 +156,7 @@ const BloodWorkPage = ({navigation,route}) => {
                 }
                 {round(progress,1) == 1.2 && 
                     <FifthScreen 
-                        onFinish={() => handleSaveProgress(type)}
+                        onFinish={() => handleSaveProgress()}
                         boxDatas={[
                             {
                                 title:"Get Insight with AI",
@@ -199,7 +182,6 @@ const BloodWorkPage = ({navigation,route}) => {
             </View>
             <SaveModal
                 saveCardModalActive={saveCardModalActive}
-                type={type}
                 setSaveCardModalActive={setSaveCardModalActive}
                 handleSaveProgress={handleSaveProgress}
             />

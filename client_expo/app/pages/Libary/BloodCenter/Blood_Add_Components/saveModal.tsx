@@ -2,7 +2,7 @@ import { Text, TouchableOpacity, View } from "react-native"
 import { add_styles } from "../../../../styles/blood_styles"
 
 
-export const SaveModal = ({saveCardModalActive,setSaveCardModalActive,handleSaveProgress,type}) => {
+export const SaveModal = ({saveCardModalActive,setSaveCardModalActive,handleSaveProgress}) => {
     return(
         <>
         {saveCardModalActive &&
@@ -16,7 +16,7 @@ export const SaveModal = ({saveCardModalActive,setSaveCardModalActive,handleSave
                         <TouchableOpacity style={{backgroundColor:"black",padding:10,borderRadius:10,alignItems:"center"}} onPress={() => {setSaveCardModalActive(!saveCardModalActive)}}>
                             <Text style={{color:"white",fontWeight:"500"}}>Go Back</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={{backgroundColor:"white",padding:10,borderRadius:10,borderWidth:1,alignItems:"center",marginLeft:20}} onPress={() =>  handleSaveProgress(type)}>
+                        <TouchableOpacity style={{backgroundColor:"white",padding:10,borderRadius:10,borderWidth:1,alignItems:"center",marginLeft:20}} onPress={() =>  handleSaveProgress()}>
                             <Text style={{color:"black",fontWeight:"500"}}>Leave</Text>
                         </TouchableOpacity>                                    
                     </View> 

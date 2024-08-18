@@ -2,7 +2,6 @@ package routes
 
 import (
 	"context"
-	"fmt"
 	_ "image/jpeg"
 	"log"
 	route_types "my-go-project/types"
@@ -168,71 +167,6 @@ func SetupBloodRoutes(e *echo.Echo, client *firestore.Client) {
 	})
 
 	e.POST("client/upload/blood", func(c echo.Context) error {
-		type UploadBloodRequest struct {
-			UserId     string                          `json:"userId"`
-			HigherRisk bool                            `json:"higherRisk"`
-			Data       []route_types.BloodWorkCategory `json:"data"`
-			CreateDate string                          `json:"createDate"`
-			Id         string                          `json:"id"`
-		}
-
-		var req UploadBloodRequest
-
-		if err := c.Bind(&req); err != nil {
-			log.Printf("Error binding request: %v", err)
-			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
-		}
-
-		ref := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("blood_work")
-		ref2 := client.Collection("users").Doc(req.UserId).Collection("Reminders").Doc("blood_work")
-
-		_, err := ref.Set(context.Background(), map[string]interface{}{
-			"data":       req.Data,
-			"created_at": req.CreateDate,
-			"id":         req.Id,
-			"risk":       req.HigherRisk,
-		})
-
-		if err != nil {
-			log.Printf("Error uploading blood data: %v", err)
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-		}
-
-		splited := formatDate(req.CreateDate)
-		var reminderDate map[string]interface{}
-
-		if req.HigherRisk {
-			if splited.Month+6 <= 12 {
-				reminderDate = map[string]interface{}{
-					"expires": fmt.Sprintf("%d-%d-%d", splited.Year, splited.Month+6, splited.Day),
-					"id":      "blood_work",
-				}
-			} else {
-				leftOff := splited.Month - 12
-				reminderDate = map[string]interface{}{
-					"expires": fmt.Sprintf("%d-%d-%d", splited.Year+1, splited.Month+leftOff, splited.Day),
-					"id":      "blood_work",
-				}
-			}
-		} else {
-			reminderDate = map[string]interface{}{
-				"expires": fmt.Sprintf("%d-%d-%d", splited.Year+1, splited.Month, splited.Day),
-				"id":      "blood_work",
-			}
-		}
-
-		_, err = ref2.Set(context.Background(), reminderDate)
-
-		if err != nil {
-			log.Printf("Error uploading blood reminder: %v", err)
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-		}
-
-		return c.NoContent(http.StatusNoContent)
-
-	})
-
-	e.POST("client/update/blood", func(c echo.Context) error {
 
 		type UpdateBloodRequest struct {
 			UserId     string                          `json:"userId"`
@@ -253,10 +187,6 @@ func SetupBloodRoutes(e *echo.Echo, client *firestore.Client) {
 		ref := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("blood_work")
 
 		docSnap, err := ref.Get(context.Background())
-		if err != nil {
-			log.Printf("Error getting blood document: %v", err)
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
-		}
 
 		if docSnap.Exists() {
 			refSave := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("blood_work").Collection("History").Doc(docSnap.Data()["id"].(string))
@@ -265,19 +195,18 @@ func SetupBloodRoutes(e *echo.Echo, client *firestore.Client) {
 				log.Printf("Error saving blood data to history: %v", err)
 				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
 			}
-		}
+		} else {
+			_, err = ref.Set(context.Background(), map[string]interface{}{
+				"data":       req.Data,
+				"created_at": req.CreateDate,
+				"id":         req.Id,
+				"risk":       req.HigherRisk,
+			})
 
-		// Save new data
-		_, err = ref.Set(context.Background(), map[string]interface{}{
-			"data":       req.Data,
-			"created_at": req.CreateDate,
-			"id":         req.Id,
-			"risk":       req.HigherRisk,
-		})
-
-		if err != nil {
-			log.Printf("Error uploading blood data: %v", err)
-			return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			if err != nil {
+				log.Printf("Error uploading blood data: %v", err)
+				return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+			}
 		}
 
 		return c.NoContent(http.StatusNoContent)
@@ -384,7 +313,6 @@ type Date struct {
 	Day   int
 }
 
-// FOR 	splited := formatDate(req.CreateDate)
 func formatDate(dateString string) Date {
 	date := time.Now()
 	if dateString != "" {

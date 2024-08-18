@@ -39,7 +39,7 @@ type (
 		Title string `json:"title"`
 		Data  []struct {
 			Type   string `json:"type"`
-			Number int    `json:"number"`
+			Number string `json:"number"`
 		} `json:"data"`
 	}
 	BloodWorkDoc struct {

@@ -4,7 +4,6 @@ import { ScrollView, Text, TextInput, TouchableOpacity, View } from "react-nativ
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export function BloodWorkComponent({
-    handleBloodWorkDataChange,
     indexPass,
     bloodWorkData,
     setIsFocused
