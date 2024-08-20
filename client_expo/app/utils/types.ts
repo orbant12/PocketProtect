@@ -239,7 +239,6 @@ export type ContextToggleType = {
     useBloodWork:boolean,
     useUvIndex:boolean,
     useMedicalData:boolean,
-    useBMI:boolean,
     useWeatherEffect:boolean
 }
 

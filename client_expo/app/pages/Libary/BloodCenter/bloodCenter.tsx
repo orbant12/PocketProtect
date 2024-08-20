@@ -154,7 +154,7 @@ const BloodCenter = ({navigation}) => {
                     </PagerView>
                     <View style={[styles.IndicatorContainer]}>
                         {bloodSelected.data.map((data,index) => (
-                            <View style={[styles.Indicator, { opacity: currentPage === index ? 1 : 0.3 }]} />      
+                            <View key={index} style={[styles.Indicator, { opacity: currentPage === index ? 1 : 0.3 }]} />      
                         ))
                         }                                                                        
                     </View>  
@@ -391,8 +391,8 @@ const BloodCenter = ({navigation}) => {
                         <Text style={{fontWeight:"700",fontSize:16,opacity:0.4}}>No blood work uploaded yet ...</Text>
                     </View> 
                 }                                                 
-                {bloodWorkHistoryData.map((data)=>(
-                <View style={[styles.selectBox,{marginTop:0},data == bloodSelected &&{borderColor:"magenta",borderWidth:2} ]}>                
+                {bloodWorkHistoryData.map((data,index)=>(
+                <View key={index} style={[styles.selectBox,{marginTop:0},data == bloodSelected &&{borderColor:"magenta",borderWidth:2} ]}>                
                 {data == bloodSelected && <Text style={{position:"absolute",top:-20,opacity:0.5,fontWeight:"700",left:15,fontSize:12,color:"magenta"}}>Selected</Text>}
                     <View style={styles.boxTop}>
                         <View style={{flexDirection:"row"}}>
@@ -592,7 +592,7 @@ export function SingleBloodAnalasis({
             <View style={{width:"100%",alignItems:"center",marginBottom:30}}>
                 <View style={[styles.IndicatorContainer]}>
                     {bloodSelected.data.map((data,index) => (
-                        <View style={[styles.Indicator, { opacity: currentPage === index ? 1 : 0.3 }]} />      
+                        <View key={index} style={[styles.Indicator, { opacity: currentPage === index ? 1 : 0.3 }]} />      
                     ))
                     }                                                                        
                 </View>  
@@ -603,8 +603,8 @@ export function SingleBloodAnalasis({
                             <Text style={{fontWeight:"700",fontSize:18,width:"100%",textAlign:"center"}}>{dataFrom.title}</Text>            
                         </View>                             
                         <ScrollView contentContainerStyle={{alignItems:"center",paddingBottom:1500}} style={{width:"100%",marginBottom:30}}>
-                            {dataFrom.data.map((dataFrom2:{type:string,number:number}) =>(
-                                <View style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginTop:0,borderBottomWidth:0.5,padding:20,borderRadius:20,backgroundColor:"white"}}>
+                            {dataFrom.data.map((dataFrom2:{type:string,number:number},indexSec) =>(
+                                <View key={indexSec} style={{flexDirection:"row",width:"90%",justifyContent:"space-between",alignItems:"center",marginTop:0,borderBottomWidth:0.5,padding:20,borderRadius:20,backgroundColor:"white"}}>
                                     <Text style={{fontWeight:"600",width:"70%"}}>{dataFrom2.type}</Text>
                                     <View style={{borderLeftWidth:2}}>        
                                         <View style={{width:70,borderWidth:1,padding:9,borderRadius:10,marginLeft:20,alignItems:"center"}}>

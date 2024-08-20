@@ -153,16 +153,18 @@ export const Navigation_AI_Chat = ({
     chatLog,
     contextToggles,
     preQuestion,
-    userContexts
+    ContextOptions,
+    ContextVisualOption
 }:{
     navigation:any,
     chatLog:any[],
     contextToggles?:ContextToggleType;
-    preQuestion?:{c_t:"blood_work" | "uv" | "medical" | "bmi" | "weather",message:string};
-    userContexts:any;
+    preQuestion?:{c_t:"blood_work" | "uv" | "medical" | "weather",message:string};
+    ContextOptions:any;
+    ContextVisualOption : any;
 }) => {
-    if(navigation != undefined && chatLog != undefined){
-        navigation.navigate("AI_Chat",{chatLog:chatLog,contextToggles:contextToggles,preQuestion:preQuestion,userContexts:userContexts})
+    if(navigation != undefined && chatLog != undefined && ContextOptions != undefined && ContextVisualOption != undefined){
+        navigation.navigate("AI_Chat",{chatLog:chatLog,contextToggles:contextToggles,preQuestion:preQuestion,ContextOptions:ContextOptions, ContextVisualOption:ContextVisualOption})
     }
 }
 

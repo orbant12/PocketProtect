@@ -5,20 +5,18 @@ import "react-native-gesture-handler"
 import { NavBar_AssistantModal } from '../../components/Assist/navbarAssistantModal';
 import { useAuth } from '../../context/UserAuthContext';
 import { Navigation_AI_Chat } from '../../navigation/navigation';
-import { ContextToggleType, UserContextType } from '../../utils/types';
-import { BloodWorkCategory, fetchAllergies, fetchBloodWork } from '../../services/server';
+import { ContextToggleType } from '../../utils/types';
 import { BottomOptionsModal } from './components/ai_chat/bottomOptionsModal';
 import { AiAssistant } from './components/ai_chat/aiWelcomePage';
 import { useWeather } from '../../context/WeatherContext';
-import { convertWeatherDataToString } from '../../utils/melanoma/weatherToStringConvert';
 import { DataModal, generateTodayForWidget, selectableDataTypes } from '../Profile/tabs/userSavedPage';
+import { ContextPanelData } from '../../models/ContextPanel';
 
 
 
 export type PromptResponseFormat = {data:{data:{choices:{message:{content:string}}[]}}}
 
 const AssistantPage = ({navigation}) => {
-
 
 //<==================<[ Variables ]>====================>
 
@@ -27,14 +25,10 @@ const { weatherData,locationString,locationPermissionGranted } = useWeather()
 
 const [selectedType, setSelectedType] = useState<null | "context" | "help" | "questions">(null);
 const [selectedData, setSelectedData] = useState<null | selectableDataTypes>(null);
-
-const [userContexts, setUserContexts] = useState<null | UserContextType>({
-  useBloodWork:null,
-  useUvIndex:weatherData != null ? `UV Index: ${weatherData.uvi}` : null,
-  useMedicalData:null,
-  useBMI:null,
-  useWeatherEffect:weatherData != null ? convertWeatherDataToString(weatherData) : null,
-})
+const contextObj = new ContextPanelData(currentuser.uid,{weatherData:weatherData,locationString:locationString,locationPermissionGranted:locationPermissionGranted})
+const contextVisualObj = new ContextPanelData(currentuser.uid,{weatherData:weatherData,locationString:locationString,locationPermissionGranted:locationPermissionGranted})
+const [ContextOptions, setContextOptions] = useState<{title:string,stateName:any,stateID:selectableDataTypes}[]>([])
+const [ContextVisualOptions, setContextVisualOptions] = useState<{title:string,stateName:any,stateID:selectableDataTypes}[]>([])
 
 //<==================<[ Functions ]>====================>
 
@@ -42,19 +36,11 @@ const [ contextToggles , setContextToggles ] = useState<ContextToggleType>({
   useBloodWork:false,
   useUvIndex:false,
   useMedicalData:false,
-  useBMI:false,
   useWeatherEffect:false,
 })
 
-const placeholders = {
-  useBloodWork:"[ Blood Work Provided ]",
-  useUvIndex:`[ UV Index of ${userContexts.useUvIndex} Provided ]`,
-  useMedicalData:"[ Medical Data Provided ]",
-  useBMI:"[ BMI Provided ]",
-  useWeatherEffect:"[ Weather Data Provided ]"
-}
 
-const handleStartChat = (e:"get_started" | string,c_t:"blood_work" | "uv" | "medical" | "bmi" | "weather") => {
+const handleStartChat = (e:"get_started" | string,c_t:"blood_work" | "uv" | "medical" | "weather") => {
   const f_q = {user:"gpt",message:"Hello, how can I help you today ?",sent:true, inline_answer: false}
 
   const q_w_context = {c_t:c_t,message:e}
@@ -64,7 +50,8 @@ const handleStartChat = (e:"get_started" | string,c_t:"blood_work" | "uv" | "med
       navigation:navigation,
       chatLog:[f_q],
       contextToggles:contextToggles,
-      userContexts:userContexts
+      ContextOptions:ContextOptions,
+      ContextVisualOption:ContextVisualOptions
     })
   } else {
     Navigation_AI_Chat({
@@ -72,55 +59,28 @@ const handleStartChat = (e:"get_started" | string,c_t:"blood_work" | "uv" | "med
       chatLog:[f_q],
       contextToggles:contextToggles,
       preQuestion: q_w_context,
-      userContexts:userContexts
+      ContextOptions:ContextOptions,
+      ContextVisualOption:ContextVisualOptions
     })
   }
   setSelectedType(null)
 }
 
-const handleAllergiesFetch = async () => {
-  const response: {"allergiesArray": string[]} = await fetchAllergies({
-    userId: currentuser.uid
-  })
-  if (response.allergiesArray.length > 0){
-    setUserContexts({
-      ...userContexts,
-      useMedicalData:[...response.allergiesArray]
-    })
-  } else if (response.allergiesArray.length == 0){ 
-    setUserContexts({
-      ...userContexts,
-      useMedicalData:null
-    })
-  }
-}
-
-const handleBloodWorkFetch = async () => {
-  const response = await fetchBloodWork({
-    userId: currentuser.uid
-  })
-  if (response != null){
-    setUserContexts({
-      ...userContexts,
-      useBloodWork:convertBloodWorkCategoriesToString(response.data)
-    })
-  } 
-}
-
-function convertBloodWorkCategoriesToString(categories: BloodWorkCategory[]): string {
-  return categories.map(category => {
-      const dataStrings = category.data.map(item => `${item.type}: ${item.number}`).join(', ');
-      return `${category.title}: ${dataStrings}`;
-  }).join('\n');
-}
 
 const fetchContextDatas = async () => {
-  await handleBloodWorkFetch()
-  await handleAllergiesFetch()
+  await contextObj.loadContextDataForString()
+  await contextVisualObj.loadContextData()
+  const v_response = contextVisualObj.getContextOptions()
+  const response = contextObj.getContextOptions()
+  setContextVisualOptions(v_response)
+  setContextOptions(response)
 }
 
-const generateBYCT = (c_t:"blood_work" | "uv" | "medical" | "bmi" | "weather") => {
-  return ( c_t == "blood_work" ? {placeholder:placeholders.useBloodWork ,message:userContexts.useBloodWork} : c_t == "uv" ? {placeholder:placeholders.useUvIndex ,message:userContexts.useUvIndex} : c_t == "medical" ? {placeholder:placeholders.useMedicalData ,message:userContexts.useMedicalData} : c_t == "bmi" ? {placeholder:placeholders.useBMI ,message:userContexts.useBMI} : {placeholder:placeholders.useWeatherEffect ,message:userContexts.useWeatherEffect});
+const handleContextDataChange = async (field:selectableDataTypes,data:any[]) => {
+  const responseAllergies = await contextVisualObj.setContextOptions(field,data)
+  const v_response = contextVisualObj.getContextOptions()
+  setContextVisualOptions(v_response)
+  setContextOptions(context => context.map((item) => item.stateID === field ? {...item,stateName:responseAllergies} : item))
 }
 
 useEffect(() => {
@@ -155,11 +115,12 @@ return (
           contextToggles={contextToggles}
           setContextToggles={setContextToggles}
           handleStartChat={handleStartChat}
-          userContexts={userContexts}
+          userContexts={ContextOptions}
+          setDataSelected={(e) => {setSelectedData(e);setSelectedType(null)}}
         />
         <DataModal 
           selectedData={selectedData}
-          setSelectedData={setSelectedData}
+          setSelectedData={(e) => {setSelectedData(e);setSelectedType("context")}}
           uviData={
             {
               locationString:locationString,
@@ -168,9 +129,9 @@ return (
               locationPermissionGranted:locationPermissionGranted
             }
           }
-          userContexts={userContexts}
-          setUserContexts={setUserContexts}
-          handleAllergiesFetch={handleAllergiesFetch}
+          userContexts={ContextVisualOptions}
+          setUserContexts={(field,data) => handleContextDataChange(field,data)}
+          handleAllergiesFetch={fetchContextDatas}
         />
       </View>
   </>

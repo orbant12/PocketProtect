@@ -1,3 +1,4 @@
+
 import {Image, StyleSheet, View, Text,ScrollView,TouchableOpacity,Modal } from "react-native";
 import { useState, useEffect } from "react";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
@@ -5,7 +6,6 @@ import { Rating } from 'react-native-stock-star-rating'
 import medic1 from "../../assets/assist/assistant.png"
 import medical from "../../assets/assist/medic.png"
 import { NavBar_TwoOption } from "../../components/Common/navBars";
-import { AssistTab } from "../../components/LibaryPage/Melanoma/SingleMole/tabs/assistTab";
 import { fetchAssistantsByField } from "../../services/server";
 import { ManualAdd_Moles } from "../../components/Assist/manualMoleScreen";
 

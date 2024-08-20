@@ -2,7 +2,7 @@ import { View, Switch, Text, Pressable} from 'react-native';
 import { styles } from '../../styles/chatBot_style';
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 
-export const MedicalData_Box = ({index,data,handleSwitch,avalible}) => {
+export const MedicalData_Box = ({index,data,handleSwitch,avalible,setDataSelected}) => {
     return( 
       <>
         {avalible ?
@@ -19,7 +19,7 @@ export const MedicalData_Box = ({index,data,handleSwitch,avalible}) => {
               {data.title}
           </Text>
           </View>
-          <Pressable style={[{flexDirection:"row",alignItems:"center",borderWidth:0,borderColor:"magenta",borderRadius:5,padding:8,justifyContent:"center",backgroundColor:"white"}, !data.stateName ? {borderColor:"magenta"} : {borderColor:"lightgreen"}]}>
+          <Pressable onPress={() => setDataSelected(data.stateID)} style={[{flexDirection:"row",alignItems:"center",borderWidth:0,borderColor:"magenta",borderRadius:5,padding:8,justifyContent:"center",backgroundColor:"white"}, !data.stateName ? {borderColor:"magenta"} : {borderColor:"lightgreen"}]}>
               <Text style={{color:"black",marginRight:10,fontWeight:"600"}}>See Data</Text>
               <MaterialCommunityIcons 
                 name='arrow-right'

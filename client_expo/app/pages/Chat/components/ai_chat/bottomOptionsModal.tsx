@@ -5,16 +5,18 @@ import { Text } from "react-native";
 import { PagerComponent } from "../../../../components/Common/pagerComponent";
 import { QuestionsSheet } from "./questionModal";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { selectableDataTypes } from "../../../Profile/tabs/userSavedPage";
 
 const maleDefault = Image.resolveAssetSource(require("../../../../assets/male.png")).uri;
 
-export const BottomOptionsModal = ({selectedType, setSelectedType,contextToggles,setContextToggles,handleStartChat,userContexts}:{
+export const BottomOptionsModal = ({selectedType, setSelectedType,contextToggles,setContextToggles,handleStartChat,userContexts,setDataSelected}:{
     selectedType: null | "context" | "help" | "questions";
     setSelectedType:(e:null | "context" | "help" | "questions") => void;
     contextToggles:ContextToggleType;
     setContextToggles:(e:ContextToggleType) => void;
-    handleStartChat:(arg:string,c_t:"blood_work" | "uv" | "medical" | "bmi" | "weather") => void;
+    handleStartChat:(arg:string,c_t:"blood_work" | "uv" | "medical" | "weather") => void;
     userContexts: any;
+    setDataSelected:(e:selectableDataTypes) => void;
   }) => {
     return(
       <Modal visible={selectedType != null} presentationStyle="formSheet" animationType='slide'>
@@ -32,6 +34,7 @@ export const BottomOptionsModal = ({selectedType, setSelectedType,contextToggles
             contextToggles={contextToggles}
             setContextToggles={setContextToggles}
             userContexts={userContexts}
+            setDataSelected={setDataSelected}
           />
         }
         {selectedType == "help" &&
@@ -59,7 +62,7 @@ export const BottomOptionsModal = ({selectedType, setSelectedType,contextToggles
         }
         {selectedType == "questions" &&
           <QuestionsSheet 
-            handlePreQuestion={(e:string,c_t:"blood_work" | "uv" | "medical" | "bmi" | "weather") => handleStartChat(e,c_t)}
+            handlePreQuestion={(e:string,c_t:"blood_work" | "uv" | "medical" | "weather") => handleStartChat(e,c_t)}
           />
         }
       </Modal>

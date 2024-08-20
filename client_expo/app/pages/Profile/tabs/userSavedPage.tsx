@@ -39,62 +39,6 @@ const UserSavedPage = ({navigation}) => {
     const contextObj = new ContextPanelData(currentuser.uid,{weatherData:weatherData,locationString:locationString,locationPermissionGranted:locationPermissionGranted})
     const [ContextOptions, setContextOptions] = useState<{title:string,stateName:any,stateID:selectableDataTypes}[]>([])
 
- 
-
-      // const ContextOptions:{title:string,stateName:any,stateID:selectableDataTypes}[] = [
-      //   {
-      //     title:"Blood Work",
-      //     stateName:userContexts.useBloodWork,
-      //     stateID:"useBloodWork"
-      //   },
-      //   {
-      //     title:"Uv Index",
-      //     stateName:userContexts.useUvIndex,
-      //     stateID:"useUvIndex"
-      //   },
-      //   {
-      //     title:"Allergies",
-      //     stateName:userContexts.useMedicalData,
-      //     stateID:"useMedicalData"
-      //   },
-      //   {
-      //     title:"Weather Effects",
-      //     stateName:userContexts.useWeatherEffect,
-      //     stateID:"useWeatherEffect"
-      //   },
-      // ]
-
-
-      // const handleAllergiesFetch = async () => {
-      //   const response: {"allergiesArray": string[]} = await fetchAllergies({
-      //     userId: currentuser.uid
-      //   })
-        
-      //   if (response.allergiesArray.length > 0){
-      //     setUserContexts({
-      //       ...userContexts,
-      //       useMedicalData:[...response.allergiesArray]
-      //     })
-      //   } else if (response.allergiesArray.length == 0){ 
-      //     setUserContexts({
-      //       ...userContexts,
-      //       useMedicalData:null
-      //     })
-      //   }
-      // }
-
-      // const handleBloodWorkFetch = async () => {
-      //   const bloodObj = new BloodWork(currentuser.uid);
-      //   await bloodObj.fetchBloodWorkData()
-      //   const response : BloodWorkDoc = bloodObj.getBloodWorkData()
-      //   if (response != null){
-      //     setUserContexts({
-      //       ...userContexts,
-      //       useBloodWork:response
-      //     })
-      //   } 
-      // }
-
       const fetchContextDatas = async () => {
         await contextObj.loadContextData()
         const response = contextObj.getContextOptions()

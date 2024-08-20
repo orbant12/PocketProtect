@@ -16,7 +16,6 @@ export const ContextSheet = ({
         useBloodWork:false,
         useUvIndex:false,
         useMedicalData:false,
-        useBMI:false,
         useWeatherEffect:false,
     })
 
@@ -83,7 +82,8 @@ const Cstyles = StyleSheet.create({
   export function ContextPanel({
     contextToggles,
     setContextToggles,
-    userContexts
+    userContexts,
+     setDataSelected
   }){
 
 
@@ -104,11 +104,6 @@ const Cstyles = StyleSheet.create({
         stateID:"useMedicalData"
       },
       {
-        title:"BMI",
-        stateName:contextToggles.useBMI,
-        stateID:"useBMI"
-      },
-      {
         title:"Weather Data",
         stateName:contextToggles.useWeatherEffect,
         stateID:"useWeatherEffect"
@@ -127,11 +122,6 @@ const Cstyles = StyleSheet.create({
           [name]:e
       })
       } else if ( name == "useMedicalData"){
-        setContextToggles({
-          ...contextToggles,
-          [name]:e
-      })
-      } else if ( name == "useBMI"){
         setContextToggles({
           ...contextToggles,
           [name]:e
@@ -164,7 +154,8 @@ const Cstyles = StyleSheet.create({
                   index={index}
                   handleSwitch={handleSwitch}
                   key={index}
-                  avalible={userContexts[data.stateID] != null}
+                  avalible={userContexts[index].stateName != null}
+                   setDataSelected={ setDataSelected}
               />
           ))
           }     
