@@ -2,23 +2,22 @@
 import { View,ScrollView,Text,Image,TextInput, Pressable, Keyboard, Switch, ActivityIndicator, StyleSheet, Dimensions, Modal } from "react-native";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import {app} from "../../services/firebase"
-import { BottomSheetModal, BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import "react-native-gesture-handler"
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Tabs} from 'react-native-collapsible-tab-view'
 import Entypo from 'react-native-vector-icons/Entypo';
-import { useState,useRef,useEffect } from "react";
+import { useState,useRef, useEffect } from "react";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { TouchableOpacity } from "react-native";
 import { styles } from "../../styles/chatBot_style";
-import { PagerComponent } from "../../components/Common/pagerComponent";
-import tutorial1 from "../../assets/diagnosis/first.png"
 import { NavBar_TwoOption } from "../../components/Common/navBars";
-import { ZoomIn } from "react-native-reanimated";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { ContextToggleType, UserContextType } from "../../utils/types";
 import { BottomOptionsModal } from "./components/ai_chat/bottomOptionsModal";
 import { Navigation_Diag_Survey } from "../../navigation/navigation";
+import { ContextPanelData } from "../../models/ContextPanel";
+import { useWeather } from "../../context/WeatherContext";
+import { useAuth } from "../../context/UserAuthContext";
+import { DataModal, generateTodayForWidget, selectableDataTypes } from "../Profile/tabs/userSavedPage";
 
 
 const { width } = Dimensions.get('window');
@@ -39,18 +38,18 @@ export type OpenApiResponseType = {
 
 function AiDiagnosis({navigation,route}){
 
+    const { currentuser } = useAuth()
+    const { weatherData,locationString,locationPermissionGranted } = useWeather()
+
     const functions = getFunctions(app);
     const [isInfoActive, setIsInfoActive] = useState<boolean>(false)
     const [selectedType, setSelectedType] = useState<null | "context" | "help" | "questions">(null);
+    const contextVisualObj = new ContextPanelData(currentuser.uid,{weatherData:weatherData,locationString:locationString,locationPermissionGranted:locationPermissionGranted})
 
-    const [userContexts, setUserContexts] = useState<null | UserContextType>(route.params.userContexts != undefined ? route.params.userContexts : {
-        useBloodWork:null,
-        useUvIndex:null,
-        useMedicalData:null,
-        useBMI:null,
-        useWeatherEffect:null,
-    }
-    )
+    const [ContextOptions, setContextOptions] = useState<{title:string,stateName:any,stateID:selectableDataTypes}[]>(route.params.ContextOptions)
+    const [ContextVisualOptions, setContextVisualOptions] = useState<{title:string,stateName:any,stateID:selectableDataTypes}[]>([])
+    const [selectedData, setSelectedData] = useState<null | selectableDataTypes>(null);
+
     const [ contextToggles , setContextToggles ] = useState<ContextToggleType>(route.params.contextToggles != undefined ? route.params.contextToggles : {
         useBloodWork:false,
         useUvIndex:false,
@@ -156,6 +155,23 @@ function AiDiagnosis({navigation,route}){
                 setIsDiagnosisLoading(false)
             }
     }
+
+    const fetchContextDatas = async () => {
+        await contextVisualObj.loadContextData()
+        const v_response = contextVisualObj.getContextOptions()
+        setContextVisualOptions(v_response)
+      }
+
+      const handleContextDataChange = async (field:selectableDataTypes,data:any[]) => {
+        const responseAllergies = await contextVisualObj.setContextOptions(field,data)
+        const v_response = contextVisualObj.getContextOptions()
+        setContextVisualOptions(v_response)
+        setContextOptions(context => context.map((item) => item.stateID === field ? {...item,stateName:responseAllergies} : item))
+      }
+
+      useEffect(() => {
+        fetchContextDatas()
+      },[])
 
     //<=======>  Componnets <===========>
 
@@ -273,7 +289,23 @@ function AiDiagnosis({navigation,route}){
             contextToggles={contextToggles}
             setContextToggles={setContextToggles}
             handleStartChat={() => {}}
-            userContexts={userContexts}
+            userContexts={ContextOptions}
+            setDataSelected={(e) => {setSelectedData(e);setSelectedType(null)}}
+        />
+        <DataModal 
+            selectedData={selectedData}
+            setSelectedData={(e) => {setSelectedData(e);setSelectedType("context")}}
+            uviData={
+                {
+                    locationString:locationString,
+                    weatherData:weatherData,
+                    today:generateTodayForWidget(),
+                    locationPermissionGranted:locationPermissionGranted
+                }
+            }
+            userContexts={ContextVisualOptions}
+            setUserContexts={(field,data) => handleContextDataChange(field,data)}
+            handleAllergiesFetch={fetchContextDatas}
         />
 
         </>

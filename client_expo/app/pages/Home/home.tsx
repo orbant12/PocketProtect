@@ -32,7 +32,7 @@ export default function TabOneScreen({navigation}) {
 
 //<==================<[ Variables ]>====================>
 
-const { currentuser,melanoma } = useAuth();
+const { melanoma } = useAuth();
 //DATE
 const today: Date = new Date();
 const format = DateToString(today);
@@ -134,6 +134,7 @@ const [unfinishedMelanomaData, setUnfinishedMelanomaData] = useState<SpotData[]>
                     tintColor={'magenta'}
                 />
             }
+            contentContainerStyle={{paddingBottom: 60}}
         >
             <Calendar affectedDays={affectedDays} onSelectDate={setSelectedDate} selected={selectedDate} today={format} todayDate={today} />
             <StatusBar style="auto" />

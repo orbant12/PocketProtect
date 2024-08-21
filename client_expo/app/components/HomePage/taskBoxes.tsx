@@ -13,7 +13,8 @@ export const TaskBox_2 = ({
     buttonText,
     nav_page,
     index,
-    handleNavigation
+    handleNavigation,
+    handleStart
 }:
 {
     title:string;
@@ -25,6 +26,7 @@ export const TaskBox_2 = ({
     nav_page:string;
     index:number;
     handleNavigation:({path,data}:{path:"" | "unfinished" | "risk",data:SpotData}) => void;
+    handleStart:() => void;
 }) => {
     return(
         <View key={index} style={styles.DataBox}>
@@ -73,7 +75,7 @@ export const TaskBox_2 = ({
             We schedule reminders for outdated blood work and recommended update.
             </Text>
         </View>
-        <Pressable style={styles.StartButton}>
+        <Pressable onPress={handleStart} style={styles.StartButton}>
             <Text>{buttonText}</Text>
             <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{ marginLeft: 10 }} />
         </Pressable>

@@ -7,24 +7,15 @@ import { User } from "../../models/User"
 
 const NoInternetConnectionPage = ({navigation,route}) => {
 
-    // function handleReload(){
-    //     navigation.navigate("AuthHub")
-    // }
 
     const uid = route.params.uid
-
-    const {melanoma} = useAuth()
-
-
     const [tries, setTries] = useState(5)
-    // IF 0 'All retries exhausted. Please check your internet connection.'
 
     const handleReload = async () => {
         
         setTries(5)
         const user = new User(uid);
 
-        
         const fetchDataWithRetries = async (attemptsLeft: number) => {
             try {
                 const response = await user.fetchUserData(2);

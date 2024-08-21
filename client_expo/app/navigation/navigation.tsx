@@ -154,31 +154,30 @@ export const Navigation_AI_Chat = ({
     contextToggles,
     preQuestion,
     ContextOptions,
-    ContextVisualOption
 }:{
     navigation:any,
     chatLog:any[],
     contextToggles?:ContextToggleType;
     preQuestion?:{c_t:"blood_work" | "uv" | "medical" | "weather",message:string};
     ContextOptions:any;
-    ContextVisualOption : any;
 }) => {
-    if(navigation != undefined && chatLog != undefined && ContextOptions != undefined && ContextVisualOption != undefined){
-        navigation.navigate("AI_Chat",{chatLog:chatLog,contextToggles:contextToggles,preQuestion:preQuestion,ContextOptions:ContextOptions, ContextVisualOption:ContextVisualOption})
+    if(navigation != undefined && chatLog != undefined && ContextOptions != undefined){
+        navigation.navigate("AI_Chat",{chatLog:chatLog,contextToggles:contextToggles,preQuestion:preQuestion,ContextOptions:ContextOptions})
     }
 }
 
 export const Navigation_Diag_Input = ({
     navigation,
     contextToggles,
-    userContexts,
+    ContextOptions,
 }:{
     contextToggles?:ContextToggleType,
-    userContexts:any,
+    ContextOptions: any,
     navigation:any
+
 }) => {
-    if (navigation != undefined){
-        navigation.navigate("Diagnosis_Chat",{contextToggles:contextToggles,userContexts:userContexts})
+    if (navigation != undefined && ContextOptions != undefined){
+        navigation.navigate("Diagnosis_Chat",{contextToggles:contextToggles,ContextOptions:ContextOptions})
     }
 }
 

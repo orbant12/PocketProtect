@@ -51,7 +51,6 @@ const handleStartChat = (e:"get_started" | string,c_t:"blood_work" | "uv" | "med
       chatLog:[f_q],
       contextToggles:contextToggles,
       ContextOptions:ContextOptions,
-      ContextVisualOption:ContextVisualOptions
     })
   } else {
     Navigation_AI_Chat({
@@ -60,7 +59,6 @@ const handleStartChat = (e:"get_started" | string,c_t:"blood_work" | "uv" | "med
       contextToggles:contextToggles,
       preQuestion: q_w_context,
       ContextOptions:ContextOptions,
-      ContextVisualOption:ContextVisualOptions
     })
   }
   setSelectedType(null)

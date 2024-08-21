@@ -5,15 +5,20 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import PagerView from 'react-native-pager-view';
 import { formatTimestampToString} from "../../../utils/date_manipulations";
 import { styles_shadow } from "../../../styles/shadow_styles";
-import { BodyPart, SpotData, WeatherAPIResponse } from "../../../utils/types";
+import { SpotData, WeatherAPIResponse } from "../../../utils/types";
 import { Home_Navigation_Paths } from "../../../pages/Home/home";
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useWeather } from "../../../context/WeatherContext";
 import { WeatherData_Default } from "../../../utils/initialValues";
 import { getUvIndexCategory } from "../../../utils/uvi/uvIndexEval";
 import { UviWidget } from "../../Widgets/uviWidget";
 import moment from "moment";
 import { ImageLoaderComponent } from "../../Common/imageLoader";
+import { DataModal, generateTodayForWidget, selectableDataTypes } from "../../../pages/Profile/tabs/userSavedPage";
+import { ContextPanelData } from "../../../models/ContextPanel";
+import { useAuth } from "../../../context/UserAuthContext";
+import { PagerComponent } from "../../Common/pagerComponent";
+import { Navigation_AddBloodWork } from "../../../navigation/navigation";
 
 export const TodayScreen = ({
     handleNavigation,
@@ -41,9 +46,92 @@ export const TodayScreen = ({
 ) => {
 
     const { weatherData, locationPermissionGranted,locationString } = useWeather();
+    const { currentuser } = useAuth();
     const day = moment(date).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') ? moment(date).format('dd'):moment(date).format('dd')
     const withoutYear = moment(date).format('DD.MM');
     const today = day + " " + withoutYear; 
+    const contextObj = new ContextPanelData(currentuser.uid,{weatherData:weatherData,locationString:locationString,locationPermissionGranted:locationPermissionGranted})
+    const [unactiveComponents, setUnactiveComponents] = useState([])
+    const [selectedData, setSelectedData] = useState<selectableDataTypes | null>(null);
+    const [ContextOptions, setContextOptions] = useState<{title:string,stateName:any,stateID:selectableDataTypes}[]>([])
+
+    const fetchContextOptions = async () => {
+        await contextObj.loadContextData();
+        const data = contextObj.getContextOptions();
+        setContextOptions(data);
+        let unaddedData = [];
+        
+        data.forEach(item => {
+            if (item.stateName == null) {
+                unaddedData.push(item.stateID);
+            }
+        });
+
+        console.log(unaddedData);
+
+        unaddedData.forEach(item => {
+            if (item === "useBloodWork") {
+                console.log("Blood Work ADDED");
+                setUnactiveComponents(prevContextOptions => [
+                    ...prevContextOptions,
+                    {
+                        pageComponent: () => (
+                            <TaskBox_2 
+                                title={"Blood Work"} 
+                                icon1="robot" 
+                                icon2="magnify" 
+                                icon3="doctor" 
+                                icon4="calendar" 
+                                buttonText="Add Now"
+                                nav_page="Add_BloodWork"
+                                handleNavigation={handleNavigation}
+                                key={0}  
+                                handleStart={() => Navigation_AddBloodWork({navigation:navigation,type:"first"})}
+                                index={0}                      
+                            />
+                        )
+                    }
+                ]);
+            } else if (item === "useMedicalData") {
+                console.log("Allergies ADDED");
+                setUnactiveComponents(prevContextOptions => [
+                    ...prevContextOptions,
+                    {
+                        pageComponent: () => (
+                            <TaskBox_2 
+                                title={"Allergies"} 
+                                icon1="robot" 
+                                icon2="magnify" 
+                                icon3="doctor" 
+                                icon4="calendar" 
+                                buttonText="Add Now"
+                                nav_page="Add_BloodWork"
+                                handleNavigation={handleNavigation}
+                                key={1}  
+                                index={1}           
+                                handleStart={() => setSelectedData("useMedicalData")}           
+                            />
+                        )
+                    }
+                ]);
+            }
+        });
+    };
+    
+    //ASYNC USE EFFECT
+    useEffect(() => {
+        fetchContextOptions();            
+    }, []);
+
+    const handleContextDataChange = async (field:selectableDataTypes,data:any[]) => {
+        console.log(field,data)
+        await contextObj.setContextOptions(field,data)
+        const response = contextObj.getContextOptions()
+        console.log(response)
+        setContextOptions(response)
+    }
+    
+
     return(    
         <>
             <UviWidget 
@@ -61,82 +149,36 @@ export const TodayScreen = ({
                 handleNavigation={handleNavigation}
                 outdatedMelanomaData={outdatedMelanomaData}
             />          
-
+        {unactiveComponents.length != 0 &&
             <View style={[styles.DataSection]}>
-                <View style={{}}>
+                <View>
                     <Text style={{color:"white",opacity:0.3,fontWeight:"400",fontSize:11,paddingHorizontal:10,marginBottom:-10,paddingVertical:5}}>More data, better prediction</Text>
                     <Text style={styles.title}>Haven't added yet ...</Text>                     
                 </View>
-
-                <PagerView style={{marginTop:10,height:365 }} onPageScroll={(e) => handleScrollReminder(e)}   initialPage={0}>
-                    <TaskBox_2 
-                        title="Blood Work" 
-                        icon1="robot" 
-                        icon2="magnify" 
-                        icon3="doctor" 
-                        icon4="calendar" 
-                        buttonText="Add Now"
-                        nav_page="Add_BloodWork"
-                        handleNavigation={handleNavigation}
-                        key={1}  
-                        index={1}                      
-                    />
-                    <TaskBox_2
-                        title="Lifestyle Assesment" 
-                        icon1="robot" 
-                        icon2="magnify" 
-                        icon3="doctor" 
-                        icon4="calendar" 
-                        buttonText="Add Now" 
-                        nav_page="Add_BloodWork"
-                        key={2}   
-                        handleNavigation={handleNavigation}
-                        index={2}   
-                    />
-                    <TaskBox_2
-                    title="Personal Assesment" 
-                    icon1="robot" 
-                    icon2="magnify" 
-                    icon3="doctor" 
-                    icon4="calendar" 
-                    handleNavigation={handleNavigation}
-                    buttonText="Add Now" 
-                    nav_page="Add_BloodWork"
-                    key={3}   
-                    index={3}   
-                    />
-                    <TaskBox_2
-                    title="Medical Assesment" 
-                    icon1="robot" 
-                    icon2="magnify" 
-                    nav_page="Add_BloodWork"
-                    icon3="doctor" 
-                    icon4="calendar" 
-                    buttonText="Add Now" 
-                    key={4}   
-                    handleNavigation={handleNavigation}
-                    index={4}   
-                    />    
-                </PagerView>                                 
-
-                <View style={styles.IndicatorContainer}>
-                    <View style={[styles.Indicator, { opacity: currentPage === 0 ? 1 : 0.3 }]} />
-                    <View style={[styles.Indicator, { opacity: currentPage === 1 ? 1 : 0.3 }]} />
-                    <View style={[styles.Indicator, { opacity: currentPage === 2 ? 1 : 0.3 }]} />
-                    <View style={[styles.Indicator, { opacity: currentPage === 3 ? 1 : 0.3 }]} />
-                </View>
-
-            </View>
-
-            <View style={styles.TodaySection}>
-                <Text style={styles.title}>Personal Advice</Text>
                 
+                <PagerComponent 
+                    dotColor={"white"}
+                    pagerStyle={{height:350,borderWidth:1,marginTop:10}}
+                    indicator_position={{backgroundColor:"black",padding:12}}
+                    pages={unactiveComponents}
+                />                       
             </View>
-
-            <View style={styles.TodaySection}>
-                <Text style={styles.title}>News</Text>
-                                        
-            </View>
+        }
+        <DataModal
+            selectedData={selectedData}
+            setSelectedData={(e) => {setSelectedData(e);e == null && setUnactiveComponents([])}}
+            uviData={
+                {
+                    locationString:locationString,
+                    weatherData:weatherData,
+                    today:generateTodayForWidget(),
+                    locationPermissionGranted:locationPermissionGranted
+                }
+            }
+            userContexts={ContextOptions}
+            setUserContexts={(field,data) => handleContextDataChange(field,data)}
+            handleAllergiesFetch={() => {}}
+        />
         </>
         )
 }

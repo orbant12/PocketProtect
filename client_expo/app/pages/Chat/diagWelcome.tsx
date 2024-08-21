@@ -9,6 +9,9 @@ import { ContextToggleType, UserContextType} from '../../utils/types';
 import { BloodWorkCategory, fetchBloodWork } from '../../services/server';
 import { BottomOptionsModal } from './components/ai_chat/bottomOptionsModal';
 import { DiagWelcomeComponent } from './components/diag/diagWelcomePage';
+import { useWeather } from '../../context/WeatherContext';
+import { DataModal, generateTodayForWidget, selectableDataTypes } from '../Profile/tabs/userSavedPage';
+import { ContextPanelData } from '../../models/ContextPanel';
 
 
 const DiagWelcomePage = ({navigation}) => {
@@ -17,15 +20,16 @@ const DiagWelcomePage = ({navigation}) => {
 //<==================<[ Variables ]>====================>
 
 const { currentuser } = useAuth()
+const { weatherData,locationString,locationPermissionGranted } = useWeather()
+
 const [selectedType, setSelectedType] = useState<null | "context" | "help" | "questions">(null);
 
-const [userContexts, setUserContexts] = useState<null | UserContextType>({
-  useBloodWork:null,
-  useUvIndex:"",
-  useMedicalData:null,
-  useBMI:null,
-  useWeatherEffect:"",
-})
+const contextObj = new ContextPanelData(currentuser.uid,{weatherData:weatherData,locationString:locationString,locationPermissionGranted:locationPermissionGranted})
+const contextVisualObj = new ContextPanelData(currentuser.uid,{weatherData:weatherData,locationString:locationString,locationPermissionGranted:locationPermissionGranted})
+
+const [ContextOptions, setContextOptions] = useState<{title:string,stateName:any,stateID:selectableDataTypes}[]>([])
+const [ContextVisualOptions, setContextVisualOptions] = useState<{title:string,stateName:any,stateID:selectableDataTypes}[]>([])
+const [selectedData, setSelectedData] = useState<null | selectableDataTypes>(null);
 
 //<==================<[ Functions ]>====================>
 
@@ -33,7 +37,6 @@ const [ contextToggles , setContextToggles ] = useState<ContextToggleType>({
   useBloodWork:false,
   useUvIndex:false,
   useMedicalData:false,
-  useBMI:false,
   useWeatherEffect:false,
 })
 
@@ -42,28 +45,26 @@ const handleStartChat = () => {
     Navigation_Diag_Input({
       navigation:navigation,
       contextToggles:contextToggles,
-      userContexts:userContexts
+      ContextOptions:ContextOptions
     })
     setSelectedType(null)
 }
 
-function convertBloodWorkCategoriesToString(categories: BloodWorkCategory[]): string {
-  return categories.map(category => {
-      const dataStrings = category.data.map(item => `${item.type}: ${item.number}`).join(', ');
-      return `${category.title}: ${dataStrings}`;
-  }).join('\n');
-}
 
 const fetchContextDatas = async () => {
-  const response = await fetchBloodWork({
-    userId: currentuser.uid
-  })
-  if (response != null){
-    setUserContexts({
-      ...userContexts,
-      useBloodWork:convertBloodWorkCategoriesToString(response.data)
-    })
-  } 
+  await contextObj.loadContextDataForString()
+  await contextVisualObj.loadContextData()
+  const v_response = contextVisualObj.getContextOptions()
+  const response = contextObj.getContextOptions()
+  setContextVisualOptions(v_response)
+  setContextOptions(response)
+}
+
+const handleContextDataChange = async (field:selectableDataTypes,data:any[]) => {
+  const responseAllergies = await contextVisualObj.setContextOptions(field,data)
+  const v_response = contextVisualObj.getContextOptions()
+  setContextVisualOptions(v_response)
+  setContextOptions(context => context.map((item) => item.stateID === field ? {...item,stateName:responseAllergies} : item))
 }
 
 
@@ -97,7 +98,23 @@ return (
           contextToggles={contextToggles}
           setContextToggles={setContextToggles}
           handleStartChat={handleStartChat}
-          userContexts={userContexts}
+          userContexts={ContextOptions}
+          setDataSelected={(e) => {setSelectedData(e);setSelectedType(null)}}
+        />
+        <DataModal
+            selectedData={selectedData}
+            setSelectedData={(e) => {setSelectedData(e);setSelectedType("context")}}
+            uviData={
+                {
+                    locationString:locationString,
+                    weatherData:weatherData,
+                    today:generateTodayForWidget(),
+                    locationPermissionGranted:locationPermissionGranted
+                }
+            }
+            userContexts={ContextVisualOptions}
+            setUserContexts={(field,data) => handleContextDataChange(field,data)}
+            handleAllergiesFetch={fetchContextDatas}
         />
       </View>
   </>
