@@ -13,19 +13,18 @@ import { useWeather } from "../../context/WeatherContext"
 
 
 
-export const UviWidget = ({ weatherData,today,location }:{weatherData:WeatherSortedResponse | false, today:string,location:string}) => {
+export const UviWidget = ({ weatherData,today,location,isForcast }:{weatherData:WeatherSortedResponse | false, today:string,location:string;isForcast:boolean}) => {
 
     const uviCategory = weatherData != false && getUvIndexCategory(Math.round(weatherData.uvi))
     const { LocationAccessAsk } = useWeather();
     const [time, setTime] = useState(new Date());
 
     useEffect(() => {
-        const intervalId = setInterval(() => {
-          setTime(new Date());
-        }, 1000);
-    
-        return () => clearInterval(intervalId); // Cleanup interval on unmount
-      }, []);
+            const intervalId = setInterval(() => {
+                setTime(new Date());
+            }, 1000);
+            return () => clearInterval(intervalId); 
+    }, []);
     
     
       const plusTwoHoursFrom = (date) => {
@@ -47,7 +46,7 @@ export const UviWidget = ({ weatherData,today,location }:{weatherData:WeatherSor
                 <View style={[styles.titleRow,{alignItems:"baseline"}]}>
                     <Text style={styles.title}>UV Index & Skin Cancer</Text>
                     <View style={[styles.titleLeft,{alignItems:"flex-end",opacity:0.8}]}>
-                        <Text style={{color:"white",marginBottom:10,fontSize:23,fontWeight:"800"}}>{formatTime(time)}</Text>
+                        <Text style={{color:"white",marginBottom:10,fontSize:23,fontWeight:"800"}}>{isForcast == false ? formatTime(time) : "MAX"}</Text>
                         <Text style={{color:"white",fontSize:13}}>{today}</Text>
                     </View>
                 </View>

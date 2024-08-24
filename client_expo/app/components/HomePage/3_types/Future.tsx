@@ -1,8 +1,10 @@
-import { styles } from "../../../styles/home_style"
-import { View,Text,Pressable,TouchableOpacity,Image } from "react-native"
 
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
-import { MonthlyTasksData } from "../../../pages/Home/home"
+import { View,Text,Pressable,TouchableOpacity,Image } from "react-native"
+import { UviWidget } from "../../Widgets/uviWidget"
+import moment from "moment";
+import { useWeather } from "../../../context/WeatherContext";
+import { WeatherData_Default } from "../../../utils/initialValues";
+import { useEffect, useState } from "react";
 
 
 
@@ -11,39 +13,61 @@ export function FutureScreen({
     displayCounter,
     thisMonthTasks,
     handleNavigation,
-    selectedDate
+    selectedDate,
 }) {
+    const date = new Date(selectedDate);
+    const day = moment(date).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') ? moment(date).format('dd'):moment(date).format('dd')
+    const withoutYear = moment(date).format('DD.MM');
+    const today = day + " " + withoutYear;
+
+    const {locationPermissionGranted,locationString,weatherData,weatherDataDaily} = useWeather();
+    
+    const calculateDistanceFromDataAndToday = (selectedDate:Date) => {
+        const today = new Date();
+        const selected = selectedDate;
+        const distance = selected.getTime() - today.getTime();
+        const nDistance = Math.floor(distance / (1000 * 60 * 60 * 24));
+        return nDistance;
+    }
+
+    const [currentForcast,setCurrentForcast] = useState(null);
+
+    useEffect(() => {
+        const res = calculateDistanceFromDataAndToday(new Date(selectedDate))
+        console.log(res)
+        if(res < 8){
+            setCurrentForcast(weatherDataDaily[res])
+            console.log(weatherDataDaily[res])
+        } else {
+            setCurrentForcast(null)
+            console.log("check")
+        }
+        
+    },[selectedDate])
+
+    
+
     return(
         <View style={{width:"100%",alignItems:"center"}}>                
-        <View style={{width:"90%",alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",height:90,justifyContent:"center",borderRadius:10}}>
-            <Text style={{marginBottom:10,fontWeight:"600",opacity:0.3}}>Not avalible yet</Text>
-            <Text style={{fontSize:20,fontWeight:"700"}}>
-                {displayCounter}
-            </Text>
-        </View>
-        <View>
-        {thisMonthTasks.map((data:MonthlyTasksData)=>(
-            data.date == selectedDate &&
-            
-            <View style={styles.TodaySection}>
-                <View style={styles.titleRow}>
-                    <Text style={styles.title}>Tasks</Text>
-                    <Text style={styles.titleLeft}>0/1</Text>
-                </View>
-
-                <View style={styles.TaskBox}>
-                    <Text style={styles.TaskTitle}>{data.data.diagnosis} Checkup</Text>
-                    <Text style={[styles.TaskSubTitle,{color:"white",opacity:0.7}]}>You haven't updated your blood work in <Text style={{fontWeight:"700",color:"magenta",opacity:0.8}}>{"12"} days</Text></Text>
-                    <Text style={styles.TaskSubTitle}>Medical research suggest to update your blood work every 6 months for a healthy lifestyle</Text>
-                    <Pressable onPress={() => handleNavigation("DailyReport")} style={[styles.StartButton,{opacity:0.3}]}>
-                        <Text>Start in - {displayCounter}</Text>
-                        <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
-                    </Pressable>
-                </View> 
+            <View style={{width:"90%",alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",height:90,justifyContent:"center",borderRadius:10}}>
+                <Text style={{marginBottom:10,fontWeight:"600",opacity:0.3}}>Forcast for {selectedDate}</Text>
+                <Text style={{fontSize:20,fontWeight:"700"}}>
+                    {displayCounter}
+                </Text>
             </View>
-        ))}
-        
-        </View>
+            {currentForcast != null ?
+                <UviWidget 
+                    weatherData={locationPermissionGranted ? (currentForcast != null ? currentForcast : WeatherData_Default) : false}
+                    today={today}
+                    location={locationString}
+                    isForcast={true}
+                />
+                :
+                <View style={{width:"90%",alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10,padding:10,marginTop:50,opacity:0.8}}>
+                    <Text style={{fontWeight:"700",fontSize:20,marginBottom:10}}>No weather data available</Text>
+                    <Text style={{fontWeight:"600",fontSize:15}}>We can only forcast for 8 days max</Text>
+                </View>
+            }
         </View>
     )
 }

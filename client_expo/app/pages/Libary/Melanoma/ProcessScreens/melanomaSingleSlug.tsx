@@ -127,11 +127,12 @@ const MelanomaSingleSlug = ({route,navigation}) => {
     const fetchSlugSpots = async () =>{
         const response = await melanoma.getMelanomaDataBySlug(bodyPartSlug.slug)
 
-        const format = response.map((data) =>{
+        const format = response.map((data,index) =>{
             return {
                 location: data.melanomaDoc.location,
                 id: data.melanomaId,
-                picture: data.melanomaPictureUrl
+                picture: data.melanomaPictureUrl,
+                key: index,
             }
         })
 

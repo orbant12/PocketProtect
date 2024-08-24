@@ -17,6 +17,7 @@ export const dotsSelectOnPart = ({
                             path={path}
                             bodyPart={bodyPart}
                             index={index}
+                            key={index}
                             stroke={"black"}
                             skin_type={skin_type}
                             userData={{gender:gender}}

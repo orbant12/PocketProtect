@@ -58,8 +58,8 @@ const SlugAnalasis = ({ route,navigation }) => {
         } else if (type === true) {
             updatedCompletedParts = completedParts.filter(part => part !== bodyPartSlug.slug);
         }
-        const response = updatedCompletedParts.map(slug => {                
-            return { slug: slug };
+        const response = updatedCompletedParts.map((slug,index) => {                
+            return { key:index, slug: slug };
         });
         await melanoma.updateCompletedParts(response);
             
@@ -136,16 +136,15 @@ return(
                 {melanomaData.length != 0 ?
                 <View style={{width:"100%",alignItems:"center",paddingBottom:500}}>                               
                     {melanomaData.map((data,index) => (
-                        data.melanomaDoc.spot.slug == bodyPartSlug.slug  ? (
+                        data.melanomaDoc.spot.slug == bodyPartSlug.slug  && (
                             <MoleBar
-                                index={index}
                                 data={data}
                                 handleSpotOpen={handleSpotOpen}
                                 highlighted={highlighted}
                                 showSpot={showSpot}
-                                key={index}
+                                key={index + "_moleBar"}
                             />
-                        ):null
+                        )
                     ))}
                 </View>
                 :
@@ -180,20 +179,18 @@ const AddSection = ({handleAddMelanoma}:{handleAddMelanoma:() => void}) => {
 const MoleBar = ({
     data,
     handleSpotOpen,
-    index,
     highlighted,
     showSpot
 }:{
     data:SpotData;
     handleSpotOpen:(data:SpotData) => void;
-    index:number;
     highlighted:string;
     showSpot:(id:string) => void;
 }) => {
 
 
     return(
-        <TouchableOpacity onPress={() => handleSpotOpen(data)} key={index} style={[SlugStyles.melanomaBox,styles_shadow.shadowContainer]}>
+        <TouchableOpacity onPress={() => handleSpotOpen(data)} style={[SlugStyles.melanomaBox,styles_shadow.shadowContainer]}>
             <ImageLoaderComponent 
                 data={data}
                 w={80}

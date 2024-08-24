@@ -186,6 +186,7 @@ const [melanomaDeleteState, setMelanomaDeleteState] = useState<boolean | string 
                             <BodyPartPath
                                 path={path}
                                 index={index}
+                                key={index}
                                 bodyPart={bodyPart.melanomaDoc.spot}
                                 userData={currentuser}
                                 skin_type={skin_type}

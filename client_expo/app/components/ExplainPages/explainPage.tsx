@@ -4,7 +4,7 @@ import { PagerComponent } from "../Common/pagerComponent";
 import { styles_shadow } from "../../styles/shadow_styles";
 import { HeaderContainer } from "../Common/headerContainer";
 import ProgressBar from 'react-native-progress/Bar';
-import { ImageLoaderComponent } from "../../pages/Libary/Melanoma/slugAnalasis";
+import { ImageLoaderComponent } from "../Common/imageLoader";
 
 const toolImage = Image.resolveAssetSource(require("../../assets/assist/proTool.png")).uri;
 const chatImage = Image.resolveAssetSource(require("../../assets/assist/chat.png")).uri;
@@ -101,16 +101,16 @@ export const ExplainPageComponent_Type2 = ({data,title,desc} : {
                     indicator_position={[{backgroundColor:"black",padding:15},item.images.length == 1 ? {display:"none"} : {}]}
                     dotColor={"white"}
                     pagerStyle={[{height:300,borderWidth:1}]}
-                    pages={item.images.map((image, index) => ({
+                    pages={item.images.map((image) => ({
                         pageComponent:() => (
                             <ImageLoaderComponent
                                 w={"100%"}
                                 h={300}
                                 imageStyle={{borderRadius:0}}
-                                
                                 data={{melanomaPictureUrl:image.image}}
                             />
                         )}
+                        
                     ))}
                         
                 />

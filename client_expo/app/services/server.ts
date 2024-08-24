@@ -971,7 +971,7 @@ export const getWeatherData = async({
     part,
 }:WeatherApiCallTypes):Promise<null | any> => {
     const API_key = getWeatherAPIKey();
-    const WEATHER_API = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=current&appid=${API_key}`;
+    const WEATHER_API = `https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&exclude=minutely,hourly,alerts&appid=${API_key}`;
     const response = await fetch(WEATHER_API, {
         method: "GET",
         headers: {

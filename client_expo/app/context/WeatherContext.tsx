@@ -13,6 +13,7 @@ interface WeatherContextType {
     locationPermissionGranted: boolean;
     locationString: string | null;
     LocationAccessAsk: () => void;
+    weatherDataDaily: any[] | null;
 }
 
 const WeatherContext = createContext<WeatherContextType | undefined>(undefined);
@@ -32,6 +33,7 @@ interface WeatherProviderProps {
 
 const WeatherProvider = ({ children, part }: WeatherProviderProps) => {
     const [weatherData, setWeatherData] = useState<WeatherSortedResponse | null>(null);
+    const [weatherDataDaily, setWeatherDataDaily] = useState<any[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
     const [locationPermissionGranted, setLocationPermissionGranted] = useState<boolean>(false);
@@ -48,57 +50,63 @@ const WeatherProvider = ({ children, part }: WeatherProviderProps) => {
             setError(null);
             try {
                 console.log('Fetching weather data');
-                // const response = await getWeatherData({ part, lat, lon });
-                // if (response === null) {
-                //     setWeatherData(null);
-                //     return;
-                // }
-                const response = {
-                    daily: [
-                        {
-                            dt: 0,
-                            sunrise: 0,
-                            sunset: 0,
-                            temp: {
-                                day: 0,
-                                min: 0,
-                                max: 0,
-                                night: 0,
-                                eve: 0,
-                                morn: 0,
-                            },
-                            feels_like: {
-                                day: 0,
-                                night: 0,
-                                eve: 0,
-                                morn: 0,
-                            },
-                            pressure: 0,
-                            humidity: 0,
-                            dew_point: 0,
-                            wind_speed: 0,
-                            wind_deg: 0,
-                            weather: [
-                                {
-                                    id: 0,
-                                    main: "",
-                                    description: "",
-                                    icon: "",
-                                },
-                            ],
-                            clouds: 0,
-                            pop: 0,
-                            uvi: 10.09,
-                        },
-                    ],
-                };
-                const result = await preprocessWeatherData({
-                    keys:["uvi","temp","pressure","humidity","weather","clouds","pop"],
-                    wData:response
-                });
-                setWeatherData(result); 
-                console.log(result);
-                console.log('Weather data fetched');
+                const response = await getWeatherData({ part, lat, lon });
+                if (response === null) {
+                    setWeatherData(null);
+                    return;
+                }
+                const currentResponse = response.current;
+                const dailyResponse = response.daily;
+                console.log("Current: " + currentResponse);
+                setWeatherDataDaily(dailyResponse);
+                setWeatherData(currentResponse);
+                // const response = {
+                //     daily: [
+                //         {
+                //             dt: 0,
+                //             sunrise: 0,
+                //             sunset: 0,
+                //             temp: {
+                //                 day: 0,
+                //                 min: 0,
+                //                 max: 0,
+                //                 night: 0,
+                //                 eve: 0,
+                //                 morn: 0,
+                //             },
+                //             feels_like: {
+                //                 day: 0,
+                //                 night: 0,
+                //                 eve: 0,
+                //                 morn: 0,
+                //             },
+                //             pressure: 0,
+                //             humidity: 0,
+                //             dew_point: 0,
+                //             wind_speed: 0,
+                //             wind_deg: 0,
+                //             weather: [
+                //                 {
+                //                     id: 0,
+                //                     main: "",
+                //                     description: "",
+                //                     icon: "",
+                //                 },
+                //             ],
+                //             clouds: 0,
+                //             pop: 0,
+                //             uvi: 10.09,
+                //         },
+                //     ],
+                // };
+
+                // const result = await preprocessWeatherData({
+                //     keys:["uvi","temp","pressure","humidity","weather","clouds","pop"],
+                //     wData:response
+                // });
+                // setWeatherData(result); 
+                // console.log(result);
+                // console.log('Weather data fetched');
             } catch (err) {
                 setError('Failed to fetch weather data');
             } finally {
@@ -159,7 +167,7 @@ const WeatherProvider = ({ children, part }: WeatherProviderProps) => {
     },[]);
 
     return (
-        <WeatherContext.Provider value={{ weatherData, loading, error, locationPermissionGranted,locationString, LocationAccessAsk }}>
+        <WeatherContext.Provider value={{ weatherData, loading, error, locationPermissionGranted,locationString, LocationAccessAsk, weatherDataDaily }}>
             {children}
         </WeatherContext.Provider>
     );

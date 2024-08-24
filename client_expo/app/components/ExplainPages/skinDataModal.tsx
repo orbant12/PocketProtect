@@ -1,17 +1,18 @@
 
-import { View,StyleSheet, Text, TouchableOpacity } from "react-native"
+import { View,StyleSheet, Text, TouchableOpacity, Image } from "react-native"
 import { useEffect, useState } from "react";
 import { ExplainPageComponent_Type1, ExplainPageComponent_Type2, ProgressRow } from "./explainPage";
 import { SkinTypeScreen } from "../../pages/Libary/Melanoma/ProcessScreens/Fullprocess/skinSelect";
 import { SkinType } from "../../utils/types";
-import { fetchSkinType, updateSkinType } from "../../services/server";
 import { useAuth } from "../../context/UserAuthContext";
 
 
 export const SkinData_Modal_View = ({handleClose}) => {
 
     const [progress, setProgress] = useState(0.1);
-    const { currentuser } = useAuth()
+    const { currentuser, melanoma } = useAuth()
+
+    const skinImage = Image.resolveAssetSource(require("../../assets/type.png")).uri;
 
     const [ skinData, setSkinData ] = useState<SkinType | null>(null)
 
@@ -29,17 +30,14 @@ export const SkinData_Modal_View = ({handleClose}) => {
     }
 
     const handleSaveSkin = async () => {
-        await updateSkinType({
-            newType: skinData,
-            userId: currentuser.uid
-        })
+
+        await melanoma.updateSkinType(skinData)
     }
 
     const handleLoad = async ()  => {
-        const response = await fetchSkinType({
-            userId: currentuser.uid
-        })
-        setSkinData(response)
+        await melanoma.fetchSkinType()
+
+        setSkinData(melanoma.getSkinType())
     }
 
     useEffect(() => {
@@ -53,10 +51,10 @@ export const SkinData_Modal_View = ({handleClose}) => {
                     {round(progress,1) == 0.1 &&<ExplainPageComponent_Type1 
                         data={[
                             {
-                                imageUri:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg",
+                                imageUri:skinImage,
                                 textComponent: () => (
                                     <>
-                                        <Text style={{color:"white",fontSize:12,fontWeight:"600",opacity:0.8,marginBottom:0}}>In this module you will learn how AI can <Text style={{color:"magenta",fontWeight:"700"}}>detect malignant</Text> moles and why you <Text style={{color:"magenta",fontWeight:"700"}}>should choose</Text> our own trained model</Text>
+                                        <Text style={{color:"white",fontSize:12,fontWeight:"600",opacity:0.8,marginBottom:0}}>In this module you can add your skin type so our we can give you <Text style={{color:"magenta",fontWeight:"700"}}>personalised information</Text> for staying safe from skin cancer</Text>
                                     </>
                                 )
                             },
@@ -76,7 +74,7 @@ export const SkinData_Modal_View = ({handleClose}) => {
                     }
                     {round(progress,1) == 0.3 && <ExplainPageComponent_Type2 
                         data={[
-                            {icon_name:"information",title:"Achivements",images:[
+                            {icon_name:"information",title:"Fair Skin and Increased UV Sensitivity",images:[
                                 {image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"},
                                 {image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"},
                             ],

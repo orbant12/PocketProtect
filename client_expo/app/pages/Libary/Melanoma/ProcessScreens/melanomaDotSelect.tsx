@@ -27,6 +27,7 @@ export const dotSelectOnPart = ({
                         index={index}
                         skin_type={skinColor}
                         bodyPart={bodyPart}
+                        key={index}
                         userData={{gender:gender}}
                         stroke={"black"}
                     />

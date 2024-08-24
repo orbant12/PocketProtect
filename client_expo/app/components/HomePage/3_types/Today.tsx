@@ -138,6 +138,7 @@ export const TodayScreen = ({
                 weatherData={locationPermissionGranted ? (weatherData != null ? weatherData : WeatherData_Default) : false}
                 today={today}
                 location={locationString}
+                isForcast={false}
             />
             <TouchableOpacity onPress={() => navigation.navigate("RegOnBoarding")}>
                 <Text>Click to open on boarding</Text>
