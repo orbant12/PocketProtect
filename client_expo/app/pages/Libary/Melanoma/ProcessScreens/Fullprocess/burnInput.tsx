@@ -90,15 +90,15 @@ export function SkinBurnScreen({
             <View style={styles.startScreen}>
                     <ScrollView centerContent style={{width:"100%"}}>
                         <View style={{width:"100%",alignItems:"center"}}>
-                            <View style={{marginTop:50,alignItems:"center"}}>  
-                                <Text style={{marginBottom:10,fontWeight:"800",fontSize:18,backgroundColor:"white",textAlign:"center"}}>Select where the sunburn has occured ?</Text>
+                            <View style={{marginTop:10,alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",padding:10,borderRadius:10}}>  
+                                <Text style={{fontWeight:"800",fontSize:18,width:300}}>Select where the sunburn has occured ?</Text>
                             </View>
-                            <View style={{flexDirection:"column",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:-10}}>
+                            <View style={{flexDirection:"column",width:"90%",justifyContent:"space-between",alignItems:"center",marginBottom:0}}>
                                     <Body 
                                         data={[{slug: melanomaMetaData.sunburn[0].slug, color:"lightgreen",pathArray:[]}]}
                                         side={selectedBurnSide}
                                         gender={userData.gender}
-                                        scale={0.8}
+                                        scale={1}
                                         onBodyPartPress={(slug) => handleMelanomaDataChange("slug",slug.slug)}
                                         skinColor={melanomaMetaData.skin_type}
                                     />
@@ -112,44 +112,44 @@ export function SkinBurnScreen({
                                         </Pressable>
                                     </View>
                             </View>                  
-                {melanomaMetaData.sunburn.map((data,index) => (                  
-                    <>
-                {index == 0 && <Text style={{fontWeight:"800",opacity:0.2,top:15,color:"magenta"}}>Current</Text>}
-                    <View key={index} style={[{width:"80%",borderWidth:0.3,padding:15,margin:20,borderRadius:10,flexDirection:"row",alignItems:"center",justifyContent:"space-between"},index == 0 &&{ borderWidth:2,borderColor:"magenta"}]}>
-                        <MaterialCommunityIcons 
-                            name="chart-box"
-                            size={25}
-                        />
-                        <View style={{marginLeft:0}}> 
-                        <Text style={{marginBottom:8,fontWeight:"400"}}>Stage: <Text style={{opacity:1,fontWeight:"800"}}>{data.stage}</Text></Text>
-                        <Text style={{fontWeight:"400",}}>Where: <Text style={{opacity:1,fontWeight:"800"}}>{data.slug}</Text></Text>
-                        </View>   
-                        <MaterialCommunityIcons 
-                            name="delete"
-                            size={25}
-                            color={"red"}
-                            style={{opacity:0.4}}
-                            onPress={() => deleteSunburn(index)}
-                        />                
-                    </View>
-                    </>  
-                ))}
-                <View style={{width:"100%",alignItems:"center",marginBottom:20,marginTop:50}}>
-                    {melanomaMetaData.sunburn[0].slug != "" ? 
-                        <Pressable onPress={() => {setProgress(0.5)}} style={[styles.startButton,{marginBottom:0,position:"relative"}]}>
-                            <Text style={{padding:15,fontWeight:"600",color:"white"}}>Done</Text>
-                        </Pressable>
-                        :
-                        <Pressable style={styles.startButtonNA}>
-                            <Text style={{padding:15,fontWeight:"600"}}>Not Selected Yet</Text>
-                        </Pressable>
-                    }
-                    <Pressable onPress={() => addMoreBurn()} style={{marginTop:0}}>
-                        <Text style={{padding:13,fontWeight:"600",color:"black",fontSize:17 }}>+ Add More</Text>
-                    </Pressable>
-                </View>
-                </View>
-                </ScrollView>
+                            {melanomaMetaData.sunburn.map((data,index) => (                  
+                            <>
+                                {index == 0 && <Text style={{fontWeight:"800",opacity:0.2,top:5,color:"magenta"}}>Current</Text>}
+                                <View key={index} style={[{width:"80%",borderWidth:0.3,padding:15,margin:10,borderRadius:10,flexDirection:"row",alignItems:"center",justifyContent:"space-between"},index == 0 &&{ borderWidth:2,borderColor:"magenta"}]}>
+                                    <MaterialCommunityIcons 
+                                        name="chart-box"
+                                        size={25}
+                                    />
+                                    <View style={{marginLeft:0}}> 
+                                    <Text style={{marginBottom:8,fontWeight:"400"}}>Stage: <Text style={{opacity:1,fontWeight:"800"}}>{data.stage}</Text></Text>
+                                    <Text style={{fontWeight:"400",}}>Where: <Text style={{opacity:1,fontWeight:"800"}}>{data.slug}</Text></Text>
+                                    </View>   
+                                    <MaterialCommunityIcons 
+                                        name="delete"
+                                        size={25}
+                                        color={"red"}
+                                        style={{opacity:0.4}}
+                                        onPress={() => deleteSunburn(index)}
+                                    />                
+                                </View>
+                            </>  
+                            ))}
+                            <View style={{width:"100%",alignItems:"center",marginBottom:20,marginTop:30}}>
+                                {melanomaMetaData.sunburn[0].slug != "" ? 
+                                    <Pressable onPress={() => {setProgress(0.5)}} style={[styles.startButton,{marginBottom:0,position:"relative"}]}>
+                                        <Text style={{padding:15,fontWeight:"600",color:"white"}}>Done</Text>
+                                    </Pressable>
+                                    :
+                                    <Pressable style={styles.startButtonNA}>
+                                        <Text style={{padding:15,fontWeight:"600"}}>Not Selected Yet</Text>
+                                    </Pressable>
+                                }
+                                <Pressable onPress={() => addMoreBurn()} style={{marginTop:0}}>
+                                    <Text style={{padding:13,fontWeight:"600",color:"black",fontSize:17 }}>+ Add More</Text>
+                                </Pressable>
+                            </View>
+                        </View>
+                    </ScrollView>
             </View> 
             
         }
