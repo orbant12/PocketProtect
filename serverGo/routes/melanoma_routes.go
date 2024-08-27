@@ -1288,13 +1288,13 @@ func SetupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 		return c.JSON(http.StatusOK, detectedRelative)
 	})
 
-	e.POST("client/update/sunburn", func(c echo.Context) error {
+	e.POST("client/update/burns", func(c echo.Context) error {
 		type UpdateSunburnRequest struct {
 			UserId  string `json:"userId"`
-			Sunburn []struct {
+			NewData []struct {
 				Stage int    `json:"stage"`
 				Slug  string `json:"slug"`
-			} `json:"sunburn"`
+			} `json:"newData"`
 		}
 
 		var req UpdateSunburnRequest
@@ -1310,7 +1310,7 @@ func SetupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 		//FORMAT REQ ARRAY
 
 		var sunburnArray []map[string]interface{}
-		for _, item := range req.Sunburn {
+		for _, item := range req.NewData {
 			data := map[string]interface{}{"stage": item.Stage, "slug": item.Slug}
 			sunburnArray = append(sunburnArray, data)
 		}
@@ -1342,7 +1342,7 @@ func SetupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 		return c.NoContent(http.StatusNoContent)
 	})
 
-	e.POST("client/get/sunburn", func(c echo.Context) error {
+	e.POST("client/get/burns", func(c echo.Context) error {
 		type GetSunburnRequest struct {
 			UserId string `json:"userId"`
 		}
@@ -1367,24 +1367,71 @@ func SetupMelanomaRoutes(e *echo.Echo, client *firestore.Client, storageClient *
 		}
 
 		if docSnap.Exists() {
-			if docSnap.Data()["sunburn"] != nil {
-				sunburnArray := docSnap.Data()["sunburn"].([]interface{})
-				for _, item := range sunburnArray {
+			if sunburnField, ok := docSnap.Data()["sunburn"].([]interface{}); ok {
+				for _, item := range sunburnField {
 					if m, ok := item.(map[string]interface{}); ok {
+						// Type assertion with int64 and conversion to int
+						stage, ok := m["stage"].(int64)
+						if !ok {
+							log.Printf("Unexpected type for stage: %T", m["stage"])
+							continue
+						}
+
+						slug, ok := m["slug"].(string)
+						if !ok {
+							log.Printf("Unexpected type for slug: %T", m["slug"])
+							continue
+						}
+
 						sunburnData = append(sunburnData, struct {
 							Stage int    `json:"stage"`
 							Slug  string `json:"slug"`
 						}{
-							Stage: m["stage"].(int),
-							Slug:  m["slug"].(string),
+							Stage: int(stage), // Convert int64 to int
+							Slug:  slug,
 						})
 					} else {
 						log.Printf("Unexpected type in sunburn data: %T", item)
 					}
 				}
+			} else {
+				log.Printf("Unexpected type for sunburn field: %T", docSnap.Data()["sunburn"])
 			}
 		}
 
 		return c.JSON(http.StatusOK, sunburnData)
 	})
+
+	e.POST("client/update/relatives", func(c echo.Context) error {
+		type UpdateRelativesReq struct {
+			NewData []string `json:"newData"`
+			UserId  string   `json:"userId"`
+		}
+
+		var req UpdateRelativesReq
+
+		// Bind request to req struct
+		if err := c.Bind(&req); err != nil {
+			log.Printf("Error binding request: %v", err)
+			return c.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		}
+
+		// Reference to the specific document in Firestore
+		docRef := client.Collection("users").Doc(req.UserId).Collection("Medical_Data").Doc("skin_data")
+
+		// Set the new data in Firestore
+		_, err := docRef.Set(c.Request().Context(), map[string]interface{}{
+			"detected_relatives": req.NewData,
+		}, firestore.MergeAll)
+
+		// Handle error from Firestore
+		if err != nil {
+			log.Printf("Error updating Firestore: %v", err)
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Could not update relatives data"})
+		}
+
+		// Successfully updated
+		return c.JSON(http.StatusOK, map[string]string{"status": "success", "message": "Relatives data updated successfully"})
+	})
+
 }

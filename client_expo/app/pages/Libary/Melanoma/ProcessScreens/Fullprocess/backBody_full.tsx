@@ -11,7 +11,7 @@ export function FourthScreen({
     setProgress,
     progress,
     completedParts,
-    melanomaMetaData,
+    skinColor,
     completedAreaMarker,
     userData,
     currentSide,
@@ -67,12 +67,12 @@ export function FourthScreen({
                         Navigation_MoleUpload_2({
                             bodyPartSlug:slug,
                             gender: userData.gender,
-                            skin_type: melanomaMetaData.skin_type,
+                            skin_type: skinColor,
                             progress: progress,
                             completedArray: completedParts,
                             navigation: navigation
                         })}
-                    skinColor={melanomaMetaData.skin_type}
+                    skinColor={skinColor}
                 />
                 </View>
 

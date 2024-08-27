@@ -7,8 +7,6 @@ import { ImageLoaderComponent } from "../../../../../components/Common/imageLoad
 export function AlertScreen({
     setProgress,
     progress,
-    melanomaMetaData,
-    uploadMetaData
 }){
     const alertMelanoma  = Image.resolveAssetSource(require('../../../../../assets/skinburn/Melanoma.png')).uri;
 
@@ -32,7 +30,7 @@ export function AlertScreen({
                         </View>
                             
                             <View style={{width:"100%",flexDirection:"column",alignSelf:"center",alignItems:"center",marginBottom:"10%"}}>
-                                <TouchableOpacity onPress={() => {setProgress(progress + 0.1);uploadMetaData(melanomaMetaData)}} style={{width:"80%",padding:5,flexDirection:"row",alignItems:"center",borderWidth:0,backgroundColor:"black",borderRadius:40,marginTop:0}}>
+                                <TouchableOpacity onPress={() => {setProgress(progress + 0.1);}} style={{width:"80%",padding:5,flexDirection:"row",alignItems:"center",borderWidth:0,backgroundColor:"black",borderRadius:40,marginTop:0}}>
                                     <View style={{backgroundColor:"white",padding:10,borderRadius:30}}>
                                         <MaterialCommunityIcons 
                                             name="account-arrow-right"

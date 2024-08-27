@@ -3,11 +3,13 @@
 import { View,StyleSheet, Text, TouchableOpacity } from "react-native"
 import { useState } from "react";
 import { ExplainPageComponent_Type1, ExplainPageComponent_Type2, ProgressRow } from "./explainPage";
+import { SkinBurnScreen } from "../../pages/Libary/Melanoma/ProcessScreens/Fullprocess/burnInput";
 
 
 export const SunBurn_Modal_View = ({handleClose}) => {
 
     const [progress, setProgress] = useState(0.1);
+    const [haveBeenBurned, setHaveBeenBurned] = useState<boolean>(false)
 
     function round(value: number, decimals: number): number {
         const factor = Math.pow(10, decimals);
@@ -17,8 +19,10 @@ export const SunBurn_Modal_View = ({handleClose}) => {
     const handleBack = (permission:boolean) => {
         if (round(progress,1) == 0.1 || permission == true){
             handleClose()
-        } else {
+        } else if (haveBeenBurned != true) {
             setProgress(round(progress,1) - 0.1)
+        } else {
+            setHaveBeenBurned(false)
         }
     }
 
@@ -43,18 +47,13 @@ export const SunBurn_Modal_View = ({handleClose}) => {
                         desc="Avoid skin cancer with our AI Model which has 85% accuracy & beats the average dermatologist's 70% accuracy "
                     />
                     }
-                    {round(progress,1) == 0.2 && <ExplainPageComponent_Type2 
-                        data={[
-                            {icon_name:"information",title:"Asymetry",images:[
-                                {image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"},
-                                {image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"},
-                            ],
-                        },
-                            {icon_name:"information",title:"Detection",images:[{image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"}]},
-                            {icon_name:"information",title:"Detection",images:[{image:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg"}]},
-                        ]}
-                        title="Select your skin type"
-                        desc="The ABCDE rule is a guide to the usual signs of melanoma. Be aware of any changes in the size, shape, color, or feel of an existing mole or the appearance of a new spot."
+                    {round(progress,1) == 0.2 && <SkinBurnScreen 
+                        setProgress={() => setProgress(0.3)}
+                        progress={progress}
+                        setHaveBeenBurned={setHaveBeenBurned}
+                        haveBeenBurned={haveBeenBurned}
+                        selectionStyle={{height:"110%"}}
+                        addStyle={{height:"110%"}}
                     />
                     }
                     {round(progress,1) == 0.3 && <ExplainPageComponent_Type2 
@@ -115,9 +114,14 @@ export const SunBurn_Modal_View = ({handleClose}) => {
                     />
                     }
                 </View>
-                <TouchableOpacity onPress={() => setProgress(progress + 0.1)} style={{width:"90%",padding:15,flexDirection:"column",justifyContent:"center",alignItems:"center",backgroundColor:"magenta",borderRadius:10}}>
-                    <Text style={{fontWeight:"700",fontSize:14,color:"white"}} >Next</Text>
-                </TouchableOpacity>
+                {!(round(progress,1) == 0.2) ?
+                    <TouchableOpacity onPress={() => setProgress(progress + 0.1)} style={{width:"90%",padding:15,flexDirection:"column",justifyContent:"center",alignItems:"center",backgroundColor:"magenta",borderRadius:10}}>
+                        <Text style={{fontWeight:"700",fontSize:14,color:"white"}} >Next</Text>
+                    </TouchableOpacity>
+                    :
+                    null
+                }
+
         </View>
     )
 }

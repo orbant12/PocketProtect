@@ -1,28 +1,29 @@
 import { BottomSheetModal, BottomSheetModalProvider } from "@gorhom/bottom-sheet";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { SelectionPage_Binary } from "../../../../../components/Common/SelectableComponents/selectPage_Binary";
 import { ScrollView, Text,Pressable,View } from "react-native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { SkinDataType } from "../../../../../utils/types";
+import { DetectableRealatives, SkinDataType } from "../../../../../utils/types";
 import { MelanomaMetaData } from "../../melanomaCenter";
+import { Relatives } from "../../../../../models/Relatives";
+import { useAuth } from "../../../../../context/UserAuthContext";
 
 
 export function FamilyTreeScreen({
-    handleMelanomaDataChange,
-    melanomaMetaData,
     setProgress,
     progress,   
     styles
 
 }:{
-    handleMelanomaDataChange:(type: "detected_relative",value:string) => void;
-    melanomaMetaData:MelanomaMetaData;
     setProgress:(progress:number) => void;
     progress:number;
     styles:any;
 }){
 
+    const [relativesData, setRelativeData] = useState<string[]>([])
+
+    const {currentuser,melanoma} = useAuth()
         
     const familyMemberOptions = [
         {
@@ -61,6 +62,25 @@ export function FamilyTreeScreen({
         }
     }
 
+    const handleMelanomaDataChange = (member:string) => {
+        setRelativeData(prevData => (
+            [...prevData, member]
+        ))
+    }
+
+    const loadData = async () => {
+        const res = await melanoma.getDetectedRelative()
+        setRelativeData(res);
+    }
+
+    const handleSave = async() => {
+        await melanoma.updateDetectedRelative(relativesData);
+    }
+
+    useEffect(() => {
+        loadData()
+    },[])
+
     return(
     <GestureHandlerRootView style={{ flex: 1,zIndex:-1,width:"100%" }}>
         <BottomSheetModalProvider>
@@ -83,7 +103,7 @@ export function FamilyTreeScreen({
                         </View>
                         <ScrollView horizontal style={{width:"100%",marginTop:30}} contentContainerStyle={{height:10}} showsHorizontalScrollIndicator={false}>
                             {familyMemberOptions.map((data) => (
-                                <Pressable key={data.member} onPress={() => handleMelanomaDataChange("detected_relative",data.member)} style={melanomaMetaData.detected_relative.includes(data.member) ? styles.selectableBubbleA : styles.selectableBubble} >
+                                <Pressable key={data.member} onPress={() => handleMelanomaDataChange(data.member)} style={relativesData.includes(data.member) ? styles.selectableBubbleA : styles.selectableBubble} >
                                     <MaterialCommunityIcons
                                         name={data.icon}
                                         size={25}
@@ -94,7 +114,7 @@ export function FamilyTreeScreen({
                                 </Pressable>
                             ))}
                         </ScrollView>
-                        <Pressable onPress={() => handleOpenBottomSheet("hide")} style={{marginTop:0,borderWidth:1,borderRadius:8,width:"80%",height:50,alignItems:"center",justifyContent:"center",backgroundColor:"black"}}>
+                        <Pressable onPress={() => {handleOpenBottomSheet("hide"),handleSave()}} style={{marginTop:0,borderWidth:1,borderRadius:8,width:"80%",height:50,alignItems:"center",justifyContent:"center",backgroundColor:"black"}}>
                             <Text style={{fontWeight:"700",color:"white"}}>Done</Text>
                         </Pressable>
                     </View>

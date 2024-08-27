@@ -1026,3 +1026,21 @@ export const updateAllergies =  async ({userId,newData}:{userId:string,newData:s
     }
 }
  
+
+
+export const fetchBurns = async ({userId}:{userId:string}):Promise <{stage:number,slug:Slug}[]> => {
+    const response = await fetch(`${DOMAIN}/client/get/burns`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+    });
+
+    if(response.ok){
+        const data = await response.json()
+        return data;
+    } else {
+        return []
+    }
+}

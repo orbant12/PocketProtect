@@ -4,7 +4,7 @@ import { useAuth } from "../../../../context/UserAuthContext";
 import { melanomaMetaDataUpload, updateCompletedParts } from "../../../../services/server"
 import { useFocusEffect } from '@react-navigation/native';
 import { decodeParts } from "../../../../utils/melanoma/decodeParts";
-import {Slug } from "../../../../utils/types";
+import {SkinType, Slug } from "../../../../utils/types";
 import { MelanomaMetaData } from "../melanomaCenter";
 import { Assist_Onboard } from "../../../../components/AddPage/onBoardings/assistantBoard";
 import { ProgressRow } from "../../../../components/ExplainPages/explainPage";
@@ -35,10 +35,13 @@ const MelanomaFullProcess = ({navigation}) => {
     const alertTeam  = Image.resolveAssetSource(require('../../../../assets/skinburn/5.png')).uri;
     const {currentuser, melanoma} = useAuth()
 
+    const [skinData, setSkinData] = useState(null)
+
     //Progress Trackers
     const [progress, setProgress] = useState(0.1)
     const [bodyProgress, setBodyProgress] = useState(1)
     const [bodyProgressBack, setBodyProgressBack] = useState(0)
+    const [haveBeenBurned, setHaveBeenBurned] = useState<boolean>(false)
 
     const [ infoModal, setInfoModal] = useState<null | "assist">(null)
     //Body for Birthmark
@@ -46,19 +49,6 @@ const MelanomaFullProcess = ({navigation}) => {
     const [completedAreaMarker, setCompletedAreaMarker] = useState([])
     const [completedParts, setCompletedParts] = useState<CompletedParts_Array>([])
     const [isModalUp, setIsModalUp] = useState<boolean>(false)
-    const [ melanomaMetaData, setMelanomaMetaData] = useState<MelanomaMetaData>({
-        sunburn:[{
-            stage:0,
-            slug:"" as Slug
-        }],
-        skin_type: null,
-        detected_relative:["none"],
-
-    })
-
-    //SKIN BURN
-    const [haveBeenBurned, setHaveBeenBurned] = useState(false)
-    const [selectedBurnSide, setSelectedBurnSide] = useState<"front" | "back">("front")
 
     const frontParts = [
         "abs",
@@ -140,25 +130,25 @@ const MelanomaFullProcess = ({navigation}) => {
         }
     }
 
-    const handleMelanomaDataChange = (type:"slug" | "stage" | "skin_type" | "detected_relative", data:any) => {
-        setMelanomaMetaData((prevState) => {
-          let newSunburn = [...prevState.sunburn]; // Create a shallow copy of the sunburn array              
-            if (newSunburn.length === 0) {
-                newSunburn.push({ stage: 0, slug: "" }); 
-            }                
-            if (type === "slug") {
-                newSunburn[0] = { ...newSunburn[0], slug: data };
-            } else if (type === "stage") {
-                newSunburn[0] = { ...newSunburn[0], stage: data };
-            }                
-            return {
-                ...prevState,
-                sunburn: newSunburn,
-                ...(type === "skin_type" && { skin_type: data }),
-                ...(type === "detected_relative" && { detected_relative: [...melanomaMetaData.detected_relative,data] })
-            };
-            });
-    };
+    // const handleMelanomaDataChange = (type:"slug" | "stage" | "skin_type" | "detected_relative", data:any) => {
+    //     setMelanomaMetaData((prevState) => {
+    //       let newSunburn = [...prevState.sunburn]; // Create a shallow copy of the sunburn array              
+    //         if (newSunburn.length === 0) {
+    //             newSunburn.push({ stage: 0, slug: "" }); 
+    //         }                
+    //         if (type === "slug") {
+    //             newSunburn[0] = { ...newSunburn[0], slug: data };
+    //         } else if (type === "stage") {
+    //             newSunburn[0] = { ...newSunburn[0], stage: data };
+    //         }                
+    //         return {
+    //             ...prevState,
+    //             sunburn: newSunburn,
+    //             ...(type === "skin_type" && { skin_type: data }),
+    //             ...(type === "detected_relative" && { detected_relative: [...melanomaMetaData.detected_relative,data] })
+    //         };
+    //         });
+    // };
 
     function round(value: number, decimals: number): number {
         const factor = Math.pow(10, decimals);
@@ -178,35 +168,13 @@ const MelanomaFullProcess = ({navigation}) => {
         }
     }
 
-    const addMoreBurn = () => {
-        setMelanomaMetaData(prevState => ({
-            ...prevState,
-            sunburn: [{ stage: 3, slug: "" }, ...prevState.sunburn]
-        }));
-        // Step 3: Set haveBeenBurned to false
-        setHaveBeenBurned(false);
-    };
 
-    const deleteSunburn = (index:number) => {
-        if(index != 0){
-        setMelanomaMetaData((prevState) => {
-            const newSunburn = [...prevState.sunburn];
-            newSunburn.splice(index, 1);     
-        return {
-            ...prevState,
-            sunburn: newSunburn 
-        };
-        });
-        } else {
-            setHaveBeenBurned(false)
-        } 
-    };
 
-    const uploadMetaData = async (metaDataPass:MelanomaMetaData) => {   
-        await melanoma.updateSkinType(metaDataPass.skin_type)
-        await melanoma.updateDetectedRelative(metaDataPass.detected_relative)
-        await melanoma.updateSunBurn(metaDataPass.sunburn)
-    }
+    // const uploadMetaData = async (metaDataPass:MelanomaMetaData) => {   
+    //     await melanoma.updateSkinType(metaDataPass.skin_type)
+    //     await melanoma.updateDetectedRelative(metaDataPass.detected_relative)
+    //     await melanoma.updateSunBurn(metaDataPass.sunburn)
+    // }
 
     const handleSlugMemoryChange = async () => {
         if ( completedParts.length != 0){
@@ -217,17 +185,28 @@ const MelanomaFullProcess = ({navigation}) => {
         }
     }
 
-    const handleMetaDataLoad = async () => {
-        const skinResult = await melanoma.getSkinType()
-        const sunResult = await melanoma.getSunBurn()
-        const relativeResult = await melanoma.getDetectedRelative()
-        if (skinResult != null && sunResult != null && relativeResult != null){
-            setMelanomaMetaData({
-                skin_type:skinResult,
-                sunburn:sunResult,
-                detected_relative:relativeResult
-            })
-        }
+    // const handleMetaDataLoad = async () => {
+    //     const skinResult = await melanoma.getSkinType()
+    //     const sunResult = await melanoma.getSunBurn()
+    //     const relativeResult = await melanoma.getDetectedRelative()
+    //     if (skinResult != null && sunResult != null && relativeResult != null){
+    //         setMelanomaMetaData({
+    //             skin_type:skinResult,
+    //             sunburn:sunResult,
+    //             detected_relative:relativeResult
+    //         })
+    //     }
+    // }
+
+    const handleLoad = async ()  => {
+        await melanoma.fetchSkinType()
+
+        setSkinData(melanoma.getSkinType())
+    }
+
+    const handleSaveSkin = async () => {
+
+        await melanoma.updateSkinType(skinData)
     }
 
     useEffect(() => {
@@ -239,10 +218,14 @@ const MelanomaFullProcess = ({navigation}) => {
     useFocusEffect(
         useCallback(() => {
             fetchCompletedSlugs()
-            handleMetaDataLoad()  
+            handleLoad() 
         return () => {};
         }, [])
     );
+
+ 
+
+
 
 
     //<==============> Components  <=============> 
@@ -271,35 +254,25 @@ const MelanomaFullProcess = ({navigation}) => {
             }
             {round(progress,1) == 0.3 && 
                 <SkinBurnScreen 
-                    setProgress={setProgress} 
+                    setProgress={() => setProgress(0.5)} 
                     progress={progress}
-                    handleMelanomaDataChange={handleMelanomaDataChange}
-                    melanomaMetaData={melanomaMetaData}
-                    setMelanomaMetaData={setMelanomaMetaData}
                     haveBeenBurned={haveBeenBurned}
                     setHaveBeenBurned={setHaveBeenBurned}
-                    selectedBurnSide={selectedBurnSide}
-                    setSelectedBurnSide={setSelectedBurnSide}
-                    addMoreBurn={addMoreBurn}
-                    deleteSunburn={deleteSunburn}
-                    userData={currentuser}
-                    styles={styles}
+                    addStyle={{height:"90%"}}
                 />
             }
             {round(progress,1) === 0.4 && 
                 <SkinTypeScreen 
-                    setProgress={setProgress} 
+                    setProgress={(e) => {setProgress(e);handleSaveSkin()}} 
                     progress={progress}
-                    handleMelanomaDataChange={handleMelanomaDataChange}
-                    melanomaMetaData={melanomaMetaData}
+                    handleMelanomaDataChange={(e:string,n:SkinType) => setSkinData(n)}
+                    melanomaMetaData={{skin_type:skinData}}
                 />
             }
             {round(progress,1) === 0.5 && 
                 <FamilyTreeScreen 
                     setProgress={setProgress} 
                     progress={progress}
-                    handleMelanomaDataChange={handleMelanomaDataChange}
-                    melanomaMetaData={melanomaMetaData}
                     styles={styles}
                 />
             }
@@ -307,18 +280,15 @@ const MelanomaFullProcess = ({navigation}) => {
                 <AlertScreen 
                     setProgress={setProgress} 
                     progress={progress}
-                    uploadMetaData={uploadMetaData}
-                    melanomaMetaData={melanomaMetaData}
                 />
             }          
             {round(progress,1) === 0.7 && 
                 <ThirdScreen 
                     userData={currentuser}
-                    melanomaMetaData={melanomaMetaData}
+                    skinColor={skinData}
                     setProgress={(e) => {setProgress(e); setCurrentSide("back");handleSlugMemoryChange()}}
                     progress={progress}
                     completedParts={completedParts}
-                    updateCompletedSlug={updateCompletedSlug}
                     navigation={navigation}
                     completedAreaMarker={completedAreaMarker}
                     currentSide={currentSide}
@@ -337,7 +307,7 @@ const MelanomaFullProcess = ({navigation}) => {
                     setProgress={setProgress}
                     progress={progress}
                     completedParts={completedParts}
-                    melanomaMetaData={melanomaMetaData}
+                    skinColor={skinData}
                     completedAreaMarker={completedAreaMarker}
                     userData={currentuser}
                     currentSide={currentSide}
@@ -408,3 +378,10 @@ const Information_Modal = ({infoModal,setInfoModal}) => {
         </Modal>
     )
 }
+
+
+
+
+
+
+//SUNBURN FILE SYSTEM

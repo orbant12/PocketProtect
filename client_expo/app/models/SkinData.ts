@@ -63,7 +63,7 @@ export class SkinData {
         }
     }
     
-    async getDetectedRelative():Promise<DetectableRealatives> {
+    async getDetectedRelative():Promise<string[]> {
         const response = await fetch(`${DOMAIN}/client/get/detected-relative`, {
             method: "POST",
             headers: {
@@ -74,7 +74,7 @@ export class SkinData {
     
         if(response.ok){
             const data = await response.json();
-            return data as DetectableRealatives;
+            return data as string[];
         } else {
             return []
         }
@@ -96,7 +96,7 @@ export class SkinData {
         }
     }
 
-    async updateDetectedRelative(newRelative:DetectableRealatives):Promise<void>{
+    async updateDetectedRelative(newRelative:string[]):Promise<void>{
         const response = await fetch(`${DOMAIN}/client/update/detected-relative`, {
             method: "POST",
             headers: {
