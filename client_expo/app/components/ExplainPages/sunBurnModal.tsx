@@ -10,6 +10,7 @@ export const SunBurn_Modal_View = ({handleClose}) => {
 
     const [progress, setProgress] = useState(0.1);
     const [haveBeenBurned, setHaveBeenBurned] = useState<boolean>(false)
+    const [change, setChange] = useState(false)
 
     function round(value: number, decimals: number): number {
         const factor = Math.pow(10, decimals);
@@ -23,6 +24,7 @@ export const SunBurn_Modal_View = ({handleClose}) => {
             setProgress(round(progress,1) - 0.1)
         } else {
             setHaveBeenBurned(false)
+            setChange(!change)
         }
     }
 
@@ -54,6 +56,7 @@ export const SunBurn_Modal_View = ({handleClose}) => {
                         haveBeenBurned={haveBeenBurned}
                         selectionStyle={{height:"110%"}}
                         addStyle={{height:"110%"}}
+                        change={change}
                     />
                     }
                     {round(progress,1) == 0.3 && <ExplainPageComponent_Type2 
