@@ -1,4 +1,4 @@
-import { ScrollView } from "react-native";
+import { ScrollView, TouchableOpacity } from "react-native";
 import { Pressable, Text, View,Image } from "react-native";
 import { SelectionPage } from "../../../../../components/Common/SelectableComponents/selectPage";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -98,15 +98,15 @@ export function SkinBurnScreen({
         let formatDataArray = []
         resData.forEach((element,index) => {
             if(element.stage == 1){
-                const formatData = {key:index,title:"Stage 1",icon:{type:"image",metaData:{name:Stage1SVG,size:30} },type:index,container:"stage_1"}
+                const formatData = {key:index,title:element.slug,icon:{type:"image",metaData:{name:Stage1SVG,size:30} },type:index,container:"stage_1"}
                 formatDataArray.push(formatData)
                 
             } else if(element.stage == 2){
-                const formatData = {title:"Stage 2",icon:{type:"image",metaData:{name:stage2SVG,size:35} },type:"stage_",container:"stage_2"}
+                const formatData = {title:element.slug,icon:{type:"image",metaData:{name:stage2SVG,size:35} },type:"stage_",container:"stage_2"}
                 formatDataArray.push(formatData)
                 
             } else if(element.stage == 3){
-                const formatData = {title:"Stage 3",icon:{type:"image",metaData:{name:stage3SVG,size:30} },type:"stage_3",container:"stage_3"}
+                const formatData = {title:element.slug,icon:{type:"image",metaData:{name:stage3SVG,size:30} },type:"stage_3",container:"stage_3"}
                 formatDataArray.push(formatData)
                 
             }
@@ -153,7 +153,7 @@ export function SkinBurnScreen({
 // Prev added burns more interactive like a folder
 // Only show stage and shit if we press add ( Not in Full Melanoma --> else None = back) 
 
-const BurnsFolder = ({burnsData,setProgress,progress,activeBurn,selectableAdds,handleMelanomaDataChange, setHaveBeenBurned, haveBeenBurned,setBurnsData}) => {
+const BurnsFolder = ({burnsData,setProgress,progress,activeBurn,selectableAdds,handleMelanomaDataChange, setHaveBeenBurned, haveBeenBurned,setBurnsData,handleDelete}) => {
 
     const BurnsArray = [
         {value:"add",title:"+ Add New"},
@@ -163,21 +163,30 @@ const BurnsFolder = ({burnsData,setProgress,progress,activeBurn,selectableAdds,h
     ];
 
     const [activeNavItem, setActiveNavItem] = useState(BurnsArray[0].value)
-    const [addNewData,setAddNewData] = useState(0);
+    const [addNewData,setAddNewData] = useState("not");
 
     return(
         <View style={{width:"100%",height:"90%",alignItems:"center"}}>
-            
+            {(addNewData != "not" && activeNavItem != "add") &&
+                <TouchableOpacity onPress={() => handleDelete(addNewData,activeNavItem)} style={{position:"absolute",flexDirection:"row",alignItems:"center",padding:10,borderWidth:1,borderRadius:10,width:"87%",justifyContent:"center",top:10,backgroundColor:"rgba(255,0,0,0.6)"}}>
+                    <MaterialCommunityIcons 
+                        name="delete"
+                        size={20}
+                    />
+                    <Text style={{marginLeft:5,fontWeight:"600"}}>Delete Selected</Text>
+                </TouchableOpacity>
+            }
+
             <SelectionPage 
                 pageTitle="Sun burns"
                 selectableOption="box"
                 desc="Please select the allergies you have"
-                pageStyle={{height:"120%",marginTop:"5%"}}
+                pageStyle={[{height:"120%",marginTop:"5%"},(addNewData != "not" && activeNavItem != "add") && {marginTop:"15%",height:"115%"}]}
                 specialValues={[1,2,3]}
                 selectableData={[...activeBurn,...selectableAdds]}
-                setOptionValue={(type) => setAddNewData(type)}
+                setOptionValue={(type) => {type != addNewData ? setAddNewData(type) : activeNavItem == "add" ? setAddNewData(null) : setAddNewData("not")}}
                 optionValue={addNewData}
-                setProgress={() => {setHaveBeenBurned(!haveBeenBurned);setBurnsData([{stage:addNewData,slug:""},...burnsData])}}
+                setProgress={addNewData == "add" ? () => {setHaveBeenBurned(!haveBeenBurned); setBurnsData([{stage:addNewData,slug:""},...burnsData]) } : () => { setProgress(progress + 0.1) } }
                 buttonAction={{type:"next",actionData:{progress:progress,increment_value:0.1}}}
                 showButton={true}
                 isMap={false}
@@ -224,22 +233,44 @@ const AddBurnComponent = ({haveBeenBurned, progress, burnData, setBurnData, setH
         
     };
 
-    const manualDeletion = async (index) => {
-        let returnOfNew = []
-        setBurnData((prevState) => {
-            const newBurnData = [...prevState];
-            newBurnData.splice(index, 1);
-            returnOfNew = newBurnData;
-            return newBurnData;
-        })
-        returnOfNew.splice(0,1)
-        return returnOfNew;
+    const manualDeletion = async (index,stage) => {
+        //REMOVE WITH THE INDEXING OF SEPERATE STAGES
+        const stage_1 = burnData.filter((data) => data.stage == 1)
+        const stage_2 = burnData.filter((data) => data.stage == 2)
+        const stage_3 = burnData.filter((data) => data.stage == 3)
+
+        let returnData = []
+
+        if(stage == "stage_1"){
+            stage_1.splice(index,1)
+            returnData = [...stage_1,...stage_2,...stage_3]
+        } else if(stage == "stage_2"){
+            stage_2.splice(index,1)
+            returnData = [...stage_1,...stage_2,...stage_3]
+        } else if(stage == "stage_3"){
+            stage_3.splice(index,1)
+            returnData = [...stage_1,...stage_2,...stage_3]
+        }
+        return returnData;
+
+        // let returnOfNew = []
+        // setBurnData((prevState) => {
+        //     const newBurnData = [...prevState];
+        //     newBurnData.splice(index, 1);
+        //     returnOfNew = newBurnData;
+        //     return newBurnData;
+        // })
+        // returnOfNew.splice(0,1)
+        // return returnOfNew;
     }
 
-    const deleteSunburn = async (index:number) => {
-        if(index != 0){
-            const response = await manualDeletion(index)
+    const handleDelete = async (index:number,stage:string) => {
+        //SEPERATE ALL STAGES IN ORDER
+        if(index != null && stage != "not"){
+            const response = await manualDeletion(index,stage)
+            setBurnData(response)
             await burnObj.updateBurnData(response)
+            await fetchAllBurns();
         } else {
             setHaveBeenBurned(false);
         } 
@@ -259,6 +290,7 @@ return(
             haveBeenBurned={haveBeenBurned}
             setHaveBeenBurned={setHaveBeenBurned}
             setBurnsData={setBurnData}
+            handleDelete={handleDelete}
         />
         :
         <View style={[styles.startScreen,addStyle]}>
@@ -289,23 +321,16 @@ return(
                         {burnData.map((data,index) => (                  
                         <>
                             {index == 0 && <Text style={{fontWeight:"800",opacity:0.2,top:5,color:"magenta"}}>Current</Text>}
-                            <View key={index} style={[{width:"80%",borderWidth:0.3,padding:15,margin:10,borderRadius:10,flexDirection:"row",alignItems:"center",justifyContent:"space-between",backgroundColor:"black"},index == 0 &&{ borderWidth:2,borderColor:"magenta"}]}>
+                            <View key={index} style={[{width:"80%",borderWidth:0.3,padding:15,margin:10,borderRadius:10,flexDirection:"row",alignItems:"center",backgroundColor:"black"},index == 0 &&{ borderWidth:2,borderColor:"magenta"}]}>
                                 <MaterialCommunityIcons 
                                     name="fire"
                                     size={25}
                                     color={"white"}
                                 />
-                                <View style={{marginLeft:0}}> 
+                                <View style={{marginLeft:20}}> 
                                 <Text style={{marginBottom:8,fontWeight:"400",color:"white"}}>Stage: <Text style={{opacity:1,fontWeight:"800"}}>{data.stage}</Text></Text>
                                 <Text style={{fontWeight:"400",color:"white"}}>Where: <Text style={{opacity:1,fontWeight:"800"}}>{data.slug}</Text></Text>
-                                </View>   
-                                <MaterialCommunityIcons 
-                                    name="delete"
-                                    size={25}
-                                    color={"red"}
-                                    style={{opacity:0.4}}
-                                    onPress={() => deleteSunburn(index)}
-                                />                
+                                </View>             
                             </View>
                         </>  
                         ))}
