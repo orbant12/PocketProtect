@@ -6,10 +6,33 @@
 
 ---
 
-## Features
-- `Skin Cancer Probability`: Picture can be uploaded from libary or with the phone's camera and then predicted on the aws cloud (EC2) from the CNN Model ( [Mobile](https://github.com/orbant12/PocketProtect/tree/main/client_expo) ,[Model](https://github.com/orbant12/PocketProtect/tree/main/ML) )
+# Features
+#### `Skin Cancer Probability`
+-  Picture can be uploaded from libary or with the phone's camera and then predicted on the aws cloud (EC2) from the CNN Model ( [Mobile](https://github.com/orbant12/PocketProtect/tree/main/client_expo) ,[Model](https://github.com/orbant12/PocketProtect/tree/main/ML) )
   
-- `Birthmark Organisation`: User can mark the position of his mole with a build in Human Body model and organise his moles by BIRTHMARKS / BODY PART ( [Mobile](https://github.com/orbant12/PocketProtect/tree/main/client_expo) )
+---
+#### `LLM health assistant with user context ( Blood Work, UV index, Allergies, Weather )`
+- User can use their data to get assistance by an LLM ( [Mobile](https://github.com/orbant12/PocketProtect/tree/main/client_expo) )
+  
+---
+#### `Professional Dermotologist Interface Panel ( Web  Next )`
+- User can mark the position of his mole with a build in Human Body model and organise his moles by BIRTHMARKS / BODY PART ( [Mobile](https://github.com/orbant12/PocketProtect/tree/main/client_expo) )
+
+---
+#### `Birthmark Organisation`
+- User can mark the position of his mole with a build in Human Body model and organise his moles by BIRTHMARKS / BODY PART ( [Mobile](https://github.com/orbant12/PocketProtect/tree/main/client_expo) )
+  
+---
+#### `Outdated Birthmark Reminder for Skin Cancer`
+- User can mark the position of his mole with a build in Human Body model and organise his moles by BIRTHMARKS / BODY PART ( [Mobile](https://github.com/orbant12/PocketProtect/tree/main/client_expo) )
+
+---
+#### `Live UV index & advice`
+- User can mark the position of his mole with a build in Human Body model and organise his moles by BIRTHMARKS / BODY PART ( [Mobile](https://github.com/orbant12/PocketProtect/tree/main/client_expo) )
+
+---
+#### `Sunburn Organisation`
+- User can mark the position of his mole with a build in Human Body model and organise his moles by BIRTHMARKS / BODY PART ( [Mobile](https://github.com/orbant12/PocketProtect/tree/main/client_expo) )
 
 ---
 
