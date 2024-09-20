@@ -1,7 +1,8 @@
 import { Image, StyleSheet, Text, View } from "react-native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { PagerComponent } from "../../Common/pagerComponent";
+
 import { styles_shadow } from "../../../styles/shadow_styles";
+import PagerComponent from "../../Common/pagerComponent";
 
 
 export const SkinCancerMonitor_Onboard = ({noTitle=true,style={},containerStyle={}}:{noTitle:boolean | undefined,style?:any,containerStyle?:any}) =>{
@@ -29,7 +30,7 @@ export const SkinCancerMonitor_Onboard = ({noTitle=true,style={},containerStyle=
             </View>
        )}
         <View style={[{width:"100%",height:"80%",alignItems:"center",zIndex:-1},containerStyle]}>
-            <PagerComponent 
+            <PagerComponent
                 indicator_position={{backgroundColor:"rgba(0,0,0,0.9)",padding:15,marginTop:-10,borderRadius:10,borderTopLeftRadius:30,borderTopRightRadius:30}}
                 dotColor={"white"}
                 pagerStyle={[{height:320,borderWidth:0,width:"90%"},styles_shadow.shadowContainer]}

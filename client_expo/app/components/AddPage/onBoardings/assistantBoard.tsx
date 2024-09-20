@@ -1,9 +1,11 @@
 import { Image, StyleSheet, Text, View, ScrollView } from "react-native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { PagerComponent } from "../../Common/pagerComponent";
+
 import { styles_shadow } from "../../../styles/shadow_styles";
 import { AssistantAdvertBox } from "../../LibaryPage/Melanoma/Assistance/assistantAdvert";
-import { ImageLoaderComponent } from "../../../pages/Libary/Melanoma/slugAnalasis";
+import PagerComponent from "../../Common/pagerComponent";
+import { ImageLoaderComponent } from "../../Common/imageLoader";
+
 
 export function Assist_Onboard(){
 
@@ -35,7 +37,7 @@ export function Assist_Onboard(){
                             size={25}
                         />
                     </View>
-                <PagerComponent 
+                <PagerComponent
                     indicator_position={{backgroundColor:"black",padding:15,display:"none"}}
                     dotColor={"white"}
                     pagerStyle={{height:300,borderWidth:1}}

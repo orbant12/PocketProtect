@@ -38,15 +38,15 @@ export const SunBurn_Modal_View = ({handleClose}) => {
                                 imageUri:"https://www.cancer.org/content/dam/cancer-org/images/cancer-types/skin/melanoma-what-is-melanoma-illustration.jpg",
                                 textComponent: () => (
                                     <>
-                                        <Text style={{color:"white",fontSize:12,fontWeight:"600",opacity:0.8,marginBottom:0}}>In this module you will learn how AI can <Text style={{color:"magenta",fontWeight:"700"}}>detect malignant</Text> moles and why you <Text style={{color:"magenta",fontWeight:"700"}}>should choose</Text> our own trained model</Text>
+                                        <Text style={{color:"white",fontSize:12,fontWeight:"600",opacity:0.8,marginBottom:0}}>In this module you can <Text style={{color:"magenta",fontWeight:"700"}}>track</Text> your <Text style={{color:"magenta",fontWeight:"700"}}>sun exposure</Text> history which can be very useful to know longterm to know your level of <Text style={{color:"magenta",fontWeight:"700"}}>potential risk</Text></Text>
                                     </>
                                 )
                             },
                         ]}
                         style={{marginTop:40}}
-                        title="Your skin and skin cancer"
+                        title="Track Sun Exposure"
                         
-                        desc="Avoid skin cancer with our AI Model which has 85% accuracy & beats the average dermatologist's 70% accuracy "
+                        desc="Extreme sun exposure increases the risk of skin cancer by damaging the DNA in skin cells due to ultraviolet (UV) radiation. Over time, this damage can lead to mutations into cancerous tumors"
                     />
                     }
                     {round(progress,1) == 0.2 && <SkinBurnScreen 

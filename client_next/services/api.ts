@@ -151,9 +151,9 @@ export const realTimeUpdateChat = async ({
         const ref = doc(db, "users", userId, "Assist_Panel", sessionId) 
         await updateDoc(ref,{chat:[...chat]})
         return true
-     } catch(Err) {
+    } catch(Err) {
         return Err
-     }
+    }
 }
 
 export const fetchRequests = async ({userId}:{userId:string}) => {
@@ -166,7 +166,6 @@ export const fetchRequests = async ({userId}:{userId:string}) => {
         });
         return requests;
     } catch(err) {
-        console.log(err)
         return [{err}]
     }
 }

@@ -66,24 +66,29 @@ export class Melanoma extends SkinData {
         console.error(err);
             return MolePerSlugNumber_Default as MolePerSlugNumber;
         }
-        
-        // const response = await fetch(`${DOMAIN}/client/get/number-of-melanoma-on-slug`, {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify({
-        //         userId:this.userId,
-        //         gender:this.gender
-        //     })}
-        // );
-    
-        // if(response.ok){
-        //     const data = await response.json();
-        //     return [data] as numberOfMolesOnSlugs;
-        // } else {
-        //     return []
-        // }
+    }
+
+    public getAllDataFromMelanoma() : {malignant: number, bening: number, outdated: number, all: number, completed: number} {
+        let malignant = 0;
+        let bening = 0;
+        let outdated = 0;
+        let all = this.allMelanomaData.length;
+        let completed = 0;
+
+        for (let i = 0; i < this.allMelanomaData.length; ++i){
+            if(this.allMelanomaData[i].risk > 0.5){
+                ++malignant
+            } else if (this.allMelanomaData[i].risk <= 0.5) {
+                ++bening
+            }
+
+            if(this.allMelanomaData[i].risk == null){
+                ++outdated
+            }
+        }
+
+        const finalData = {malignant: malignant, bening: bening, outdated: outdated, all: all, completed: completed};
+        return finalData;
     }
 
 

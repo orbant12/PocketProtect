@@ -18,6 +18,7 @@ export function SkinBurnScreen({
     selectionStyle,
     addStyle,
     change,
+    pageStyle={}
 }:{
     setProgress?:(e:boolean) => void,
     progress?:number,
@@ -27,7 +28,8 @@ export function SkinBurnScreen({
     haveBeenBurned:boolean,
     addStyle?:any;
     fetchAllBurns?:() => void,
-    change?:boolean
+    change?:boolean,
+    pageStyle?:any
 }){
     const Stage1SVG = Image.resolveAssetSource(require('../../../../../assets/skinburn/3.png')).uri;
     const stage2SVG  = Image.resolveAssetSource(require('../../../../../assets/skinburn/2.png')).uri;
@@ -98,15 +100,15 @@ export function SkinBurnScreen({
         let formatDataArray = []
         resData.forEach((element,index) => {
             if(element.stage == 1){
-                const formatData = {key:index,title:element.slug,icon:{type:"image",metaData:{name:Stage1SVG,size:30} },type:index,container:"stage_1"}
+                const formatData = {key:index,title:`${element.slug}`,icon:{type:"image",metaData:{name:Stage1SVG,size:70} },type:index,container:"stage_1"}
                 formatDataArray.push(formatData)
                 
             } else if(element.stage == 2){
-                const formatData = {title:element.slug,icon:{type:"image",metaData:{name:stage2SVG,size:35} },type:"stage_",container:"stage_2"}
+                const formatData = {title:`${element.slug}`,icon:{type:"image",metaData:{name:stage2SVG,size:70} },type:"stage_",container:"stage_2"}
                 formatDataArray.push(formatData)
                 
             } else if(element.stage == 3){
-                const formatData = {title:element.slug,icon:{type:"image",metaData:{name:stage3SVG,size:30} },type:"stage_3",container:"stage_3"}
+                const formatData = {title:`${element.slug}`,icon:{type:"image",metaData:{name:stage3SVG,size:70} },type:"stage_3",container:"stage_3"}
                 formatDataArray.push(formatData)
                 
             }
@@ -144,6 +146,7 @@ export function SkinBurnScreen({
                 selectableAdds={selectableAdds}
                 burnObj={burnObj}
                 fetchAllBurns={fetchAllBurns}
+                pageStyle={pageStyle}
             />
         
     )
@@ -153,7 +156,7 @@ export function SkinBurnScreen({
 // Prev added burns more interactive like a folder
 // Only show stage and shit if we press add ( Not in Full Melanoma --> else None = back) 
 
-const BurnsFolder = ({burnsData,setProgress,progress,activeBurn,selectableAdds,handleMelanomaDataChange, setHaveBeenBurned, haveBeenBurned,setBurnsData,handleDelete}) => {
+const BurnsFolder = ({burnsData,setProgress,progress,activeBurn,selectableAdds,handleMelanomaDataChange, setHaveBeenBurned, haveBeenBurned,setBurnsData,handleDelete,pageStyle}) => {
 
     const BurnsArray = [
         {value:"add",title:"+ Add New"},
@@ -180,8 +183,8 @@ const BurnsFolder = ({burnsData,setProgress,progress,activeBurn,selectableAdds,h
             <SelectionPage 
                 pageTitle="Sun burns"
                 selectableOption="box"
-                desc="Please select the allergies you have"
-                pageStyle={[{height:"120%",marginTop:"5%"},(addNewData != "not" && activeNavItem != "add") && {marginTop:"15%",height:"115%"}]}
+                desc="Tracking your sun exposure enables you to asses potential cancer risks in the longterm !"
+                pageStyle={[{height:"120%",marginTop:"5%"},pageStyle,(addNewData != "not" && activeNavItem != "add") && {marginTop:"15%",height:"115%"}]}
                 specialValues={[1,2,3]}
                 selectableData={[...activeBurn,...selectableAdds]}
                 setOptionValue={(type) => {type != addNewData ? setAddNewData(type) : activeNavItem == "add" ? setAddNewData(null) : setAddNewData("not")}}
@@ -201,7 +204,7 @@ const BurnsFolder = ({burnsData,setProgress,progress,activeBurn,selectableAdds,h
     )
 }
 
-const AddBurnComponent = ({haveBeenBurned, progress, burnData, setBurnData, setHaveBeenBurned,handleSaveNew, setProgress, selectionStyle, currentuser, addStyle, activeBurn, selectableAdds,burnObj,fetchAllBurns}) => {
+const AddBurnComponent = ({haveBeenBurned, progress, burnData, setBurnData, setHaveBeenBurned,handleSaveNew, setProgress, selectionStyle, currentuser, addStyle, activeBurn, selectableAdds,burnObj,fetchAllBurns,pageStyle}) => {
     const Stage1SVG = Image.resolveAssetSource(require('../../../../../assets/skinburn/3.png')).uri;
     const stage2SVG  = Image.resolveAssetSource(require('../../../../../assets/skinburn/2.png')).uri;
     const stage3SVG  = Image.resolveAssetSource(require('../../../../../assets/skinburn/1.png')).uri;
@@ -291,10 +294,11 @@ return(
             setHaveBeenBurned={setHaveBeenBurned}
             setBurnsData={setBurnData}
             handleDelete={handleDelete}
+            pageStyle={pageStyle}
         />
         :
         <View style={[styles.startScreen,addStyle]}>
-                <ScrollView centerContent style={{width:"100%"}}>
+                <ScrollView centerContent style={{width:"100%",height:"100%"}}>
                     <View style={{width:"100%",alignItems:"center"}}>
                         <View style={{marginTop:10,alignItems:"center",backgroundColor:"rgba(0,0,0,0.1)",padding:10,borderRadius:10}}>  
                             <Text style={{fontWeight:"800",fontSize:18,width:300}}>Select where the sunburn has occured ?</Text>

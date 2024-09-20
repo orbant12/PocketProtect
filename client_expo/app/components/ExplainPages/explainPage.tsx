@@ -1,6 +1,6 @@
 import {  View,StyleSheet, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { PagerComponent } from "../Common/pagerComponent";
+import PagerComponent  from "../Common/pagerComponent";
 import { styles_shadow } from "../../styles/shadow_styles";
 import { HeaderContainer } from "../Common/headerContainer";
 import ProgressBar from 'react-native-progress/Bar';

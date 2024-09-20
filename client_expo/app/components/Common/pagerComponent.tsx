@@ -1,9 +1,10 @@
-import PagerView from "react-native-pager-view"
+
 import { View, StyleSheet } from "react-native"
-import { useState } from "react"
+import React,{ useState } from "react"
+import PagerView from "react-native-pager-view"
 
 
-export const PagerComponent = ({
+const PagerComponent = ({
     pages,
     indicator_position,
     pagerStyle,
@@ -52,3 +53,5 @@ const pager_style = StyleSheet.create({
         marginHorizontal: 5,
     },
 })
+
+export default PagerComponent;

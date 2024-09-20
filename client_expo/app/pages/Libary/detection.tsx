@@ -21,7 +21,7 @@ const DetectionLibary = ({
 
 //<==================<[ Variable ]>====================>     
 
-const { currentuser } = useAuth();
+const { currentuser,melanoma } = useAuth();
 const [ diagnosisData, setDiagnosisData] = useState<DiagnosisData[]>([])
 //REFS
 const skinCancerRef = useRef(null);
@@ -61,16 +61,20 @@ const fetchDiagnosis = async () => {
     }
 }
 
-const fetchMoles = async (gender:Gender) => {
+const fetchMoles = async () => {
     if(currentuser){
-        const response = await fetchNumberOfMoles({
-            userId:currentuser.uid,
-            gender: gender
+
+        const melanomaData = melanoma.getAllDataFromMelanoma();
+
+        setSkinCancerData(melanomaData)
+        const nOfCompl = melanoma.getCompletedParts();
+        setSkinCancerData({
+            ...skinCancerData,
+            completed: nOfCompl.length
         })
-        if(response != null){
-            setSkinCancerData(response)
-            setSkinCancerProgress(response.outdated / 24)
-        }
+
+        setSkinCancerProgress(melanomaData.outdated / 24)
+    
     }
 
 }
@@ -97,20 +101,16 @@ const handleScroll = useCallback((event) => {
     const scrollY = event.nativeEvent.contentOffset.y;
     if (scrollY >= positions.current.skinCancer && scrollY < positions.current.bloodAnalysis) {
         setIsSelected('ai_vision');
-    } else if (scrollY >= positions.current.bloodAnalysis && scrollY < positions.current.diagnosis) {
-        setIsSelected('blood_work');
-    } else if (scrollY >= positions.current.diagnosis && scrollY < positions.current.soon) {
+  } else if (scrollY >= positions.current.diagnosis && scrollY < positions.current.soon) {
         setIsSelected('diagnosis');
-    } else if (scrollY >= positions.current.soon) {
-        setIsSelected('soon');
-    }
+    } 
 }, []);
 
 const onRefresh = useCallback(() => {
     setRefreshing(true);
     //
     fetchDiagnosis()
-    fetchMoles(currentuser.gender)
+    fetchMoles()
     setTimeout(() => {
         setRefreshing(false);
     }, 2000); // Example: setTimeout for simulating a delay
@@ -123,18 +123,11 @@ useEffect(() => {
         skinCancerRef.current.measure((x, y, width, height, pageX, pageY) => {
           positions.current.skinCancer = pageY - 200;
         });
-    
-        bloodAnalysisRef.current.measure((x, y, width, height, pageX, pageY) => {
-          positions.current.bloodAnalysis = pageY - 240;
-        });
-    
+
         diagnosisRef.current.measure((x, y, width, height, pageX, pageY) => {
           positions.current.diagnosis = pageY - 240;
         });
-    
-        soonRef.current.measure((x, y, width, height, pageX, pageY) => {
-          positions.current.soon = pageY - 100;
-        });
+
     }, 0);
 }, []);
 
@@ -142,6 +135,7 @@ useEffect(() => {
 useFocusEffect(
     useCallback(() => {
         fetchDiagnosis()    
+        fetchMoles()
     return () => {};
     }, [])
 );
@@ -208,15 +202,6 @@ return(
                 </View>
                 <Text style={{marginRight:"auto",marginLeft:"auto",fontSize:20,fontWeight:"600",opacity:0.3,marginBottom:20,marginTop:10}}>More fetures coming soon ...</Text>
             </View>
-            {/*Blood Analasis*/}
-            <View ref={bloodAnalysisRef} style={{width:"100%"}}>
-                <Text style={{fontWeight:"800",fontSize:24,margin:15,marginTop:40}}>Blood Analasis</Text>
-                <MainBloodBox 
-                    navigation={navigation}
-                    handleScrollReminder={handleScrollReminder}
-                    currentPage={currentPage}
-                />
-            </View>
             {/*DIAGNOSIS*/}
             <View ref={diagnosisRef}  style={{width:"100%"}}>
                 <Text style={{fontWeight:"800",fontSize:24,margin:15,marginTop:40}}>Custom Diagnosis</Text>
@@ -246,12 +231,7 @@ return(
                         />
                     </View>
                     <View style={styles.boxBottom}>
-                        <View style={{padding:1,width:"55%",marginRight:10,opacity:0.6, borderLeftWidth:0.3,paddingLeft:10,borderColor:"magenta"}}>
-                            <Text style={{color:"black",marginBottom:8,fontSize:12,fontWeight:"300"}}>Eliminating deficiencies</Text>
-                            <Text style={{color:"black",marginBottom:8,fontSize:12,fontWeight:"300"}}>Outline </Text>
-                            <Text style={{color:"black",fontSize:12,fontWeight:"300"}}>Outdated Moles: {"0"}</Text>
-                        </View>
-                        <TouchableOpacity onPress={() => navigation.navigate("add-detection")} style={{width:"45%",backgroundColor:"black",padding:10,paddingVertical:18,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
+                        <TouchableOpacity onPress={() => navigation.navigate("AI_Diagnosis")} style={{width:"45%",backgroundColor:"black",padding:10,paddingVertical:18,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
                             <Text style={{fontWeight:"600",color:"white",marginRight:15,fontSize:15}}>Open</Text>
                             <MaterialCommunityIcons 
                                 name='arrow-right'
@@ -261,69 +241,6 @@ return(
                         </TouchableOpacity>                            
                     </View>      
                 </View>                        
-            </View>
-            {/*SOON NEWS*/}
-            <View ref={soonRef}  style={{width:"100%"}}>
-                <Text style={{fontWeight:"800",fontSize:24,margin:15,marginTop:40}}>Coming Soon ...</Text>
-                <View style={styles.selectBox}>
-                    <View style={styles.boxTop}>
-                        <View style={{flexDirection:"row"}}>
-                            <MaterialCommunityIcons 
-                                name='magnify'
-                                size={30}
-                            />
-                            <View style={{marginLeft:20}}>
-                                <Text style={{fontWeight:"800",fontSize:16}}>Session</Text>
-                                <Text style={{fontWeight:"400",fontSize:12}}>Diagnosis: <Text style={{fontWeight:"600",opacity:0.6}}>Valami</Text></Text>
-                            </View>
-                        </View>    
-                        <MaterialCommunityIcons 
-                            name='menu'
-                            size={20}
-                        />
-                    </View>
-                    <View style={styles.boxBottom}>       
-                        <TouchableOpacity style={{width:"100%",backgroundColor:"black",padding:10,alignItems:"center",justifyContent:"center",borderRadius:20,flexDirection:"row"}}>
-                            <Text style={{fontWeight:"600",color:"white",marginRight:15}}>Open</Text>
-                            <MaterialCommunityIcons 
-                                name='arrow-right'
-                                size={15}
-                                color={"magenta"}                                                                        
-                            />
-                        </TouchableOpacity>                            
-                    </View>      
-                </View>
-                <View style={styles.selectBox}>
-                    <View style={styles.boxTop}>
-                        <View style={{flexDirection:"row"}}>
-                            <MaterialCommunityIcons 
-                                name='doctor'
-                                size={30}
-                            />
-                            <View style={{marginLeft:20}}>
-                                <Text style={{fontWeight:"800",fontSize:16}}>Skin Cancer</Text>
-                                <Text style={{fontWeight:"400",fontSize:12}}>Desc 2003.11.17 </Text>
-                            </View>
-                        </View>    
-                        <MaterialCommunityIcons 
-                            name='menu'
-                            size={20}
-                        />
-                    </View>
-                    <View style={styles.boxBottom}>
-                        <View style={{padding:10,backgroundColor:"black",width:"55%",marginRight:10,opacity:0.2}}>
-
-                        </View>
-                        <TouchableOpacity style={{width:"45%",backgroundColor:"black",padding:10,alignItems:"center",justifyContent:"center",borderRadius:20,flexDirection:"row"}}>
-                            <Text style={{fontWeight:"600",color:"white",marginRight:15}}>Open</Text>
-                            <MaterialCommunityIcons 
-                                name='arrow-right'
-                                size={15}
-                                color={"magenta"}                                                                        
-                            />
-                        </TouchableOpacity>                            
-                    </View>      
-                </View>
             </View>
         </View>
     </ScrollView>

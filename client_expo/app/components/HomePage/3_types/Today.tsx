@@ -2,7 +2,6 @@ import { styles } from "../../../styles/home_style"
 import { View,Text,TouchableOpacity} from "react-native"
 import { TaskBox_2, } from "../taskBoxes"
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
-import PagerView from 'react-native-pager-view';
 import { formatTimestampToString} from "../../../utils/date_manipulations";
 import { styles_shadow } from "../../../styles/shadow_styles";
 import { SpotData, WeatherAPIResponse } from "../../../utils/types";
@@ -17,8 +16,11 @@ import { ImageLoaderComponent } from "../../Common/imageLoader";
 import { DataModal, generateTodayForWidget, selectableDataTypes } from "../../../pages/Profile/tabs/userSavedPage";
 import { ContextPanelData } from "../../../models/ContextPanel";
 import { useAuth } from "../../../context/UserAuthContext";
-import { PagerComponent } from "../../Common/pagerComponent";
+import PagerComponent  from "../../Common/pagerComponent";
 import { Navigation_AddBloodWork } from "../../../navigation/navigation";
+import { OneOptionBox } from "../../LibaryPage/Melanoma/boxes/oneOptionBox";
+import { Mstyles } from "../../../styles/libary_style";
+import { AssistantAdvertBox } from "../../LibaryPage/Melanoma/Assistance/assistantAdvert";
 
 export const TodayScreen = ({
     handleNavigation,
@@ -180,6 +182,45 @@ export const TodayScreen = ({
             setUserContexts={(field,data) => handleContextDataChange(field,data)}
             handleAllergiesFetch={() => {}}
         />
+
+        <View style={[Mstyles.educationSection,{marginTop:10}]}>
+            <OneOptionBox
+                navigation={navigation}
+                stw={180}
+                buttonTitle="Register New !"
+                subTitle="Sunburn significantly increases the risk of skin cancer"
+                mainTitle="Your Skin Data"
+                image={require("../../../assets/type.png")}
+                bgColor={"black"}
+                textColor={"white"}
+                id="skin_data"
+            />
+
+            <OneOptionBox 
+                navigation={navigation}
+                stw={180}
+                buttonTitle="Register New !"
+                subTitle="Sunburn significantly increases the risk of skin cancer"
+                mainTitle="Track Sun Burn"
+                image={require("../../../assets/burn.png")}
+                bgColor={"orange"}
+                id="sun_burn"
+            />
+
+            <OneOptionBox 
+                navigation={navigation}
+                buttonTitle="How it works ?"
+                subTitle="100% Transparency - Open Source"
+                mainTitle="Our AI Model"
+                image={require("../../../assets/ai.png")}
+                bgColor="white"
+                id="ai_model"
+            />
+
+            <AssistantAdvertBox
+                navigation={navigation}
+            />
+        </View>
         </>
         )
 }
@@ -332,7 +373,6 @@ const Melanoma_WidgetBox = ({
             handleNavigation={handleNavigation}
             type={"unfinished"}
         />
-
     </View> 
     )
 }

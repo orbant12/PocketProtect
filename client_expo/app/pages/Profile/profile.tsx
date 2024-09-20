@@ -114,20 +114,11 @@ const handleChangeProfile = async() => {
                                     scroll: { x: 0, y: -30, animated: true }
                                 },
                                 {
-                                    title:"Blood Analasis",
-                                    value:"blood_work",
-                                    scroll: { x: 0, y: 650, animated: true }
-                                },
-                                {
                                     title:"Custom Diagnosis",
                                     value:"diagnosis",
-                                    
+                                    scroll: { x: 0, y: 1000, animated: true }
                                 },
-                                {
-                                    title:"Coming Soon",
-                                    value:"soon",
-                                    
-                                }
+                        
                         ]}
                         scrollViewRef={scrollViewRef}
                         style={{}}
@@ -166,7 +157,13 @@ const handleChangeProfile = async() => {
                     label={() => <Entypo name={'bell'} size={25} color={"white"} />}
                 >
                     <Tabs.ScrollView>
-                        
+                        <View style={{width:"100%", flexDirection:"column",alignItems:"center",height:"70%",justifyContent:"center"}}>
+                            <View style={{width:"60%", flexDirection:"column",alignItems:"center",padding:10, backgroundColor:"rgba(0,0,0,0.1)",borderRadius:10}}>
+                                <Text style={{fontWeight:700,fontSize:14,opacity:0.5}}>
+                                    No Notifications !
+                                </Text>
+                            </View>
+                        </View>
                     </Tabs.ScrollView>
                 </Tabs.Tab>
 

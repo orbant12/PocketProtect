@@ -68,7 +68,7 @@ export const SkinData_Modal_View = ({handleClose}) => {
                         style={{marginTop:40}}
                         title="Your skin and skin cancer"
                         
-                        desc="Avoid skin cancer with our AI Model which has 85% accuracy & beats the average dermatologist's 70% accuracy "
+                        desc="Different skin type are more volnurable to UV exposere"
                     />
                     }
                     {round(progress,1) == 0.2 && <SkinTypeScreen 
@@ -87,8 +87,8 @@ export const SkinData_Modal_View = ({handleClose}) => {
                             {icon_name:"information",title:"Darker Skin and Lower Skin Cancer Awareness",images:[{image:skin3Image}]},
                             {icon_name:"information",title:"Genetic Factors in Different Skin Types",images:[{image:skin4Image}]},
                         ]}
-                        title="How prone your skin is to cancer"
-                        desc="The ABCDE rule is a guide to the usual signs of melanoma. Be aware of any changes in the size, shape, color, or feel of an existing mole or the appearance of a new spot."
+                        title="How prone your skin is to cancer ?"
+                        desc="In this module you can asses your skin cancer risk based on your skin type !"
                     />
                     }
                     {round(progress,1) == 0.4 && <ExplainPageComponent_Type2 
@@ -101,8 +101,8 @@ export const SkinData_Modal_View = ({handleClose}) => {
                             {icon_name:"information",title:"Genetically Predisposed Individuals",images:[{image:skin7Image}]},
                         ]}
                         
-                        title="How to avoid by protection"
-                        desc="The ABCDE rule is a guide to the usual signs of melanoma. Be aware of any changes in the size, shape, color, or feel of an existing mole or the appearance of a new spot."
+                        title="How to avoid by protection !"
+                        desc="In this module you can learn ways to protect your skin based on your skin type !"
                     />
                     }
                 </View>

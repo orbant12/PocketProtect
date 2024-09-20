@@ -202,7 +202,7 @@ const SingleFeature = ({navigation}) => {
             >
                 <NavBar_TwoOption 
                     icon_left={{name:"arrow-left", size:25,action:() => navigation.goBack()}}
-                    icon_right={{name:"monitor-eye", size:25,action:() => navigation.goBack()}}
+                    icon_right={{name:"monitor-eye", size:25,action:() => scrollRef.current.scrollTo({ x: 0, y: 800, animated: true }) }}
                     title={null}
                     style={{borderColor:"white",borderWidth:2}}
                     titleComponent={() =>  

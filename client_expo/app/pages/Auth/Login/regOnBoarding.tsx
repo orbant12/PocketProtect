@@ -1,4 +1,4 @@
-import { View,StyleSheet,Text,Pressable,Image, TouchableOpacity, Modal, ScrollView } from "react-native"
+import { View,Text,Pressable,Image, TouchableOpacity, Modal, ScrollView } from "react-native"
 import ProgressBar from 'react-native-progress/Bar';
 import React,{useState,useEffect} from "react";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -6,30 +6,34 @@ import Onboarding from 'react-native-onboarding-swiper';
 import "react-native-gesture-handler"
 import { changePersonalData, changeProfilePicture } from "../../../services/server"
 import { useAuth } from "../../../context/UserAuthContext";
-
 import { NavBar_OneOption, NavBar_TwoOption } from "../../../components/Common/navBars";
-import { DateToString } from "../../../utils/date_manipulations";
 import { SelectionPage } from "../../../components/Common/SelectableComponents/selectPage";
 import { styles_shadow } from "../../../styles/shadow_styles";
 import * as ImagePicker from 'expo-image-picker';
-import { ImageLoaderComponent } from "../../Libary/Melanoma/slugAnalasis";
 import ProfileCameraScreenView from "../cameraModal";
-import { PagerComponent } from "../../../components/Common/pagerComponent";
 import { OneOptionBox } from "../../../components/LibaryPage/Melanoma/boxes/oneOptionBox";
-import { AssistantAdvertBox } from "../../../components/LibaryPage/Melanoma/Assistance/assistantAdvert";
-import { opacity } from "react-native-reanimated/lib/typescript/reanimated2/Colors";
 import { convertImageToBase64 } from "../../../utils/imageConvert";
 import { SkinCancerMonitor_Onboard } from "../../../components/AddPage/onBoardings/skinCancerMonitorBoard";
 import { Assist_Onboard } from "../../../components/AddPage/onBoardings/assistantBoard";
 import { styles } from "../../../styles/onBoard_styles";
 import { DateInputPage } from "../OnBoarding_Components/dateInput";
+import { ImageLoaderComponent } from "../../../components/Common/imageLoader";
+import PagerComponent  from "../../../components/Common/pagerComponent";
 
 
 const RegOnBoarding = ({navigation}) => {
 
     const maleDefault = Image.resolveAssetSource(require("../../../assets/male.png")).uri;
     const femaleDefault = Image.resolveAssetSource(require("../../../assets/female.png")).uri;
+
+    const melanomaWelcome1 = Image.resolveAssetSource(require("../../../assets/melanomaW1.png")).uri;
+    const melanomaWelcome2 = Image.resolveAssetSource(require("../../../assets/melanomaW2.png")).uri;
     
+    const aiChatWelcome1 = Image.resolveAssetSource(require("../../../assets/aiChat1.png")).uri;
+    const aiChatWelcome2 = Image.resolveAssetSource(require("../../../assets/aiChat2.png")).uri;
+
+    const diagWelcome1 = Image.resolveAssetSource(require("../../../assets/diagW1.png")).uri;
+    const diagWelcome2 = Image.resolveAssetSource(require("../../../assets/diagW2.png")).uri;
 
     // <===> Variable <====> 
 
@@ -239,20 +243,20 @@ const RegOnBoarding = ({navigation}) => {
                                 size={25}
                             />
                         </View>
-                    <PagerComponent 
+                    <PagerComponent
                         indicator_position={{backgroundColor:"black",padding:15}}
                         dotColor={"white"}
                         pagerStyle={{height:300,borderWidth:1}}
                         pages={[
                             {pageComponent:() =>
                                 <Image
-                                    source={{uri: maleDefault}}
+                                    source={{uri: melanomaWelcome1}}
                                     style={{width:"100%",height:300}}
                                 />
                             },
                             {pageComponent:() =>
                             <Image
-                                source={{uri: maleDefault}}
+                                source={{uri: melanomaWelcome2}}
                                 style={{width:"100%",height:300}}
                             />
                             }
@@ -269,24 +273,24 @@ const RegOnBoarding = ({navigation}) => {
                             />
                         </View>
                         <PagerComponent 
-                        indicator_position={{backgroundColor:"black",padding:15}}
-                        dotColor={"white"}
-                        pagerStyle={{height:300,borderWidth:1}}
-                        pages={[
-                            {pageComponent:() =>
+                            indicator_position={{backgroundColor:"black",padding:15}}
+                            dotColor={"white"}
+                            pagerStyle={{height:300,borderWidth:1}}
+                            pages={[
+                                {pageComponent:() =>
+                                    <Image
+                                        source={{uri: aiChatWelcome1}}
+                                        style={{width:"100%",height:300}}
+                                    />
+                                },
+                                {pageComponent:() =>
                                 <Image
-                                    source={{uri: maleDefault}}
+                                    source={{uri: aiChatWelcome2}}
                                     style={{width:"100%",height:300}}
                                 />
-                            },
-                            {pageComponent:() =>
-                            <Image
-                                source={{uri: maleDefault}}
-                                style={{width:"100%",height:300}}
-                            />
-                            }
-                        ]}
-                    />
+                                }
+                            ]}
+                        />
                     </View>
                     <View style={[{width:"80%",borderWidth:0.3,height:350,borderRadius:10,marginTop:70},styles_shadow.hightShadowContainer]}>
                         <View style={{width:"100%",borderWidth:2,height:50,flexDirection:"row",justifyContent:"space-between",alignItems:"center",backgroundColor:"rgba(0,0,0,0.9)",paddingHorizontal:10,borderTopLeftRadius:10,borderTopRightRadius:10}}>
@@ -304,13 +308,13 @@ const RegOnBoarding = ({navigation}) => {
                         pages={[
                             {pageComponent:() =>
                                 <Image
-                                    source={{uri: maleDefault}}
+                                    source={{uri: diagWelcome1}}
                                     style={{width:"100%",height:300}}
                                 />
                             },
                             {pageComponent:() =>
                             <Image
-                                source={{uri: maleDefault}}
+                                source={{uri: diagWelcome2}}
                                 style={{width:"100%",height:300}}
                             />
                             }
@@ -364,8 +368,8 @@ const RegOnBoarding = ({navigation}) => {
                             mainTitle="Detect Skin Cancer"
                             image={require("../../../assets/abcde.png")}
                             bgColor="white"
-                            onClick={() => alert("Complete your onboarding to access this feature")}
-                            id="abcde"
+                            onClick={"Complete your onboarding to access this feature"}
+                            id="alert"
                         />
 
 
@@ -378,8 +382,8 @@ const RegOnBoarding = ({navigation}) => {
                             image={require("../../../assets/type.png")}
                             bgColor={"black"}
                             textColor={"white"}
-                            onClick={() => alert("Complete your onboarding to access this feature")}
-                            id="skin_data"
+                            onClick={"Complete your onboarding to access this feature"}
+                            id="alert"
                         />
 
                         <OneOptionBox 
@@ -389,8 +393,8 @@ const RegOnBoarding = ({navigation}) => {
                             mainTitle="Our AI Model"
                             image={require("../../../assets/ai.png")}
                             bgColor="white"
-                            onClick={() => alert("Complete your onboarding to access this feature")}
-                            id="ai_model"
+                            onClick={"Complete your onboarding to access this feature"}
+                            id="alert"
                         />
 
                         <OneOptionBox 
@@ -401,8 +405,8 @@ const RegOnBoarding = ({navigation}) => {
                             mainTitle="Track Sun Burn"
                             image={require("../../../assets/burn.png")}
                             bgColor={"orange"}
-                            onClick={() => alert("Complete your onboarding to access this feature")}
-                            id="sun_burn"
+                            onClick={"Complete your onboarding to access this feature"}
+                            id="alert"
                         />
                     </ScrollView>
                 </View>
@@ -432,15 +436,12 @@ const RegOnBoarding = ({navigation}) => {
                         backgroundColor: 'white',
                         title: Assist_Onboard()
                     },
-                    {
-                        backgroundColor: 'white',
-                        title: 
-                            TutorialSecound()
-                    },
+
                 ]}
                 />
             </View>
-    )}
+        )
+    }
 
     function FinalScreen(){
         return(
@@ -484,7 +485,7 @@ const RegOnBoarding = ({navigation}) => {
                 icon_right={{name:"skip-next-outline",size:25,action() {
                     progress >= 0.6 ? setProgress(1) : alert("You need to add mandatory data first !")
                 },}}
-                icon_left={{name:"arrow-left",size:25,action:() => setProgress(progress - 0.2) }}
+                icon_left={{name:"arrow-left",size:25,action:() => round(progress) == 1 ? setProgress(progress - 0.4) : setProgress(progress - 0.2) }}
                 title={"Welcome to PocketProtect"} 
                 outerBg="white"
             />

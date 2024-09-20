@@ -258,7 +258,8 @@ const MelanomaFullProcess = ({navigation}) => {
                     progress={progress}
                     haveBeenBurned={haveBeenBurned}
                     setHaveBeenBurned={setHaveBeenBurned}
-                    addStyle={{height:"90%"}}
+                    addStyle={{height:"95%"}}
+                    pageStyle={{height:"98%"}}
                 />
             }
             {round(progress,1) === 0.4 && 

@@ -82,7 +82,7 @@ export const Ai_Modal_View = ({handleClose}) => {
                             ]},
                         ]}  
                         title="How AI Detects Cancer"
-                        desc="The ABCDE rule is a guide to the usual signs of melanoma. Be aware of any changes in the size, shape, color, or feel of an existing mole or the appearance of a new spot."
+                        desc="In this module you can gain insight about how AI detects skin cancer !"
                     />
                     }
                     {round(progress,1) == 0.3 && <ExplainPageComponent_Type2 
@@ -97,7 +97,7 @@ export const Ai_Modal_View = ({handleClose}) => {
                                 {image:aiImage_13}]},
                         ]}
                         title="Our Accuracy"
-                        desc="The ABCDE rule is a guide to the usual signs of melanoma. Be aware of any changes in the size, shape, color, or feel of an existing mole or the appearance of a new spot."
+                        desc="Transparency is our main goal. We do not gain a penny with this application therefore we have no business influence. We just want the best for you !"
                     />
                     }
                 </View>

@@ -19,7 +19,7 @@ export const OneOptionBox = (
         bgColor,
         stw,
         textColor,
-        onClick,
+        onClick="",
         imageStyle,
         tw,
         id
@@ -35,7 +35,7 @@ export const OneOptionBox = (
         onClick?:any;
         imageStyle?:any;
         tw?:number;
-        id:"skin_data" | "sun_burn" | "ai_model" | "abcde";
+        id:"skin_data" | "sun_burn" | "ai_model" | "abcde" | "alert";
     }) => {
 
     const [activeModal, setActiveModal] = useState<"skin_data" | "sun_burn" | "ai_model" | "abcde" | null>(null);
@@ -45,7 +45,7 @@ export const OneOptionBox = (
         <View style={[{width:"90%",marginTop:20,alignItems:"center",backgroundColor:bgColor,padding:0,borderRadius:10,flexDirection:"row",height:170,borderWidth:4,borderColor:"white"},styles_shadow.shadowContainer]}>
         <Text style={{fontWeight:"700",fontSize:10,color:textColor != undefined ? textColor : "black",opacity:0.4,position:"absolute",top:10,marginLeft:10,marginTop:5,width: stw != undefined ? stw : 130}}>{subTitle}</Text>
         <Text style={{fontWeight:"800",fontSize:20,color:textColor != undefined ? textColor : "black",opacity:0.8,marginTop:0,maxWidth:"100%",marginLeft:10,marginBottom:40,width: tw != undefined ? tw : 230}}>{mainTitle}</Text>
-        <TouchableOpacity onPress={() => {setActiveModal(id) }} style={[{width:"50%",borderWidth:2,padding:8,borderColor:"white",borderRadius:100,alignItems:"center",opacity:1,marginTop:20,zIndex:100,backgroundColor:"black",position:"absolute",bottom:20,left:10},styles_shadow.hightShadowContainer]}>
+        <TouchableOpacity onPress={() => {id != "alert" ? setActiveModal(id) : alert(onClick) }} style={[{width:"50%",borderWidth:2,padding:8,borderColor:"white",borderRadius:100,alignItems:"center",opacity:1,marginTop:20,zIndex:100,backgroundColor:"black",position:"absolute",bottom:20,left:10},styles_shadow.hightShadowContainer]}>
             <Text style={{color:"white",fontWeight:"800",fontSize:12,opacity:1}}>{buttonTitle}</Text>
         </TouchableOpacity>
         <Image 
@@ -62,9 +62,9 @@ export const OneOptionBox = (
             />
         }
         {activeModal == "ai_model" &&
-             <Ai_Modal_View 
+            <Ai_Modal_View 
                 handleClose={() => setActiveModal(null)}
-             />
+            />
         }
         {activeModal == "skin_data" && 
             <SkinData_Modal_View 
