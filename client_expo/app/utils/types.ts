@@ -122,7 +122,7 @@ export type UserData = {
     uid:string;
     fullname:string;
     gender: Gender;
-    birth_date: Date;
+    birth_date: string;
     email:string;
     profileUrl:string;
     user_since:string;

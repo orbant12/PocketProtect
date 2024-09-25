@@ -14,7 +14,7 @@ export const FLASK_DOMAIN =  "http://127.0.0.1:5001/";
 
 type SpotDeleteTypes = "history" | "latest"
 
-type userFields = "gender" | "birth_date" | "profileUrl"
+type userFields = "gender" | "birth_date" | "profileUrl" | "fullname"
 
 
 export type BloodWorkTypes = 

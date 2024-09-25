@@ -110,6 +110,24 @@ export class User {
 
     }
 
+    async changeFullname(newName:string):Promise<boolean> {
+        
+        const response = await fetch(`${DOMAIN}/client/update/fullname`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ userId:this.userId, newName }),
+        });
+    
+        if(response.ok){
+            return true;
+        } else {
+            return false
+        }
+
+    }
+
   getUserData(): UserData | null {
     return this.userData;
   }

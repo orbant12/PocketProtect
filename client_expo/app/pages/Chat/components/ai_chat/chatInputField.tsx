@@ -135,7 +135,7 @@ export const Diag_InpitField = ({
     inputValue,
     setInputValue,
     handleSend,
-    setSelectedType,
+    sendOff = false
   }) => {
     return(
         <KeyboardAvoidingView
@@ -156,7 +156,7 @@ export const Diag_InpitField = ({
                         />
                     </View>
                 </View>
-
+            {sendOff == false &&
               <TouchableOpacity onPress={() => handleSend()} style={{ padding: 10, backgroundColor: 'magenta', justifyContent: 'center', alignItems:"center", borderRadius: 10,marginLeft:10,height:50,width:60,borderWidth:0.3 }}>
                     <MaterialCommunityIcons
                         name={"send"}
@@ -164,6 +164,7 @@ export const Diag_InpitField = ({
                         color={"white"}
                     />
               </TouchableOpacity>
+            }
            </View>
         </KeyboardAvoidingView>
     )

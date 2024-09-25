@@ -5,19 +5,26 @@
 //<***********************************>
 
 //BASIC IMPORTS
-import React from 'react'
+import React, { useState } from 'react'
+import { Modal } from 'react-native';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
-
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { sendPasswordResetEmail } from "@firebase/auth"
 //ICONS
 import { Icon } from 'react-native-elements';
+import { UserDataChange } from './userDataChange';
+import { UserDelete } from './deleteUser';
+import { ChangePass } from './changePass';
+import { useAuth } from '../../../../context/UserAuthContext';
+import { auth } from '../../../../services/firebase';
+
 
 const GeneralSettings = ({ route, navigation }) => {
 
-
-    //<**********************VARIABLES******************************>
-
     //GET DATA FROM ROUTE
     const settingsData = route.params.data
+    const [selectedChange, setSelectedChange] = useState<"userData" | "changePass" | "deleteUser" | null>(null);
+    const {currentuser} = useAuth();
 
     //<**********************FUNCTIONS******************************>
 
@@ -32,12 +39,13 @@ const GeneralSettings = ({ route, navigation }) => {
     }
 
     return (
+        <>
         <View style={styles.container}>
             {/* ACCOUNT DETAILS */}
             {settingsData === "Account" ? (
                 <View style={styles.colContainer}>
-                    <TouchableOpacity style={styles.topicRow}>
-                        <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>User Information</Text>
+                    <TouchableOpacity onPress={() => setSelectedChange("userData")} style={styles.topicRow}>
+                        <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>Change User Data</Text>
                         <Icon
                             name='arrow-forward-ios'
                             type='material'
@@ -47,7 +55,7 @@ const GeneralSettings = ({ route, navigation }) => {
                         />
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={openBottomSheet} style={styles.topicRow}>
+                    <TouchableOpacity onPress={() => sendPasswordResetEmail(auth,currentuser.email)} style={styles.topicRow}>
                         <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>Change Password</Text>
                         <Icon
                             name='arrow-forward-ios'
@@ -58,7 +66,7 @@ const GeneralSettings = ({ route, navigation }) => {
                         />
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.topicRow}>
+                    <TouchableOpacity onPress={() => setSelectedChange("deleteUser")} style={styles.topicRow}>
                         <Text style={{ marginRight: 120, fontWeight: "600", fontSize: 15 }}>Delete Account</Text>
                         <Icon
                             name='arrow-forward-ios'
@@ -205,8 +213,30 @@ const GeneralSettings = ({ route, navigation }) => {
             ) : null}
 
         </View>
+        <Modal animationType='slide' visible={selectedChange != null} >
+        <TouchableOpacity onPress={() =>setSelectedChange(null)} style={{flexDirection:"row",alignItems:"center",justifyContent:"center",backgroundColor:"rgba(0,0,0,0.86)",borderWidth:2,borderColor:"gray",paddingVertical:10,borderRadius:10,width:"100%",alignSelf:"center",borderBottomLeftRadius:0,borderBottomRightRadius:0}}>
+          <MaterialCommunityIcons 
+            name='close'
+            size={25}
+            color={"white"}
+          />
+          <Text style={{color:"white",fontWeight:"800",fontSize:16,marginLeft:10,marginRight:10}}>Close</Text>
+        </TouchableOpacity>
+            {selectedChange == "userData" &&
+                <UserDataChange />
+            }
+            {selectedChange == "changePass" &&
+                <ChangePass />
+            }
+            {selectedChange == "deleteUser" &&
+                <UserDelete />
+            }
+        </Modal>
+        </>
     )
 }
+
+
 
 const styles = StyleSheet.create({
     container: {

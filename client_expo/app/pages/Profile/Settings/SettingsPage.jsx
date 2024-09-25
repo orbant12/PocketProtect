@@ -1,12 +1,8 @@
-//<********************************************>
-//LAST EDITED: 2023.12.05
-//EDITED BY: Orban Tamas
-//DESC: This is the settings page. It contains the following tabs: Account, Creator Panel, Privacy, Security, Logout, Send feedback, Report a problem, Support, Terms & Services, Creator Program
-//<********************************************>
 
 //BASIC IMPORTS
 import React from 'react';
-import {View,Text,StyleSheet,TouchableOpacity,ScrollView} from 'react-native';
+import {View,Text,StyleSheet,TouchableOpacity,ScrollView, Linking, Alert} from 'react-native';
+import * as MailComposer from 'expo-mail-composer';
 
 //ICONS
 import { Icon } from 'react-native-elements';
@@ -35,6 +31,20 @@ const handleLogout = () => {
 
 }
 
+const openAppStore = () => {
+    const appStoreLink = 'https://apps.apple.com/app/idYOUR_APP_ID'; // Replace with your actual App Store link
+    Linking.openURL(appStoreLink).catch(err => console.error("Couldn't load page", err));
+};
+
+const sendEmail = () => {
+    const options = {
+        recipients: ["orbant1@gmail.com"],
+        subject: "App Feed Back",
+        body: "Hez ndksndknskdnkc k cjkd",
+        isHtml: false
+    }
+    MailComposer.composeAsync(options);
+};
 return(
 <View style={styles.container}> 
     <ScrollView style={styles.colContainer}>
@@ -50,57 +60,6 @@ return(
                 size={20} 
             />
             <Text style={{marginRight:120,fontWeight:"600",fontSize:15}}>Account</Text>
-            <Icon
-                name='arrow-forward-ios'
-                type='material'
-                color='black'
-                size={20}
-                style={{opacity:0.8}}
-            />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => handleGeneralNavigation("Creator Panel")} style={styles.topicRow}>
-            <Icon
-                name='settings'
-                type='material'
-                color='black'
-                size={20} 
-            />
-            <Text style={{marginRight:80,fontWeight:"600",fontSize:15}}>Creator Panel</Text>
-            <Icon
-                name='arrow-forward-ios'
-                type='material'
-                color='black'
-                size={20}
-                style={{opacity:0.8}}
-            />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => handleGeneralNavigation("Privacy")} style={styles.topicRow}>
-            <Icon
-                name='lock'
-                type='material'
-                color='black'
-                size={20} 
-            />
-            <Text style={{marginRight:122,fontWeight:"600",fontSize:15}}>Privacy</Text>
-            <Icon
-                name='arrow-forward-ios'
-                type='material'
-                color='black'
-                size={20}
-                style={{opacity:0.8}}
-            />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => handleGeneralNavigation("Security")} style={styles.topicRow}>
-            <Icon
-                name='person'
-                type='material'
-                color='black'
-                size={20} 
-            />
-            <Text style={{marginRight:120,fontWeight:"600",fontSize:15}}>Security</Text>
             <Icon
                 name='arrow-forward-ios'
                 type='material'
@@ -131,7 +90,7 @@ return(
             <Text>FEEDBACK</Text>
         </View>
 
-        <TouchableOpacity  style={styles.topicRow}>
+        <TouchableOpacity onPress={openAppStore}  style={styles.topicRow}>
             <Icon
                 name='send'
                 type='material'
@@ -148,7 +107,7 @@ return(
             />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.topicRow}>
+        <TouchableOpacity onPress={() => sendEmail()}  style={styles.topicRow}>
             <Icon
                 name='warning'
                 type='material'
@@ -165,7 +124,7 @@ return(
             />
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.topicRow}>
+        <TouchableOpacity onPress={() => sendEmail()} style={styles.topicRow}>
             <Icon
                 name='info'
                 type='material'
@@ -210,7 +169,7 @@ return(
                 color='black'
                 size={20} 
             />
-            <Text style={{marginRight:40,fontWeight:"600",fontSize:15}}>Creator Program</Text>
+            <Text style={{marginRight:40,fontWeight:"600",fontSize:15}}>User Safety</Text>
             <Icon
                 name='arrow-forward-ios'
                 type='material'

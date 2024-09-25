@@ -180,7 +180,7 @@ func SetupClientRoutes(e *echo.Echo, client *firestore.Client, storageClient *st
 			"profileUrl": req.Data.ProfileUrl,
 			"gender":     req.Data.Gender,
 			"user_since": req.Data.UserSince,
-			"birth_date": req.Data.BirthDate,
+			"birth_date": req.Data.Birth_Date,
 			"email":      req.Data.Email,
 		}
 
