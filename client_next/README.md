@@ -24,7 +24,17 @@
 - Firebase Firestore Database
 - Docker
 ---
+### Install
 
+```
+  git clone
+  cd client_next
+```
+
+```
+  npm i
+  npm run dev
+```
 
 
 
