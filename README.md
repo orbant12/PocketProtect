@@ -1,11 +1,9 @@
 # Pocket Protect 
 
-(Will be avalible on App Store and Play Store !)
-
-
 ### Feature Showcase Video
 [![Watch the video](https://img.youtube.com/vi/XVxlf7O_N04/0.jpg)](https://www.youtube.com/watch?v=XVxlf7O_N04)
 
+----
 
 ### This app is mainly a cross-platform (Android & IOS) mobile application designed to help in areas of Skin Cancer Prevention with built in CNN deep learning model and an interactive web interface for professional dermotologists with powerful analasis features and the ability to live chat with their clients (Web Socket).
 
