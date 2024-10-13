@@ -2,6 +2,7 @@
 
 ### Feature Showcase Video ( Click to watch )
 
+[Watch the showcase video](https://www.youtube.com/watch?v=Yij-03l_Cps)
 [![Watch the video](https://github.com/user-attachments/assets/2bca9b30-d94e-4b3d-982f-3d1b8d2f8a06)](https://www.youtube.com/watch?v=Yij-03l_Cps)
 
 
