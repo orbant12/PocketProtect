@@ -2,6 +2,8 @@
 
 (Avalible on App Store and Play Store !)
 
+https://firebasestorage.googleapis.com/v0/b/betterbyte-fbd6c.appspot.com/o/Google%20Auth.mp4?alt=media&token=20667450-b67f-4c40-b61c-0474dfe39191
+
 ### This app is mainly a cross-platform (Android & IOS) mobile application designed to help in areas of Skin Cancer Prevention with built in CNN deep learning model and an interactive web interface for professional dermotologists with powerful analasis features and the ability to live chat with their clients (Web Socket).
 
 ### Other Features: LLM Medical Assistance with user provided medical data, Daily UV index alert with advice like "What factor of sunscreen should you apply ..." and more.
