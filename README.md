@@ -2,8 +2,8 @@
 
 (Avalible on App Store and Play Store !)
 
-[Watch the video](https://firebasestorage.googleapis.com/v0/b/betterbyte-fbd6c.appspot.com/o/Google%20Auth.mp4?alt=media&token=20667450-b67f-4c40-b61c-0474dfe39191)
 
+### Feature Showcase Video
 [![Watch the video](https://img.youtube.com/vi/XVxlf7O_N04/0.jpg)](https://www.youtube.com/watch?v=XVxlf7O_N04)
 
 
