@@ -1,6 +1,6 @@
 # Pocket Protect 
 
-(Avalible on App Store and Play Store !)
+(Will be avalible on App Store and Play Store !)
 
 
 ### Feature Showcase Video
