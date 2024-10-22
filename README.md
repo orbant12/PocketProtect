@@ -12,7 +12,7 @@
 
 ### Other Features: LLM Medical Assistance with user provided medical data, Daily UV index alert with advice like "What factor of sunscreen should you apply ..." and more.
 
----
+--- 
   
 # Features
 #### `Skin Cancer Probability`
