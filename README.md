@@ -14,7 +14,7 @@
  
 --- 
   
-# Features
+# Features 
 #### `Skin Cancer Probability`
 -  Picture can be uploaded from libary or with the phone's camera and then predicted on the aws cloud (EC2) from the CNN Model ( [Mobile](https://github.com/orbant12/PocketProtect/tree/main/client_expo) ,[Model](https://github.com/orbant12/PocketProtect/tree/main/ML) )
   
