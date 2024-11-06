@@ -52,7 +52,7 @@ export const TodayScreen = ({
     const day = moment(date).format('YYYY-MM-DD') === moment().format('YYYY-MM-DD') ? moment(date).format('dd'):moment(date).format('dd')
     const withoutYear = moment(date).format('DD.MM');
     const today = day + " " + withoutYear; 
-    const contextObj = new ContextPanelData(currentuser.uid,{weatherData:weatherData,locationString:locationString,locationPermissionGranted:locationPermissionGranted})
+    const [contextObj, setContextObj] = useState(new ContextPanelData("",{weatherData:weatherData,locationString:locationString,locationPermissionGranted:locationPermissionGranted}));
     const [unactiveComponents, setUnactiveComponents] = useState([])
     const [selectedData, setSelectedData] = useState<selectableDataTypes | null>(null);
     const [ContextOptions, setContextOptions] = useState<{title:string,stateName:any,stateID:selectableDataTypes}[]>([])
@@ -125,6 +125,14 @@ export const TodayScreen = ({
         fetchContextOptions();            
     }, []);
 
+    useEffect(() => {
+        if(currentuser){
+            setContextObj(new ContextPanelData(currentuser.uid,{weatherData:weatherData,locationString:locationString,locationPermissionGranted:locationPermissionGranted}));
+        } else {
+            setContextObj(new ContextPanelData("",{weatherData:weatherData,locationString:locationString,locationPermissionGranted:locationPermissionGranted}));
+        }
+    }, [currentuser]);
+
     const handleContextDataChange = async (field:selectableDataTypes,data:any[]) => {
         console.log(field,data)
         await contextObj.setContextOptions(field,data)
@@ -142,10 +150,7 @@ export const TodayScreen = ({
                 location={locationString}
                 isForcast={false}
             />
-            <TouchableOpacity onPress={() => navigation.navigate("RegOnBoarding")}>
-                <Text>Click to open on boarding</Text>
-            </TouchableOpacity>
-            
+                        
             <Melanoma_WidgetBox 
                 riskyMelanomaData={riskyMelanomaData}
                 unfinishedMelanomaData={unfinishedMelanomaData}

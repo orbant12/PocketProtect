@@ -1,14 +1,22 @@
 # Pocket Protect 
 
-(Avalible on App Store and Play Store !)
+### Feature Showcase Video - [[Click to watch the showcase video](https://www.youtube.com/watch?v=Yij-03l_Cps)]
 
-### Pocket Protect is mainly a cross-platform mobile application designed to help in areas of Skin Cancer Prevention / Detection, LLM Medical Assistance with provided medical data
 
----
+[![Watch the video](https://github.com/user-attachments/assets/2bca9b30-d94e-4b3d-982f-3d1b8d2f8a06)](https://www.youtube.com/watch?v=Yij-03l_Cps)
 
-# Features
-#### `Skin Cancer Probability`
--  Picture can be uploaded from libary or with the phone's camera and then predicted on the aws cloud (EC2) from the CNN Model ( [Mobile](https://github.com/orbant12/PocketProtect/tree/main/client_expo) ,[Model](https://github.com/orbant12/PocketProtect/tree/main/ML) )
+
+----
+ 
+### This app is mainly a cross-platform (Android & IOS) mobile application designed to help in areas of Skin Cancer Prevention with built in CNN deep learning model and an interactive web interface for professional dermotologists with powerful analasis features and the ability to live chat with their clients (Web Socket).
+
+### Other Features: LLM Medical Assistance with user provided medical data, Daily UV index alert with advice like "What factor of sunscreen should you apply ..." and more.
+ 
+--- 
+  
+# Features  
+#### `Skin Cancer Probability` 
+-  Picture can be uploaded from libary or with the phone's camera and then predicted on the aws cloud (EC2) from the CNN Model ( [Mobile](https://github.com/orbant12/PocketProtect/tree/main/client_expo) ,[Model](https://github.com/orbant12/PocketProtect/tree/main/ML) ) 
   
 ---
 #### `LLM health assistant with user context ( Blood Work, UV index, Allergies, Weather )`

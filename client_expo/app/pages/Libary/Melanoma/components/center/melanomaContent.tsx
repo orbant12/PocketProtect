@@ -150,51 +150,51 @@ const RelatedBoxesContainer = ({navigation}) => {
     return(
         <>
         <View style={[Mstyles.melanomaTitle,{marginTop:0,marginBottom:30}]}>
-        <View style={Mstyles.melanomaTitleLeft}>
-            <Text style={{fontSize:12,opacity:0.5,fontWeight:"500"}}>Open them for analasis results</Text>   
-            <Text style={{fontSize:20,fontWeight:"700"}}>Prevent Skin Cancer</Text>                                    
+            <View style={Mstyles.melanomaTitleLeft}>
+                <Text style={{fontSize:12,opacity:0.5,fontWeight:"500"}}>Open them for analasis results</Text>   
+                <Text style={{fontSize:20,fontWeight:"700"}}>Prevent Skin Cancer</Text>                                    
+            </View>
         </View>
-    </View>
 
-    <View style={Mstyles.educationSection}>
-        <OneOptionBox 
-            navigation={navigation}
-            stw={180}
-            buttonTitle="Register New !"
-            subTitle="Sunburn significantly increases the risk of skin cancer"
-            mainTitle="Your Skin Data"
-            image={require("../../../../../assets/type.png")}
-            bgColor={"black"}
-            textColor={"white"}
-            id="skin_data"
-        />
+        <View style={Mstyles.educationSection}>
+            <OneOptionBox 
+                navigation={navigation}
+                stw={180}
+                buttonTitle="Register New !"
+                subTitle="Sunburn significantly increases the risk of skin cancer"
+                mainTitle="Your Skin Data"
+                image={require("../../../../../assets/type.png")}
+                bgColor={"black"}
+                textColor={"white"}
+                id="skin_data"
+            />
 
-        <OneOptionBox 
-            navigation={navigation}
-            stw={180}
-            buttonTitle="Register New !"
-            subTitle="Sunburn significantly increases the risk of skin cancer"
-            mainTitle="Track Sun Burn"
-            image={require("../../../../../assets/burn.png")}
-            bgColor={"orange"}
-            id="sun_burn"
-        />
+            <OneOptionBox 
+                navigation={navigation}
+                stw={180}
+                buttonTitle="Register New !"
+                subTitle="Sunburn significantly increases the risk of skin cancer"
+                mainTitle="Track Sun Burn"
+                image={require("../../../../../assets/burn.png")}
+                bgColor={"orange"}
+                id="sun_burn"
+            />
 
-        <OneOptionBox 
-            navigation={navigation}
-            buttonTitle="How it works ?"
-            subTitle="100% Transparency - Open Source"
-            mainTitle="Our AI Model"
-            image={require("../../../../../assets/ai.png")}
-            bgColor="white"
-            id="ai_model"
-        />
+            <OneOptionBox 
+                navigation={navigation}
+                buttonTitle="How it works ?"
+                subTitle="100% Transparency - Open Source"
+                mainTitle="Our AI Model"
+                image={require("../../../../../assets/ai.png")}
+                bgColor="white"
+                id="ai_model"
+            />
 
-        <AssistantAdvertBox 
-            navigation={navigation}
-        />
+            <AssistantAdvertBox 
+                navigation={navigation}
+            />
 
-    </View>
+        </View>
     </>
     )
 }

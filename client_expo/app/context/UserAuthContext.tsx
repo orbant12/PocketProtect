@@ -133,7 +133,7 @@ useEffect(() => {
     } else if (user && isRegisterLoading == "reset"){
       //FOR USEEFFECT CLEANUP
     } else if (user == null) {
-      ErrorClientHandler("TypeError: Network request failed",null)
+      //ErrorClientHandler("TypeError: Network request failed",null)
       setuser(null);
     } 
   });

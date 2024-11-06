@@ -287,6 +287,7 @@ const SurveyScreeen = ({route,navigation}) => {
                             })      
                             setIsDiagnosDone(true)                                
                     }                 
+                    
                 } else {
                     const diagnosis = fullDiagnosis.diagnosis
                     const stage2_diagnosisData = await getDiagnosisData({diagnosis,dataFixed,memoryDataFixed,stage:2})
@@ -299,6 +300,7 @@ const SurveyScreeen = ({route,navigation}) => {
                             })       
                         setIsDiagnosDone(true)                               
                     }      
+                    
 
                 }
                 // If data is not edited it stays only --> openEditSheet() can change it

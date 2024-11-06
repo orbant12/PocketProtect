@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
                     <View style={{width:"100%",flexDirection:"row",marginTop:20,borderBottomWidth:0.3,paddingBottom:20}}>
                         <Image source={data.melanomaPictureUrl} style={{width:50,height:50,borderWidth:1,borderRadius:5}} />
                         <View style={{width:"70%",margin:0,flexDirection:"column",marginLeft:20}}>
-                            <Text style={{fontSize:10}}>• Location: {data.melanomaDoc.spot[0].slug}</Text>
+                            <Text style={{fontSize:10}}>• Location: {data.melanomaDoc.slug}</Text>
                             <Text style={{fontSize:10,marginTop:7}}>• AI Risk Prediction: {data.risk == null ? "Not Analised" : data.risk}</Text>
                             <Text style={{fontSize:10,marginTop:7}}>• Photo taken: {timestampToString(data.created_at)}</Text>
                         </View>

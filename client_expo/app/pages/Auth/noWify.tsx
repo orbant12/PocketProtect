@@ -79,7 +79,7 @@ const NoInternetConnectionPage = ({navigation,route}) => {
                 size={30}
                 color={"white"}
             />
-            <Text style={{opacity:0.6,padding:10,margin:5,textAlign:"left",fontSize:12,color:"white",fontWeight:"500"}}>We're unable tonk nd kosndiknsk ndks kdns kndksn dknsk dnksnd ksndk nskdnsklnd ksn</Text>
+            <Text style={{opacity:0.6,padding:10,margin:5,textAlign:"left",fontSize:12,color:"white",fontWeight:"500"}}>We're unable connect you to our server. It seems like there is no internet connection !</Text>
             </View>
             {tries != 0 ?
             <TouchableOpacity onPress={() => handleReload()} style={{justifyContent:"center",alignItems:"center",width:"100%",padding:10,borderRadius:10,backgroundColor:"rgba(250,0,250,0.4)",borderWidth:1,borderColor:"magenta",opacity:0.3}}>

@@ -385,7 +385,7 @@ const CrucialInformation_Component = ({
 
             <div style={{display:"flex",flexDirection:"row",justifyContent:"space-between",marginTop:10,width:"90%",alignSelf:"center",background:"rgba(0,0,0,0.1)",padding:15,borderRadius:10}}>
                 <h4>Location:</h4>
-                <h4>{data.melanomaDoc.spot[0].slug}</h4>
+                <h4>{data.melanomaDoc.slug}</h4>
             </div>
             <div style={{display:"flex",flexDirection:"row",justifyContent:"space-between",marginTop:10,width:"90%",alignSelf:"center",background:"rgba(0,0,0,0.2)",padding:15,borderRadius:10}}>
                 <h4>Itching:</h4>
@@ -547,7 +547,7 @@ const Result_Component = ({
                     <h4 style={{alignSelf:"flex-start",opacity:0.8,margin:10}}>Useful Information:</h4>
                     <div style={{display:"flex",flexDirection:"row",justifyContent:"space-between",marginTop:10,width:"90%",alignSelf:"center",background:"rgba(0,0,0,0.1)",padding:15,borderRadius:10}}>
                         <h4>Location:</h4>
-                        <h4>{data.melanomaDoc.spot[0].slug}</h4>
+                        <h4>{data.melanomaDoc.slug}</h4>
                     </div>
                     <div style={{display:"flex",flexDirection:"row",justifyContent:"space-between",marginTop:10,width:"90%",alignSelf:"center",background:"rgba(0,0,0,0.2)",padding:15,borderRadius:10}}>
                         <h4>Had melanoma before ?</h4>
@@ -615,7 +615,7 @@ const Overall_Result_Component = ({
                     <h4 style={{alignSelf:"flex-start",opacity:0.8,margin:10}}>Useful Information:</h4>
                     <div style={{display:"flex",flexDirection:"row",justifyContent:"space-between",marginTop:10,width:"90%",alignSelf:"center",background:"rgba(0,0,0,0.1)",padding:15,borderRadius:10}}>
                         <h4>Location:</h4>
-                        <h4>{data.melanomaDoc.spot[0].slug}</h4>
+                        <h4>{data.melanomaDoc.slug}</h4>
                     </div>
                     <div style={{display:"flex",flexDirection:"row",justifyContent:"space-between",marginTop:10,width:"90%",alignSelf:"center",background:"rgba(0,0,0,0.2)",padding:15,borderRadius:10}}>
                         <h4>Had melanoma before ?</h4>

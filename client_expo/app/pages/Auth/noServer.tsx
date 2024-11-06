@@ -33,7 +33,7 @@ const NoServerPage = ({navigation}) => {
                 size={30}
                 color={"white"}
             />
-            <Text style={{opacity:0.6,padding:10,margin:5,textAlign:"left",fontSize:12,color:"white",fontWeight:"500"}}>We're unable tonk nd kosndiknsk ndks kdns kndksn dknsk dnksnd ksndk nskdnsklnd ksn</Text>
+            <Text style={{opacity:0.6,padding:10,margin:5,textAlign:"left",fontSize:12,color:"white",fontWeight:"500"}}>We're currently working on our production server. Check back in a few hours please. Thank you for your patience !</Text>
             </View>
             <TouchableOpacity onPress={() => handleReload()} style={{justifyContent:"center",alignItems:"center",width:"100%",padding:10,borderRadius:10,backgroundColor:"rgba(250,0,250,0.4)",borderWidth:1,borderColor:"magenta"}}>
                 <Text style={{fontWeight:"700",fontSize:15,color:"white",opacity:0.6}}>Reload</Text>

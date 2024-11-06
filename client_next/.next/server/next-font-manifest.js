@@ -1,1 +1,1 @@
-self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/Users/tamas/Programming_Projects/Test/client_next/app/layout\":[\"static/media/c9a5bc6a7c948fb0-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"
+self.__NEXT_FONT_MANIFEST="{\"pages\":{},\"app\":{\"/Volumes/Mac_SSD/Skin_Cancer/client_next/app/layout\":[\"static/media/a34f9d1faa5f3315-s.p.woff2\"]},\"appUsingSizeAdjust\":true,\"pagesUsingSizeAdjust\":false}"

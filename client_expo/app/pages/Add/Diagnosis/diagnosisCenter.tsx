@@ -1,4 +1,4 @@
-import { View,Text,TouchableOpacity,StyleSheet,ScrollView,RefreshControl,Dimensions ,TextInput,Linking,ActivityIndicator, Modal} from "react-native"
+import { View,Text,TouchableOpacity,StyleSheet,ScrollView,RefreshControl,Dimensions ,TextInput,Linking,ActivityIndicator, Modal, Alert} from "react-native"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -274,7 +274,7 @@ const DiagnosisCenter = ({navigation,route}) => {
                                     color={"white"}
                                 />  
                             </View>                     
-                            <TouchableOpacity  style={{borderWidth:0.3,width:"100%",backgroundColor:"rgba(255,255,255,0.6)",padding:10,paddingVertical:10,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
+                            <TouchableOpacity onPress={() => Alert.alert("Not avalible yet. Coming soon...")}   style={{borderWidth:0.3,width:"100%",backgroundColor:"rgba(255,255,255,0.6)",padding:10,paddingVertical:10,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
                                 <Text style={{fontWeight:"600",color:"black",marginRight:15,fontSize:13}}>Open</Text>
                                 <MaterialCommunityIcons 
                                     name='arrow-right'
@@ -301,7 +301,7 @@ const DiagnosisCenter = ({navigation,route}) => {
                                     color={"white"}
                                 />                       
                             </View>                     
-                            <TouchableOpacity  style={{borderWidth:0.3,width:"100%",backgroundColor:"rgba(255,255,255,0.6)",padding:10,paddingVertical:10,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
+                            <TouchableOpacity onPress={() => Alert.alert("Not avalible yet. Coming soon...")}  style={{borderWidth:0.3,width:"100%",backgroundColor:"rgba(255,255,255,0.6)",padding:10,paddingVertical:10,alignItems:"center",justifyContent:"center",borderRadius:10,flexDirection:"row"}}>
                                 <Text style={{fontWeight:"600",color:"black",marginRight:15,fontSize:13}}>Open</Text>
                                 <MaterialCommunityIcons 
                                     name='arrow-right'

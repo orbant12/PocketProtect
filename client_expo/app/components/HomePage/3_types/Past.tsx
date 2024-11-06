@@ -21,28 +21,18 @@ export function PastScreen({
 
             <View style={styles.TodaySection}>
                     <View style={styles.titleRow}>
-                        <Text style={styles.title}>Schedule</Text>
-                        <Text style={styles.titleLeft}>0/1</Text>
+                        <Text style={styles.title}>Coming soon</Text>
                     </View>
 
                     <View style={styles.TaskBox}>
                         <Text style={styles.TaskTitle}>Blood Work Reminder</Text>
-                        <Text style={[styles.TaskSubTitle,{color:"white",opacity:0.7}]}>You haven't updated your blood work in <Text style={{fontWeight:"700",color:"magenta",opacity:0.8}}>{"12"} days</Text></Text>
-                        <Text style={styles.TaskSubTitle}>Medical research suggest to update your blood work every 6 months for a healthy lifestyle</Text>
-                        <Pressable onPress={() => handleNavigation("DailyReport")} style={styles.StartButton}>
-                            <Text>Schedule Now</Text>
-                            <MaterialCommunityIcons name="arrow-right" size={20} color="magenta" style={{marginLeft:10}} />
-                        </Pressable>
+                        <Text style={[styles.TaskSubTitle,{color:"white",opacity:0.7}]}>It will remind you to update your blood work like <Text style={{fontWeight:"700",color:"magenta",opacity:0.8}}>Your blood work is outdated for {"12"} days</Text></Text>
                     </View> 
-            </View>
 
-            <View style={styles.TodaySection}>
-                    <View style={styles.titleRow}>
-                        <Text style={styles.title}>{selectedDate} Tasks</Text>
-                        <Text style={styles.titleLeft}>0/1</Text>
-                    </View>
-
-                    <TaskBox_1 />
+                    <View style={styles.TaskBox}>
+                        <Text style={styles.TaskTitle}>Melanoma Reminder</Text>
+                        <Text style={[styles.TaskSubTitle,{color:"white",opacity:0.7}]}>You will get notifications about your <Text style={{fontWeight:"700",color:"magenta",opacity:0.8}}>moles</Text></Text>
+                    </View> 
             </View>
         </View>
         </View>

@@ -36,7 +36,7 @@ const UserSavedPage = ({navigation}) => {
     const { weatherData, locationString, locationPermissionGranted } = useWeather()
     const { currentuser } = useAuth()
     const [selectedData, setSelectedData] = useState<selectableDataTypes>(null)
-    const contextObj = new ContextPanelData(currentuser.uid,{weatherData:weatherData,locationString:locationString,locationPermissionGranted:locationPermissionGranted})
+    const [contextObj, setContextObj] = useState(new ContextPanelData("",{weatherData:weatherData,locationString:locationString,locationPermissionGranted:locationPermissionGranted}));
     const [ContextOptions, setContextOptions] = useState<{title:string,stateName:any,stateID:selectableDataTypes}[]>([])
 
       const fetchContextDatas = async () => {
@@ -49,6 +49,14 @@ const UserSavedPage = ({navigation}) => {
     useEffect(() => {
       fetchContextDatas()
     },[])  
+
+    useEffect(() => {
+      if(currentuser){
+          setContextObj(new ContextPanelData(currentuser.uid,{weatherData:weatherData,locationString:locationString,locationPermissionGranted:locationPermissionGranted}));
+      } else {
+          setContextObj(new ContextPanelData("",{weatherData:weatherData,locationString:locationString,locationPermissionGranted:locationPermissionGranted}));
+      }
+  }, [currentuser]);
 
     const handleContextDataChange = async (field:selectableDataTypes,data:any[]) => {
       console.log(field,data)

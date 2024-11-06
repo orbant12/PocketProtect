@@ -2,7 +2,7 @@
 //BASIC IMPORTS
 import React from 'react';
 import {View,Text,StyleSheet,TouchableOpacity,ScrollView, Linking, Alert} from 'react-native';
-import * as MailComposer from 'expo-mail-composer';
+//import * as MailComposer from 'expo-mail-composer';
 
 //ICONS
 import { Icon } from 'react-native-elements';
@@ -25,6 +25,7 @@ const handleLogout = () => {
     //logout from firebase
     signOut(auth).then(() => {
         alert("You have been logged out")
+        navigation.navigate("AuthHub");
     }).catch((error) => {
         console.log(error)
     });
@@ -32,8 +33,9 @@ const handleLogout = () => {
 }
 
 const openAppStore = () => {
-    const appStoreLink = 'https://apps.apple.com/app/idYOUR_APP_ID'; // Replace with your actual App Store link
-    Linking.openURL(appStoreLink).catch(err => console.error("Couldn't load page", err));
+    //const appStoreLink = 'https://apps.apple.com/app/idYOUR_APP_ID'; // Replace with your actual App Store link
+    //Linking.openURL(appStoreLink).catch(err => console.error("Couldn't load page", err));
+    Alert.alert("Not implemented yet ...");
 };
 
 const sendEmail = () => {
@@ -43,7 +45,7 @@ const sendEmail = () => {
         body: "Hez ndksndknskdnkc k cjkd",
         isHtml: false
     }
-    MailComposer.composeAsync(options);
+    //MailComposer.composeAsync(options);
 };
 return(
 <View style={styles.container}> 
@@ -107,7 +109,7 @@ return(
             />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => sendEmail()}  style={styles.topicRow}>
+        <TouchableOpacity onPress={() => Alert.alert("Not implemented yet ...")}  style={styles.topicRow}>
             <Icon
                 name='warning'
                 type='material'
@@ -124,7 +126,7 @@ return(
             />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => sendEmail()} style={styles.topicRow}>
+        <TouchableOpacity onPress={() => Alert.alert("Not implemented yet ...")} style={styles.topicRow}>
             <Icon
                 name='info'
                 type='material'

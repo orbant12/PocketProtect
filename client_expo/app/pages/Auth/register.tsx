@@ -37,6 +37,7 @@ const SubmitHandler = async (e:GestureResponderEvent) => {
     }
     if (response == true){
         navigation.navigate("RegOnBoarding")
+        handleClose()
     } else {
         alert(response)
     }

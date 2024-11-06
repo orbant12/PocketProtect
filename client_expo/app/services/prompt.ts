@@ -74,7 +74,7 @@ const ProcessRediagnosis = async ({dataFixed,possibleOutcomes,preDiagnosis}) => 
     return { [type]: response }
 }
 
-const ProcessCreateSurvey= async ({dataFixed,fullDiagnosis}):Promise <{type:string,q:string}[]> => {    
+const ProcessCreateSurvey= async ({dataFixed,fullDiagnosis}):Promise <{type:string,q:string}[] | false> => {    
     const binaryFeedback = dataFixed.map(item => {
         return item.q + ", " + item.a + '\n';
     });
@@ -85,13 +85,20 @@ const ProcessCreateSurvey= async ({dataFixed,fullDiagnosis}):Promise <{type:stri
     feedback,Please describe ... \n `;
     const response = await generateDiagnosisFromPrompt(prompt)
 
-    const formattedData: {type:string,q:string}[] = response.split('\n').map(line => {
-        const [type, question] = line.split(',');    
-        return { type, q: question };
-    });    
+    try{
+        const formattedData: {type:string,q:string}[] = response.split('\n').map(line => {
+            const [type, question] = line.split(',');    
+            return { type, q: question };
+        });    
+    
+        const filtered = formattedData.filter(item => item.q !== undefined);
+        return filtered
 
-    const filtered = formattedData.filter(item => item.q !== undefined);
-    return filtered
+    }catch(err){
+        return false;
+    }
+
+
 }
 
 const ProcessFutureAssistanceDiagnosis = async ({diagnosis,memoryDataFixed,dataFixed}) => {   
@@ -211,14 +218,16 @@ export const getSurvey = async ({
     fullDiagnosis
 }):Promise <{type:string,q:string}[] | null> => {
         const survey = await ProcessCreateSurvey({dataFixed,fullDiagnosis})
-        
+        if(survey != false) {
         const result = survey.every((item) => {
             return (item.type == "feedback" || item.type == "binary") && item.q !== undefined;
         });
-        console.log(result)
         if(result == true){
             return survey
         } else {
             return null
+        }
+        } else {
+            return null;
         }
 }

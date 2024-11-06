@@ -29,6 +29,7 @@ const LoginPage = ({navigation, handleClose}) => {
             setInputPassword('');
             handleClose()
         }
+        handleClose()
     };
 
     const handleForgotPass = async() => {

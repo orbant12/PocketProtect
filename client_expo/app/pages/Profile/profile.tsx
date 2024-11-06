@@ -1,5 +1,5 @@
 import { View,Text,StyleSheet,Image,TouchableOpacity, Modal, ActivityIndicator } from "react-native"
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import UserSavedPage from "./tabs/userSavedPage"
 import { Tabs} from 'react-native-collapsible-tab-view'
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -15,6 +15,8 @@ import ProfileCameraScreenView from "../Auth/cameraModal";
 import { styles_shadow } from "../../styles/shadow_styles";
 import { User } from "../../models/User";
 import { ImageLoaderComponent } from "../../components/Common/imageLoader";
+import { UserData } from "../../utils/types";
+import { UserData_Default } from "../../utils/initialValues";
 
 type NavbarValues = "ai_vision" | "blood_work" | "diagnosis" | "soon"
 
@@ -25,8 +27,9 @@ const Profile = ({navigation,handleSettings}) => {
 
 const { currentuser, handleAuthHandler } = useAuth()
 const [isProfileChangeActive, setIsProfileChangeActive] = useState(false);  
-const [profileUrl, setProfileUrl] = useState(currentuser.profileUrl);
+const [profileUrl, setProfileUrl] = useState("");
 const [isCameraActive, setIsCameraActive] = useState(false);
+const [userData,setUserData] = useState<UserData>(UserData_Default);
 const [loading, setLoading] = useState(false)
 const maleDefault = Image.resolveAssetSource(require("../../assets/male.png")).uri;
 const femaleDefault = Image.resolveAssetSource(require("../../assets/female.png")).uri;
@@ -49,6 +52,19 @@ const positions = useRef({
 const handleSettingsNavigation = () => {
     navigation.navigate("SettingsPage")
 }
+
+useEffect(()=>{
+    if(currentuser){
+        setProfileUrl(currentuser.profileUrl);
+        setUserData(currentuser);
+    }
+},[currentuser])
+
+useEffect(()=>{
+    if(currentuser){
+        setUserData(currentuser);
+    }
+},[])
 
 const handlePictureUpload = async() => {        
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -84,17 +100,17 @@ const handleChangeProfile = async() => {
                 renderHeader={() => 
                     <>
                     <NavBar_TwoOption
-                        title={currentuser.fullname}
+                        title={userData.fullname}
                         icon_right={{name:"menu",size:25,action:handleSettingsNavigation}}
                         icon_left_component={() => 
                             <TouchableOpacity onPress={() => setIsProfileChangeActive(true)}>
-                                {currentuser.profileUrl != "" ?
+                                {userData.profileUrl != "" ?
                                     <ImageLoaderComponent
                                         w={50}
                                         h={50}
                                         imageStyle={{borderRadius:10,borderColor:"magenta",borderWidth:2}}
                                         style={{borderRadius:10,borderColor:"magenta",borderWidth:1}}
-                                        data={{melanomaPictureUrl:currentuser.profileUrl}}
+                                        data={{melanomaPictureUrl:userData.profileUrl}}
                                     />
                                     :
                                     <View style={{width:50,height:50, borderRadius:50,borderColor:"magenta",borderWidth:2,backgroundColor:"black"}} />
@@ -172,7 +188,7 @@ const handleChangeProfile = async() => {
             <>
                 {!loading ?
                 <>
-                <TouchableOpacity onPress={() => {setIsProfileChangeActive(!isProfileChangeActive);setProfileUrl(currentuser.profileUrl)}} style={{flexDirection:"column",justifyContent:"center",width:"90%",height:50,borderRadius:10,backgroundColor:"black",borderWidth:3,borderColor:"white",alignItems:"center",position:"absolute",top:20,alignSelf:"center"}}>
+                <TouchableOpacity onPress={() => {setIsProfileChangeActive(!isProfileChangeActive);setProfileUrl(userData.profileUrl)}} style={{flexDirection:"column",justifyContent:"center",width:"90%",height:50,borderRadius:10,backgroundColor:"black",borderWidth:3,borderColor:"white",alignItems:"center",position:"absolute",top:20,alignSelf:"center"}}>
                         <MaterialCommunityIcons 
                             name="close"
                             size={25}

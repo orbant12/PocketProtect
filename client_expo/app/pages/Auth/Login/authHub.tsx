@@ -1,4 +1,4 @@
-import { View,Text,Pressable,StyleSheet, Modal } from "react-native"
+import { View,Text,Pressable,StyleSheet, Modal, Alert } from "react-native"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAuth } from '../../../context/UserAuthContext'
 import React, {useState, useCallback} from "react";
@@ -27,11 +27,12 @@ const AuthHub = ({navigation}) => {
         <>
         <View style={styles.container}>
             <View style={styles.TopAnimationSection}>
-                <Text>Let's get protected</Text>
+                <Text style={{fontWeight:"800",fontSize:22,opacity:0.3}}>Let's get protected</Text>
+                <Text style={{fontWeight:"800",fontSize:18,opacity:0.1,marginTop:10}}>Pocket Protect</Text>
             </View>
             <View style={{height:"47%", backgroundColor:"black",width:"100%",borderTopLeftRadius:20,borderTopRightRadius:20,}}>
                 <View style={styles.BottomFormSection}>
-                    <Pressable style={[styles.Button,{backgroundColor:"white"}]}>
+                    <Pressable onPress={() => Alert.alert("Not implemented yet ...")} style={[styles.Button,{backgroundColor:"white"}]}>
                         <MaterialCommunityIcons 
                             name="apple"
                             size={20}

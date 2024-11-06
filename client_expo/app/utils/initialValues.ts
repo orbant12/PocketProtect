@@ -3,12 +3,12 @@ import { Gender, MolePerSlugNumber, Success_Purchase_Client_Checkout_Data } from
 
 export const UserData_Default = {
         uid:"default",
-        birth_date: new Date(),
+        birth_date: "date",
         gender: "male" as Gender,
         profileUrl:"",
         user_since:"",
         email:"",
-        fullname:""
+        fullname:"",
 }
 
 

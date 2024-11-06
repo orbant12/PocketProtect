@@ -122,12 +122,17 @@ function AiDiagnosis({navigation,route}){
             feedback,Please describe ... \n `;
             const response :string= await generateDiagnosisFromPrompt(prompt)
             
-            const formattedData = response.split('\n').map(line => {
-                const [type, question] = line.split(',');
-                return { type, q: question };
-            });
+            try{
+                const formattedData = response.split('\n').map(line => {
+                    const [type, question] = line.split(',');
+                    return { type, q: question };
+                });
+
+                return formattedData
+            } catch{
+                return false
+            }
             
-            return formattedData
         }  catch (error) {
             return false
         }

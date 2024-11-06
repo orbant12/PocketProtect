@@ -1,28 +1,16 @@
 {
   "pages": {
-    "/assistant/layout": [
+    "/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/assistant/layout.css",
-      "static/chunks/app/assistant/layout.js"
+      "static/css/app/page.css",
+      "static/chunks/app/page.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
-    ],
-    "/assistant/sessions/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/assistant/sessions/[id]/page.css",
-      "static/chunks/app/assistant/sessions/[id]/page.js"
-    ],
-    "/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/page.css",
-      "static/chunks/app/page.js"
     ],
     "/auth/login/page": [
       "static/chunks/webpack.js",
@@ -36,11 +24,23 @@
       "static/css/app/assistant/page.css",
       "static/chunks/app/assistant/page.js"
     ],
+    "/assistant/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/assistant/layout.css",
+      "static/chunks/app/assistant/layout.js"
+    ],
     "/assistant/sessions/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/assistant/sessions/page.css",
       "static/chunks/app/assistant/sessions/page.js"
+    ],
+    "/assistant/sessions/[id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/assistant/sessions/[id]/page.css",
+      "static/chunks/app/assistant/sessions/[id]/page.js"
     ],
     "/assistant/requests/page": [
       "static/chunks/webpack.js",

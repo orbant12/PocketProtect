@@ -74,7 +74,7 @@ const MelanomaSingleSlug = ({route,navigation}) => {
 
             const pictureUrl = await convertImageToBase64(uploadedSpotPicture);
 
-            const res = await melanomaSpotUpload({
+            const res = await melanoma.melanomaSpotUpload({
                 userId: currentuser.uid,
                 melanomaDocument: {spot: bodyPartSlug, location: redDotLocation},
                 gender: currentuser.gender,

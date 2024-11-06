@@ -6,6 +6,8 @@ import { SkinData } from "./SkinData";
 import { convertImageToBase64 } from "../utils/imageConvert";
 import { MolePerSlugNumber_Default } from "../utils/initialValues";
 
+
+
 export class Melanoma extends SkinData {
     
     private gender: Gender;
@@ -41,7 +43,7 @@ export class Melanoma extends SkinData {
     public async numberOfMolesOnSlugsArray(): Promise <MolePerSlugNumber> {
         try {
             const slugValues: string[] = [];
-        
+            
             for (const doc of this.allMelanomaData) {
                 const spotData: SpotData = doc as SpotData;
         
@@ -63,7 +65,7 @@ export class Melanoma extends SkinData {
             return slugCount as MolePerSlugNumber;
         
         } catch (err) {
-        console.error(err);
+            console.error(err);
             return MolePerSlugNumber_Default as MolePerSlugNumber;
         }
     }
@@ -113,7 +115,7 @@ export class Melanoma extends SkinData {
     
         if(response.ok){
             this.handleSwitchCurrentToNewLatest({newData:newData});
-
+            this.allMelanomaData.push(newData);
             return true;
         } else {
             return false
@@ -140,6 +142,62 @@ export class Melanoma extends SkinData {
             return "NoHistory";
         }
     }  
+
+    
+
+    public async melanomaSpotUpload({
+        userId,
+        melanomaDocument,
+        gender,
+        spotId,
+        melanomaPictureUrl,
+        storageLocation,
+        risk,
+        storage_name,
+        created_at,
+        melanomaBlob
+    }) {
+        try{
+    
+            const response = await fetch(`${DOMAIN}/client/upload/melanoma`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    userId,
+                    spotData: {
+                        melanomaDoc: {
+                            location: { x: melanomaDocument.location.x, y: melanomaDocument.location.y },
+                            spot: {
+                                slug: melanomaDocument.spot.slug,
+                                pathArray: melanomaDocument.spot.pathArray,
+                                color: melanomaDocument.spot.color
+                            }
+                        },
+                        melanomaId: spotId,
+                        risk,
+                        gender,
+                        storage_name: storage_name,
+                        storage_location: storageLocation,
+                        melanomaPictureUrl,
+                        created_at: created_at.toISOString(), // Convert to ISO string for consistency
+                    },
+                    melanomaBlob
+                }),
+                
+            });
+    
+            if(response.ok){
+                this.fetchAllMelanomaData();
+                return true;
+            } else {
+                return false
+            }
+        } catch (error) {
+            return false
+        }
+    }
 
     public async deleteSpotWithHistoryReset({melanomaId,deleteType,storage_name,newLatest}:{melanomaId: string,deleteType:"latest" | "history",storage_name:string,newLatest:SpotData}): Promise<{firestore:{success:boolean,message:string},storage:{success:boolean,message:string}}> {
         const response = await fetch(`${DOMAIN}/client/delete/melanoma-with-history-reset`, {

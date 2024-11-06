@@ -1,4 +1,4 @@
-// File: /Users/tamas/Programming_Projects/Test/client_next/app/assistant/page.tsx
+// File: /Volumes/Mac_SSD/Skin_Cancer/client_next/app/assistant/page.tsx
 import * as entry from '../../../../app/assistant/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

@@ -11,10 +11,10 @@ import { SkinModal } from "../../../components/LibaryPage/Melanoma/modals";
 import { Navigation_MoleUpload_1,Navigation_SlugAnalysis } from "../../../navigation/navigation";
 import { styles_shadow } from "../../../styles/shadow_styles";
 import { NavBar_TwoOption } from "../../../components/Common/navBars";
-import { BodyPart, DetectableRealatives, MolePerSlugNumber, SkinType, Slug, SpotData, SunBurnData} from "../../../utils/types";
+import { BodyPart, DetectableRealatives, MolePerSlugNumber, SkinType, Slug, SpotData, SunBurnData, UserData} from "../../../utils/types";
 import { SkinNumber_Convert } from "../../../utils/skinConvert";
 import { MelanomaContent } from "./components/center/melanomaContent";
-import { MolePerSlugNumber_Default } from "../../../utils/initialValues";
+import { MolePerSlugNumber_Default, UserData_Default } from "../../../utils/initialValues";
 
 
 export type MelanomaMetaData = {
@@ -38,7 +38,8 @@ const SingleFeature = ({navigation}) => {
     const [ affectedSlugs,setAffectedSlugs ] = useState<{slug: Slug}[]>([])
     const [selectedSide, setSelectedSide] = useState<"front" | "back">("front");
     const [ completedParts, setCompletedParts] = useState([])
-    const [numberOfMolesOnSlugs,setNumberOfMolesOnSlugs] = useState<MolePerSlugNumber>(MolePerSlugNumber_Default)
+    const [numberOfMolesOnSlugs,setNumberOfMolesOnSlugs] = useState<MolePerSlugNumber>(MolePerSlugNumber_Default);
+    const [userData,setUserData] = useState<UserData>(UserData_Default);
     const [ melanomaMetaData, setMelanomaMetaData] = useState<MelanomaMetaData>({
         sunburn:[{
             stage:0,
@@ -147,6 +148,9 @@ const SingleFeature = ({navigation}) => {
     useFocusEffect(
         React.useCallback(() => {
         handleRefresh();
+        if(currentuser){
+            setUserData(currentuser);
+        }
         return () => {};
         }, [])
     );
@@ -216,7 +220,7 @@ const SingleFeature = ({navigation}) => {
                     setSelectedSide={setSelectedSide}
                     melanomaMetaData={melanomaMetaData}
                     setSkinModal={setSkinModal}
-                    userData={currentuser}
+                    userData={userData}
                     melanomaData={melanomaData}
                     bodySlugs={bodySlugs}
                     completedParts={completedParts}

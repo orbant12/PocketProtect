@@ -4,10 +4,10 @@
     "slug": "PocketProtect",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./app/assets/logo.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./app/assets/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "white"
     },
@@ -38,14 +38,14 @@
     ],
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./app/assets/logo.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.orbant12.LupodyMobile",
       "googleServicesFile": "./s_key.json"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./app/assets/logo.png"
     },
     "scheme": "com.orbant12.LupodyMobile",
     "extra": {
