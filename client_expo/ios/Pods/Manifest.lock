@@ -256,6 +256,8 @@ PODS:
     - ExpoModulesCore
   - ExpoLinearGradient (13.0.2):
     - ExpoModulesCore
+  - ExpoMailComposer (13.0.1):
+    - ExpoModulesCore
   - ExpoModulesCore (1.12.20):
     - DoubleConversion
     - glog
@@ -286,20 +288,20 @@ PODS:
   - EXUpdatesInterface (0.16.2):
     - ExpoModulesCore
   - FBLazyVector (0.74.3)
-  - Firebase/Auth (10.29.0):
+  - Firebase/Auth (10.27.0):
     - Firebase/CoreOnly
-    - FirebaseAuth (~> 10.29.0)
-  - Firebase/CoreOnly (10.29.0):
-    - FirebaseCore (= 10.29.0)
+    - FirebaseAuth (~> 10.27.0)
+  - Firebase/CoreOnly (10.27.0):
+    - FirebaseCore (= 10.27.0)
   - FirebaseAppCheckInterop (10.29.0)
-  - FirebaseAuth (10.29.0):
+  - FirebaseAuth (10.27.0):
     - FirebaseAppCheckInterop (~> 10.17)
     - FirebaseCore (~> 10.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.8)
     - GoogleUtilities/Environment (~> 7.8)
     - GTMSessionFetcher/Core (< 4.0, >= 2.1)
     - RecaptchaInterop (~> 100.0)
-  - FirebaseCore (10.29.0):
+  - FirebaseCore (10.27.0):
     - FirebaseCoreInternal (~> 10.0)
     - GoogleUtilities/Environment (~> 7.12)
     - GoogleUtilities/Logger (~> 7.12)
@@ -1584,11 +1586,11 @@ PODS:
     - React-Core
   - RNDateTimePicker (8.0.1):
     - React-Core
-  - RNFBApp (20.3.0):
-    - Firebase/CoreOnly (= 10.29.0)
+  - RNFBApp (20.1.0):
+    - Firebase/CoreOnly (= 10.27.0)
     - React-Core
   - RNFBAuth (20.1.0):
-    - Firebase/Auth (= 10.29.0)
+    - Firebase/Auth (= 10.27.0)
     - React-Core
     - RNFBApp
   - RNGestureHandler (2.16.2):
@@ -1754,6 +1756,7 @@ DEPENDENCIES:
   - ExpoImagePicker (from `../node_modules/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../node_modules/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../node_modules/expo-linear-gradient/ios`)
+  - ExpoMailComposer (from `../node_modules/expo-mail-composer/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core`)
   - ExpoSharing (from `../node_modules/expo-sharing/ios`)
   - ExpoWebBrowser (from `../node_modules/expo-web-browser/ios`)
@@ -1907,6 +1910,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-keep-awake/ios"
   ExpoLinearGradient:
     :path: "../node_modules/expo-linear-gradient/ios"
+  ExpoMailComposer:
+    :path: "../node_modules/expo-mail-composer/ios"
   ExpoModulesCore:
     :path: "../node_modules/expo-modules-core"
   ExpoSharing:
@@ -2079,15 +2084,16 @@ SPEC CHECKSUMS:
   ExpoImagePicker: 12a420923383ae38dccb069847218f27a3b87816
   ExpoKeepAwake: 3b8815d9dd1d419ee474df004021c69fdd316d08
   ExpoLinearGradient: 8cec4a09426d8934c433e83cb36262d72c667fce
+  ExpoMailComposer: e6da16de4682fba919051b2e680f804af00341f3
   ExpoModulesCore: 17a5163fddddcc6472ccf9d57a64f5a075a4c6db
   ExpoSharing: 8db05dd85081219f75989a3db2c92fe5e9741033
   ExpoWebBrowser: 7595ccac6938eb65b076385fd23d035db9ecdc8e
   EXUpdatesInterface: 996527fd7d1a5d271eb523258d603f8f92038f24
   FBLazyVector: 7e977dd099937dc5458851233141583abba49ff2
-  Firebase: cec914dab6fd7b1bd8ab56ea07ce4e03dd251c2d
+  Firebase: 26b040b20866a55f55eb3611b9fcf3ae64816b86
   FirebaseAppCheckInterop: 6a1757cfd4067d8e00fccd14fcc1b8fd78cfac07
-  FirebaseAuth: e2ebfaf9fb4638a1c9a3b0efd17d1b90943987cd
-  FirebaseCore: 30e9c1cbe3d38f5f5e75f48bfcea87d7c358ec16
+  FirebaseAuth: 77a012b7e08042bf44d0db835ca2e86e6ca7bbd3
+  FirebaseCore: a2b95ae4ce7c83ceecfbbbe3b6f1cddc7415a808
   FirebaseCoreInternal: df84dd300b561c27d5571684f389bf60b0a5c934
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
@@ -2154,8 +2160,8 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 826b603ae9c0f88b5ac4e956801f755109fa4d5c
   RNCPicker: 3e2c37a8328f368ce14da050cdc8231deb5fc9f9
   RNDateTimePicker: b6a9b35a785ecbe12b4e7d6de5439d0aa4614146
-  RNFBApp: 793adb33298db7e67dc365dc1ec0dc8a55a7a044
-  RNFBAuth: 3d7a94add07a3c849ed165dc092d8929d6dee814
+  RNFBApp: 9acbe359ef3559d6f8ca5c350db471f2b352f98a
+  RNFBAuth: 58a7a5591755a4f078cfa03e29a60be009a93931
   RNGestureHandler: 20a4307fd21cbff339abfcfa68192f3f0a6a518b
   RNGoogleSignin: 08dc4ba7eac2096c7fecfe109f0950fa4683c803
   RNReanimated: d51431fd3597a8f8320319dce8e42cee82a5445f

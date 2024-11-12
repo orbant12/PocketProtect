@@ -45,6 +45,6 @@ with_node \
   --no-warnings \
   --eval "require(require.resolve('expo-modules-autolinking', { paths: [require.resolve('expo/package.json')] }))(process.argv.slice(1))" \
   generate-modules-provider  \
-  --target "/Volumes/SSD/Programming_Projects/Test/client_expo/ios/Pods/Target Support Files/Pods-LupodyMobile/ExpoModulesProvider.swift" \
+  --target "/Volumes/Mac_SSD/Skin_Cancer/client_expo/ios/Pods/Target Support Files/Pods-LupodyMobile/ExpoModulesProvider.swift" \
   --platform "apple" \
-  --packages "@react-native-google-signin/google-signin" "expo-application" "expo-asset" "expo-camera" "expo-constants" "expo-crypto" "expo-dev-launcher" "expo-dev-menu" "expo-file-system" "expo-font" "expo-image-manipulator" "expo-image-picker" "expo-keep-awake" "expo-linear-gradient" "expo-sharing" "expo-web-browser"
+  --packages "@react-native-google-signin/google-signin" "expo-application" "expo-asset" "expo-camera" "expo-constants" "expo-crypto" "expo-dev-launcher" "expo-dev-menu" "expo-file-system" "expo-font" "expo-image-manipulator" "expo-image-picker" "expo-keep-awake" "expo-linear-gradient" "expo-mail-composer" "expo-sharing" "expo-web-browser"

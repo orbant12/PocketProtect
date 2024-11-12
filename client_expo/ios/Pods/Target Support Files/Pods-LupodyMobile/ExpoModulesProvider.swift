@@ -18,6 +18,7 @@ import ExpoImageManipulator
 import ExpoImagePicker
 import ExpoKeepAwake
 import ExpoLinearGradient
+import ExpoMailComposer
 import ExpoSharing
 import ExpoWebBrowser
 #if EXPO_CONFIGURATION_DEBUG
@@ -42,6 +43,7 @@ public class ExpoModulesProvider: ModulesProvider {
       ImagePickerModule.self,
       KeepAwakeModule.self,
       LinearGradientModule.self,
+      MailComposerModule.self,
       SharingModule.self,
       WebBrowserModule.self,
       DevLauncherInternal.self,
@@ -66,6 +68,7 @@ public class ExpoModulesProvider: ModulesProvider {
       ImagePickerModule.self,
       KeepAwakeModule.self,
       LinearGradientModule.self,
+      MailComposerModule.self,
       SharingModule.self,
       WebBrowserModule.self
     ]
