@@ -2,7 +2,6 @@
 import { Timestamp } from "../utils/date_manipulations";
 import { Gender, SkinType, Slug, SpotData, Success_Purchase_Client_Checkout_Data, UserData,AssistanceFields, AssistantData, DiagnosisData, WeatherAPIResponse } from "../utils/types";
 import { MelanomaMetaData } from "../pages/Libary/Melanoma/melanomaCenter";
-import { numberOfMolesOnSlugs } from "../components/LibaryPage/Melanoma/slugCard";
 import { getWeatherAPIKey } from "../../key";
 
 
