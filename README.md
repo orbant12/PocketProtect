@@ -1,8 +1,8 @@
 # Skin Screen 
 
-• This project repo is a failed startup, helping others with my 1.5 year of work.
-• It was running on appstore and AWS EC2 for 4 months.
-• Cause of failiure: Low Demand with High Competition
+ This project repo is a failed startup, helping others with my 1.5 year of work.
+ It was running on appstore and AWS EC2 for 4 months.
+ Cause of failiure: Low Demand with High Competition
 
 ### Feature Showcase Video - [[Click to watch the showcase video](https://www.youtube.com/watch?v=Yij-03l_Cps)]
 
