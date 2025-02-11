@@ -2,6 +2,8 @@
 
  - This project repo is a failed startup, helping others with my 1.5 year of work.
  - It was running on appstore and AWS EC2 for 4 months.
+ - It was helped by Vrije University of Amsterdam's startup program DemonstratorLab. More about them: https://www.linkedin.com/search/results/all/?fetchDeterministicClustersOnly=true&heroEntityKey=urn%3Ali%3Aorganization%3A84829725&keywords=demonstrator%20lab%20amsterdam&origin=RICH_QUERY_TYPEAHEAD_HISTORY&position=0&searchId=1bcddc54-4686-4ae5-a28d-e8a4200b9c0d&sid=i6%3B&spellCorrectionEnabled=true
+   
  - Cause of failiure: Low Demand with High Competition
 
 ### Feature Showcase Video - [[Click to watch the showcase video](https://www.youtube.com/watch?v=Yij-03l_Cps)]
