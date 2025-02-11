@@ -1,6 +1,6 @@
 # Skin Screen 
 
- - This project repo is a failed startup, helping others with my 1.5 year of work.
+#### `This project repo is a failed startup, helping others with my 1.5 year of work` 
  - It was running on appstore and AWS EC2 for 4 months.
  - It was helped by Vrije University of Amsterdam's startup program DemonstratorLab. More about them: https://www.demonstratorlab.nl
    
