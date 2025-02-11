@@ -8,9 +8,12 @@
 
 -----
 
-### This app is mainly a cross-platform React Native mobile application designed to help in areas of Skin Cancer Prevention with built in CNN deep learning model and an interactive web interface for professional dermotologists with powerful analasis features and the ability to live chat with their clients (Web Socket).
+### This app is mainly a cross-platform React Native mobile application designed to help in areas of Skin Cancer Prevention
+- with built in CNN deep learning model and an interactive web interface for professional dermotologists with powerful analasis features and the ability to live chat with their clients (Web Socket).
 
-### Other Features: LLM Medical Assistance with user provided medical data, Daily UV index alert with advice like "What factor of sunscreen should you apply ..." and more.
+### Other Features: 
+- LLM Medical Assistance with user provided medical data
+- Daily UV index alert with advice like "What factor of sunscreen should you apply ..." and more.
  
 --- 
 ### Try App from your browser - [[Click to try demo](https://www.youtube.com/watch?v=Yij-03l_Cps)]
