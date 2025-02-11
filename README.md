@@ -1,4 +1,10 @@
-# Pocket Protect 
+# Skin Screen 
+
+### Details
+
+- This project repo is a failed startup, helping others with my 1.5 year of work.
+- It was running on appstore and AWS EC2 for 4 months.
+- Cause of failiure: Low Demand with High Competition
 
 ### Feature Showcase Video - [[Click to watch the showcase video](https://www.youtube.com/watch?v=Yij-03l_Cps)]
 
@@ -8,7 +14,7 @@
 
 ----
  
-### This app is mainly a cross-platform (Android & IOS) mobile application designed to help in areas of Skin Cancer Prevention with built in CNN deep learning model and an interactive web interface for professional dermotologists with powerful analasis features and the ability to live chat with their clients (Web Socket).
+### This app is mainly a cross-platform React Native mobile application designed to help in areas of Skin Cancer Prevention with built in CNN deep learning model and an interactive web interface for professional dermotologists with powerful analasis features and the ability to live chat with their clients (Web Socket).
 
 ### Other Features: LLM Medical Assistance with user provided medical data, Daily UV index alert with advice like "What factor of sunscreen should you apply ..." and more.
  
@@ -54,8 +60,7 @@
 
 ### ⚙️ Go Backend [[REST-API](https://github.com/orbant12/PocketProtect/tree/main/serverGo)]
 - Go (REST API)
-- Tensorflow-js-node (CLOUD COMPUTE for DL Model)
-- Firebase Functions (Server Provider)
+- AWS EC2 (Web Server Provider)
 - Firebase - Firestore and Storage (Database)
 
 ### 🖥️ Next Web [[web](https://github.com/orbant12/PocketProtect/tree/main/client_next)]
