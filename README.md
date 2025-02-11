@@ -7,7 +7,7 @@
  - Cause of failiure: Low Demand with High Competition
 
 -----
-### Try APP from your browser - [[Click to watch the showcase video](https://www.youtube.com/watch?v=Yij-03l_Cps)]
+### Try App from your browser - [[Click to use demo](https://www.youtube.com/watch?v=Yij-03l_Cps)]
 
 
 -----
