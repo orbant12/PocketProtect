@@ -39,11 +39,6 @@
 
 -----
 
-### Try App from your browser - [[Click to try demo](https://www.youtube.com/watch?v=Yij-03l_Cps)]
-
-
------
-
 ### Feature Showcase Video - [[Click to watch the showcase video](https://www.youtube.com/watch?v=Yij-03l_Cps)]
 
 
