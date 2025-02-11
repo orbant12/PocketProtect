@@ -1,6 +1,6 @@
-# Pocket Protect 
+# Skin Screen 
 
-(Avalible on App Store and Play Store !)
+(Was Avalible on App Store and Play Store !)
 
 ### Pocket Protect is mainly a cross-platform mobile application designed to help in areas of Skin Cancer Prevention / Detection, LLM Medical Assistance with provided medical data
 
